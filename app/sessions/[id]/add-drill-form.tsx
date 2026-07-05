@@ -48,6 +48,20 @@ const DRILLS: Record<string, string[]> = {
     "RET-BKH-MID",
     "RET-BKH-BLC",
   ],
+  Servis: [
+    "SR1-DCE-BDY",
+    "SR1-DCE-WDE",
+    "SR1-DCE-T",
+    "SR1-ADV-BDY",
+    "SR1-ADV-WDE",
+    "SR1-ADV-T",
+    "SR2-DCE-BDY",
+    "SR2-DCE-WDE",
+    "SR2-DCE-T",
+    "SR2-ADV-BDY",
+    "SR2-ADV-WDE",
+    "SR2-ADV-T",
+  ],
 };
 
 export function AddDrillForm({ sessionId }: { sessionId: string }) {
