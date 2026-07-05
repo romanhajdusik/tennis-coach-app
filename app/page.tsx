@@ -18,6 +18,12 @@ export default async function Home() {
           <p className="text-zinc-600 dark:text-zinc-400">
             Prihlásený ako <span className="font-medium">{user.email}</span>
           </p>
+          <Link
+            href="/players"
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+          >
+            Hráči
+          </Link>
           <form action={logout}>
             <button
               type="submit"
