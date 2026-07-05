@@ -11,8 +11,11 @@ export async function createSession(
   formData: FormData,
 ): Promise<SessionFormState> {
   const date = formData.get("date") as string;
-  const focus = formData.get("focus") as string;
+  const focusOption = formData.get("focus") as string;
+  const focusOther = (formData.get("focus_other") as string)?.trim();
   const durationMinutes = formData.get("duration_minutes") as string;
+
+  const focus = focusOption === "Iné" ? focusOther : focusOption;
 
   if (!date || !focus || !durationMinutes) {
     return { error: "Vyplň všetky polia." };
