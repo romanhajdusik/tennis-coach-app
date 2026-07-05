@@ -5,8 +5,6 @@ import { NewSessionForm } from "./new-session-form";
 
 type PlannedData = {
   date?: string;
-  focus?: string;
-  duration_minutes?: number;
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -83,11 +81,11 @@ export default async function SessionsPage() {
                 {sessions.map((session) => {
                   const planned = session.planned_data as PlannedData | null;
                   return (
-                    <li
-                      key={session.id}
-                      className="flex flex-col gap-1 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
-                    >
-                      <div className="flex items-center justify-between">
+                    <li key={session.id}>
+                      <Link
+                        href={`/sessions/${session.id}`}
+                        className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+                      >
                         <p className="font-medium text-zinc-900 dark:text-zinc-50">
                           {planned?.date
                             ? new Date(planned.date).toLocaleString("sk-SK", {
@@ -99,13 +97,7 @@ export default async function SessionsPage() {
                         <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                           {STATUS_LABELS[session.status] ?? session.status}
                         </span>
-                      </div>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                        {planned?.focus}
-                        {planned?.duration_minutes
-                          ? ` · ${planned.duration_minutes} min`
-                          : ""}
-                      </p>
+                      </Link>
                     </li>
                   );
                 })}

@@ -1,21 +1,10 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { createSession } from "@/lib/actions/sessions";
-
-const FOCUS_OPTIONS = [
-  "Forhand",
-  "Backhand",
-  "Volley",
-  "Return",
-  "Servis",
-  "Herné cvičenia",
-  "Iné",
-];
 
 export function NewSessionForm() {
   const [state, formAction, pending] = useActionState(createSession, undefined);
-  const [focus, setFocus] = useState(FOCUS_OPTIONS[0]);
 
   return (
     <form
@@ -37,62 +26,6 @@ export function NewSessionForm() {
           name="date"
           type="datetime-local"
           required
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-        />
-      </div>
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="focus"
-          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Zameranie
-        </label>
-        <select
-          id="focus"
-          name="focus"
-          value={focus}
-          onChange={(event) => setFocus(event.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-        >
-          {FOCUS_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
-      {focus === "Iné" && (
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="focus_other"
-            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Upresni zameranie
-          </label>
-          <input
-            id="focus_other"
-            name="focus_other"
-            type="text"
-            required
-            placeholder="napr. kondícia, taktika"
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-          />
-        </div>
-      )}
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="duration_minutes"
-          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Trvanie (minúty)
-        </label>
-        <input
-          id="duration_minutes"
-          name="duration_minutes"
-          type="number"
-          min={1}
-          required
-          defaultValue={60}
           className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
         />
       </div>

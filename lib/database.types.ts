@@ -138,6 +138,47 @@ export type Database = {
         }
         Relationships: []
       }
+      session_drills: {
+        Row: {
+          category: string
+          character: string
+          coach_id: string
+          created_at: string
+          drill_code: string | null
+          duration_minutes: number
+          id: string
+          session_id: string
+        }
+        Insert: {
+          category: string
+          character: string
+          coach_id: string
+          created_at?: string
+          drill_code?: string | null
+          duration_minutes: number
+          id?: string
+          session_id: string
+        }
+        Update: {
+          category?: string
+          character?: string
+          coach_id?: string
+          created_at?: string
+          drill_code?: string | null
+          duration_minutes?: number
+          id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_drills_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sessions: {
         Row: {
           actual_data: Json | null
