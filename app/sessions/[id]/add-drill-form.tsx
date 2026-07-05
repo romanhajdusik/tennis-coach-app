@@ -25,6 +25,7 @@ const DURATION_OPTIONS = [5, 10, 15, 20, 30];
 // ostatné kategórie zatiaľ používajú voľné textové pole
 const DRILLS: Record<string, string[]> = {
   Forhand: ["FRH-CRS", "FRH-DTL", "FRH-IOU", "FRH-IIN", "FRH-SLC", "FRH-DRP"],
+  Backhand: ["BKH-CRS", "BKH-DTL", "BKH-IOU", "BKH-IIN", "BKH-SLC", "BKH-DRP"],
 };
 
 export function AddDrillForm({ sessionId }: { sessionId: string }) {
