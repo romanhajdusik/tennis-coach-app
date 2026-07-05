@@ -26,6 +26,18 @@ const DURATION_OPTIONS = [5, 10, 15, 20, 30];
 const DRILLS: Record<string, string[]> = {
   Forhand: ["FRH-CRS", "FRH-DTL", "FRH-IOU", "FRH-IIN", "FRH-SLC", "FRH-DRP"],
   Backhand: ["BKH-CRS", "BKH-DTL", "BKH-IOU", "BKH-IIN", "BKH-SLC", "BKH-DRP"],
+  Volley: [
+    "VOL-FRH",
+    "VOL-BKH",
+    "VOL-FRH-LOW",
+    "VOL-FRH-HGH",
+    "VOL-FRH-DRP",
+    "VOL-FRH-DRV",
+    "VOL-BKH-LOW",
+    "VOL-BKH-HGH",
+    "VOL-BKH-DRP",
+    "VOL-BKH-DRV",
+  ],
 };
 
 export function AddDrillForm({ sessionId }: { sessionId: string }) {
