@@ -1,7 +1,13 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { addDrill } from "@/lib/actions/session-drills";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+import { addDrill, removeDrill } from "@/lib/actions/session-drills";
 
 const CATEGORY_OPTIONS = [
   "Forhand",
@@ -21,8 +27,7 @@ const CHARACTER_OPTIONS = [
 
 const DURATION_OPTIONS = [5, 10, 15, 20, 30];
 
-// Kódy cvičení podľa kategórie — zatiaľ vyplnené len pre Forhand,
-// ostatné kategórie zatiaľ používajú voľné textové pole
+// Kódy cvičení podľa kategórie — "Iné" zatiaľ používa voľné textové pole
 const DRILLS: Record<string, string[]> = {
   Forhand: ["FRH-CRS", "FRH-DTL", "FRH-IOU", "FRH-IIN", "FRH-SLC", "FRH-DRP"],
   Backhand: ["BKH-CRS", "BKH-DTL", "BKH-IOU", "BKH-IIN", "BKH-SLC", "BKH-DRP"],
@@ -64,131 +69,205 @@ const DRILLS: Record<string, string[]> = {
   ],
 };
 
+const DEFAULT_CATEGORY = CATEGORY_OPTIONS[0];
+const DEFAULT_CHARACTER = "neutral";
+
+type LastAdded = {
+  id: string;
+  category: string;
+  character: string;
+  drillCode: string;
+};
+
 export function AddDrillForm({ sessionId }: { sessionId: string }) {
   const addDrillWithSession = addDrill.bind(null, sessionId);
-  const [state, formAction, pending] = useActionState(
-    addDrillWithSession,
-    undefined,
-  );
-  const [category, setCategory] = useState(CATEGORY_OPTIONS[0]);
+  const [state, formAction] = useActionState(addDrillWithSession, undefined);
+  const formRef = useRef<HTMLFormElement>(null);
+  const processedIdRef = useRef<string | null>(null);
+  const [isRemoving, startRemoveTransition] = useTransition();
+
+  const [category, setCategory] = useState(DEFAULT_CATEGORY);
+  const [character, setCharacter] = useState(DEFAULT_CHARACTER);
   const drillOptions = DRILLS[category];
+  const [drillCode, setDrillCode] = useState(drillOptions?.[0] ?? "");
+  const [duration, setDuration] = useState("");
+  const [lastAdded, setLastAdded] = useState<LastAdded | null>(null);
+
+  useEffect(() => {
+    if (state?.addedDrillId && state.addedDrillId !== processedIdRef.current) {
+      processedIdRef.current = state.addedDrillId;
+      setLastAdded({ id: state.addedDrillId, category, character, drillCode });
+      // pripraviť formulár na ďalšie cvičenie
+      setCategory(DEFAULT_CATEGORY);
+      setCharacter(DEFAULT_CHARACTER);
+      setDrillCode(DRILLS[DEFAULT_CATEGORY]?.[0] ?? "");
+      setDuration("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
+
+  function handleCategoryChange(value: string) {
+    setCategory(value);
+    setDrillCode(DRILLS[value]?.[0] ?? "");
+  }
+
+  function handleDurationChange(value: string) {
+    setDuration(value);
+    if (value) {
+      formRef.current?.requestSubmit();
+    }
+  }
+
+  function handleUndo() {
+    if (!lastAdded) return;
+    const toRemove = lastAdded;
+    startRemoveTransition(async () => {
+      await removeDrill(sessionId, toRemove.id);
+    });
+    // vrátiť sa pred krok zadania trvania — zameranie/charakter/cvičenie
+    // ostávajú vyplnené, len trvanie treba zadať znova
+    setCategory(toRemove.category);
+    setCharacter(toRemove.character);
+    setDrillCode(toRemove.drillCode);
+    setDuration("");
+    setLastAdded(null);
+  }
 
   return (
-    <form
-      action={formAction}
-      className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
-    >
-      <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-        Pridať cvičenie
-      </h2>
+    <div className="flex flex-col gap-3">
+      {lastAdded && (
+        <div className="flex items-center justify-between rounded-xl border border-emerald-300 bg-emerald-50 p-3 text-sm dark:border-emerald-800 dark:bg-emerald-950">
+          <span className="text-emerald-800 dark:text-emerald-200">
+            Pridané: {lastAdded.category} · {lastAdded.drillCode}
+          </span>
+          <button
+            type="button"
+            onClick={handleUndo}
+            disabled={isRemoving}
+            className="rounded-lg border border-emerald-400 px-3 py-1 text-xs font-medium text-emerald-800 disabled:opacity-50 dark:border-emerald-700 dark:text-emerald-200"
+          >
+            Undo
+          </button>
+        </div>
+      )}
 
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="category"
-          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Zameranie
-        </label>
-        <select
-          id="category"
-          name="category"
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-        >
-          {CATEGORY_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
+      <form
+        ref={formRef}
+        action={formAction}
+        className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+      >
+        <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          Pridať cvičenie
+        </h2>
 
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="character"
-          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Charakter úderu
-        </label>
-        <select
-          id="character"
-          name="character"
-          defaultValue="neutral"
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-        >
-          {CHARACTER_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="drill_code"
-          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Cvičenie
-        </label>
-        {drillOptions ? (
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="category"
+            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Zameranie
+          </label>
           <select
-            id="drill_code"
-            name="drill_code"
-            key={category}
+            id="category"
+            name="category"
+            value={category}
+            onChange={(event) => handleCategoryChange(event.target.value)}
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
           >
-            {drillOptions.map((code) => (
-              <option key={code} value={code}>
-                {code}
+            {CATEGORY_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
               </option>
             ))}
           </select>
-        ) : (
-          <input
-            id="drill_code"
-            name="drill_code"
-            type="text"
-            required
-            placeholder="napr. BKH-CRS"
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="character"
+            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Charakter úderu
+          </label>
+          <select
+            id="character"
+            name="character"
+            value={character}
+            onChange={(event) => setCharacter(event.target.value)}
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-          />
-        )}
-      </div>
+          >
+            {CHARACTER_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="duration_minutes"
-          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Trvanie
-        </label>
-        <select
-          id="duration_minutes"
-          name="duration_minutes"
-          defaultValue={10}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-        >
-          {DURATION_OPTIONS.map((minutes) => (
-            <option key={minutes} value={minutes}>
-              {minutes} min
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="drill_code"
+            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Cvičenie
+          </label>
+          {drillOptions ? (
+            <select
+              id="drill_code"
+              name="drill_code"
+              value={drillCode}
+              onChange={(event) => setDrillCode(event.target.value)}
+              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            >
+              {drillOptions.map((code) => (
+                <option key={code} value={code}>
+                  {code}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              id="drill_code"
+              name="drill_code"
+              type="text"
+              required
+              value={drillCode}
+              onChange={(event) => setDrillCode(event.target.value)}
+              placeholder="napr. BKH-CRS"
+              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            />
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="duration_minutes"
+            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Trvanie
+          </label>
+          <select
+            id="duration_minutes"
+            name="duration_minutes"
+            value={duration}
+            onChange={(event) => handleDurationChange(event.target.value)}
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            <option value="" disabled>
+              Vyber trvanie
             </option>
-          ))}
-        </select>
-      </div>
+            {DURATION_OPTIONS.map((minutes) => (
+              <option key={minutes} value={minutes}>
+                {minutes} min
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {state?.error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
-      )}
-
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
-      >
-        {pending ? "Pridávam..." : "Pridať cvičenie"}
-      </button>
-    </form>
+        {state?.error && (
+          <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
+        )}
+      </form>
+    </div>
   );
 }

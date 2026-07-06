@@ -4,7 +4,9 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export type DrillFormState = { error?: string } | undefined;
+export type DrillFormState =
+  | { error?: string; addedDrillId?: string }
+  | undefined;
 
 const VALID_CHARACTERS = ["offensive", "neutral", "defensive"];
 const VALID_DURATIONS = [5, 10, 15, 20, 30];
@@ -40,18 +42,42 @@ export async function addDrill(
     redirect("/login");
   }
 
-  const { error } = await supabase.from("session_drills").insert({
-    session_id: sessionId,
-    coach_id: user.id,
-    category,
-    character,
-    drill_code: drillCode,
-    duration_minutes: durationMinutes,
-  });
+  const { data: drill, error } = await supabase
+    .from("session_drills")
+    .insert({
+      session_id: sessionId,
+      coach_id: user.id,
+      category,
+      character,
+      drill_code: drillCode,
+      duration_minutes: durationMinutes,
+    })
+    .select("id")
+    .single();
 
-  if (error) {
+  if (error || !drill) {
     return { error: "Cvičenie sa nepodarilo pridať." };
   }
+
+  revalidatePath(`/sessions/${sessionId}`);
+  return { addedDrillId: drill.id };
+}
+
+export async function removeDrill(sessionId: string, drillId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  await supabase
+    .from("session_drills")
+    .delete()
+    .eq("id", drillId)
+    .eq("coach_id", user.id);
 
   revalidatePath(`/sessions/${sessionId}`);
 }
