@@ -2,8 +2,10 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AddDrillForm } from "./add-drill-form";
+import { SessionReviewForm } from "./session-review-form";
 
 type PlannedData = { date?: string };
+type ActualData = { date?: string };
 
 const CHARACTER_LABELS: Record<string, string> = {
   offensive: "Offensive",
@@ -28,7 +30,7 @@ export default async function SessionDetailPage({
 
   const { data: session } = await supabase
     .from("sessions")
-    .select("id, status, planned_data")
+    .select("id, status, planned_data, actual_data, notes")
     .eq("id", id)
     .maybeSingle();
 
@@ -43,6 +45,7 @@ export default async function SessionDetailPage({
     .order("created_at", { ascending: true });
 
   const planned = session.planned_data as PlannedData | null;
+  const actual = session.actual_data as ActualData | null;
   const totalMinutes = (drills ?? []).reduce(
     (sum, drill) => sum + drill.duration_minutes,
     0,
@@ -76,7 +79,16 @@ export default async function SessionDetailPage({
         </p>
       </div>
 
-      <AddDrillForm sessionId={session.id} />
+      <SessionReviewForm
+        sessionId={session.id}
+        status={session.status}
+        initialDate={actual?.date ?? planned?.date}
+        initialNotes={session.notes}
+      />
+
+      {session.status !== "completed" && (
+        <AddDrillForm sessionId={session.id} />
+      )}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
