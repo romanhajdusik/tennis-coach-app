@@ -16,7 +16,7 @@ const CATEGORY_OPTIONS = [
   "Return",
   "Servis",
   "Herné cvičenia",
-  "Iné",
+  "POINTS",
 ];
 
 const CHARACTER_OPTIONS = [
@@ -27,7 +27,8 @@ const CHARACTER_OPTIONS = [
 
 const DURATION_OPTIONS = [5, 10, 15, 20, 30];
 
-// Kódy cvičení podľa kategórie — "Iné" zatiaľ používa voľné textové pole
+// Kódy cvičení podľa kategórie — kategória bez zoznamu (žiadna zatiaľ)
+// by použila voľné textové pole
 const DRILLS: Record<string, string[]> = {
   Forhand: ["FRH-CRS", "FRH-DTL", "FRH-IOU", "FRH-IIN", "FRH-SLC", "FRH-DRP"],
   Backhand: ["BKH-CRS", "BKH-DTL", "BKH-IOU", "BKH-IIN", "BKH-SLC", "BKH-DRP"],
@@ -71,6 +72,7 @@ const DRILLS: Record<string, string[]> = {
     "VOL-PRP+VOL",
     "ATK+VOL+SSH",
   ],
+  POINTS: ["TRN-PRC", "HOM-PRC", "MATCH"],
 };
 
 const DEFAULT_CATEGORY = CATEGORY_OPTIONS[0];
