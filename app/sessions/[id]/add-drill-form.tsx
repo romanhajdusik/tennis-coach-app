@@ -66,6 +66,10 @@ const DRILLS: Record<string, string[]> = {
     "TRI-CC+LL",
     "DR8-C+L",
     "DR8-CCL+CC",
+    "FRH-ATK+VOL",
+    "BKH-ATK+VOL",
+    "VOL-PRP+VOL",
+    "ATK+VOL+SSH",
   ],
 };
 
