@@ -147,7 +147,9 @@ export type Database = {
           drill_code: string | null
           duration_minutes: number
           id: string
+          replaces_drill_id: string | null
           session_id: string
+          status: string
         }
         Insert: {
           category: string
@@ -157,7 +159,9 @@ export type Database = {
           drill_code?: string | null
           duration_minutes: number
           id?: string
+          replaces_drill_id?: string | null
           session_id: string
+          status?: string
         }
         Update: {
           category?: string
@@ -167,9 +171,18 @@ export type Database = {
           drill_code?: string | null
           duration_minutes?: number
           id?: string
+          replaces_drill_id?: string | null
           session_id?: string
+          status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "session_drills_replaces_drill_id_fkey"
+            columns: ["replaces_drill_id"]
+            isOneToOne: false
+            referencedRelation: "session_drills"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "session_drills_session_id_fkey"
             columns: ["session_id"]

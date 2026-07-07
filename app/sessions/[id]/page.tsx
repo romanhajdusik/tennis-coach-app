@@ -3,15 +3,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AddDrillForm } from "./add-drill-form";
 import { SessionReviewForm } from "./session-review-form";
+import { DrillRow, type Drill } from "./drill-row";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
-
-const CHARACTER_LABELS: Record<string, string> = {
-  offensive: "Offensive",
-  neutral: "Neutral",
-  defensive: "Defensive",
-};
 
 export default async function SessionDetailPage({
   params,
@@ -40,16 +35,35 @@ export default async function SessionDetailPage({
 
   const { data: drills } = await supabase
     .from("session_drills")
-    .select("id, category, character, drill_code, duration_minutes")
+    .select(
+      "id, category, character, drill_code, duration_minutes, status, replaces_drill_id",
+    )
     .eq("session_id", id)
     .order("created_at", { ascending: true });
 
   const planned = session.planned_data as PlannedData | null;
   const actual = session.actual_data as ActualData | null;
-  const totalMinutes = (drills ?? []).reduce(
-    (sum, drill) => sum + drill.duration_minutes,
-    0,
+  const totalMinutes = (drills ?? [])
+    .filter((drill) => drill.status === "played")
+    .reduce((sum, drill) => sum + drill.duration_minutes, 0);
+
+  // náhradné cvičenie sa zobrazí hneď za tým, ktoré nahrádza
+  const replacementByOriginal = new Map(
+    (drills ?? [])
+      .filter((drill) => drill.replaces_drill_id)
+      .map((drill) => [drill.replaces_drill_id as string, drill]),
   );
+  const orderedDrills: Drill[] = [];
+  for (const drill of drills ?? []) {
+    if (drill.replaces_drill_id) continue;
+    orderedDrills.push(drill);
+    let current = drill;
+    while (replacementByOriginal.has(current.id)) {
+      current = replacementByOriginal.get(current.id)!;
+      orderedDrills.push(current);
+    }
+  }
+  const canEdit = session.status !== "completed";
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
@@ -86,37 +100,25 @@ export default async function SessionDetailPage({
         initialNotes={session.notes}
       />
 
-      {session.status !== "completed" && (
-        <AddDrillForm sessionId={session.id} />
-      )}
+      {canEdit && <AddDrillForm sessionId={session.id} />}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
           Cvičenia
         </h2>
-        {!drills || drills.length === 0 ? (
+        {orderedDrills.length === 0 ? (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             Zatiaľ žiadne cvičenia.
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {drills.map((drill) => (
-              <li
+            {orderedDrills.map((drill) => (
+              <DrillRow
                 key={drill.id}
-                className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
-              >
-                <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                    {drill.category} · {drill.drill_code}
-                  </p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {CHARACTER_LABELS[drill.character] ?? drill.character}
-                  </p>
-                </div>
-                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                  {drill.duration_minutes} min
-                </span>
-              </li>
+                sessionId={session.id}
+                drill={drill}
+                canEdit={canEdit}
+              />
             ))}
           </ul>
         )}
