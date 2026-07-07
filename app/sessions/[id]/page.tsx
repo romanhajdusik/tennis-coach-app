@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AddDrillForm } from "./add-drill-form";
 import { SessionReviewForm } from "./session-review-form";
 import { DrillRow, type Drill } from "./drill-row";
+import { getDrillOptionsByCategory } from "@/lib/actions/drill-codes";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -64,6 +65,7 @@ export default async function SessionDetailPage({
     }
   }
   const canEdit = session.status !== "completed";
+  const drillsByCategory = await getDrillOptionsByCategory(supabase, user.id);
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
@@ -100,7 +102,12 @@ export default async function SessionDetailPage({
         initialNotes={session.notes}
       />
 
-      {canEdit && <AddDrillForm sessionId={session.id} />}
+      {canEdit && (
+        <AddDrillForm
+          sessionId={session.id}
+          drillsByCategory={drillsByCategory}
+        />
+      )}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
@@ -118,6 +125,7 @@ export default async function SessionDetailPage({
                 sessionId={session.id}
                 drill={drill}
                 canEdit={canEdit}
+                drillsByCategory={drillsByCategory}
               />
             ))}
           </ul>

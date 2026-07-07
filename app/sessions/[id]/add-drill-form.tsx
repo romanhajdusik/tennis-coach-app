@@ -13,7 +13,6 @@ import {
   CHARACTER_OPTIONS,
   DEFAULT_CATEGORY,
   DEFAULT_CHARACTER,
-  DRILLS,
   DURATION_OPTIONS,
 } from "@/lib/drill-options";
 
@@ -24,7 +23,13 @@ type LastAdded = {
   drillCode: string;
 };
 
-export function AddDrillForm({ sessionId }: { sessionId: string }) {
+export function AddDrillForm({
+  sessionId,
+  drillsByCategory,
+}: {
+  sessionId: string;
+  drillsByCategory: Record<string, string[]>;
+}) {
   const addDrillWithSession = addDrill.bind(null, sessionId);
   const [state, formAction] = useActionState(addDrillWithSession, undefined);
   const formRef = useRef<HTMLFormElement>(null);
@@ -33,7 +38,7 @@ export function AddDrillForm({ sessionId }: { sessionId: string }) {
 
   const [category, setCategory] = useState(DEFAULT_CATEGORY);
   const [character, setCharacter] = useState(DEFAULT_CHARACTER);
-  const drillOptions = DRILLS[category];
+  const drillOptions = drillsByCategory[category];
   const [drillCode, setDrillCode] = useState(drillOptions?.[0] ?? "");
   const [duration, setDuration] = useState("");
   const [lastAdded, setLastAdded] = useState<LastAdded | null>(null);
@@ -45,7 +50,7 @@ export function AddDrillForm({ sessionId }: { sessionId: string }) {
       // pripraviť formulár na ďalšie cvičenie
       setCategory(DEFAULT_CATEGORY);
       setCharacter(DEFAULT_CHARACTER);
-      setDrillCode(DRILLS[DEFAULT_CATEGORY]?.[0] ?? "");
+      setDrillCode(drillsByCategory[DEFAULT_CATEGORY]?.[0] ?? "");
       setDuration("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,7 +58,7 @@ export function AddDrillForm({ sessionId }: { sessionId: string }) {
 
   function handleCategoryChange(value: string) {
     setCategory(value);
-    setDrillCode(DRILLS[value]?.[0] ?? "");
+    setDrillCode(drillsByCategory[value]?.[0] ?? "");
   }
 
   function handleDurationChange(value: string) {
@@ -156,7 +161,7 @@ export function AddDrillForm({ sessionId }: { sessionId: string }) {
           >
             Cvičenie
           </label>
-          {drillOptions ? (
+          {drillOptions && drillOptions.length > 0 ? (
             <select
               id="drill_code"
               name="drill_code"

@@ -8,7 +8,6 @@ import {
   CHARACTER_OPTIONS,
   DEFAULT_CATEGORY,
   DEFAULT_CHARACTER,
-  DRILLS,
   DURATION_OPTIONS,
 } from "@/lib/drill-options";
 
@@ -37,10 +36,12 @@ const STATUS_BADGES: Record<string, string> = {
 function ReplaceDrillForm({
   sessionId,
   drillId,
+  drillsByCategory,
   onCancel,
 }: {
   sessionId: string;
   drillId: string;
+  drillsByCategory: Record<string, string[]>;
   onCancel: () => void;
 }) {
   const replaceThisDrill = replaceDrill.bind(null, sessionId, drillId);
@@ -50,12 +51,12 @@ function ReplaceDrillForm({
   );
   const [category, setCategory] = useState(DEFAULT_CATEGORY);
   const [character, setCharacter] = useState(DEFAULT_CHARACTER);
-  const drillOptions = DRILLS[category];
+  const drillOptions = drillsByCategory[category];
   const [drillCode, setDrillCode] = useState(drillOptions?.[0] ?? "");
 
   function handleCategoryChange(value: string) {
     setCategory(value);
-    setDrillCode(DRILLS[value]?.[0] ?? "");
+    setDrillCode(drillsByCategory[value]?.[0] ?? "");
   }
 
   return (
@@ -89,7 +90,7 @@ function ReplaceDrillForm({
         ))}
       </select>
 
-      {drillOptions ? (
+      {drillOptions && drillOptions.length > 0 ? (
         <select
           name="drill_code"
           value={drillCode}
@@ -158,10 +159,12 @@ export function DrillRow({
   sessionId,
   drill,
   canEdit,
+  drillsByCategory,
 }: {
   sessionId: string;
   drill: Drill;
   canEdit: boolean;
+  drillsByCategory: Record<string, string[]>;
 }) {
   const [isPending, startTransition] = useTransition();
   const [isReplacing, setIsReplacing] = useState(false);
@@ -232,6 +235,7 @@ export function DrillRow({
         <ReplaceDrillForm
           sessionId={sessionId}
           drillId={drill.id}
+          drillsByCategory={drillsByCategory}
           onCancel={() => setIsReplacing(false)}
         />
       )}

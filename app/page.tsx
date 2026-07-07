@@ -31,6 +31,12 @@ export default async function Home() {
             >
               Tréningy
             </Link>
+            <Link
+              href="/drill-codes"
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            >
+              Kódy cvičení
+            </Link>
           </div>
           <form action={logout}>
             <button

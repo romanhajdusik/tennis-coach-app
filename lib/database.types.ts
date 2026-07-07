@@ -34,6 +34,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      drill_codes: {
+        Row: {
+          category: string
+          coach_id: string
+          code: string | null
+          created_at: string
+          id: string
+          slot: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          coach_id: string
+          code?: string | null
+          created_at?: string
+          id?: string
+          slot: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          coach_id?: string
+          code?: string | null
+          created_at?: string
+          id?: string
+          slot?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       metrics_and_tests: {
         Row: {
           coach_id: string
