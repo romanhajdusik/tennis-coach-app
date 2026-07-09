@@ -72,7 +72,7 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - Prehľad podľa kódu cvičenia (čas, odhadovaný počet úderov, % využitia) a podľa charakteru cvičenia (offensive/neutral/defensive)
 - Dáta sa vždy načítavajú len pre aktívneho hráča (`players.is_active = true`), priamo v server action (`lib/actions/analytics.ts`), nie cez DB views — pri zmene hráča sa dashboardy prirodzene vynulujú
 - Vizualizácia: Recharts (donut aj stĺpcový graf)
-- **Zameranie-špecifické pravidlá** (`ANALYTICS_FULL_BREAKDOWN_CATEGORIES` v `lib/drill-options.ts`): Forhand, Backhand a Volley zobrazujú vždy úplný rozpad všetkých použitých kódov (žiadne zbaľovanie do "Ostatné") a majú prepínač dizajnu grafu koláč/stĺpce (`app/analytics/[category]/category-charts.tsx`). Ostatné zamerania (Return, Servis, Herné cvičenia, POINTS) zatiaľ zostávajú pri pôvodnom správaní (koláč, zbaľovanie nad 7 kódov do "Ostatné") — nastavia sa samostatne neskôr.
+- **Zameranie-špecifické pravidlá** (`ANALYTICS_FULL_BREAKDOWN_CATEGORIES` v `lib/drill-options.ts`): Forhand, Backhand a Volley zobrazujú vždy úplný rozpad všetkých použitých kódov (žiadne zbaľovanie do "Ostatné") a majú prepínač dizajnu grafu koláč/stĺpce (`app/analytics/[category]/category-charts.tsx`). Ostatné zamerania (Return, Servis, Herné cvičenia, POINTS) zatiaľ zostávajú pri pôvodnom správaní (koláč, zbaľovanie nad 7 kódov do "Ostatné") — dostanú **vlastné, ešte nespresnené** pravidlá zobrazenia neskôr (nie nutne rovnaké ako Forhand/Backhand/Volley).
 
 ## Archív
 
@@ -113,6 +113,11 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 /lib                 # Supabase klient, utility, typy
 /supabase/migrations # SQL migrácie
 ```
+
+## Testovanie na mobile (lokálna sieť)
+
+- `next.config.ts` má `allowedDevOrigins` s LAN IP adresou trénerovho laptopu — Next.js dev server inak blokuje cross-origin požiadavky z iného zariadenia v sieti (napr. telefónu), čo potichu rozbije celú klientskú interaktivitu (hydratáciu), nielen HMR. Pri zmene siete/IP treba adresu v `allowedDevOrigins` aktualizovať.
+- `app/layout.tsx` má `<body className="flex flex-col">`. Každý stránkový root div preto **musí** mať popri `max-w-md` aj `w-full min-w-0`, inak ho širší vnútorný obsah (napr. netransformovateľný riadok záložiek) roztiahne cez celý viewport a spôsobí horizontálne posúvanie na úzkych obrazovkách — over toto ako prvé, ak niekedy nahlásia horizontálny scroll.
 
 ## Pracovné pravidlá pre Claude Code
 
