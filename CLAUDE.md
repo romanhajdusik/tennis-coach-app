@@ -68,9 +68,11 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 ## Analytika
 
-- Agregované pohľady: **týždenné** (operatíva), **mesačné** (fakturácia, cykly prípravy), **kvartálne** (trendy)
-- Všetky analytické dotazy a PostgreSQL Views obsahujú podmienku `WHERE is_active = true` — pri zmene hráča sa dashboardy prirodzene vynulujú
-- Vizualizácia: Recharts (odtrénované hodiny, rozdelenie zamerania)
+- Filtrovanie podľa obdobia: **týždeň**, **mesiac**, **kvartál**, **rok** — s porovnaním voči minulému roku (`/analytics/[category]`)
+- Prehľad podľa kódu cvičenia (čas, odhadovaný počet úderov, % využitia) a podľa charakteru cvičenia (offensive/neutral/defensive)
+- Dáta sa vždy načítavajú len pre aktívneho hráča (`players.is_active = true`), priamo v server action (`lib/actions/analytics.ts`), nie cez DB views — pri zmene hráča sa dashboardy prirodzene vynulujú
+- Vizualizácia: Recharts (donut aj stĺpcový graf)
+- **Zameranie-špecifické pravidlá** (`ANALYTICS_FULL_BREAKDOWN_CATEGORIES` v `lib/drill-options.ts`): Forhand, Backhand a Volley zobrazujú vždy úplný rozpad všetkých použitých kódov (žiadne zbaľovanie do "Ostatné") a majú prepínač dizajnu grafu koláč/stĺpce (`app/analytics/[category]/category-charts.tsx`). Ostatné zamerania (Return, Servis, Herné cvičenia, POINTS) zatiaľ zostávajú pri pôvodnom správaní (koláč, zbaľovanie nad 7 kódov do "Ostatné") — nastavia sa samostatne neskôr.
 
 ## Archív
 
@@ -80,17 +82,17 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 ## Roadmapa (fázovanie)
 
-### Fáza 1 — MVP (aktuálna)
+### Fáza 1 — MVP (dokončená)
 - [x] Auth (Supabase — e-mail + heslo)
 - [x] Správa hráčov (vytvorenie, deaktivácia, prepínanie)
 - [x] Tréningy: celý životný cyklus planned → review → completed
 - [x] Označenie cvičení v review ako neodohrané/nahradené (`session_drills.status`)
 - [x] Personalizácia kódov cvičení trénerom (`/drill-codes`, 20 slotov na zameranie)
-- [ ] Analytika a grafy (týždeň/mesiac/kvartál) — posledný chýbajúci bod fázy 1
+- [x] Analytika a grafy (týždeň/mesiac/kvartál/rok, `/analytics/[category]`)
 - [x] Archív v read-only móde
 - [x] Lokálny vývoj, bez deploya
 
-### Fáza 2 — Kalendár a testy
+### Fáza 2 — Kalendár a testy (aktuálna)
 - Google Calendar: najprv jednosmerne (app → kalendár) + kontrola kolízií pri plánovaní
 - Neskôr obojsmerná synchronizácia (webhooks, obnova kanálov, riešenie konfliktov — zdroj pravdy je aplikácia)
 - Modul kondičných a technických testov (metrics_and_tests)

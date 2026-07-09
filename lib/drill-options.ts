@@ -72,3 +72,8 @@ export const DRILLS: Record<string, string[]> = {
 
 export const DEFAULT_CATEGORY = CATEGORY_OPTIONS[0];
 export const DEFAULT_CHARACTER = "neutral";
+
+// Tieto zamerania zobrazujú v analytike vždy úplný rozpad (bez zbaľovania
+// do "Ostatné") a umožňujú prepnutie grafu na stĺpce. Ostatné zamerania
+// (Return, Servis, Herné cvičenia, POINTS) sa nastavia samostatne neskôr.
+export const ANALYTICS_FULL_BREAKDOWN_CATEGORIES = ["Forhand", "Backhand", "Volley"];

@@ -8,7 +8,10 @@ import {
   getPreviousYearValue,
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
-import { CATEGORY_OPTIONS } from "@/lib/drill-options";
+import {
+  ANALYTICS_FULL_BREAKDOWN_CATEGORIES,
+  CATEGORY_OPTIONS,
+} from "@/lib/drill-options";
 import { CategoryCharts } from "./category-charts";
 
 const RANGE_OPTIONS: { value: PeriodRangeType; label: string }[] = [
@@ -79,7 +82,7 @@ export default async function AnalyticsPage({
     `range=${r}&value=${encodeURIComponent(v)}`;
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           Analytika
@@ -92,7 +95,7 @@ export default async function AnalyticsPage({
         </Link>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto">
+      <div className="flex min-w-0 gap-2 overflow-x-auto">
         {CATEGORY_OPTIONS.map((option) => (
           <Link
             key={option}
@@ -182,7 +185,11 @@ export default async function AnalyticsPage({
           Žiadne odohrané cvičenia v tomto období.
         </p>
       ) : (
-        <CategoryCharts byCode={byCode} byCharacter={byCharacter} />
+        <CategoryCharts
+          byCode={byCode}
+          byCharacter={byCharacter}
+          fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(category)}
+        />
       )}
     </div>
   );
