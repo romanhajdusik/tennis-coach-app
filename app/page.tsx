@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
+import { DEFAULT_CATEGORY } from "@/lib/drill-options";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -18,7 +19,7 @@ export default async function Home() {
           <p className="text-zinc-600 dark:text-zinc-400">
             Prihlásený ako <span className="font-medium">{user.email}</span>
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <Link
               href="/players"
               className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
@@ -36,6 +37,12 @@ export default async function Home() {
               className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
             >
               Kódy cvičení
+            </Link>
+            <Link
+              href={`/analytics/${DEFAULT_CATEGORY}`}
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            >
+              Analytika
             </Link>
           </div>
           <form action={logout}>
