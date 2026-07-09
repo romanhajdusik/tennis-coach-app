@@ -25,11 +25,13 @@ SaaS aplikácia pre tenisových trénerov a rodičov na plánovanie, správu a a
 ## Príkazy
 
 ```bash
-npm run dev          # lokálny vývoj
-npm run build        # produkčný build
-npm run lint         # lint
-npx supabase start   # lokálna Supabase inštancia
-npx supabase db push # aplikovanie migrácií
+npm run dev                       # lokálny vývoj
+npm run build                     # produkčný build
+npm run lint                      # lint
+npx supabase start                # lokálna Supabase inštancia
+npx supabase migration up --local # aplikovanie migrácií lokálne
+npx supabase db push              # aplikovanie migrácií na linknutý remote projekt (nie lokálne)
+npx supabase gen types typescript --local > lib/database.types.ts # po každej migrácii
 ```
 
 ## Dátový model (PostgreSQL)
@@ -44,18 +46,25 @@ npx supabase db push # aplikovanie migrácií
    - `planned_data` (plánovaný čas a zameranie), `actual_data` (reálny čas), `notes`, `status` (`planned` / `completed` / `cancelled`)
    - `google_event_id` (text, nullable) — **pridať už od začiatku**, príprava na kalendárovú synchronizáciu
 4. **metrics_and_tests** — kondičné a technické testy hráča (implementácia vo fáze 2, tabuľku možno vytvoriť vopred)
+5. **session_drills** — cvičenia v rámci tréningu (kategória/zameranie, charakter úderu, kód cvičenia, trvanie)
+   - `status` (`played` / `not_played` / `replaced`) — review označenie, defaultne `played`
+   - `replaces_drill_id` — náhradné cvičenie sa viaže na to, ktoré nahrádza; v zozname sa zobrazí hneď za ním
+6. **drill_codes** — trénerom personalizované kódy cvičení, 20 slotov na zameranie (`coach_id`, `category`, `slot` 1–20, `code`)
+   - Bez uložených riadkov pre danú kategóriu sa použije predvolený zoznam z `lib/drill-options.ts` (`DRILLS`); po prvom uložení je DB autoritatívna
+   - Editovateľné na `/drill-codes`
 
 ### Bezpečnostné pravidlá (povinné)
 
 - **RLS zapnuté na každej tabuľke.** Základná policy: `coach_id = auth.uid()`
 - **Archív (neaktívny hráč) je read-only na úrovni DB:** RLS policy blokuje UPDATE/DELETE na sessions a metrics, ak hráč má `is_active = false`. UI kontrola nestačí.
+- **Dokončený tréning (`sessions.status = 'completed'`) je tiež read-only na úrovni DB:** RLS blokuje UPDATE/DELETE na `sessions` a `session_drills` (aj INSERT nových cvičení), rovnaký princíp ako archív.
 - Všetky zmeny schémy výhradne cez migrácie (Supabase CLI), nikdy manuálne v dashboarde.
 
 ## Životný cyklus tréningu
 
 1. **Plánovanie (planned):** vytvorenie zámeru — dátum, čas, zameranie
-2. **Aktualizácia (review):** po tréningu tréner doplní reálny čas a poznámky
-3. **Archivácia (completed):** uzamknutie záznamu
+2. **Aktualizácia (review):** po tréningu tréner doplní reálny čas a poznámky; jednotlivé cvičenia môže označiť ako **neodohrané** alebo **nahradené** (náhrada sa zaradí v zozname hneď za pôvodným cvičením)
+3. **Archivácia (completed):** uzamknutie záznamu (vynútené aj cez RLS)
 
 ## Analytika
 
@@ -72,12 +81,14 @@ npx supabase db push # aplikovanie migrácií
 ## Roadmapa (fázovanie)
 
 ### Fáza 1 — MVP (aktuálna)
-- Auth (Supabase — e-mail + heslo)
-- Správa hráčov (vytvorenie, deaktivácia, prepínanie)
-- Tréningy: celý životný cyklus planned → review → completed
-- Analytika a grafy (týždeň/mesiac/kvartál)
-- Archív v read-only móde
-- Lokálny vývoj, bez deploya
+- [x] Auth (Supabase — e-mail + heslo)
+- [x] Správa hráčov (vytvorenie, deaktivácia, prepínanie)
+- [x] Tréningy: celý životný cyklus planned → review → completed
+- [x] Označenie cvičení v review ako neodohrané/nahradené (`session_drills.status`)
+- [x] Personalizácia kódov cvičení trénerom (`/drill-codes`, 20 slotov na zameranie)
+- [ ] Analytika a grafy (týždeň/mesiac/kvartál) — posledný chýbajúci bod fázy 1
+- [x] Archív v read-only móde
+- [x] Lokálny vývoj, bez deploya
 
 ### Fáza 2 — Kalendár a testy
 - Google Calendar: najprv jednosmerne (app → kalendár) + kontrola kolízií pri plánovaní
