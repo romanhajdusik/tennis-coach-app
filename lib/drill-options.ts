@@ -87,11 +87,11 @@ export type AnalyticsCodeGroup = { label: string; prefix: string };
 // stĺpec zobrazí detail jednotlivých kódov v rámci vybranej skupiny.
 export const ANALYTICS_GROUPED_CATEGORIES: Record<string, AnalyticsCodeGroup[]> = {
   Return: [
-    { label: "RET-FRH", prefix: "RET-FRH" },
-    { label: "RET-BKH", prefix: "RET-BKH" },
+    { label: "Forhand return", prefix: "RET-FRH" },
+    { label: "Backhand return", prefix: "RET-BKH" },
   ],
   Servis: [
-    { label: "SR1", prefix: "SR1" },
-    { label: "SR2", prefix: "SR2" },
+    { label: "1. servis", prefix: "SR1" },
+    { label: "2. servis", prefix: "SR2" },
   ],
 };
