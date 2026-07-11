@@ -96,7 +96,7 @@ export default async function AnalyticsPage({
         </Link>
       </div>
 
-      <div className="flex min-w-0 gap-2 overflow-x-auto">
+      <div className="flex min-w-0 flex-wrap gap-2">
         {CATEGORY_OPTIONS.map((option) => (
           <Link
             key={option}
