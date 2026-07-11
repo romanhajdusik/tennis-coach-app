@@ -3,14 +3,19 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { syncSessionToGoogleCalendar } from "@/lib/google/calendar";
 
 export type SessionFormState = { error?: string } | undefined;
+
+const DEFAULT_SESSION_DURATION_MINUTES = 90;
 
 export async function createSession(
   _prevState: SessionFormState,
   formData: FormData,
 ): Promise<SessionFormState> {
   const date = formData.get("date") as string;
+  const durationMinutes =
+    Number(formData.get("duration_minutes")) || DEFAULT_SESSION_DURATION_MINUTES;
 
   if (!date) {
     return { error: "Vyber dátum a čas tréningu." };
@@ -27,7 +32,7 @@ export async function createSession(
 
   const { data: activePlayer } = await supabase
     .from("players")
-    .select("id")
+    .select("id, name")
     .eq("coach_id", user.id)
     .eq("is_active", true)
     .maybeSingle();
@@ -42,7 +47,7 @@ export async function createSession(
       coach_id: user.id,
       player_id: activePlayer.id,
       status: "planned",
-      planned_data: { date },
+      planned_data: { date, duration_minutes: durationMinutes },
     })
     .select("id")
     .single();
@@ -51,7 +56,28 @@ export async function createSession(
     return { error: "Tréning sa nepodarilo naplánovať." };
   }
 
-  redirect(`/sessions/${session.id}`);
+  const start = new Date(date);
+  const end = new Date(start.getTime() + durationMinutes * 60_000);
+  const { googleEventId, collision } = await syncSessionToGoogleCalendar(
+    supabase,
+    user.id,
+    `Tréning — ${activePlayer.name}`,
+    start.toISOString(),
+    end.toISOString(),
+  );
+
+  if (googleEventId) {
+    await supabase
+      .from("sessions")
+      .update({ google_event_id: googleEventId })
+      .eq("id", session.id);
+  }
+
+  redirect(
+    collision
+      ? `/sessions/${session.id}?calendarWarning=collision`
+      : `/sessions/${session.id}`,
+  );
 }
 
 export async function updateSessionReview(

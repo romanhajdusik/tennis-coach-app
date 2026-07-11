@@ -11,10 +11,13 @@ type ActualData = { date?: string };
 
 export default async function SessionDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ calendarWarning?: string }>;
 }) {
   const { id } = await params;
+  const { calendarWarning } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -80,6 +83,12 @@ export default async function SessionDetailPage({
           Späť
         </Link>
       </div>
+
+      {calendarWarning === "collision" && (
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700 dark:bg-amber-950 dark:text-amber-400">
+          Tréning sa prekrýva s inou udalosťou v tvojom Google Kalendári.
+        </p>
+      )}
 
       <div className="rounded-xl border border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-950">
         <p className="font-medium text-zinc-900 dark:text-zinc-50">

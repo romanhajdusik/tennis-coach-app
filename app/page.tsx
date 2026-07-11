@@ -44,6 +44,12 @@ export default async function Home() {
             >
               Analytika
             </Link>
+            <Link
+              href="/settings"
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            >
+              Nastavenia
+            </Link>
           </div>
           <form action={logout}>
             <button

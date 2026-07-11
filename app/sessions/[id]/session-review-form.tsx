@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { completeSession, updateSessionReview } from "@/lib/actions/sessions";
 
 function toLocalInputValue(date: string | undefined) {
@@ -30,6 +30,7 @@ export function SessionReviewForm({
     undefined,
   );
   const [isCompleting, startCompleteTransition] = useTransition();
+  const [confirmingComplete, setConfirmingComplete] = useState(false);
 
   if (status === "completed") {
     return (
@@ -58,13 +59,6 @@ export function SessionReviewForm({
   }
 
   function handleComplete() {
-    if (
-      !confirm(
-        "Naozaj chceš tréning dokončiť? Po dokončení už nepôjde upravovať.",
-      )
-    ) {
-      return;
-    }
     startCompleteTransition(async () => {
       await completeSession(sessionId);
     });
@@ -122,14 +116,39 @@ export function SessionReviewForm({
         </button>
       </form>
 
-      <button
-        type="button"
-        onClick={handleComplete}
-        disabled={isCompleting}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
-      >
-        {isCompleting ? "Dokončujem..." : "Dokončiť tréning"}
-      </button>
+      {confirmingComplete ? (
+        <div className="flex flex-col gap-2 rounded-lg border border-zinc-300 p-3 dark:border-zinc-700">
+          <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            Naozaj chceš tréning dokončiť? Po dokončení už nepôjde upravovať.
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleComplete}
+              disabled={isCompleting}
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
+            >
+              {isCompleting ? "Dokončujem..." : "Áno, dokončiť"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmingComplete(false)}
+              disabled={isCompleting}
+              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
+            >
+              Zrušiť
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setConfirmingComplete(true)}
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+        >
+          Dokončiť tréning
+        </button>
+      )}
     </div>
   );
 }

@@ -64,6 +64,36 @@ export type Database = {
         }
         Relationships: []
       }
+      google_calendar_connections: {
+        Row: {
+          access_token: string
+          calendar_id: string
+          coach_id: string
+          created_at: string
+          refresh_token: string
+          token_expires_at: string
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          calendar_id?: string
+          coach_id: string
+          created_at?: string
+          refresh_token: string
+          token_expires_at: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          calendar_id?: string
+          coach_id?: string
+          created_at?: string
+          refresh_token?: string
+          token_expires_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       metrics_and_tests: {
         Row: {
           coach_id: string
