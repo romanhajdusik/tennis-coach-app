@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getDrillCodeSlots } from "@/lib/actions/drill-codes";
-import { CATEGORY_OPTIONS } from "@/lib/drill-options";
+import { ANALYTICS_GROUPED_CATEGORIES, CATEGORY_OPTIONS } from "@/lib/drill-options";
 import { DrillCodeForm } from "./drill-code-form";
 
 export default async function DrillCodesPage() {
@@ -44,6 +44,7 @@ export default async function DrillCodesPage() {
           key={category}
           category={category}
           initialSlots={slotsByCategory[index]}
+          groups={ANALYTICS_GROUPED_CATEGORIES[category]}
         />
       ))}
     </div>
