@@ -13,12 +13,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { CHARACTER_LABELS } from "@/lib/drill-options";
+import { CHARACTER_LABELS, type AnalyticsCodeGroup } from "@/lib/drill-options";
 import type { CharacterStat, CodeStat } from "@/lib/actions/analytics";
 
 type ChartType = "pie" | "bar";
 
 const MAX_CODE_SLICES = 7;
+const OTHER_GROUP_LABEL = "Ostatné";
 
 // Kategorický poradie farieb je fixné, nikdy sa necykluje/negeneruje pri
 // zbaľovaní do "Ostatné" — posledný slot je zámerne šedý, nie ďalší hue,
@@ -37,6 +38,30 @@ const OTHER_VAR = "var(--series-other)";
 
 function colorAt(index: number): string {
   return SERIES_VARS[index % SERIES_VARS.length];
+}
+
+function groupOf(code: string, groups: AnalyticsCodeGroup[]): string {
+  return groups.find((group) => code.startsWith(group.prefix))?.label ?? OTHER_GROUP_LABEL;
+}
+
+function computeGroupStats(byCode: CodeStat[], groups: AnalyticsCodeGroup[]): CodeStat[] {
+  const totals = new Map<string, CodeStat>();
+  for (const entry of byCode) {
+    const label = groupOf(entry.code, groups);
+    const current = totals.get(label) ?? { code: label, minutes: 0, strokes: 0, percentage: 0 };
+    current.minutes += entry.minutes;
+    current.strokes += entry.strokes;
+    current.percentage += entry.percentage;
+    totals.set(label, current);
+  }
+  return groups
+    .map((group) => totals.get(group.label))
+    .filter((entry): entry is CodeStat => Boolean(entry))
+    .concat(totals.has(OTHER_GROUP_LABEL) ? [totals.get(OTHER_GROUP_LABEL)!] : []);
+}
+
+function codesInGroup(byCode: CodeStat[], groups: AnalyticsCodeGroup[], groupLabel: string): CodeStat[] {
+  return byCode.filter((entry) => groupOf(entry.code, groups) === groupLabel);
 }
 
 function foldIntoOther(byCode: CodeStat[]): CodeStat[] {
@@ -139,17 +164,36 @@ export function CategoryCharts({
   byCode,
   byCharacter,
   fullBreakdown,
+  groups,
 }: {
   byCode: CodeStat[];
   byCharacter: CharacterStat[];
   fullBreakdown: boolean;
+  groups?: AnalyticsCodeGroup[];
 }) {
   const [codeChartType, setCodeChartType] = useState<ChartType>("pie");
   const [characterChartType, setCharacterChartType] = useState<ChartType>("pie");
 
-  const codeSlices = fullBreakdown ? byCode : foldIntoOther(byCode);
+  const groupStats = groups ? computeGroupStats(byCode, groups) : [];
+  const [selectedGroup, setSelectedGroup] = useState<string | undefined>(
+    groupStats[0]?.code,
+  );
+  const activeGroup = selectedGroup ?? groupStats[0]?.code;
+  const groupDetailCodes = groups && activeGroup
+    ? codesInGroup(byCode, groups, activeGroup)
+    : [];
+
+  const isFoldedView = groups ? true : !fullBreakdown;
+  const codeSlices = groups
+    ? foldIntoOther(groupDetailCodes)
+    : fullBreakdown
+      ? byCode
+      : foldIntoOther(byCode);
   const codeColors = codeSlices.map((entry, index) =>
-    !fullBreakdown && entry.code === "Ostatné" ? OTHER_VAR : colorAt(index),
+    isFoldedView && entry.code === "Ostatné" ? OTHER_VAR : colorAt(index),
+  );
+  const groupColors = groupStats.map((entry, index) =>
+    entry.code === OTHER_GROUP_LABEL ? OTHER_VAR : colorAt(index),
   );
 
   const characterColors: Record<string, string> = {
@@ -185,10 +229,39 @@ export function CategoryCharts({
         }
       `}</style>
 
+      {groups && (
+        <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+          <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            Podľa kódu cvičenia — skupiny
+          </h2>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={groupStats} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="code" tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+              <Tooltip content={<CodeTooltip />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
+              <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
+                {groupStats.map((entry, index) => (
+                  <Cell
+                    key={entry.code}
+                    fill={groupColors[index]}
+                    opacity={activeGroup === entry.code ? 1 : 0.45}
+                    onClick={() => setSelectedGroup(entry.code)}
+                    className="cursor-pointer"
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
       <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Podľa kódu cvičenia — čas, počet úderov, % používania
+            {groups
+              ? `Detail — ${activeGroup}`
+              : "Podľa kódu cvičenia — čas, počet úderov, % používania"}
           </h2>
           {fullBreakdown && (
             <ChartTypeToggle value={codeChartType} onChange={setCodeChartType} />

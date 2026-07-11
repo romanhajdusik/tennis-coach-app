@@ -10,6 +10,7 @@ import {
 } from "@/lib/actions/analytics";
 import {
   ANALYTICS_FULL_BREAKDOWN_CATEGORIES,
+  ANALYTICS_GROUPED_CATEGORIES,
   CATEGORY_OPTIONS,
 } from "@/lib/drill-options";
 import { CategoryCharts } from "./category-charts";
@@ -189,6 +190,7 @@ export default async function AnalyticsPage({
           byCode={byCode}
           byCharacter={byCharacter}
           fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(category)}
+          groups={ANALYTICS_GROUPED_CATEGORIES[category]}
         />
       )}
     </div>

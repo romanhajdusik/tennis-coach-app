@@ -77,3 +77,21 @@ export const DEFAULT_CHARACTER = "neutral";
 // do "Ostatné") a umožňujú prepnutie grafu na stĺpce. Ostatné zamerania
 // (Return, Servis, Herné cvičenia, POINTS) sa nastavia samostatne neskôr.
 export const ANALYTICS_FULL_BREAKDOWN_CATEGORIES = ["Forhand", "Backhand", "Volley"];
+
+export type AnalyticsCodeGroup = { label: string; prefix: string };
+
+// Tieto zamerania majú v analytike dvojúrovňové zobrazenie podľa kódu
+// cvičenia: hlavný stĺpcový graf rozdelí kódy do dvoch skupín podľa
+// prefixu (priradenie je podľa textu kódu, nie podľa slotu — ak si tréner
+// kód premenuje mimo tento prefix, spadne do skupiny "Ostatné"), klik na
+// stĺpec zobrazí detail jednotlivých kódov v rámci vybranej skupiny.
+export const ANALYTICS_GROUPED_CATEGORIES: Record<string, AnalyticsCodeGroup[]> = {
+  Return: [
+    { label: "RET-FRH", prefix: "RET-FRH" },
+    { label: "RET-BKH", prefix: "RET-BKH" },
+  ],
+  Servis: [
+    { label: "SR1", prefix: "SR1" },
+    { label: "SR2", prefix: "SR2" },
+  ],
+};

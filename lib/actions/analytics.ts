@@ -14,6 +14,14 @@ const STROKES_PER_MIN: Record<string, number> = {
 };
 const BREAK_FACTOR = 0.8; // 20 % z celkového času ide na prestávku
 
+// Return a Servis majú výrazne nižšiu frekvenciu úderov než výmeny z
+// dna kurtu — počet úderov sa preto počíta z fixnej sadzby, nie podľa
+// charakteru cvičenia.
+const FIXED_STROKES_PER_MIN_CATEGORIES: Record<string, number> = {
+  Return: 8,
+  Servis: 8,
+};
+
 const MONTH_LABELS = [
   "Január",
   "Február",
@@ -185,9 +193,11 @@ export async function getCategoryAnalytics(
   const characterTotals = new Map<string, number>();
   let totalMinutes = 0;
 
+  const fixedStrokesPerMin = FIXED_STROKES_PER_MIN_CATEGORIES[category];
+
   for (const drill of drills ?? []) {
     const code = drill.drill_code ?? "—";
-    const strokesPerMin = STROKES_PER_MIN[drill.character] ?? 0;
+    const strokesPerMin = fixedStrokesPerMin ?? STROKES_PER_MIN[drill.character] ?? 0;
     const strokes = drill.duration_minutes * BREAK_FACTOR * strokesPerMin;
 
     const codeEntry = codeTotals.get(code) ?? { minutes: 0, strokes: 0 };
