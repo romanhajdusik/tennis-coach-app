@@ -52,6 +52,8 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 6. **drill_codes** — trénerom personalizované kódy cvičení, 20 slotov na zameranie (`coach_id`, `category`, `slot` 1–20, `code`)
    - Bez uložených riadkov pre danú kategóriu sa použije predvolený zoznam z `lib/drill-options.ts` (`DRILLS`); po prvom uložení je DB autoritatívna
    - Editovateľné na `/drill-codes`
+7. **google_calendar_connections** — OAuth tokeny pripojenia trénerovho Google Kalendára (`coach_id` PK, `access_token`, `refresh_token`, `token_expires_at`, `calendar_id`)
+   - Jeden riadok na trénera, spravované cez `/settings` (pripojiť/odpojiť), logika v `lib/google/calendar.ts`
 
 ### Bezpečnostné pravidlá (povinné)
 
@@ -75,6 +77,15 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - **Zameranie-špecifické pravidlá** (`ANALYTICS_FULL_BREAKDOWN_CATEGORIES` v `lib/drill-options.ts`): Forhand, Backhand, Volley a GAME DRILLS zobrazujú vždy úplný rozpad všetkých použitých kódov (žiadne zbaľovanie do "Ostatné") a majú prepínač dizajnu grafu koláč/stĺpce (`app/analytics/[category]/category-charts.tsx`). Return a Serve majú dvojúrovňové skupinové zobrazenie (`ANALYTICS_GROUPED_CATEGORIES`): stĺpcový graf rozdelí kódy podľa prefixu na "Forhand return"/"Backhand return" resp. "1st serve"/"2nd serve", klik na stĺpec zobrazí detail kódov danej skupiny — rovnaké skupiny sa zobrazujú aj pri editácii kódov na `/drill-codes`. POINTS (`ANALYTICS_TOTAL_TIME_ONLY_CATEGORIES`) nemá rozpad podľa kódu ani charakteru — zobrazuje jediný graf: celkový odohraný čas za obdobie ako veľké číslo.
 - **Počet úderov** sa štandardne počíta z charakteru cvičenia (offensive/neutral/defensive), ale Return, Serve a GAME DRILLS majú vlastnú fixnú sadzbu úderov/min (`FIXED_STROKES_PER_MIN_CATEGORIES` v `lib/actions/analytics.ts`), keďže majú inú frekvenciu výmen než hra z dna kurtu.
 
+## Google Calendar (jednosmerne, Fáza 2)
+
+- Tréner si pripojí svoj Google účet na `/settings` (`app/api/google/auth` → OAuth consent → `app/api/google/callback` uloží tokeny do `google_calendar_connections`)
+- Pri naplánovaní tréningu (`createSession` v `lib/actions/sessions.ts`) appka automaticky vytvorí udalosť v pripojenom Google Kalendári (`lib/google/calendar.ts`, `syncSessionToGoogleCalendar`) a uloží jej ID do `sessions.google_event_id`
+- Plánovanie tréningu má teraz aj pole **plánovaná dĺžka** (60/90/120 min, `planned_data.duration_minutes`) — potrebné na určenie konca kalendárovej udalosti
+- **Kontrola kolízií** pri plánovaní len upozorní (banner na stránke tréningu cez `?calendarWarning=collision`), neblokuje uloženie
+- Ak tréner nemá pripojený kalendár alebo Google API zlyhá, tréning sa vytvorí bez neho — kalendárová synchronizácia nikdy neblokuje základné plánovanie
+- **Zatiaľ len jednosmerne** (app → kalendár): úprava/zrušenie tréningu sa do Google Kalendára nepremieta, kým appka nemá UI na editáciu naplánovaného tréningu. Obojsmerná synchronizácia (webhooks) je neskoršia fáza.
+
 ## Archív
 
 - Tréner môže v menu vybrať neaktívneho hráča (`is_active = false`)
@@ -94,9 +105,9 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - [x] Lokálny vývoj, bez deploya
 
 ### Fáza 2 — Kalendár a testy (aktuálna)
-- Google Calendar: najprv jednosmerne (app → kalendár) + kontrola kolízií pri plánovaní
-- Neskôr obojsmerná synchronizácia (webhooks, obnova kanálov, riešenie konfliktov — zdroj pravdy je aplikácia)
-- Modul kondičných a technických testov (metrics_and_tests)
+- [x] Google Calendar: jednosmerne (app → kalendár) + kontrola kolízií pri plánovaní
+- [ ] Neskôr obojsmerná synchronizácia (webhooks, obnova kanálov, riešenie konfliktov — zdroj pravdy je aplikácia)
+- [ ] Modul kondičných a technických testov (metrics_and_tests)
 
 ### Fáza 3 — SaaS predaj
 - Stripe Checkout + Customer Portal (mesačné/ročné predplatné)
