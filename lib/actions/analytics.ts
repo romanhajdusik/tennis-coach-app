@@ -18,8 +18,8 @@ const BREAK_FACTOR = 0.8; // 20 % z celkového času ide na prestávku
 // dna kurtu — počet úderov sa preto počíta z fixnej sadzby, nie podľa
 // charakteru cvičenia.
 const FIXED_STROKES_PER_MIN_CATEGORIES: Record<string, number> = {
-  Return: 8,
-  Servis: 8,
+  Return: 6,
+  Servis: 6,
 };
 
 const MONTH_LABELS = [
