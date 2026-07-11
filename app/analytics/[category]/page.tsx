@@ -11,6 +11,7 @@ import {
 import {
   ANALYTICS_FULL_BREAKDOWN_CATEGORIES,
   ANALYTICS_GROUPED_CATEGORIES,
+  ANALYTICS_TOTAL_TIME_ONLY_CATEGORIES,
   CATEGORY_OPTIONS,
 } from "@/lib/drill-options";
 import { CategoryCharts } from "./category-charts";
@@ -186,6 +187,15 @@ export default async function AnalyticsPage({
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Žiadne odohrané cvičenia v tomto období.
         </p>
+      ) : ANALYTICS_TOTAL_TIME_ONLY_CATEGORIES.includes(category) ? (
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
+          <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            Celkový čas odohraný v cvičeniach
+          </span>
+          <span className="text-4xl font-semibold text-zinc-900 dark:text-zinc-50">
+            {byCode.reduce((sum, entry) => sum + entry.minutes, 0)} min
+          </span>
+        </div>
       ) : (
         <CategoryCharts
           byCode={byCode}

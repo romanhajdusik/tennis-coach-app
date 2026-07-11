@@ -74,14 +74,17 @@ export const DEFAULT_CATEGORY = CATEGORY_OPTIONS[0];
 export const DEFAULT_CHARACTER = "neutral";
 
 // Tieto zamerania zobrazujú v analytike vždy úplný rozpad (bez zbaľovania
-// do "Ostatné") a umožňujú prepnutie grafu na stĺpce. POINTS zatiaľ zostáva
-// pri pôvodnom správaní — pravidlá pre neho sa nastavia samostatne neskôr.
+// do "Ostatné") a umožňujú prepnutie grafu na stĺpce.
 export const ANALYTICS_FULL_BREAKDOWN_CATEGORIES = [
   "Forhand",
   "Backhand",
   "Volley",
   "GAME DRILLS",
 ];
+
+// Tieto zamerania nemajú rozpad podľa kódu ani charakteru — v analytike sa
+// zobrazí jediný graf: celkový odohraný čas za obdobie.
+export const ANALYTICS_TOTAL_TIME_ONLY_CATEGORIES = ["POINTS"];
 
 export type AnalyticsCodeGroup = { label: string; prefix: string };
 
