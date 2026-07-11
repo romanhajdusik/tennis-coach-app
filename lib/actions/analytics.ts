@@ -14,12 +14,13 @@ const STROKES_PER_MIN: Record<string, number> = {
 };
 const BREAK_FACTOR = 0.8; // 20 % z celkového času ide na prestávku
 
-// Return a Servis majú výrazne nižšiu frekvenciu úderov než výmeny z
-// dna kurtu — počet úderov sa preto počíta z fixnej sadzby, nie podľa
-// charakteru cvičenia.
+// Return, Serve a GAME DRILLS majú vlastnú frekvenciu úderov odlišnú
+// od výmen z dna kurtu — počet úderov sa preto počíta z fixnej sadzby,
+// nie podľa charakteru cvičenia.
 const FIXED_STROKES_PER_MIN_CATEGORIES: Record<string, number> = {
   Return: 6,
-  Servis: 6,
+  Serve: 6,
+  "GAME DRILLS": 22,
 };
 
 const MONTH_LABELS = [

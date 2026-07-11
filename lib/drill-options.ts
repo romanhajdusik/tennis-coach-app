@@ -3,8 +3,8 @@ export const CATEGORY_OPTIONS = [
   "Backhand",
   "Volley",
   "Return",
-  "Servis",
-  "Herné cvičenia",
+  "Serve",
+  "GAME DRILLS",
   "POINTS",
 ];
 
@@ -49,8 +49,8 @@ export const DRILLS: Record<string, string[]> = {
     "RET-BKH-MID",
     "RET-BKH-BLC",
   ],
-  Servis: ["SR1-DCE", "SR1-ADV", "SR2-DCE", "SR2-ADV"],
-  "Herné cvičenia": [
+  Serve: ["SR1-DCE", "SR1-ADV", "SR2-DCE", "SR2-ADV"],
+  "GAME DRILLS": [
     "RZH-TRE",
     "RZH-ZAP",
     "SR1+1",
@@ -74,9 +74,14 @@ export const DEFAULT_CATEGORY = CATEGORY_OPTIONS[0];
 export const DEFAULT_CHARACTER = "neutral";
 
 // Tieto zamerania zobrazujú v analytike vždy úplný rozpad (bez zbaľovania
-// do "Ostatné") a umožňujú prepnutie grafu na stĺpce. Ostatné zamerania
-// (Return, Servis, Herné cvičenia, POINTS) sa nastavia samostatne neskôr.
-export const ANALYTICS_FULL_BREAKDOWN_CATEGORIES = ["Forhand", "Backhand", "Volley"];
+// do "Ostatné") a umožňujú prepnutie grafu na stĺpce. POINTS zatiaľ zostáva
+// pri pôvodnom správaní — pravidlá pre neho sa nastavia samostatne neskôr.
+export const ANALYTICS_FULL_BREAKDOWN_CATEGORIES = [
+  "Forhand",
+  "Backhand",
+  "Volley",
+  "GAME DRILLS",
+];
 
 export type AnalyticsCodeGroup = { label: string; prefix: string };
 
@@ -90,9 +95,9 @@ export const ANALYTICS_GROUPED_CATEGORIES: Record<string, AnalyticsCodeGroup[]> 
     { label: "Forhand return", prefix: "RET-FRH" },
     { label: "Backhand return", prefix: "RET-BKH" },
   ],
-  Servis: [
-    { label: "1. servis", prefix: "SR1" },
-    { label: "2. servis", prefix: "SR2" },
+  Serve: [
+    { label: "1st serve", prefix: "SR1" },
+    { label: "2nd serve", prefix: "SR2" },
   ],
 };
 

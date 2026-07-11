@@ -50,7 +50,8 @@ export default async function AnalyticsPage({
   params: Promise<{ category: string }>;
   searchParams: Promise<{ range?: string; value?: string }>;
 }) {
-  const { category } = await params;
+  const { category: rawCategory } = await params;
+  const category = decodeURIComponent(rawCategory);
   if (!CATEGORY_OPTIONS.includes(category)) {
     notFound();
   }
