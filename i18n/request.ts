@@ -6,10 +6,14 @@ export type AppLocale = (typeof locales)[number];
 export const defaultLocale: AppLocale = "sk";
 
 async function loadMessages(locale: AppLocale) {
-  const [common] = await Promise.all([import(`../messages/${locale}/common.json`)]);
+  const [common, auth] = await Promise.all([
+    import(`../messages/${locale}/common.json`),
+    import(`../messages/${locale}/auth.json`),
+  ]);
 
   return {
     Common: common.default,
+    Auth: auth.default,
   };
 }
 

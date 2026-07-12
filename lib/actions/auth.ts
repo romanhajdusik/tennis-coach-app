@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthFormState = { error?: string } | undefined;
@@ -11,16 +12,17 @@ export async function login(
 ): Promise<AuthFormState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const t = await getTranslations("Auth.errors");
 
   if (!email || !password) {
-    return { error: "Vyplň e-mail aj heslo." };
+    return { error: t("missingLoginFields") };
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { error: "Nesprávny e-mail alebo heslo." };
+    return { error: t("invalidCredentials") };
   }
 
   redirect("/");
@@ -34,17 +36,18 @@ export async function register(
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const role = formData.get("role") as string;
+  const t = await getTranslations("Auth.errors");
 
   if (!fullName || !email || !password || !role) {
-    return { error: "Vyplň všetky polia." };
+    return { error: t("missingRegisterFields") };
   }
 
   if (!["coach", "parent", "manager"].includes(role)) {
-    return { error: "Neplatná rola." };
+    return { error: t("invalidRole") };
   }
 
   if (password.length < 8) {
-    return { error: "Heslo musí mať aspoň 8 znakov." };
+    return { error: t("passwordTooShort") };
   }
 
   const supabase = await createClient();

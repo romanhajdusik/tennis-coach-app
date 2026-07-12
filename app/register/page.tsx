@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { register } from "@/lib/actions/auth";
 
 export default function RegisterPage() {
+  const t = useTranslations("Auth.register");
   const [state, formAction, pending] = useActionState(register, undefined);
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-black">
       <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Registrácia
+          {t("heading")}
         </h1>
         <form action={formAction} className="mt-6 flex flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -19,7 +21,7 @@ export default function RegisterPage() {
               htmlFor="full_name"
               className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
-              Meno a priezvisko
+              {t("fullNameLabel")}
             </label>
             <input
               id="full_name"
@@ -35,7 +37,7 @@ export default function RegisterPage() {
               htmlFor="role"
               className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
-              Som
+              {t("roleLabel")}
             </label>
             <select
               id="role"
@@ -44,9 +46,9 @@ export default function RegisterPage() {
               required
               className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
             >
-              <option value="coach">Tréner</option>
-              <option value="parent">Rodič</option>
-              <option value="manager">Manažér</option>
+              <option value="coach">{t("roleCoach")}</option>
+              <option value="parent">{t("roleParent")}</option>
+              <option value="manager">{t("roleManager")}</option>
             </select>
           </div>
           <div className="flex flex-col gap-1">
@@ -54,7 +56,7 @@ export default function RegisterPage() {
               htmlFor="email"
               className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
-              E-mail
+              {t("emailLabel")}
             </label>
             <input
               id="email"
@@ -70,7 +72,7 @@ export default function RegisterPage() {
               htmlFor="password"
               className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
-              Heslo
+              {t("passwordLabel")}
             </label>
             <input
               id="password"
@@ -90,16 +92,16 @@ export default function RegisterPage() {
             disabled={pending}
             className="mt-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
           >
-            {pending ? "Registrujem..." : "Zaregistrovať sa"}
+            {pending ? t("submitPending") : t("submit")}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
-          Už máš účet?{" "}
+          {t("hasAccount")}{" "}
           <Link
             href="/login"
             className="font-medium text-zinc-900 underline dark:text-zinc-50"
           >
-            Prihlás sa
+            {t("loginLink")}
           </Link>
         </p>
       </div>
