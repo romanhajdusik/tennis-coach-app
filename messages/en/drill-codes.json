@@ -1,0 +1,10 @@
+{
+  "title": "Drill codes",
+  "description": "Each focus area has 20 slots for your own drill codes. An empty slot won't be used in a session.",
+  "save": "Save codes",
+  "saving": "Saving...",
+  "errors": {
+    "invalidCategory": "Invalid focus area.",
+    "saveFailed": "Failed to save the codes."
+  }
+}

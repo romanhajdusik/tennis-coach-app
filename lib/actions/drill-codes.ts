@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { CATEGORY_OPTIONS, DRILLS } from "@/lib/drill-options";
 
@@ -80,8 +81,10 @@ export async function saveDrillCodes(
   _prevState: DrillCodesFormState,
   formData: FormData,
 ): Promise<DrillCodesFormState> {
+  const t = await getTranslations("DrillCodes.errors");
+
   if (!isKnownCategory(category)) {
-    return { error: "Neplatné zameranie." };
+    return { error: t("invalidCategory") };
   }
 
   const codes = formData.getAll("code").map((value) => (value as string).trim());
@@ -107,7 +110,7 @@ export async function saveDrillCodes(
     .upsert(rows, { onConflict: "coach_id,category,slot" });
 
   if (error) {
-    return { error: "Kódy sa nepodarilo uložiť." };
+    return { error: t("saveFailed") };
   }
 
   revalidatePath("/drill-codes");

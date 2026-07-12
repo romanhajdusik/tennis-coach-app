@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { saveDrillCodes } from "@/lib/actions/drill-codes";
 import { splitSlotsIntoGroups, type AnalyticsCodeGroup } from "@/lib/drill-options";
 
@@ -13,6 +14,7 @@ export function DrillCodeForm({
   initialSlots: string[];
   groups?: AnalyticsCodeGroup[];
 }) {
+  const t = useTranslations("DrillCodes");
   const saveForCategory = saveDrillCodes.bind(null, category);
   const [state, formAction, pending] = useActionState(
     saveForCategory,
@@ -71,7 +73,7 @@ export function DrillCodeForm({
         disabled={pending}
         className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
       >
-        {pending ? "Ukladám..." : "Uložiť kódy"}
+        {pending ? t("saving") : t("save")}
       </button>
     </form>
   );

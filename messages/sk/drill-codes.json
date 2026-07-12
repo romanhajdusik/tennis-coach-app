@@ -1,0 +1,10 @@
+{
+  "title": "Kódy cvičení",
+  "description": "Pre každé zameranie máš 20 slotov na vlastné kódy cvičení. Prázdny slot sa v tréningu nepoužije.",
+  "save": "Uložiť kódy",
+  "saving": "Ukladám...",
+  "errors": {
+    "invalidCategory": "Neplatné zameranie.",
+    "saveFailed": "Kódy sa nepodarilo uložiť."
+  }
+}
