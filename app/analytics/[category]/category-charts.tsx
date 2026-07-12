@@ -13,13 +13,17 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useTranslations } from "next-intl";
 import { CHARACTER_LABELS, type AnalyticsCodeGroup } from "@/lib/drill-options";
 import type { CharacterStat, CodeStat } from "@/lib/actions/analytics";
 
 type ChartType = "pie" | "bar";
 
 const MAX_CODE_SLICES = 7;
-const OTHER_GROUP_LABEL = "Ostatné";
+// Interný, neprekladaný kľúč pre skupinu "Ostatné" — oddelený od
+// zobrazovaného textu (ktorý je preložený), aby preklad do angličtiny
+// nerozbil porovnávanie/zoskupovanie v groupOf/computeGroupStats nižšie.
+const OTHER_KEY = "__other__";
 
 // Kategorický poradie farieb je fixné, nikdy sa necykluje/negeneruje pri
 // zbaľovaní do "Ostatné" — posledný slot je zámerne šedý, nie ďalší hue,
@@ -41,7 +45,7 @@ function colorAt(index: number): string {
 }
 
 function groupOf(code: string, groups: AnalyticsCodeGroup[]): string {
-  return groups.find((group) => code.startsWith(group.prefix))?.label ?? OTHER_GROUP_LABEL;
+  return groups.find((group) => code.startsWith(group.prefix))?.label ?? OTHER_KEY;
 }
 
 function computeGroupStats(byCode: CodeStat[], groups: AnalyticsCodeGroup[]): CodeStat[] {
@@ -57,11 +61,11 @@ function computeGroupStats(byCode: CodeStat[], groups: AnalyticsCodeGroup[]): Co
   return groups
     .map((group) => totals.get(group.label))
     .filter((entry): entry is CodeStat => Boolean(entry))
-    .concat(totals.has(OTHER_GROUP_LABEL) ? [totals.get(OTHER_GROUP_LABEL)!] : []);
+    .concat(totals.has(OTHER_KEY) ? [totals.get(OTHER_KEY)!] : []);
 }
 
-function codesInGroup(byCode: CodeStat[], groups: AnalyticsCodeGroup[], groupLabel: string): CodeStat[] {
-  return byCode.filter((entry) => groupOf(entry.code, groups) === groupLabel);
+function codesInGroup(byCode: CodeStat[], groups: AnalyticsCodeGroup[], groupKey: string): CodeStat[] {
+  return byCode.filter((entry) => groupOf(entry.code, groups) === groupKey);
 }
 
 function foldIntoOther(byCode: CodeStat[]): CodeStat[] {
@@ -69,7 +73,7 @@ function foldIntoOther(byCode: CodeStat[]): CodeStat[] {
   const top = byCode.slice(0, MAX_CODE_SLICES - 1);
   const rest = byCode.slice(MAX_CODE_SLICES - 1);
   const other: CodeStat = {
-    code: "Ostatné",
+    code: OTHER_KEY,
     minutes: rest.reduce((sum, drill) => sum + drill.minutes, 0),
     strokes: rest.reduce((sum, drill) => sum + drill.strokes, 0),
     percentage: rest.reduce((sum, drill) => sum + drill.percentage, 0),
@@ -84,6 +88,7 @@ function CodeTooltip({
   active?: boolean;
   payload?: { payload: CodeStat; fill?: string; color?: string }[];
 }) {
+  const t = useTranslations("Analytics");
   if (!active || !payload?.length) return null;
   const { payload: item, fill, color } = payload[0];
   return (
@@ -96,7 +101,11 @@ function CodeTooltip({
         {item.code}
       </div>
       <p className="mt-1 text-zinc-500 dark:text-zinc-400">
-        {item.minutes} min · {item.strokes} úderov · {Math.round(item.percentage)} %
+        {t("codeStatsLine", {
+          minutes: item.minutes,
+          strokes: item.strokes,
+          percentage: Math.round(item.percentage),
+        })}
       </p>
     </div>
   );
@@ -109,6 +118,7 @@ function CharacterTooltip({
   active?: boolean;
   payload?: { payload: CharacterStat; fill?: string; color?: string }[];
 }) {
+  const t = useTranslations("Analytics");
   if (!active || !payload?.length) return null;
   const { payload: item, fill, color } = payload[0];
   return (
@@ -121,7 +131,10 @@ function CharacterTooltip({
         {CHARACTER_LABELS[item.character] ?? item.character}
       </div>
       <p className="mt-1 text-zinc-500 dark:text-zinc-400">
-        {item.minutes} min · {Math.round(item.percentage)} %
+        {t("characterStatsLine", {
+          minutes: item.minutes,
+          percentage: Math.round(item.percentage),
+        })}
       </p>
     </div>
   );
@@ -140,6 +153,7 @@ function ChartTypeToggle({
   value: ChartType;
   onChange: (value: ChartType) => void;
 }) {
+  const t = useTranslations("Analytics");
   return (
     <div className="flex justify-end gap-2">
       <button
@@ -147,14 +161,14 @@ function ChartTypeToggle({
         onClick={() => onChange("pie")}
         className={chartToggleButtonClass(value === "pie")}
       >
-        Koláč
+        {t("chartPie")}
       </button>
       <button
         type="button"
         onClick={() => onChange("bar")}
         className={chartToggleButtonClass(value === "bar")}
       >
-        Stĺpce
+        {t("chartBar")}
       </button>
     </div>
   );
@@ -171,29 +185,38 @@ export function CategoryCharts({
   fullBreakdown: boolean;
   groups?: AnalyticsCodeGroup[];
 }) {
+  const t = useTranslations("Analytics");
+  const otherLabel = t("otherGroupLabel");
   const [codeChartType, setCodeChartType] = useState<ChartType>("pie");
   const [characterChartType, setCharacterChartType] = useState<ChartType>("pie");
 
-  const groupStats = groups ? computeGroupStats(byCode, groups) : [];
+  const groupStatsRaw = groups ? computeGroupStats(byCode, groups) : [];
   const [selectedGroup, setSelectedGroup] = useState<string | undefined>(
-    groupStats[0]?.code,
+    groupStatsRaw[0]?.code,
   );
-  const activeGroup = selectedGroup ?? groupStats[0]?.code;
-  const groupDetailCodes = groups && activeGroup
-    ? codesInGroup(byCode, groups, activeGroup)
+  const activeGroupKey = selectedGroup ?? groupStatsRaw[0]?.code;
+  const activeGroupLabel = activeGroupKey === OTHER_KEY ? otherLabel : activeGroupKey;
+  const groupDetailCodes = groups && activeGroupKey
+    ? codesInGroup(byCode, groups, activeGroupKey)
     : [];
 
   const isFoldedView = groups ? true : !fullBreakdown;
-  const codeSlices = groups
+  const codeSlicesRaw = groups
     ? foldIntoOther(groupDetailCodes)
     : fullBreakdown
       ? byCode
       : foldIntoOther(byCode);
-  const codeColors = codeSlices.map((entry, index) =>
-    isFoldedView && entry.code === "Ostatné" ? OTHER_VAR : colorAt(index),
+  const codeSlices = codeSlicesRaw.map((entry) =>
+    entry.code === OTHER_KEY ? { ...entry, code: otherLabel } : entry,
   );
-  const groupColors = groupStats.map((entry, index) =>
-    entry.code === OTHER_GROUP_LABEL ? OTHER_VAR : colorAt(index),
+  const codeColors = codeSlicesRaw.map((entry, index) =>
+    isFoldedView && entry.code === OTHER_KEY ? OTHER_VAR : colorAt(index),
+  );
+  const groupStats = groupStatsRaw.map((entry) =>
+    entry.code === OTHER_KEY ? { ...entry, code: otherLabel } : entry,
+  );
+  const groupColors = groupStatsRaw.map((entry, index) =>
+    entry.code === OTHER_KEY ? OTHER_VAR : colorAt(index),
   );
 
   const characterColors: Record<string, string> = {
@@ -232,7 +255,7 @@ export function CategoryCharts({
       {groups && (
         <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
           <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Podľa kódu cvičenia — skupiny
+            {t("byCodeGroupsHeading")}
           </h2>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={groupStats} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
@@ -241,11 +264,11 @@ export function CategoryCharts({
               <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
               <Tooltip content={<CodeTooltip />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
               <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
-                {groupStats.map((entry, index) => (
+                {groupStatsRaw.map((entry, index) => (
                   <Cell
                     key={entry.code}
                     fill={groupColors[index]}
-                    opacity={activeGroup === entry.code ? 1 : 0.45}
+                    opacity={activeGroupKey === entry.code ? 1 : 0.45}
                     onClick={() => setSelectedGroup(entry.code)}
                     className="cursor-pointer"
                   />
@@ -260,8 +283,8 @@ export function CategoryCharts({
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
             {groups
-              ? `Detail — ${activeGroup}`
-              : "Podľa kódu cvičenia — čas, počet úderov, % používania"}
+              ? t("detailHeading", { group: activeGroupLabel })
+              : t("byCodeHeading")}
           </h2>
           {fullBreakdown && (
             <ChartTypeToggle value={codeChartType} onChange={setCodeChartType} />
@@ -321,8 +344,12 @@ export function CategoryCharts({
                 {entry.code}
               </span>
               <span className="min-w-0 flex-1 truncate text-zinc-500 dark:text-zinc-400">
-                — {entry.minutes} min · {entry.strokes} úderov ·{" "}
-                {Math.round(entry.percentage)} %
+                —{" "}
+                {t("codeStatsLine", {
+                  minutes: entry.minutes,
+                  strokes: entry.strokes,
+                  percentage: Math.round(entry.percentage),
+                })}
               </span>
             </li>
           ))}
@@ -332,7 +359,7 @@ export function CategoryCharts({
       <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Podľa charakteru cvičenia
+            {t("byCharacterHeading")}
           </h2>
           {fullBreakdown && (
             <ChartTypeToggle value={characterChartType} onChange={setCharacterChartType} />
@@ -397,7 +424,7 @@ export function CategoryCharts({
                 {CHARACTER_LABELS[entry.character] ?? entry.character}
               </span>
               <span className="min-w-0 flex-1 truncate text-zinc-500 dark:text-zinc-400">
-                — {Math.round(entry.percentage)} %
+                — {t("percentageOnly", { percentage: Math.round(entry.percentage) })}
               </span>
             </li>
           ))}

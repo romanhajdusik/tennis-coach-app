@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   getCategoryAnalytics,
@@ -16,15 +17,10 @@ import {
 } from "@/lib/drill-options";
 import { CategoryCharts } from "./category-charts";
 
-const RANGE_OPTIONS: { value: PeriodRangeType; label: string }[] = [
-  { value: "week", label: "Týždeň" },
-  { value: "month", label: "Mesiac" },
-  { value: "quarter", label: "Kvartál" },
-  { value: "year", label: "Rok" },
-];
+const RANGE_VALUES: PeriodRangeType[] = ["week", "month", "quarter", "year"];
 
 function isPeriodRangeType(value: string): value is PeriodRangeType {
-  return RANGE_OPTIONS.some((option) => option.value === value);
+  return RANGE_VALUES.includes(value as PeriodRangeType);
 }
 
 function quarterOptions(): { value: string; label: string }[] {
@@ -57,6 +53,15 @@ export default async function AnalyticsPage({
     notFound();
   }
 
+  const t = await getTranslations("Analytics");
+  const tCommon = await getTranslations("Common");
+  const RANGE_OPTIONS: { value: PeriodRangeType; label: string }[] = [
+    { value: "week", label: t("rangeWeek") },
+    { value: "month", label: t("rangeMonth") },
+    { value: "quarter", label: t("rangeQuarter") },
+    { value: "year", label: t("rangeYear") },
+  ];
+
   const search = await searchParams;
   const range: PeriodRangeType =
     search.range && isPeriodRangeType(search.range) ? search.range : "month";
@@ -71,7 +76,7 @@ export default async function AnalyticsPage({
     redirect("/login");
   }
 
-  const { start, end, label } = getPeriodRange(range, value);
+  const { start, end, label } = await getPeriodRange(range, value);
   const { byCode, byCharacter } = await getCategoryAnalytics(
     supabase,
     user.id,
@@ -88,13 +93,13 @@ export default async function AnalyticsPage({
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Analytika
+          {t("title")}
         </h1>
         <Link
           href="/"
           className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
         >
-          Späť
+          {tCommon("back")}
         </Link>
       </div>
 
@@ -166,7 +171,7 @@ export default async function AnalyticsPage({
             type="submit"
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
           >
-            Zobraziť
+            {t("show")}
           </button>
         </form>
 
@@ -178,19 +183,19 @@ export default async function AnalyticsPage({
             href={`/analytics/${encodeURIComponent(category)}?${periodQuery(range, previousYearValue)}`}
             className="underline"
           >
-            ◀ Minulý rok
+            {t("previousYear")}
           </Link>
         </div>
       </div>
 
       {byCode.length === 0 ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Žiadne odohrané cvičenia v tomto období.
+          {t("noDrillsInPeriod")}
         </p>
       ) : ANALYTICS_TOTAL_TIME_ONLY_CATEGORIES.includes(category) ? (
         <div className="flex flex-col items-center gap-2 rounded-xl border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-950">
           <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Celkový čas odohraný v cvičeniach
+            {t("totalTimeHeading")}
           </span>
           <span className="text-4xl font-semibold text-zinc-900 dark:text-zinc-50">
             {byCode.reduce((sum, entry) => sum + entry.minutes, 0)} min

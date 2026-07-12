@@ -6,14 +6,16 @@ export type AppLocale = (typeof locales)[number];
 export const defaultLocale: AppLocale = "sk";
 
 async function loadMessages(locale: AppLocale) {
-  const [common, auth, home, players, sessions, drillCodes] = await Promise.all([
-    import(`../messages/${locale}/common.json`),
-    import(`../messages/${locale}/auth.json`),
-    import(`../messages/${locale}/home.json`),
-    import(`../messages/${locale}/players.json`),
-    import(`../messages/${locale}/sessions.json`),
-    import(`../messages/${locale}/drill-codes.json`),
-  ]);
+  const [common, auth, home, players, sessions, drillCodes, analytics] =
+    await Promise.all([
+      import(`../messages/${locale}/common.json`),
+      import(`../messages/${locale}/auth.json`),
+      import(`../messages/${locale}/home.json`),
+      import(`../messages/${locale}/players.json`),
+      import(`../messages/${locale}/sessions.json`),
+      import(`../messages/${locale}/drill-codes.json`),
+      import(`../messages/${locale}/analytics.json`),
+    ]);
 
   return {
     Common: common.default,
@@ -22,6 +24,7 @@ async function loadMessages(locale: AppLocale) {
     Players: players.default,
     Sessions: sessions.default,
     DrillCodes: drillCodes.default,
+    Analytics: analytics.default,
   };
 }
 

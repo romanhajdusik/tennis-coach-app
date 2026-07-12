@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
@@ -22,21 +23,6 @@ const FIXED_STROKES_PER_MIN_CATEGORIES: Record<string, number> = {
   Serve: 6,
   "GAME DRILLS": 22,
 };
-
-const MONTH_LABELS = [
-  "Január",
-  "Február",
-  "Marec",
-  "Apríl",
-  "Máj",
-  "Jún",
-  "Júl",
-  "August",
-  "September",
-  "Október",
-  "November",
-  "December",
-];
 
 function isoWeekRange(year: number, week: number): { start: Date; end: Date } {
   const jan4 = new Date(Date.UTC(year, 0, 4));
@@ -63,16 +49,19 @@ function getISOWeek(date: Date): { year: number; week: number } {
   return { year: d.getUTCFullYear(), week };
 }
 
-export function getPeriodRange(
+export async function getPeriodRange(
   range: PeriodRangeType,
   value: string,
-): { start: Date; end: Date; label: string } {
+): Promise<{ start: Date; end: Date; label: string }> {
+  const t = await getTranslations("Analytics");
+  const monthLabels = t.raw("months") as string[];
+
   if (range === "week") {
     const [yearStr, weekStr] = value.split("-W");
     const year = Number(yearStr);
     const week = Number(weekStr);
     const { start, end } = isoWeekRange(year, week);
-    return { start, end, label: `Týždeň ${week}, ${year}` };
+    return { start, end, label: t("weekLabel", { week, year }) };
   }
   if (range === "month") {
     const [yearStr, monthStr] = value.split("-");
@@ -80,7 +69,7 @@ export function getPeriodRange(
     const month = Number(monthStr);
     const start = new Date(Date.UTC(year, month - 1, 1));
     const end = new Date(Date.UTC(year, month, 1));
-    return { start, end, label: `${MONTH_LABELS[month - 1]} ${year}` };
+    return { start, end, label: `${monthLabels[month - 1]} ${year}` };
   }
   if (range === "quarter") {
     const [yearStr, qStr] = value.split("-Q");
@@ -94,7 +83,7 @@ export function getPeriodRange(
   const year = Number(value);
   const start = new Date(Date.UTC(year, 0, 1));
   const end = new Date(Date.UTC(year + 1, 0, 1));
-  return { start, end, label: `Rok ${year}` };
+  return { start, end, label: t("yearLabel", { year }) };
 }
 
 export function getDefaultPeriodValue(range: PeriodRangeType): string {
