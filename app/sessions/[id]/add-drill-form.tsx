@@ -7,6 +7,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import { useTranslations } from "next-intl";
 import { addDrill, removeDrill } from "@/lib/actions/session-drills";
 import {
   CATEGORY_OPTIONS,
@@ -30,6 +31,7 @@ export function AddDrillForm({
   sessionId: string;
   drillsByCategory: Record<string, string[]>;
 }) {
+  const t = useTranslations("Sessions.addDrillForm");
   const addDrillWithSession = addDrill.bind(null, sessionId);
   const [state, formAction] = useActionState(addDrillWithSession, undefined);
   const formRef = useRef<HTMLFormElement>(null);
@@ -88,7 +90,7 @@ export function AddDrillForm({
       {lastAdded && (
         <div className="flex items-center justify-between rounded-xl border border-emerald-300 bg-emerald-50 p-3 text-sm dark:border-emerald-800 dark:bg-emerald-950">
           <span className="text-emerald-800 dark:text-emerald-200">
-            Pridané: {lastAdded.category} · {lastAdded.drillCode}
+            {t("addedPrefix")} {lastAdded.category} · {lastAdded.drillCode}
           </span>
           <button
             type="button"
@@ -96,7 +98,7 @@ export function AddDrillForm({
             disabled={isRemoving}
             className="rounded-lg border border-emerald-400 px-3 py-1 text-xs font-medium text-emerald-800 disabled:opacity-50 dark:border-emerald-700 dark:text-emerald-200"
           >
-            Undo
+            {t("undo")}
           </button>
         </div>
       )}
@@ -107,7 +109,7 @@ export function AddDrillForm({
         className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
       >
         <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          Pridať cvičenie
+          {t("heading")}
         </h2>
 
         <div className="flex flex-col gap-1">
@@ -115,7 +117,7 @@ export function AddDrillForm({
             htmlFor="category"
             className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Zameranie
+            {t("categoryLabel")}
           </label>
           <select
             id="category"
@@ -137,7 +139,7 @@ export function AddDrillForm({
             htmlFor="character"
             className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Charakter úderu
+            {t("characterLabel")}
           </label>
           <select
             id="character"
@@ -159,7 +161,7 @@ export function AddDrillForm({
             htmlFor="drill_code"
             className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Cvičenie
+            {t("drillLabel")}
           </label>
           {drillOptions && drillOptions.length > 0 ? (
             <select
@@ -183,7 +185,7 @@ export function AddDrillForm({
               required
               value={drillCode}
               onChange={(event) => setDrillCode(event.target.value)}
-              placeholder="napr. BKH-CRS"
+              placeholder={t("drillPlaceholder")}
               className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
             />
           )}
@@ -194,7 +196,7 @@ export function AddDrillForm({
             htmlFor="duration_minutes"
             className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Trvanie
+            {t("durationLabel")}
           </label>
           <select
             id="duration_minutes"
@@ -204,7 +206,7 @@ export function AddDrillForm({
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
           >
             <option value="" disabled>
-              Vyber trvanie
+              {t("selectDuration")}
             </option>
             {DURATION_OPTIONS.map((minutes) => (
               <option key={minutes} value={minutes}>

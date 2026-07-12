@@ -1,0 +1,75 @@
+{
+  "title": "Sessions",
+  "activePlayer": "Active player: {name}",
+  "noActivePlayer": "First <link>set an active player</link>, then you'll be able to schedule a session.",
+  "planHeading": "Plan",
+  "calendarEventTitle": "Session — {name}",
+  "noSessions": "No sessions scheduled yet.",
+  "noDate": "No date",
+  "detail": {
+    "heading": "Session",
+    "calendarWarning": "This session overlaps with another event in your Google Calendar.",
+    "totalDuration": "Total duration: {minutes} min",
+    "drillsHeading": "Drills",
+    "noDrills": "No drills yet."
+  },
+  "newForm": {
+    "heading": "Schedule a session",
+    "dateLabel": "Date and time",
+    "durationLabel": "Planned duration",
+    "submit": "Schedule",
+    "confirmMessage": "Schedule session on {date}, duration {duration} min?",
+    "confirmSubmit": "Yes, schedule",
+    "confirmSubmitPending": "Saving...",
+    "confirmEdit": "Edit"
+  },
+  "review": {
+    "heading": "Review",
+    "completedBadge": "Completed",
+    "noActualDate": "No actual time entered",
+    "noNotes": "No notes.",
+    "actualDateLabel": "Actual date and time",
+    "notesLabel": "Notes",
+    "saveNotes": "Save notes",
+    "savingNotes": "Saving...",
+    "completeButton": "Complete session",
+    "confirmCompleteMessage": "Are you sure you want to complete this session? Once completed, it can no longer be edited.",
+    "confirmCompleteSubmit": "Yes, complete",
+    "confirmCompleteSubmitPending": "Completing...",
+    "confirmCompleteCancel": "Cancel"
+  },
+  "addDrillForm": {
+    "heading": "Add drill",
+    "categoryLabel": "Focus",
+    "characterLabel": "Shot character",
+    "drillLabel": "Drill",
+    "drillPlaceholder": "e.g. BKH-CRS",
+    "durationLabel": "Duration",
+    "selectDuration": "Select duration",
+    "addedPrefix": "Added:",
+    "undo": "Undo"
+  },
+  "drillRow": {
+    "statusNotPlayed": "Not played",
+    "statusReplaced": "Replaced",
+    "markNotPlayed": "Not played",
+    "markReplaced": "Replaced",
+    "restore": "Restore",
+    "drillPlaceholder": "e.g. BKH-CRS",
+    "selectDuration": "Select duration",
+    "replaceSubmit": "Replace",
+    "replaceSubmitPending": "Saving...",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "missingDate": "Select the session date and time.",
+    "noActivePlayer": "First set an active player.",
+    "createFailed": "Failed to schedule the session.",
+    "reviewLocked": "The session is locked, notes could not be saved.",
+    "missingFields": "Fill in all fields.",
+    "invalidCharacter": "Invalid shot character.",
+    "invalidDuration": "Invalid duration.",
+    "addFailed": "Failed to add the drill.",
+    "replaceFailed": "Failed to add the replacement drill."
+  }
+}

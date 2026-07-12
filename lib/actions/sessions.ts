@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { syncSessionToGoogleCalendar } from "@/lib/google/calendar";
 
@@ -16,9 +17,11 @@ export async function createSession(
   const date = formData.get("date") as string;
   const durationMinutes =
     Number(formData.get("duration_minutes")) || DEFAULT_SESSION_DURATION_MINUTES;
+  const t = await getTranslations("Sessions.errors");
+  const tSessions = await getTranslations("Sessions");
 
   if (!date) {
-    return { error: "Vyber dátum a čas tréningu." };
+    return { error: t("missingDate") };
   }
 
   const supabase = await createClient();
@@ -38,7 +41,7 @@ export async function createSession(
     .maybeSingle();
 
   if (!activePlayer) {
-    return { error: "Najprv nastav aktívneho hráča." };
+    return { error: t("noActivePlayer") };
   }
 
   const { data: session, error } = await supabase
@@ -53,7 +56,7 @@ export async function createSession(
     .single();
 
   if (error || !session) {
-    return { error: "Tréning sa nepodarilo naplánovať." };
+    return { error: t("createFailed") };
   }
 
   const start = new Date(date);
@@ -61,7 +64,7 @@ export async function createSession(
   const { googleEventId, collision } = await syncSessionToGoogleCalendar(
     supabase,
     user.id,
-    `Tréning — ${activePlayer.name}`,
+    tSessions("calendarEventTitle", { name: activePlayer.name }),
     start.toISOString(),
     end.toISOString(),
   );
@@ -87,6 +90,7 @@ export async function updateSessionReview(
 ): Promise<SessionFormState> {
   const actualDate = formData.get("actual_date") as string;
   const notes = (formData.get("notes") as string) ?? "";
+  const t = await getTranslations("Sessions.errors");
 
   const supabase = await createClient();
   const {
@@ -110,7 +114,7 @@ export async function updateSessionReview(
     .eq("coach_id", user.id);
 
   if (error || count === 0) {
-    return { error: "Tréning je uzamknutý, poznámky sa nepodarilo uložiť." };
+    return { error: t("reviewLocked") };
   }
 
   revalidatePath(`/sessions/${sessionId}`);

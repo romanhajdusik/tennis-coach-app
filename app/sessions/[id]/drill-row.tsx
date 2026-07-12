@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { replaceDrill, setDrillPlayed } from "@/lib/actions/session-drills";
 import {
   CATEGORY_OPTIONS,
@@ -28,11 +29,6 @@ const STATUS_STYLES: Record<string, string> = {
     "border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950",
 };
 
-const STATUS_BADGES: Record<string, string> = {
-  not_played: "Neodohrané",
-  replaced: "Nahradené",
-};
-
 function ReplaceDrillForm({
   sessionId,
   drillId,
@@ -44,6 +40,7 @@ function ReplaceDrillForm({
   drillsByCategory: Record<string, string[]>;
   onCancel: () => void;
 }) {
+  const t = useTranslations("Sessions.drillRow");
   const replaceThisDrill = replaceDrill.bind(null, sessionId, drillId);
   const [state, formAction, pending] = useActionState(
     replaceThisDrill,
@@ -110,7 +107,7 @@ function ReplaceDrillForm({
           required
           value={drillCode}
           onChange={(event) => setDrillCode(event.target.value)}
-          placeholder="napr. BKH-CRS"
+          placeholder={t("drillPlaceholder")}
           className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
         />
       )}
@@ -122,7 +119,7 @@ function ReplaceDrillForm({
         className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
       >
         <option value="" disabled>
-          Vyber trvanie
+          {t("selectDuration")}
         </option>
         {DURATION_OPTIONS.map((minutes) => (
           <option key={minutes} value={minutes}>
@@ -141,14 +138,14 @@ function ReplaceDrillForm({
           disabled={pending}
           className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
         >
-          {pending ? "Ukladám..." : "Nahradiť"}
+          {pending ? t("replaceSubmitPending") : t("replaceSubmit")}
         </button>
         <button
           type="button"
           onClick={onCancel}
           className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
         >
-          Zrušiť
+          {t("cancel")}
         </button>
       </div>
     </form>
@@ -166,8 +163,16 @@ export function DrillRow({
   canEdit: boolean;
   drillsByCategory: Record<string, string[]>;
 }) {
+  const t = useTranslations("Sessions.drillRow");
   const [isPending, startTransition] = useTransition();
   const [isReplacing, setIsReplacing] = useState(false);
+
+  const statusBadge =
+    drill.status === "not_played"
+      ? t("statusNotPlayed")
+      : drill.status === "replaced"
+        ? t("statusReplaced")
+        : null;
 
   return (
     <li
@@ -183,9 +188,9 @@ export function DrillRow({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {STATUS_BADGES[drill.status] && (
+          {statusBadge && (
             <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
-              {STATUS_BADGES[drill.status]}
+              {statusBadge}
             </span>
           )}
           <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
@@ -204,14 +209,14 @@ export function DrillRow({
             }
             className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
           >
-            Neodohrané
+            {t("markNotPlayed")}
           </button>
           <button
             type="button"
             onClick={() => setIsReplacing(true)}
             className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
           >
-            Nahradené
+            {t("markReplaced")}
           </button>
         </div>
       )}
@@ -226,7 +231,7 @@ export function DrillRow({
             }
             className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
           >
-            Vrátiť
+            {t("restore")}
           </button>
         </div>
       )}

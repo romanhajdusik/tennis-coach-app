@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 export type DrillFormState =
@@ -20,17 +21,18 @@ export async function addDrill(
   const character = formData.get("character") as string;
   const drillCode = (formData.get("drill_code") as string)?.trim();
   const durationMinutes = Number(formData.get("duration_minutes"));
+  const t = await getTranslations("Sessions.errors");
 
   if (!category || !character || !drillCode) {
-    return { error: "Vyplň všetky polia." };
+    return { error: t("missingFields") };
   }
 
   if (!VALID_CHARACTERS.includes(character)) {
-    return { error: "Neplatný charakter úderu." };
+    return { error: t("invalidCharacter") };
   }
 
   if (!VALID_DURATIONS.includes(durationMinutes)) {
-    return { error: "Neplatné trvanie." };
+    return { error: t("invalidDuration") };
   }
 
   const supabase = await createClient();
@@ -56,7 +58,7 @@ export async function addDrill(
     .single();
 
   if (error || !drill) {
-    return { error: "Cvičenie sa nepodarilo pridať." };
+    return { error: t("addFailed") };
   }
 
   revalidatePath(`/sessions/${sessionId}`);
@@ -115,17 +117,18 @@ export async function replaceDrill(
   const character = formData.get("character") as string;
   const drillCode = (formData.get("drill_code") as string)?.trim();
   const durationMinutes = Number(formData.get("duration_minutes"));
+  const t = await getTranslations("Sessions.errors");
 
   if (!category || !character || !drillCode) {
-    return { error: "Vyplň všetky polia." };
+    return { error: t("missingFields") };
   }
 
   if (!VALID_CHARACTERS.includes(character)) {
-    return { error: "Neplatný charakter úderu." };
+    return { error: t("invalidCharacter") };
   }
 
   if (!VALID_DURATIONS.includes(durationMinutes)) {
-    return { error: "Neplatné trvanie." };
+    return { error: t("invalidDuration") };
   }
 
   const supabase = await createClient();
@@ -150,7 +153,7 @@ export async function replaceDrill(
     });
 
   if (replacementError) {
-    return { error: "Náhradné cvičenie sa nepodarilo pridať." };
+    return { error: t("replaceFailed") };
   }
 
   await supabase

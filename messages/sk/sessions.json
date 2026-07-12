@@ -1,0 +1,75 @@
+{
+  "title": "Tréningy",
+  "activePlayer": "Aktívny hráč: {name}",
+  "noActivePlayer": "Najprv <link>nastav aktívneho hráča</link>, potom mu budeš môcť naplánovať tréning.",
+  "planHeading": "Plán",
+  "calendarEventTitle": "Tréning — {name}",
+  "noSessions": "Zatiaľ žiadne naplánované tréningy.",
+  "noDate": "Bez dátumu",
+  "detail": {
+    "heading": "Tréning",
+    "calendarWarning": "Tréning sa prekrýva s inou udalosťou v tvojom Google Kalendári.",
+    "totalDuration": "Celkové trvanie: {minutes} min",
+    "drillsHeading": "Cvičenia",
+    "noDrills": "Zatiaľ žiadne cvičenia."
+  },
+  "newForm": {
+    "heading": "Naplánovať tréning",
+    "dateLabel": "Dátum a čas",
+    "durationLabel": "Plánovaná dĺžka",
+    "submit": "Naplánovať",
+    "confirmMessage": "Naplánovať tréning na {date}, dĺžka {duration} min?",
+    "confirmSubmit": "Áno, naplánovať",
+    "confirmSubmitPending": "Ukladám...",
+    "confirmEdit": "Upraviť"
+  },
+  "review": {
+    "heading": "Review",
+    "completedBadge": "Dokončený",
+    "noActualDate": "Reálny čas nezadaný",
+    "noNotes": "Žiadne poznámky.",
+    "actualDateLabel": "Reálny dátum a čas",
+    "notesLabel": "Poznámky",
+    "saveNotes": "Uložiť poznámky",
+    "savingNotes": "Ukladám...",
+    "completeButton": "Dokončiť tréning",
+    "confirmCompleteMessage": "Naozaj chceš tréning dokončiť? Po dokončení už nepôjde upravovať.",
+    "confirmCompleteSubmit": "Áno, dokončiť",
+    "confirmCompleteSubmitPending": "Dokončujem...",
+    "confirmCompleteCancel": "Zrušiť"
+  },
+  "addDrillForm": {
+    "heading": "Pridať cvičenie",
+    "categoryLabel": "Zameranie",
+    "characterLabel": "Charakter úderu",
+    "drillLabel": "Cvičenie",
+    "drillPlaceholder": "napr. BKH-CRS",
+    "durationLabel": "Trvanie",
+    "selectDuration": "Vyber trvanie",
+    "addedPrefix": "Pridané:",
+    "undo": "Undo"
+  },
+  "drillRow": {
+    "statusNotPlayed": "Neodohrané",
+    "statusReplaced": "Nahradené",
+    "markNotPlayed": "Neodohrané",
+    "markReplaced": "Nahradené",
+    "restore": "Vrátiť",
+    "drillPlaceholder": "napr. BKH-CRS",
+    "selectDuration": "Vyber trvanie",
+    "replaceSubmit": "Nahradiť",
+    "replaceSubmitPending": "Ukladám...",
+    "cancel": "Zrušiť"
+  },
+  "errors": {
+    "missingDate": "Vyber dátum a čas tréningu.",
+    "noActivePlayer": "Najprv nastav aktívneho hráča.",
+    "createFailed": "Tréning sa nepodarilo naplánovať.",
+    "reviewLocked": "Tréning je uzamknutý, poznámky sa nepodarilo uložiť.",
+    "missingFields": "Vyplň všetky polia.",
+    "invalidCharacter": "Neplatný charakter úderu.",
+    "invalidDuration": "Neplatné trvanie.",
+    "addFailed": "Cvičenie sa nepodarilo pridať.",
+    "replaceFailed": "Náhradné cvičenie sa nepodarilo pridať."
+  }
+}

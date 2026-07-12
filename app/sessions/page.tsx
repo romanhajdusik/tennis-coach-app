@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations, getFormatter } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { NewSessionForm } from "./new-session-form";
 
@@ -7,13 +8,10 @@ type PlannedData = {
   date?: string;
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  planned: "Naplánovaný",
-  completed: "Dokončený",
-  cancelled: "Zrušený",
-};
-
 export default async function SessionsPage() {
+  const t = await getTranslations("Sessions");
+  const tCommon = await getTranslations("Common");
+  const format = await getFormatter();
   const supabase = await createClient();
   const {
     data: { user },
@@ -42,39 +40,41 @@ export default async function SessionsPage() {
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Tréningy
+          {t("title")}
         </h1>
         <Link
           href="/"
           className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
         >
-          Späť
+          {tCommon("back")}
         </Link>
       </div>
 
       {!activePlayer ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Najprv{" "}
-          <Link href="/players" className="underline">
-            nastav aktívneho hráča
-          </Link>
-          , potom mu budeš môcť naplánovať tréning.
+          {t.rich("noActivePlayer", {
+            link: (chunks) => (
+              <Link href="/players" className="underline">
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       ) : (
         <>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Aktívny hráč: <span className="font-medium">{activePlayer.name}</span>
+            {t("activePlayer", { name: activePlayer.name })}
           </p>
 
           <NewSessionForm />
 
           <section className="flex flex-col gap-2">
             <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-              Plán
+              {t("planHeading")}
             </h2>
             {!sessions || sessions.length === 0 ? (
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Zatiaľ žiadne naplánované tréningy.
+                {t("noSessions")}
               </p>
             ) : (
               <ul className="flex flex-col gap-2">
@@ -88,14 +88,14 @@ export default async function SessionsPage() {
                       >
                         <p className="font-medium text-zinc-900 dark:text-zinc-50">
                           {planned?.date
-                            ? new Date(planned.date).toLocaleString("sk-SK", {
+                            ? format.dateTime(new Date(planned.date), {
                                 dateStyle: "medium",
                                 timeStyle: "short",
                               })
-                            : "Bez dátumu"}
+                            : t("noDate")}
                         </p>
                         <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                          {STATUS_LABELS[session.status] ?? session.status}
+                          {tCommon(`status.${session.status}`)}
                         </span>
                       </Link>
                     </li>
