@@ -1,0 +1,10 @@
+{
+  "title": "Settings",
+  "connectedBanner": "Google Calendar was successfully connected.",
+  "errorBanner": "Connecting Google Calendar failed. Please try again.",
+  "googleCalendarHeading": "Google Calendar",
+  "connectedDescription": "Connected — scheduled sessions are automatically added to your Google Calendar.",
+  "disconnect": "Disconnect",
+  "notConnectedDescription": "Not connected — sessions are scheduled only in the app, without calendar sync.",
+  "connect": "Connect Google Calendar"
+}

@@ -1,0 +1,10 @@
+{
+  "title": "Nastavenia",
+  "connectedBanner": "Google Kalendár bol úspešne pripojený.",
+  "errorBanner": "Pripojenie Google Kalendára sa nepodarilo. Skús to prosím znova.",
+  "googleCalendarHeading": "Google Kalendár",
+  "connectedDescription": "Pripojené — naplánované tréningy sa automaticky pridávajú do tvojho Google Kalendára.",
+  "disconnect": "Odpojiť",
+  "notConnectedDescription": "Nepripojené — tréningy sa plánujú len v appke, bez synchronizácie s kalendárom.",
+  "connect": "Pripojiť Google Kalendár"
+}
