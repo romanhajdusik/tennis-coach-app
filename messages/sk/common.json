@@ -1,5 +1,7 @@
 {
   "back": "Späť",
+  "appTitle": "Tenisový tréner",
+  "appDescription": "Aplikácia pre tenisových trénerov",
   "status": {
     "planned": "Naplánovaný",
     "completed": "Dokončený",

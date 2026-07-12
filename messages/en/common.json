@@ -1,5 +1,7 @@
 {
   "back": "Back",
+  "appTitle": "Tennis Coach",
+  "appDescription": "An app for tennis coaches",
   "status": {
     "planned": "Planned",
     "completed": "Completed",
