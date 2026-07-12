@@ -1,0 +1,19 @@
+{
+  "title": "Hráči",
+  "activePlayerHeading": "Aktívny hráč",
+  "noActivePlayer": "Zatiaľ nemáš aktívneho hráča.",
+  "archive": "Archivovať",
+  "activate": "Aktivovať",
+  "archiveHeading": "Archív",
+  "addForm": {
+    "heading": "Pridať hráča",
+    "nameLabel": "Meno",
+    "birthDateLabel": "Dátum narodenia",
+    "submit": "Pridať hráča",
+    "submitPending": "Pridávam..."
+  },
+  "errors": {
+    "missingName": "Zadaj meno hráča.",
+    "createFailed": "Hráča sa nepodarilo vytvoriť."
+  }
+}

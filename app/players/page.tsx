@@ -1,10 +1,13 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { activatePlayer } from "@/lib/actions/players";
+import { activatePlayer, deactivatePlayer } from "@/lib/actions/players";
 import { AddPlayerForm } from "./add-player-form";
 
 export default async function PlayersPage() {
+  const t = await getTranslations("Players");
+  const tCommon = await getTranslations("Common");
   const supabase = await createClient();
   const {
     data: { user },
@@ -28,34 +31,44 @@ export default async function PlayersPage() {
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Hráči
+          {t("title")}
         </h1>
         <Link
           href="/"
           className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
         >
-          Späť
+          {tCommon("back")}
         </Link>
       </div>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          Aktívny hráč
+          {t("activePlayerHeading")}
         </h2>
         {activePlayer ? (
-          <div className="rounded-xl border border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-950">
-            <p className="font-medium text-zinc-900 dark:text-zinc-50">
-              {activePlayer.name}
-            </p>
-            {activePlayer.birth_date && (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                {activePlayer.birth_date}
+          <div className="flex items-center justify-between rounded-xl border border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-950">
+            <div>
+              <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                {activePlayer.name}
               </p>
-            )}
+              {activePlayer.birth_date && (
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  {activePlayer.birth_date}
+                </p>
+              )}
+            </div>
+            <form action={deactivatePlayer.bind(null, activePlayer.id)}>
+              <button
+                type="submit"
+                className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-700"
+              >
+                {t("archive")}
+              </button>
+            </form>
           </div>
         ) : (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Zatiaľ nemáš aktívneho hráča.
+            {t("noActivePlayer")}
           </p>
         )}
       </section>
@@ -65,7 +78,7 @@ export default async function PlayersPage() {
       {archivedPlayers.length > 0 && (
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Archív
+            {t("archiveHeading")}
           </h2>
           <ul className="flex flex-col gap-2">
             {archivedPlayers.map((player) => (
@@ -88,7 +101,7 @@ export default async function PlayersPage() {
                     type="submit"
                     className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-700"
                   >
-                    Aktivovať
+                    {t("activate")}
                   </button>
                 </form>
               </li>

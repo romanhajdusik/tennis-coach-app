@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 export type PlayerFormState = { error?: string } | undefined;
@@ -12,9 +13,10 @@ export async function createPlayer(
 ): Promise<PlayerFormState> {
   const name = formData.get("name") as string;
   const birthDate = formData.get("birth_date") as string;
+  const t = await getTranslations("Players.errors");
 
   if (!name) {
-    return { error: "Zadaj meno hráča." };
+    return { error: t("missingName") };
   }
 
   const supabase = await createClient();
@@ -41,8 +43,27 @@ export async function createPlayer(
   });
 
   if (error) {
-    return { error: "Hráča sa nepodarilo vytvoriť." };
+    return { error: t("createFailed") };
   }
+
+  revalidatePath("/players");
+}
+
+export async function deactivatePlayer(playerId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  await supabase
+    .from("players")
+    .update({ is_active: false })
+    .eq("id", playerId)
+    .eq("coach_id", user.id);
 
   revalidatePath("/players");
 }

@@ -1,0 +1,19 @@
+{
+  "title": "Players",
+  "activePlayerHeading": "Active player",
+  "noActivePlayer": "You don't have an active player yet.",
+  "archive": "Archive",
+  "activate": "Activate",
+  "archiveHeading": "Archive",
+  "addForm": {
+    "heading": "Add player",
+    "nameLabel": "Name",
+    "birthDateLabel": "Date of birth",
+    "submit": "Add player",
+    "submitPending": "Adding..."
+  },
+  "errors": {
+    "missingName": "Enter the player's name.",
+    "createFailed": "Failed to create the player."
+  }
+}
