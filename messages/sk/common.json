@@ -1,0 +1,8 @@
+{
+  "back": "Späť",
+  "status": {
+    "planned": "Naplánovaný",
+    "completed": "Dokončený",
+    "cancelled": "Zrušený"
+  }
+}
