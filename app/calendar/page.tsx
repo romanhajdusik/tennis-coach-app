@@ -1,17 +1,10 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations, getFormatter } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
-
-const STATUS_LABELS: Record<string, string> = {
-  planned: "Naplánovaný",
-  completed: "Dokončený",
-  cancelled: "Zrušený",
-};
-
-const WEEKDAY_LABELS = ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"];
 
 function toDayKey(date: Date) {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -38,6 +31,10 @@ export default async function CalendarPage({
   searchParams: Promise<{ month?: string }>;
 }) {
   const { month } = await searchParams;
+  const t = await getTranslations("Calendar");
+  const tCommon = await getTranslations("Common");
+  const format = await getFormatter();
+  const weekdays = t.raw("weekdays") as string[];
   const supabase = await createClient();
   const {
     data: { user },
@@ -91,7 +88,7 @@ export default async function CalendarPage({
   const prevMonth = monthIndex === 0 ? { year: year - 1, monthIndex: 11 } : { year, monthIndex: monthIndex - 1 };
   const nextMonth = monthIndex === 11 ? { year: year + 1, monthIndex: 0 } : { year, monthIndex: monthIndex + 1 };
 
-  const monthLabel = monthStart.toLocaleDateString("sk-SK", {
+  const monthLabel = format.dateTime(monthStart, {
     month: "long",
     year: "numeric",
   });
@@ -100,23 +97,25 @@ export default async function CalendarPage({
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Kalendár
+          {t("title")}
         </h1>
         <Link
           href="/"
           className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
         >
-          Späť
+          {tCommon("back")}
         </Link>
       </div>
 
       {!activePlayer ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Najprv{" "}
-          <Link href="/players" className="underline">
-            nastav aktívneho hráča
-          </Link>
-          , potom uvidíš jeho tréningy v kalendári.
+          {t.rich("noActivePlayer", {
+            link: (chunks) => (
+              <Link href="/players" className="underline">
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       ) : (
         <>
@@ -125,7 +124,7 @@ export default async function CalendarPage({
               href={`/calendar?month=${monthParam(prevMonth.year, prevMonth.monthIndex)}`}
               className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
             >
-              ← Predch.
+              {t("prev")}
             </Link>
             <p className="text-sm font-medium capitalize text-zinc-900 dark:text-zinc-50">
               {monthLabel}
@@ -134,12 +133,12 @@ export default async function CalendarPage({
               href={`/calendar?month=${monthParam(nextMonth.year, nextMonth.monthIndex)}`}
               className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
             >
-              Ďalší →
+              {t("next")}
             </Link>
           </div>
 
           <div className="grid grid-cols-7 gap-1 text-center text-xs text-zinc-500 dark:text-zinc-400">
-            {WEEKDAY_LABELS.map((label) => (
+            {weekdays.map((label) => (
               <div key={label} className="py-1 font-medium">
                 {label}
               </div>
@@ -170,11 +169,11 @@ export default async function CalendarPage({
 
           <section className="flex flex-col gap-2">
             <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-              Tréningy v tomto mesiaci
+              {t("monthSessionsHeading")}
             </h2>
             {monthSessions.length === 0 ? (
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Žiadne tréningy v tomto mesiaci.
+                {t("noSessionsInMonth")}
               </p>
             ) : (
               <ul className="flex flex-col gap-2">
@@ -185,13 +184,13 @@ export default async function CalendarPage({
                       className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
                     >
                       <p className="font-medium text-zinc-900 dark:text-zinc-50">
-                        {new Date(session.date).toLocaleString("sk-SK", {
+                        {format.dateTime(new Date(session.date), {
                           dateStyle: "medium",
                           timeStyle: "short",
                         })}
                       </p>
                       <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                        {STATUS_LABELS[session.status] ?? session.status}
+                        {tCommon(`status.${session.status}`)}
                       </span>
                     </Link>
                   </li>

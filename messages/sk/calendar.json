@@ -1,0 +1,9 @@
+{
+  "title": "Kalendár",
+  "noActivePlayer": "Najprv <link>nastav aktívneho hráča</link>, potom uvidíš jeho tréningy v kalendári.",
+  "prev": "← Predch.",
+  "next": "Ďalší →",
+  "weekdays": ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"],
+  "monthSessionsHeading": "Tréningy v tomto mesiaci",
+  "noSessionsInMonth": "Žiadne tréningy v tomto mesiaci."
+}
