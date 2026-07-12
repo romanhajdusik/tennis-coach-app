@@ -38,6 +38,10 @@ export async function register(
   const role = formData.get("role") as string;
   const t = await getTranslations("Auth.errors");
 
+  if (process.env.REGISTRATION_ENABLED !== "true") {
+    return { error: t("registrationClosed") };
+  }
+
   if (!fullName || !email || !password || !role) {
     return { error: t("missingRegisterFields") };
   }
