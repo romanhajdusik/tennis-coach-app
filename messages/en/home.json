@@ -1,0 +1,13 @@
+{
+  "title": "Tennis Coach",
+  "loggedInAs": "Logged in as",
+  "players": "Players",
+  "sessions": "Sessions",
+  "calendar": "Calendar",
+  "drillCodes": "Drill codes",
+  "analytics": "Analytics",
+  "settings": "Settings",
+  "logout": "Log out",
+  "login": "Sign in",
+  "register": "Registration"
+}

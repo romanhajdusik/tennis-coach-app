@@ -1,0 +1,13 @@
+{
+  "title": "Tenisový tréner",
+  "loggedInAs": "Prihlásený ako",
+  "players": "Hráči",
+  "sessions": "Tréningy",
+  "calendar": "Kalendár",
+  "drillCodes": "Kódy cvičení",
+  "analytics": "Analytika",
+  "settings": "Nastavenia",
+  "logout": "Odhlásiť sa",
+  "login": "Prihlásiť sa",
+  "register": "Registrácia"
+}
