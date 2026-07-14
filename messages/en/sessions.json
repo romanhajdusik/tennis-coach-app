@@ -36,7 +36,12 @@
     "confirmCompleteMessage": "Are you sure you want to complete this session? Once completed, it can no longer be edited.",
     "confirmCompleteSubmit": "Yes, complete",
     "confirmCompleteSubmitPending": "Completing...",
-    "confirmCompleteCancel": "Cancel"
+    "confirmCompleteCancel": "Cancel",
+    "deleteButton": "Cancel session",
+    "confirmDeleteMessage": "Are you sure you want to cancel this session? The session and its drills will be permanently deleted, this action cannot be undone.",
+    "confirmDeleteSubmit": "Yes, cancel and delete",
+    "confirmDeleteSubmitPending": "Deleting...",
+    "confirmDeleteCancel": "No, keep it"
   },
   "addDrillForm": {
     "heading": "Add drill",

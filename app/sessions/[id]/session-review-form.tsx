@@ -2,7 +2,11 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { useTranslations, useFormatter } from "next-intl";
-import { completeSession, updateSessionReview } from "@/lib/actions/sessions";
+import {
+  completeSession,
+  deleteSession,
+  updateSessionReview,
+} from "@/lib/actions/sessions";
 
 function toLocalInputValue(date: string | undefined) {
   if (!date) return "";
@@ -33,7 +37,9 @@ export function SessionReviewForm({
     undefined,
   );
   const [isCompleting, startCompleteTransition] = useTransition();
+  const [isDeleting, startDeleteTransition] = useTransition();
   const [confirmingComplete, setConfirmingComplete] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   if (status === "completed") {
     return (
@@ -64,6 +70,12 @@ export function SessionReviewForm({
   function handleComplete() {
     startCompleteTransition(async () => {
       await completeSession(sessionId);
+    });
+  }
+
+  function handleDelete() {
+    startDeleteTransition(async () => {
+      await deleteSession(sessionId);
     });
   }
 
@@ -119,7 +131,7 @@ export function SessionReviewForm({
         </button>
       </form>
 
-      {confirmingComplete ? (
+      {confirmingComplete && (
         <div className="flex flex-col gap-2 rounded-lg border border-zinc-300 p-3 dark:border-zinc-700">
           <p className="text-sm text-zinc-700 dark:text-zinc-300">
             {t("confirmCompleteMessage")}
@@ -143,14 +155,51 @@ export function SessionReviewForm({
             </button>
           </div>
         </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setConfirmingComplete(true)}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
-        >
-          {t("completeButton")}
-        </button>
+      )}
+
+      {confirmingDelete && (
+        <div className="flex flex-col gap-2 rounded-lg border border-red-300 p-3 dark:border-red-800">
+          <p className="text-sm text-red-700 dark:text-red-400">
+            {t("confirmDeleteMessage")}
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-red-700"
+            >
+              {isDeleting ? t("confirmDeleteSubmitPending") : t("confirmDeleteSubmit")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(false)}
+              disabled={isDeleting}
+              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
+            >
+              {t("confirmDeleteCancel")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!confirmingComplete && !confirmingDelete && (
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setConfirmingComplete(true)}
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+          >
+            {t("completeButton")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmingDelete(true)}
+            className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 dark:border-red-800 dark:text-red-400"
+          >
+            {t("deleteButton")}
+          </button>
+        </div>
       )}
     </div>
   );

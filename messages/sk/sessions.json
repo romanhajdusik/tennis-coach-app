@@ -36,7 +36,12 @@
     "confirmCompleteMessage": "Naozaj chceš tréning dokončiť? Po dokončení už nepôjde upravovať.",
     "confirmCompleteSubmit": "Áno, dokončiť",
     "confirmCompleteSubmitPending": "Dokončujem...",
-    "confirmCompleteCancel": "Zrušiť"
+    "confirmCompleteCancel": "Zrušiť",
+    "deleteButton": "Zrušiť tréning",
+    "confirmDeleteMessage": "Naozaj chceš tréning úplne zrušiť? Tréning aj jeho cvičenia sa natrvalo vymažú, táto akcia sa nedá vrátiť späť.",
+    "confirmDeleteSubmit": "Áno, zrušiť a vymazať",
+    "confirmDeleteSubmitPending": "Mažem...",
+    "confirmDeleteCancel": "Nie, ponechať"
   },
   "addDrillForm": {
     "heading": "Pridať cvičenie",

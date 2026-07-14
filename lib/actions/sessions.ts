@@ -140,3 +140,29 @@ export async function completeSession(sessionId: string) {
   revalidatePath(`/sessions/${sessionId}`);
   revalidatePath("/sessions");
 }
+
+// Zrušenie plánovaného tréningu ho úplne vymaže (aj cvičenia cez cascade) —
+// nie je to len zmena statusu. RLS už blokuje mazanie dokončených tréningov
+// (rovnaká policy ako pri "sessions_delete_active_player"), takže tu netreba
+// žiadnu ďalšiu kontrolu. Zámerne nemažeme prípadnú udalosť v Google
+// Kalendári — kalendárová synchronizácia je zatiaľ len jednosmerná.
+export async function deleteSession(sessionId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  await supabase
+    .from("sessions")
+    .delete()
+    .eq("id", sessionId)
+    .eq("coach_id", user.id);
+
+  revalidatePath("/sessions");
+  revalidatePath("/calendar");
+  redirect("/sessions");
+}
