@@ -59,7 +59,7 @@ export default async function Home() {
               {t("settings")}
             </Link>
           </div>
-          <form action={logout}>
+          <form action={logout.bind(null, "/login")}>
             <button
               type="submit"
               className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"

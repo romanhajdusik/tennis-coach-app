@@ -5,9 +5,9 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { login } from "@/lib/actions/auth";
 
-export default function LoginPage() {
-  const t = useTranslations("Auth.login");
-  const loginAction = login.bind(null, "/");
+export default function ParentLoginPage() {
+  const t = useTranslations("Parent.login");
+  const loginAction = login.bind(null, "/parent");
   const [state, formAction, pending] = useActionState(loginAction, undefined);
 
   return (
@@ -16,6 +16,9 @@ export default function LoginPage() {
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
           {t("heading")}
         </h1>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          {t("subtitle")}
+        </p>
         <form action={formAction} className="mt-6 flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <label

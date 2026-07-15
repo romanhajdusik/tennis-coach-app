@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 export type AuthFormState = { error?: string } | undefined;
 
 export async function login(
+  redirectTo: string,
   _prevState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
@@ -25,7 +26,7 @@ export async function login(
     return { error: t("invalidCredentials") };
   }
 
-  redirect("/");
+  redirect(redirectTo);
 }
 
 export async function register(
@@ -67,11 +68,11 @@ export async function register(
     return { error: error.message };
   }
 
-  redirect("/");
+  redirect(role === "coach" ? "/" : "/parent");
 }
 
-export async function logout() {
+export async function logout(redirectTo: string = "/login") {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/login");
+  redirect(redirectTo);
 }

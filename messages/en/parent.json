@@ -1,4 +1,30 @@
 {
+  "login": {
+    "heading": "Parent sign in",
+    "subtitle": "Track your child's sessions and analytics.",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "submit": "Sign in",
+    "submitPending": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Sign up"
+  },
+  "connect": {
+    "heading": "Connect a coach",
+    "description": "Enter the code your child's coach sent you.",
+    "codePlaceholder": "e.g. 4GMQZKVP",
+    "submit": "Connect",
+    "submitPending": "Connecting..."
+  },
+  "dashboard": {
+    "title": "Overview",
+    "logout": "Log out",
+    "connectedTo": "Connected player: {name}",
+    "calendar": "Calendar",
+    "analytics": "Analytics",
+    "sessionsHeading": "Sessions",
+    "noSessions": "No sessions yet."
+  },
   "errors": {
     "missingCode": "Enter the code from the coach.",
     "invalidCode": "Invalid or already used code."

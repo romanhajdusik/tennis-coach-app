@@ -1,4 +1,30 @@
 {
+  "login": {
+    "heading": "Prihlásenie pre rodiča",
+    "subtitle": "Sleduj tréningy a analytiku svojho dieťaťa.",
+    "emailLabel": "E-mail",
+    "passwordLabel": "Heslo",
+    "submit": "Prihlásiť sa",
+    "submitPending": "Prihlasujem...",
+    "noAccount": "Nemáš účet?",
+    "registerLink": "Zaregistruj sa"
+  },
+  "connect": {
+    "heading": "Pripojiť trénera",
+    "description": "Zadaj kód, ktorý ti poslal tréner tvojho dieťaťa.",
+    "codePlaceholder": "napr. 4GMQZKVP",
+    "submit": "Pripojiť",
+    "submitPending": "Pripájam..."
+  },
+  "dashboard": {
+    "title": "Prehľad",
+    "logout": "Odhlásiť sa",
+    "connectedTo": "Pripojený hráč: {name}",
+    "calendar": "Kalendár",
+    "analytics": "Analytika",
+    "sessionsHeading": "Tréningy",
+    "noSessions": "Zatiaľ žiadne tréningy."
+  },
   "errors": {
     "missingCode": "Zadaj kód od trénera.",
     "invalidCode": "Neplatný alebo už použitý kód."
