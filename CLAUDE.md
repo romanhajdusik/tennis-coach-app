@@ -54,6 +54,10 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
    - Editovateľné na `/drill-codes`
 7. **google_calendar_connections** — OAuth tokeny pripojenia trénerovho Google Kalendára (`coach_id` PK, `access_token`, `refresh_token`, `token_expires_at`, `calendar_id`)
    - Jeden riadok na trénera, spravované cez `/settings` (pripojiť/odpojiť), logika v `lib/google/calendar.ts`
+8. **player_connections** — prepojenie rodiča/manažéra s hráčom u konkrétneho trénera (`coach_id`, `player_id`, `parent_id` nullable kým nie je zaklaimované, `connect_code`, `status` `pending`/`active`/`revoked`)
+   - `CREATE UNIQUE INDEX one_active_connection_per_parent ON player_connections (parent_id) WHERE status = 'active'` — jeden rodič = jedno aktívne prepojenie naraz, nový kód automaticky nahradí staré
+   - RPC `claim_player_connection(p_code)` (`security definer`) — rodič zadá kód, funkcia nájde `pending` riadok, zruší predošlé aktívne prepojenie toho istého rodiča a aktivuje nové
+9. **parent_session_records** / **parent_session_drill_records** — **trvalá kópia** tréningov pre pripojeného rodiča, nie live pohľad (pozri sekciu "Zdieľanie s rodičom" nižšie prečo)
 
 ### Bezpečnostné pravidlá (povinné)
 
@@ -85,6 +89,18 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - **Kontrola kolízií** pri plánovaní len upozorní (banner na stránke tréningu cez `?calendarWarning=collision`), neblokuje uloženie
 - Ak tréner nemá pripojený kalendár alebo Google API zlyhá, tréning sa vytvorí bez neho — kalendárová synchronizácia nikdy neblokuje základné plánovanie
 - **Zatiaľ len jednosmerne** (app → kalendár): úprava/zrušenie tréningu sa do Google Kalendára nepremieta, kým appka nemá UI na editáciu naplánovaného tréningu. Obojsmerná synchronizácia (webhooks) je neskoršia fáza.
+
+## Zdieľanie s rodičom/manažérom
+
+- Rodič/manažér má **vlastný, oddelený vstupný bod** appky — `/parent/login` (nie ten istý `/login` ako tréner), aj keď ide o rovnaký Supabase Auth a rovnaký kód/deploy. Po registrácii s rolou `parent`/`manager` appka presmeruje na `/parent` namiesto `/`.
+- Tréner vygeneruje kód pre aktívneho hráča na `/players` (sekcia "Zdieľať s rodičom", `lib/actions/player-connections.ts#generateConnectCode`) a pošle ho rodičovi mimo appky (SMS a pod.). Rodič ho raz zadá na `/parent` (`claimConnection` → RPC `claim_player_connection`).
+- **Kľúčové architektonické rozhodnutie: appka dáta pre rodiča priebežne KOPÍRUJE, nezobrazuje ich cez live RLS pohľad nad `sessions`/`session_drills`.** Dôvod: keď tréner zmení aktívneho hráča, ukončí spoluprácu, alebo tréning/účet zmaže, rodič **nesmie prísť o doteraz nazbieranú históriu**. `AFTER INSERT OR UPDATE` triggery (`sync_session_to_parent`, `sync_drill_to_parent`) upsertujú zmeny do `parent_session_records`/`parent_session_drill_records`, len ak pre daného hráča existuje aktívne prepojenie — appka o tejto synchronizácii vôbec nemusí vedieť, funguje pre všetky existujúce cesty zápisu (`createSession`, `updateSessionReview`, `completeSession`, `addDrill`, `replaceDrill`, `setDrillPlayed`).
+  - **DELETE sa zámerne nepropaguje** (napr. "Zrušiť tréning") — kópia u rodiča ostáva aj po zmazaní pôvodnej session. `parent_session_records.source_session_id` je zámerne **bez foreign key** na `sessions`, aby kópia prežila aj zmazanie celého trénerovho účtu.
+  - Pri `claim_player_connection` sa jednorazovo spätne doplní aj existujúca história hráča (nielen budúce zmeny) — rodič po pripojení hneď vidí, čo sa dovtedy odohralo.
+  - Zrušenie prepojenia (`revokeConnection`) len nastaví `status = 'revoked'` — synchronizácia sa zastaví, ale doteraz skopírované dáta ostávajú. Nový tréner = nový kód = nové dáta pribúdajú do **toho istého** `parent_id`, takže rodičovi vzniká kontinuálny záznam naprieč viacerými trénermi v čase.
+- Rodičovské stránky (`app/parent/`) sú **čisto na čítanie** — kalendár, detail tréningu, analytika, žiadne plánovanie ani editácia. Analytická agregácia je zdieľaná s trénerovou (`aggregateDrillStats` v `lib/actions/analytics.ts`, volaná aj z `lib/actions/parent-data.ts`), len zdroj dát je iný.
+- `login`/`logout`/`register` v `lib/actions/auth.ts` berú `redirectTo` ako bindovaný parameter, aby fungovali pre oba vstupné body (`/login` → `/`, `/parent/login` → `/parent`) bez duplikovania auth logiky.
+- Platba za rodičovský prístup je zatiaľ nevyriešená (téma Fázy 3/Stripe) — rodič sa zatiaľ registruje zadarmo.
 
 ## Internacionalizácia (i18n)
 
