@@ -138,6 +138,83 @@ export type Database = {
           },
         ]
       }
+      parent_session_drill_records: {
+        Row: {
+          category: string
+          character: string
+          drill_code: string | null
+          duration_minutes: number
+          id: string
+          parent_record_id: string
+          source_drill_id: string
+          status: string
+        }
+        Insert: {
+          category: string
+          character: string
+          drill_code?: string | null
+          duration_minutes: number
+          id?: string
+          parent_record_id: string
+          source_drill_id: string
+          status: string
+        }
+        Update: {
+          category?: string
+          character?: string
+          drill_code?: string | null
+          duration_minutes?: number
+          id?: string
+          parent_record_id?: string
+          source_drill_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_session_drill_records_parent_record_id_fkey"
+            columns: ["parent_record_id"]
+            isOneToOne: false
+            referencedRelation: "parent_session_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parent_session_records: {
+        Row: {
+          actual_data: Json | null
+          coach_id: string
+          id: string
+          notes: string | null
+          parent_id: string
+          planned_data: Json | null
+          source_session_id: string
+          status: string
+          synced_at: string
+        }
+        Insert: {
+          actual_data?: Json | null
+          coach_id: string
+          id?: string
+          notes?: string | null
+          parent_id: string
+          planned_data?: Json | null
+          source_session_id: string
+          status: string
+          synced_at?: string
+        }
+        Update: {
+          actual_data?: Json | null
+          coach_id?: string
+          id?: string
+          notes?: string | null
+          parent_id?: string
+          planned_data?: Json | null
+          source_session_id?: string
+          status?: string
+          synced_at?: string
+        }
+        Relationships: []
+      }
       player_connections: {
         Row: {
           coach_id: string
