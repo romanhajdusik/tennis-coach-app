@@ -138,6 +138,47 @@ export type Database = {
           },
         ]
       }
+      player_connections: {
+        Row: {
+          coach_id: string
+          connect_code: string
+          created_at: string
+          id: string
+          parent_id: string | null
+          player_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          connect_code: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          player_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          connect_code?: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          player_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_connections_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           birth_date: string | null
@@ -304,7 +345,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_player_connection: {
+        Args: { p_code: string }
+        Returns: {
+          coach_id: string
+          player_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
