@@ -16,6 +16,7 @@ async function loadMessages(locale: AppLocale) {
     analytics,
     calendar,
     settings,
+    parent,
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`),
     import(`../messages/${locale}/auth.json`),
@@ -26,6 +27,7 @@ async function loadMessages(locale: AppLocale) {
     import(`../messages/${locale}/analytics.json`),
     import(`../messages/${locale}/calendar.json`),
     import(`../messages/${locale}/settings.json`),
+    import(`../messages/${locale}/parent.json`),
   ]);
 
   return {
@@ -38,6 +40,7 @@ async function loadMessages(locale: AppLocale) {
     Analytics: analytics.default,
     Calendar: calendar.default,
     Settings: settings.default,
+    Parent: parent.default,
   };
 }
 

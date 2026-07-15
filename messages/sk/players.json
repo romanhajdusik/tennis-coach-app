@@ -12,6 +12,17 @@
     "submit": "Pridať hráča",
     "submitPending": "Pridávam..."
   },
+  "share": {
+    "heading": "Zdieľať s rodičom",
+    "description": "Vygeneruj kód a pošli ho rodičovi (SMS, WhatsApp...). Rodič ho raz zadá vo svojej appke a uvidí tréningy a analytiku tohto hráča.",
+    "generateButton": "Vygenerovať kód",
+    "codeLabel": "Kód pre rodiča",
+    "copyButton": "Kopírovať",
+    "copiedButton": "Skopírované!",
+    "pendingStatus": "Čaká, kým rodič kód zadá",
+    "activeStatus": "Rodič je pripojený",
+    "revokeButton": "Zrušiť zdieľanie"
+  },
   "errors": {
     "missingName": "Zadaj meno hráča.",
     "createFailed": "Hráča sa nepodarilo vytvoriť."

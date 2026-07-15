@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "missingCode": "Enter the code from the coach.",
+    "invalidCode": "Invalid or already used code."
+  }
+}

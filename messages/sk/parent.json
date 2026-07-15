@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "missingCode": "Zadaj kód od trénera.",
+    "invalidCode": "Neplatný alebo už použitý kód."
+  }
+}
