@@ -134,6 +134,63 @@ export type CharacterStat = {
   percentage: number;
 };
 
+type DrillForStats = {
+  character: string;
+  drill_code: string | null;
+  duration_minutes: number;
+};
+
+// Zdieľané s lib/actions/parent-data.ts — rovnaká agregácia sa počíta aj
+// nad kópiou dát v parent_session_drill_records, len s inak získaným
+// zoznamom drills.
+export function aggregateDrillStats(
+  drills: DrillForStats[],
+  category: string,
+): { byCode: CodeStat[]; byCharacter: CharacterStat[] } {
+  const codeTotals = new Map<string, { minutes: number; strokes: number }>();
+  const characterTotals = new Map<string, number>();
+  let totalMinutes = 0;
+
+  const fixedStrokesPerMin = FIXED_STROKES_PER_MIN_CATEGORIES[category];
+
+  for (const drill of drills) {
+    const code = drill.drill_code ?? "—";
+    const strokesPerMin = fixedStrokesPerMin ?? STROKES_PER_MIN[drill.character] ?? 0;
+    const strokes = drill.duration_minutes * BREAK_FACTOR * strokesPerMin;
+
+    const codeEntry = codeTotals.get(code) ?? { minutes: 0, strokes: 0 };
+    codeEntry.minutes += drill.duration_minutes;
+    codeEntry.strokes += strokes;
+    codeTotals.set(code, codeEntry);
+
+    characterTotals.set(
+      drill.character,
+      (characterTotals.get(drill.character) ?? 0) + drill.duration_minutes,
+    );
+
+    totalMinutes += drill.duration_minutes;
+  }
+
+  const byCode: CodeStat[] = Array.from(codeTotals.entries())
+    .map(([code, { minutes, strokes }]) => ({
+      code,
+      minutes,
+      strokes: Math.round(strokes),
+      percentage: totalMinutes > 0 ? (minutes / totalMinutes) * 100 : 0,
+    }))
+    .sort((a, b) => b.minutes - a.minutes);
+
+  const byCharacter: CharacterStat[] = Array.from(characterTotals.entries())
+    .map(([character, minutes]) => ({
+      character,
+      minutes,
+      percentage: totalMinutes > 0 ? (minutes / totalMinutes) * 100 : 0,
+    }))
+    .sort((a, b) => b.minutes - a.minutes);
+
+  return { byCode, byCharacter };
+}
+
 export async function getCategoryAnalytics(
   supabase: SupabaseServerClient,
   userId: string,
@@ -179,46 +236,5 @@ export async function getCategoryAnalytics(
     .eq("category", category)
     .eq("status", "played");
 
-  const codeTotals = new Map<string, { minutes: number; strokes: number }>();
-  const characterTotals = new Map<string, number>();
-  let totalMinutes = 0;
-
-  const fixedStrokesPerMin = FIXED_STROKES_PER_MIN_CATEGORIES[category];
-
-  for (const drill of drills ?? []) {
-    const code = drill.drill_code ?? "—";
-    const strokesPerMin = fixedStrokesPerMin ?? STROKES_PER_MIN[drill.character] ?? 0;
-    const strokes = drill.duration_minutes * BREAK_FACTOR * strokesPerMin;
-
-    const codeEntry = codeTotals.get(code) ?? { minutes: 0, strokes: 0 };
-    codeEntry.minutes += drill.duration_minutes;
-    codeEntry.strokes += strokes;
-    codeTotals.set(code, codeEntry);
-
-    characterTotals.set(
-      drill.character,
-      (characterTotals.get(drill.character) ?? 0) + drill.duration_minutes,
-    );
-
-    totalMinutes += drill.duration_minutes;
-  }
-
-  const byCode: CodeStat[] = Array.from(codeTotals.entries())
-    .map(([code, { minutes, strokes }]) => ({
-      code,
-      minutes,
-      strokes: Math.round(strokes),
-      percentage: totalMinutes > 0 ? (minutes / totalMinutes) * 100 : 0,
-    }))
-    .sort((a, b) => b.minutes - a.minutes);
-
-  const byCharacter: CharacterStat[] = Array.from(characterTotals.entries())
-    .map(([character, minutes]) => ({
-      character,
-      minutes,
-      percentage: totalMinutes > 0 ? (minutes / totalMinutes) * 100 : 0,
-    }))
-    .sort((a, b) => b.minutes - a.minutes);
-
-  return { byCode, byCharacter };
+  return aggregateDrillStats(drills ?? [], category);
 }

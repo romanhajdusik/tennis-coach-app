@@ -25,6 +25,10 @@
     "sessionsHeading": "Tréningy",
     "noSessions": "Zatiaľ žiadne tréningy."
   },
+  "calendar": {
+    "back": "Späť",
+    "noConnection": "Zatiaľ nie si pripojený na žiadneho trénera."
+  },
   "errors": {
     "missingCode": "Zadaj kód od trénera.",
     "invalidCode": "Neplatný alebo už použitý kód."

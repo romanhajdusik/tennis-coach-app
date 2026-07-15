@@ -25,6 +25,10 @@
     "sessionsHeading": "Sessions",
     "noSessions": "No sessions yet."
   },
+  "calendar": {
+    "back": "Back",
+    "noConnection": "You're not connected to a coach yet."
+  },
   "errors": {
     "missingCode": "Enter the code from the coach.",
     "invalidCode": "Invalid or already used code."
