@@ -7,6 +7,16 @@ import { CHARACTER_LABELS } from "@/lib/drill-options";
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
 
+// Rovnaké farby ako v app/sessions/[id]/drill-row.tsx (STATUS_STYLES) —
+// rodič má vidieť rozpis rovnako farebne odlíšený ako tréner.
+const STATUS_STYLES: Record<string, string> = {
+  played:
+    "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950",
+  not_played: "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950",
+  replaced:
+    "border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950",
+};
+
 export default async function ParentSessionDetailPage({
   params,
 }: {
@@ -109,7 +119,7 @@ export default async function ParentSessionDetailPage({
             {drills.map((drill) => (
               <li
                 key={drill.id}
-                className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+                className={`flex items-center justify-between rounded-xl border p-4 ${STATUS_STYLES[drill.status] ?? STATUS_STYLES.played}`}
               >
                 <div>
                   <p className="font-medium text-zinc-900 dark:text-zinc-50">
