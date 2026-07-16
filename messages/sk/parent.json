@@ -11,7 +11,7 @@
   },
   "connect": {
     "heading": "Pripojiť trénera",
-    "description": "Zadaj kód, ktorý ti poslal tréner tvojho dieťaťa.",
+    "description": "Ak si rodič / manažér hráča, zadaj kód, ktorý ti poslal tréner.",
     "codePlaceholder": "napr. 4GMQZKVP",
     "submit": "Pripojiť",
     "submitPending": "Pripájam..."

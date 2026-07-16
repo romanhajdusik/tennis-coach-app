@@ -11,7 +11,7 @@
   },
   "connect": {
     "heading": "Connect a coach",
-    "description": "Enter the code your child's coach sent you.",
+    "description": "If you're the player's parent / manager, enter the code your coach sent you.",
     "codePlaceholder": "e.g. 4GMQZKVP",
     "submit": "Connect",
     "submitPending": "Connecting..."
