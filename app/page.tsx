@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
@@ -10,6 +11,21 @@ export default async function Home() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    // Rodič/manažér nemá vlastných hráčov, ide na svoju samostatnú časť
+    // appky — kým sa nepripojí na trénera cez kód, uvidí tam rovno
+    // formulár na jeho zadanie (app/parent/page.tsx).
+    if (profile && profile.role !== "coach") {
+      redirect("/parent");
+    }
+  }
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-zinc-50 px-4 dark:bg-black">
