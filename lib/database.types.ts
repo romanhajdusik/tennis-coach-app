@@ -327,6 +327,7 @@ export type Database = {
           id: string
           replaces_drill_id: string | null
           session_id: string
+          sort_order: number
           status: string
         }
         Insert: {
@@ -339,6 +340,7 @@ export type Database = {
           id?: string
           replaces_drill_id?: string | null
           session_id: string
+          sort_order: number
           status?: string
         }
         Update: {
@@ -351,6 +353,7 @@ export type Database = {
           id?: string
           replaces_drill_id?: string | null
           session_id?: string
+          sort_order?: number
           status?: string
         }
         Relationships: [

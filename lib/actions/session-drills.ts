@@ -44,6 +44,14 @@ export async function addDrill(
     redirect("/login");
   }
 
+  const { data: lastDrill } = await supabase
+    .from("session_drills")
+    .select("sort_order")
+    .eq("session_id", sessionId)
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   const { data: drill, error } = await supabase
     .from("session_drills")
     .insert({
@@ -53,6 +61,7 @@ export async function addDrill(
       character,
       drill_code: drillCode,
       duration_minutes: durationMinutes,
+      sort_order: (lastDrill?.sort_order ?? 0) + 1,
     })
     .select("id")
     .single();
@@ -80,6 +89,52 @@ export async function removeDrill(sessionId: string, drillId: string) {
     .delete()
     .eq("id", drillId)
     .eq("coach_id", user.id);
+
+  revalidatePath(`/sessions/${sessionId}`);
+}
+
+export async function moveDrill(
+  sessionId: string,
+  drillId: string,
+  direction: "up" | "down",
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const { data: drills } = await supabase
+    .from("session_drills")
+    .select("id, sort_order")
+    .eq("session_id", sessionId)
+    .order("sort_order", { ascending: true });
+
+  if (!drills) return;
+
+  const index = drills.findIndex((drill) => drill.id === drillId);
+  const swapIndex = direction === "up" ? index - 1 : index + 1;
+
+  if (index === -1 || swapIndex < 0 || swapIndex >= drills.length) return;
+
+  const current = drills[index];
+  const swapWith = drills[swapIndex];
+
+  await Promise.all([
+    supabase
+      .from("session_drills")
+      .update({ sort_order: swapWith.sort_order })
+      .eq("id", current.id)
+      .eq("coach_id", user.id),
+    supabase
+      .from("session_drills")
+      .update({ sort_order: current.sort_order })
+      .eq("id", swapWith.id)
+      .eq("coach_id", user.id),
+  ]);
 
   revalidatePath(`/sessions/${sessionId}`);
 }
@@ -140,6 +195,31 @@ export async function replaceDrill(
     redirect("/login");
   }
 
+  const { data: originalDrill } = await supabase
+    .from("session_drills")
+    .select("sort_order")
+    .eq("id", replacedDrillId)
+    .single();
+
+  const originalOrder = originalDrill?.sort_order ?? 0;
+
+  // Náhradné cvičenie sa má zaradiť hneď za to, ktoré nahrádza — posunúť
+  // všetky nasledujúce o jedno miesto, aby sa uvoľnilo miesto za pôvodným.
+  const { data: laterDrills } = await supabase
+    .from("session_drills")
+    .select("id, sort_order")
+    .eq("session_id", sessionId)
+    .gt("sort_order", originalOrder);
+
+  await Promise.all(
+    (laterDrills ?? []).map((drill) =>
+      supabase
+        .from("session_drills")
+        .update({ sort_order: drill.sort_order + 1 })
+        .eq("id", drill.id),
+    ),
+  );
+
   const { error: replacementError } = await supabase
     .from("session_drills")
     .insert({
@@ -150,6 +230,7 @@ export async function replaceDrill(
       drill_code: drillCode,
       duration_minutes: durationMinutes,
       replaces_drill_id: replacedDrillId,
+      sort_order: originalOrder + 1,
     });
 
   if (replacementError) {

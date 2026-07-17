@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { replaceDrill, setDrillPlayed } from "@/lib/actions/session-drills";
+import { moveDrill, replaceDrill, setDrillPlayed } from "@/lib/actions/session-drills";
 import {
   CATEGORY_OPTIONS,
   CHARACTER_LABELS,
@@ -19,6 +19,7 @@ export type Drill = {
   drill_code: string | null;
   duration_minutes: number;
   status: string;
+  sort_order: number;
 };
 
 const STATUS_STYLES: Record<string, string> = {
@@ -157,14 +158,19 @@ export function DrillRow({
   drill,
   canEdit,
   drillsByCategory,
+  isFirst,
+  isLast,
 }: {
   sessionId: string;
   drill: Drill;
   canEdit: boolean;
   drillsByCategory: Record<string, string[]>;
+  isFirst: boolean;
+  isLast: boolean;
 }) {
   const t = useTranslations("Sessions.drillRow");
   const [isPending, startTransition] = useTransition();
+  const [isMoving, startMoveTransition] = useTransition();
   const [isReplacing, setIsReplacing] = useState(false);
 
   const statusBadge =
@@ -179,13 +185,41 @@ export function DrillRow({
       className={`flex flex-col gap-2 rounded-xl border p-4 ${STATUS_STYLES[drill.status] ?? STATUS_STYLES.played}`}
     >
       <div className="flex items-center justify-between">
-        <div>
-          <p className="font-medium text-zinc-900 dark:text-zinc-50">
-            {drill.category} · {drill.drill_code}
-          </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {CHARACTER_LABELS[drill.character] ?? drill.character}
-          </p>
+        <div className="flex items-center gap-2">
+          {canEdit && (
+            <div className="flex flex-col">
+              <button
+                type="button"
+                disabled={isMoving || isFirst}
+                onClick={() =>
+                  startMoveTransition(() => moveDrill(sessionId, drill.id, "up"))
+                }
+                aria-label={t("moveUp")}
+                className="px-1 leading-none text-zinc-500 disabled:opacity-25 dark:text-zinc-400"
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                disabled={isMoving || isLast}
+                onClick={() =>
+                  startMoveTransition(() => moveDrill(sessionId, drill.id, "down"))
+                }
+                aria-label={t("moveDown")}
+                className="px-1 leading-none text-zinc-500 disabled:opacity-25 dark:text-zinc-400"
+              >
+                ▼
+              </button>
+            </div>
+          )}
+          <div>
+            <p className="font-medium text-zinc-900 dark:text-zinc-50">
+              {drill.category} · {drill.drill_code}
+            </p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {CHARACTER_LABELS[drill.character] ?? drill.character}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {statusBadge && (

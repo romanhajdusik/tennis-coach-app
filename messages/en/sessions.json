@@ -55,6 +55,8 @@
     "undo": "Undo"
   },
   "drillRow": {
+    "moveUp": "Move up",
+    "moveDown": "Move down",
     "statusNotPlayed": "Not played",
     "statusReplaced": "Replaced",
     "markNotPlayed": "Not played",

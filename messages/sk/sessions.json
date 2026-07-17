@@ -55,6 +55,8 @@
     "undo": "Undo"
   },
   "drillRow": {
+    "moveUp": "Posunúť vyššie",
+    "moveDown": "Posunúť nižšie",
     "statusNotPlayed": "Neodohrané",
     "statusReplaced": "Nahradené",
     "markNotPlayed": "Neodohrané",

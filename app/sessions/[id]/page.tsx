@@ -45,10 +45,10 @@ export default async function SessionDetailPage({
   const { data: drills } = await supabase
     .from("session_drills")
     .select(
-      "id, category, character, drill_code, duration_minutes, status, replaces_drill_id",
+      "id, category, character, drill_code, duration_minutes, status, sort_order",
     )
     .eq("session_id", id)
-    .order("created_at", { ascending: true });
+    .order("sort_order", { ascending: true });
 
   const planned = session.planned_data as PlannedData | null;
   const actual = session.actual_data as ActualData | null;
@@ -56,22 +56,7 @@ export default async function SessionDetailPage({
     .filter((drill) => drill.status === "played")
     .reduce((sum, drill) => sum + drill.duration_minutes, 0);
 
-  // náhradné cvičenie sa zobrazí hneď za tým, ktoré nahrádza
-  const replacementByOriginal = new Map(
-    (drills ?? [])
-      .filter((drill) => drill.replaces_drill_id)
-      .map((drill) => [drill.replaces_drill_id as string, drill]),
-  );
-  const orderedDrills: Drill[] = [];
-  for (const drill of drills ?? []) {
-    if (drill.replaces_drill_id) continue;
-    orderedDrills.push(drill);
-    let current = drill;
-    while (replacementByOriginal.has(current.id)) {
-      current = replacementByOriginal.get(current.id)!;
-      orderedDrills.push(current);
-    }
-  }
+  const orderedDrills: Drill[] = drills ?? [];
   const canEdit = session.status !== "completed";
   const drillsByCategory = await getDrillOptionsByCategory(supabase, user.id);
 
@@ -133,13 +118,15 @@ export default async function SessionDetailPage({
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {orderedDrills.map((drill) => (
+            {orderedDrills.map((drill, index) => (
               <DrillRow
                 key={drill.id}
                 sessionId={session.id}
                 drill={drill}
                 canEdit={canEdit}
                 drillsByCategory={drillsByCategory}
+                isFirst={index === 0}
+                isLast={index === orderedDrills.length - 1}
               />
             ))}
           </ul>
