@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { TimezoneDetector } from "@/components/timezone-detector";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -40,6 +41,7 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           {children}
           <LocaleSwitcher />
+          <TimezoneDetector />
         </NextIntlClientProvider>
       </body>
     </html>

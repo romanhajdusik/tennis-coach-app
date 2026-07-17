@@ -112,6 +112,12 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - **Čo sa NEPREKLADÁ**: `lib/drill-options.ts` (kategórie cvičení, kódy cvičení, skupinové názvy ako "Forhand return") — sú to dáta/konvencie trénera, nie UI text. Kódové komentáre a interné diagnostické hlášky (napr. `console.error` v `lib/google/calendar.ts`) ostávajú po slovensky, keďže sa nikdy nezobrazujú používateľovi
 - DB enum hodnoty (napr. `sessions.status`) sa prekladajú cez centralizovaný `Common.status.*` namespace, nikdy sa neprekladajú priamo v DB
 
+### Časové pásmo (medzinárodné použitie)
+
+- Appka sa používa medzinárodne (tréneri aj rodičia v rôznych pásmach) — **nie je natvrdo nastavená na Slovensko**. Každé zariadenie si zisťuje vlastné pásmo automaticky (`components/timezone-detector.tsx`, beží raz globálne v `app/layout.tsx` rovnako ako `LocaleSwitcher`) cez `Intl.DateTimeFormat().resolvedOptions().timeZone`, uloží ho do cookie `NEXT_TIMEZONE` (`lib/actions/timezone.ts#setTimeZone`, validované cez `Intl.supportedValuesOf("timeZone")`) a appku obnoví
+- `i18n/request.ts` číta `NEXT_TIMEZONE` a posiela ho do next-intl configu — **zobrazovanie** (`format.dateTime`) je tak vždy v pásme toho, kto sa práve pozerá, nie pásme servera ani pásme trénera, ktorý tréning zadal. Bez platnej cookie sa použije `defaultTimeZone` ("Europe/Bratislava")
+- **Zadávanie** dátumu/času (`<input type="datetime-local">` v `new-session-form.tsx`, `session-review-form.tsx`) sa naopak zámerne riadi pásmom zariadenia **v momente zápisu** — pred odoslaním sa prevedie na jednoznačný ISO reťazec (`new Date(value).toISOString()`) priamo v prehliadači, takže sa do DB nikdy neukladá "holý" dátum bez pásma. Toto je vedomé rozhodnutie (potvrdené s trénerom): tréning sa fyzicky odohráva tam, kde je zariadenie zadávajúceho, takže interpretácia podľa jeho aktuálneho pásma je správna
+
 ## Archív
 
 - Tréner môže v menu vybrať neaktívneho hráča (`is_active = false`)

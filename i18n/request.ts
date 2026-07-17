@@ -5,6 +5,18 @@ export const locales = ["sk", "en"] as const;
 export type AppLocale = (typeof locales)[number];
 export const defaultLocale: AppLocale = "sk";
 
+// Appka sa používa medzinárodne — každý používateľ má vidieť čas vo
+// vlastnom časovom pásme (zisťuje sa v prehliadači, pozri
+// components/timezone-detector.tsx), nie natvrdo slovenský. Kým sa
+// nezistí (prvé zobrazenie pred spustením JS), použije sa tento default.
+export const defaultTimeZone = "Europe/Bratislava";
+
+const validTimeZones = new Set(Intl.supportedValuesOf("timeZone"));
+
+export function isValidTimeZone(value: string | undefined): value is string {
+  return !!value && validTimeZones.has(value);
+}
+
 async function loadMessages(locale: AppLocale) {
   const [
     common,
@@ -51,13 +63,12 @@ export default getRequestConfig(async () => {
     ? (cookieLocale as AppLocale)
     : defaultLocale;
 
+  const cookieTimeZone = cookieStore.get("NEXT_TIMEZONE")?.value;
+  const timeZone = isValidTimeZone(cookieTimeZone) ? cookieTimeZone : defaultTimeZone;
+
   return {
     locale,
-    // Natvrdo nastavené — appka je len pre slovenských trénerov/rodičov.
-    // Bez tohto next-intl padá na časové pásmo servera (na Verceli UTC),
-    // čo pri formátovaní dátumov posúva čas o 1-2 hodiny (podľa letného/
-    // zimného času) oproti tomu, čo tréner naozaj zadal.
-    timeZone: "Europe/Bratislava",
+    timeZone,
     messages: await loadMessages(locale),
   };
 });
