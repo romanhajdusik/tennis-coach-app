@@ -27,9 +27,11 @@ type LastAdded = {
 export function AddDrillForm({
   sessionId,
   drillsByCategory,
+  initialCategory,
 }: {
   sessionId: string;
   drillsByCategory: Record<string, string[]>;
+  initialCategory?: string;
 }) {
   const t = useTranslations("Sessions.addDrillForm");
   const addDrillWithSession = addDrill.bind(null, sessionId);
@@ -39,7 +41,10 @@ export function AddDrillForm({
   const processedIdRef = useRef<string | null>(null);
   const [isRemoving, startRemoveTransition] = useTransition();
 
-  const [category, setCategory] = useState(DEFAULT_CATEGORY);
+  // Zameranie sa predvypĺňa podľa naposledy uloženého cvičenia v tomto
+  // tréningu (nie natvrdo defaultom), nech si tréner nemusí kategóriu
+  // vyberať znova ani po reloade stránky (napr. po zamknutí telefónu)
+  const [category, setCategory] = useState(initialCategory ?? DEFAULT_CATEGORY);
   const [character, setCharacter] = useState(DEFAULT_CHARACTER);
   const drillOptions = drillsByCategory[category];
   const [drillCode, setDrillCode] = useState(drillOptions?.[0] ?? "");
@@ -51,10 +56,11 @@ export function AddDrillForm({
     if (state?.addedDrillId && state.addedDrillId !== processedIdRef.current) {
       processedIdRef.current = state.addedDrillId;
       setLastAdded({ id: state.addedDrillId, category, character, drillCode });
-      // pripraviť formulár na ďalšie cvičenie
-      setCategory(DEFAULT_CATEGORY);
+      // pripraviť formulár na ďalšie cvičenie — zameranie zámerne necháme
+      // na poslednej použitej hodnote (tréner často zadáva viac cvičení
+      // za sebou v tej istej kategórii), resetuje sa len charakter a kód
       setCharacter(DEFAULT_CHARACTER);
-      setDrillCode(drillsByCategory[DEFAULT_CATEGORY]?.[0] ?? "");
+      setDrillCode(drillsByCategory[category]?.[0] ?? "");
       setDuration("");
 
       // Udrží scroll pri formulári (nie inde na stránke) a na chvíľu

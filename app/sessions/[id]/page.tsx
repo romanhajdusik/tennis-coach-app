@@ -91,6 +91,7 @@ export default async function SessionDetailPage({
         <AddDrillForm
           sessionId={session.id}
           drillsByCategory={drillsByCategory}
+          initialCategory={orderedDrills.at(-1)?.category}
         />
       )}
 
