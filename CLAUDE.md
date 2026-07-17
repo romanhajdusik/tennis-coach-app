@@ -43,12 +43,13 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
    - `is_active` (boolean) — **vždy len jeden aktívny hráč na trénera**
    - Vynútené na úrovni DB: `CREATE UNIQUE INDEX one_active_player ON players (coach_id) WHERE is_active = true;`
 3. **sessions** — tréningy naviazané na hráča
-   - `planned_data` (plánovaný čas a zameranie), `actual_data` (reálny čas), `notes`, `status` (`planned` / `completed` / `cancelled`)
+   - `planned_data` (plánovaný čas a zameranie), `actual_data` (reálny čas), `notes`, `status` (`planned` / `completed` / `cancelled` — `cancelled` je v DB kvôli budúcemu použitiu, appka dnes namiesto neho naplánovaný tréning rovno **zmaže**, pozri "Životný cyklus tréningu")
    - `google_event_id` (text, nullable) — **pridať už od začiatku**, príprava na kalendárovú synchronizáciu
 4. **metrics_and_tests** — kondičné a technické testy hráča (implementácia vo fáze 2, tabuľku možno vytvoriť vopred)
 5. **session_drills** — cvičenia v rámci tréningu (kategória/zameranie, charakter úderu, kód cvičenia, trvanie)
    - `status` (`played` / `not_played` / `replaced`) — review označenie, defaultne `played`
-   - `replaces_drill_id` — náhradné cvičenie sa viaže na to, ktoré nahrádza; v zozname sa zobrazí hneď za ním
+   - `replaces_drill_id` — väzba náhradného cvičenia na to, ktoré nahrádza (len informatívna, na poradie sa už nepoužíva)
+   - `sort_order` (integer, not null) — **jediný zdroj poradia v zozname**, tréner ho vie meniť šípkami hore/dole (`lib/actions/session-drills.ts#moveDrill`), len kým je tréning `planned` (RLS zablokuje update pri `completed`). `addDrill` pridáva na koniec, `replaceDrill` vloží nové cvičenie hneď za nahradzované (posunie zvyšok o jedno miesto)
 6. **drill_codes** — trénerom personalizované kódy cvičení, 20 slotov na zameranie (`coach_id`, `category`, `slot` 1–20, `code`)
    - Bez uložených riadkov pre danú kategóriu sa použije predvolený zoznam z `lib/drill-options.ts` (`DRILLS`); po prvom uložení je DB autoritatívna
    - Editovateľné na `/drill-codes`
@@ -68,9 +69,9 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 ## Životný cyklus tréningu
 
-1. **Plánovanie (planned):** vytvorenie zámeru — dátum, čas, zameranie
+1. **Plánovanie (planned):** vytvorenie zámeru — dátum, čas, zameranie. Kým je tréning v tomto stave, dá sa aj **úplne zrušiť** (`lib/actions/sessions.ts#deleteSession` — natrvalo zmaže session aj jej cvičenia cez `on delete cascade`, nie len zmena statusu; potvrdzuje sa dvojkrokovo v UI). Cvičenia sa dajú preusporiadať šípkami hore/dole (`session_drills.sort_order`)
 2. **Aktualizácia (review):** po tréningu tréner doplní reálny čas a poznámky; jednotlivé cvičenia môže označiť ako **neodohrané** alebo **nahradené** (náhrada sa zaradí v zozname hneď za pôvodným cvičením)
-3. **Archivácia (completed):** uzamknutie záznamu (vynútené aj cez RLS)
+3. **Archivácia (completed):** uzamknutie záznamu (vynútené aj cez RLS) — od tohto bodu už nejde tréning ani zrušiť, ani cvičenia preusporiadať
 
 ## Analytika
 
