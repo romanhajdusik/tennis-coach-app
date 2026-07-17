@@ -19,7 +19,7 @@ SaaS aplikácia pre tenisových trénerov a rodičov na plánovanie, správu a a
 - **Styling:** Tailwind CSS
 - **Grafy:** Recharts
 - **Backend/DB:** Supabase (PostgreSQL, Auth, Edge Functions)
-- **Hosting:** Vercel (deploy až po MVP — zatiaľ len lokálny vývoj)
+- **Hosting:** Vercel — appka je nasadená na produkcii, automatický deploy pri pushi do `master` (žiadny `vercel.json`/CI gate). Zmeny sa musia commitnúť a pushnúť, inak sa k trénerovi na telefón nedostanú — lokálny build/test nestačí
 - **Platby:** Stripe (fáza 3, zatiaľ neimplementovať)
 
 ## Príkazy
@@ -143,11 +143,15 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - [ ] Modul kondičných a technických testov (metrics_and_tests)
 
 ### Fáza 3 — SaaS predaj
-- Stripe Checkout + Customer Portal (mesačné/ročné predplatné)
-- Landing page (Hero, Features, Pricing, CTA) — v tom istom Next.js projekte
-- Deploy na Vercel
+- [x] Deploy na Vercel (produkcia beží, coach appku reálne používa na telefóne)
+- [ ] Stripe Checkout + Customer Portal (mesačné/ročné predplatné)
+- [ ] Landing page (Hero, Features, Pricing, CTA) — v tom istom Next.js projekte
 
 **Dôležité:** Neimplementuj funkcie z neskorších fáz, pokiaľ to nie je výslovne požadované. Architektúru však navrhuj tak, aby ich neskoršie pridanie neprekážalo (napr. `google_event_id` v sessions už teraz).
+
+### Nápady na neskôr (nepotvrdené, nezaradené do fázy)
+
+- **Manažér/športový riaditeľ pre viacerých hráčov naraz** (akadémie, zväzy): dnes má rola `manager` v DB rovnaké obmedzenie ako `parent` — `one_active_connection_per_parent` (`supabase/migrations/20260715100000_player_connections.sql`) dovoľuje len jedno aktívne prepojenie naraz, nový kód automaticky zruší predošlé. Nápad: uvoľniť tento limit len pre rolu `manager` (rodič ostáva 1:1) a postaviť prehľadovú stránku so zoznamom/tabuľkou hráčov zoskupených podľa trénera (`player_connections.coach_id`), s indikátorom "bez tréningu X dní" a agregovanou analytikou naprieč akadémiou. Dva mockupy (mobil aj tablet/laptop s grafmi) boli spravené 2026-07-17, zatiaľ len ako Claude Artifacts na diskusiu, nič nie je implementované. Ide o B2B rozšírenie scope-u (akadémie/zväzy majú iné potreby aj cenotvorbu než 1:1 tréner-hráč) — netreba to robiť mimochodom pri inej úlohe, len ako vedomé rozhodnutie o rozsahu.
 
 ## Štruktúra priečinkov
 
@@ -163,6 +167,11 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 - `next.config.ts` má `allowedDevOrigins` s LAN IP adresou trénerovho laptopu — Next.js dev server inak blokuje cross-origin požiadavky z iného zariadenia v sieti (napr. telefónu), čo potichu rozbije celú klientskú interaktivitu (hydratáciu), nielen HMR. Pri zmene siete/IP treba adresu v `allowedDevOrigins` aktualizovať.
 - `app/layout.tsx` má `<body className="flex flex-col">`. Každý stránkový root div preto **musí** mať popri `max-w-md` aj `w-full min-w-0`, inak ho širší vnútorný obsah (napr. netransformovateľný riadok záložiek) roztiahne cez celý viewport a spôsobí horizontálne posúvanie na úzkych obrazovkách — over toto ako prvé, ak niekedy nahlásia horizontálny scroll.
+
+## PWA (Add to Home Screen)
+
+- Appka má Web App Manifest (`app/manifest.ts`, lokalizovaný cez `Common.appTitle`/`appShortName`/`appDescription`) a generované ikony (`app/icon.tsx`, `app/apple-icon.tsx`, cez `next/og` `ImageResponse`) — "Add to Home Screen" tak vytvorí plnohodnotnú ikonu (`display: standalone`), nie obyčajnú záložku
+- **Viac hráčov na jednom zariadení:** appka je 1:1 (tréner ↔ jeden aktívny hráč), takže tréner s viacerými hráčmi musí použiť dva rôzne účty. Keďže session (cookies) je viazaná na origin appky v danom prehliadači, dva účty naraz na jednom telefóne fungujú len cez **dva rôzne prehliadače** (napr. Safari + Chrome), každý prihlásený do iného účtu a s vlastným "Add to Home Screen" — dve karty v tom istom prehliadači zdieľajú cookies a jedna by odhlásila druhú. Rovnaký princíp platí aj pre rodiča/manažéra a `player_connections`.
 
 ## Pracovné pravidlá pre Claude Code
 
