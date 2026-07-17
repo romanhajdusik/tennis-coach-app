@@ -40,6 +40,7 @@ export function SessionReviewForm({
   const [isDeleting, startDeleteTransition] = useTransition();
   const [confirmingComplete, setConfirmingComplete] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [actualDate, setActualDate] = useState(toLocalInputValue(initialDate));
 
   if (status === "completed") {
     return (
@@ -95,10 +96,15 @@ export function SessionReviewForm({
           </label>
           <input
             id="actual_date"
-            name="actual_date"
             type="datetime-local"
-            defaultValue={toLocalInputValue(initialDate)}
+            value={actualDate}
+            onChange={(event) => setActualDate(event.target.value)}
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          />
+          <input
+            type="hidden"
+            name="actual_date"
+            value={actualDate ? new Date(actualDate).toISOString() : ""}
           />
         </div>
 

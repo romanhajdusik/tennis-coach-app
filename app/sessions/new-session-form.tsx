@@ -85,7 +85,11 @@ export function NewSessionForm() {
               duration,
             })}
           </p>
-          <input type="hidden" name="date" value={date} />
+          <input
+            type="hidden"
+            name="date"
+            value={date ? new Date(date).toISOString() : ""}
+          />
           <input type="hidden" name="duration_minutes" value={duration} />
           {state?.error && (
             <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>

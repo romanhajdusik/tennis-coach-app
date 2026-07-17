@@ -53,6 +53,11 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
+    // Natvrdo nastavené — appka je len pre slovenských trénerov/rodičov.
+    // Bez tohto next-intl padá na časové pásmo servera (na Verceli UTC),
+    // čo pri formátovaní dátumov posúva čas o 1-2 hodiny (podľa letného/
+    // zimného času) oproti tomu, čo tréner naozaj zadal.
+    timeZone: "Europe/Bratislava",
     messages: await loadMessages(locale),
   };
 });
