@@ -1,0 +1,42 @@
+{
+  "eyebrow": "Para entrenadores de tenis",
+  "heroTitle": "Los entrenamientos bajo control. Directamente en la pista.",
+  "heroSubtitle": "CourtLog te ayuda a planificar, registrar y analizar cada entrenamiento desde el móvil — sin papeles ni hojas de cálculo.",
+  "ctaPrimary": "Probar gratis",
+  "ctaSecondary": "Iniciar sesión",
+  "featuresTitle": "Todo lo que necesitas, dentro y fuera de la pista",
+  "features": [
+    {
+      "title": "Planificación de entrenamientos",
+      "description": "Planifica un entrenamiento en segundos, con duración y enfoque incluidos. Si tienes Google Calendar conectado, el evento se añade automáticamente."
+    },
+    {
+      "title": "Registro y revisión",
+      "description": "Después del entrenamiento, añade el tiempo real y notas, y marca cada ejercicio como no realizado o sustituido — el desarrollo exacto queda registrado."
+    },
+    {
+      "title": "Códigos de ejercicios propios",
+      "description": "20 espacios por enfoque, siguiendo tu propio sistema de abreviaturas — sin adaptarte a la terminología de otra persona."
+    },
+    {
+      "title": "Analítica y gráficos",
+      "description": "Resumen por semana, mes, trimestre y año con comparación respecto a la temporada anterior, desglosado por código de ejercicio y carácter del golpe."
+    },
+    {
+      "title": "Compartir con los padres",
+      "description": "El padre o representante del jugador obtiene su propio acceso al historial de entrenamientos — nada que reenviar manualmente."
+    },
+    {
+      "title": "Pensada para el móvil",
+      "description": "La aplicación está diseñada Mobile First, para poder usarla cómodamente directamente en la pista, no solo desde el escritorio."
+    }
+  ],
+  "pricingTitle": "Precios",
+  "pricingBadge": "Próximamente",
+  "pricingText": "Estamos preparando planes mensuales y anuales sencillos. Mientras tanto, el registro es gratuito.",
+  "pricingCta": "Registrarse gratis",
+  "finalCtaTitle": "Prepárate para la temporada con una visión clara",
+  "finalCtaSubtitle": "Crea una cuenta en un par de minutos y planifica hoy mismo tu primer entrenamiento.",
+  "finalCtaButton": "Crear cuenta",
+  "footerTagline": "CourtLog — un diario de entrenamientos para entrenadores de tenis"
+}

@@ -1,0 +1,42 @@
+{
+  "eyebrow": "Für Tennistrainer",
+  "heroTitle": "Training unter Kontrolle. Direkt auf dem Platz.",
+  "heroSubtitle": "CourtLog hilft dir, jedes Training vom Handy aus zu planen, zu erfassen und auszuwerten — ganz ohne Papier und Excel.",
+  "ctaPrimary": "Kostenlos testen",
+  "ctaSecondary": "Anmelden",
+  "featuresTitle": "Alles, was du auf und neben dem Platz brauchst",
+  "features": [
+    {
+      "title": "Trainingsplanung",
+      "description": "Plane ein Training in Sekunden, inklusive Dauer und Schwerpunkt. Mit verbundenem Google Kalender wird der Termin automatisch eingetragen."
+    },
+    {
+      "title": "Erfassung und Review",
+      "description": "Trage nach dem Training die tatsächliche Zeit und Notizen ein und markiere einzelne Übungen als ausgefallen oder ersetzt — der genaue Ablauf bleibt dokumentiert."
+    },
+    {
+      "title": "Eigene Übungscodes",
+      "description": "20 Plätze pro Schwerpunkt, genau nach deinem eigenen Kürzelsystem — keine Anpassung an fremde Begriffe nötig."
+    },
+    {
+      "title": "Analysen und Grafiken",
+      "description": "Auswertung nach Woche, Monat, Quartal und Jahr im Vergleich zur Vorsaison, aufgeschlüsselt nach Übungscode und Schlagcharakter."
+    },
+    {
+      "title": "Teilen mit den Eltern",
+      "description": "Eltern oder Manager eines Spielers erhalten einen eigenen Zugang zur Trainingshistorie — nichts muss manuell weitergeleitet werden."
+    },
+    {
+      "title": "Für unterwegs gebaut",
+      "description": "Die App ist Mobile First konzipiert, damit sie sich bequem direkt auf dem Platz nutzen lässt, nicht nur am Schreibtisch."
+    }
+  ],
+  "pricingTitle": "Preise",
+  "pricingBadge": "Demnächst",
+  "pricingText": "Wir arbeiten an einfachen Monats- und Jahresplänen. Bis dahin ist die Registrierung kostenlos.",
+  "pricingCta": "Kostenlos registrieren",
+  "finalCtaTitle": "Starte mit vollem Überblick in die Saison",
+  "finalCtaSubtitle": "Erstelle in wenigen Minuten ein Konto und plane noch heute dein erstes Training.",
+  "finalCtaButton": "Konto erstellen",
+  "footerTagline": "CourtLog — das Trainingstagebuch für Tennistrainer"
+}

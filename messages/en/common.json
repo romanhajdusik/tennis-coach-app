@@ -1,8 +1,8 @@
 {
   "back": "Back",
-  "appTitle": "Tennis Coach",
-  "appShortName": "Coach",
-  "appDescription": "An app for tennis coaches",
+  "appTitle": "CourtLog",
+  "appShortName": "CourtLog",
+  "appDescription": "An app for tennis coaches to plan and analyze training sessions",
   "status": {
     "planned": "Planned",
     "completed": "Completed",

@@ -1,0 +1,42 @@
+{
+  "eyebrow": "Pre tenisových trénerov",
+  "heroTitle": "Tréningy pod kontrolou. Priamo na kurte.",
+  "heroSubtitle": "CourtLog ti pomôže naplánovať, zaznamenať a analyzovať každý tréning z telefónu — bez papierov a excelov.",
+  "ctaPrimary": "Vyskúšať zadarmo",
+  "ctaSecondary": "Prihlásiť sa",
+  "featuresTitle": "Všetko, čo potrebuješ na kurte aj mimo neho",
+  "features": [
+    {
+      "title": "Plánovanie tréningov",
+      "description": "Naplánuj tréning za pár sekúnd vrátane dĺžky a zamerania. Ak máš pripojený Google Kalendár, appka doň udalosť pridá automaticky."
+    },
+    {
+      "title": "Záznam a review",
+      "description": "Po tréningu doplň reálny čas a poznámky, jednotlivé cvičenia označ ako neodohrané alebo nahradené — presný priebeh tréningu ostáva zachovaný."
+    },
+    {
+      "title": "Vlastné kódy cvičení",
+      "description": "20 slotov na každé zameranie, presne podľa tvojho vlastného systému skratiek — žiadne prispôsobovanie sa cudzej terminológii."
+    },
+    {
+      "title": "Analytika a grafy",
+      "description": "Prehľad podľa týždňa, mesiaca, kvartálu aj roka s porovnaním voči minulej sezóne, rozpad podľa kódu cvičenia aj charakteru úderu."
+    },
+    {
+      "title": "Zdieľanie s rodičom",
+      "description": "Rodič alebo manažér hráča dostane vlastný prístup s históriou tréningov — nič netreba posielať ručne."
+    },
+    {
+      "title": "Postavené pre telefón",
+      "description": "Appka je navrhnutá Mobile First, aby sa dala pohodlne používať priamo na kurte, nie od stola."
+    }
+  ],
+  "pricingTitle": "Cenník",
+  "pricingBadge": "Čoskoro",
+  "pricingText": "Pripravujeme jednoduché mesačné a ročné predplatné. Kým ho doladíme, registrácia je k dispozícii zadarmo.",
+  "pricingCta": "Zaregistrovať sa zadarmo",
+  "finalCtaTitle": "Priprav sa na sezónu s prehľadom",
+  "finalCtaSubtitle": "Založ si účet za pár minút a začni plánovať prvý tréning ešte dnes.",
+  "finalCtaButton": "Vytvoriť účet",
+  "footerTagline": "CourtLog — tréningový denník pre tenisových trénerov"
+}

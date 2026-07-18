@@ -1,8 +1,8 @@
 {
   "back": "Späť",
-  "appTitle": "Tenisový tréner",
-  "appShortName": "Tréner",
-  "appDescription": "Aplikácia pre tenisových trénerov",
+  "appTitle": "CourtLog",
+  "appShortName": "CourtLog",
+  "appDescription": "Aplikácia pre tenisových trénerov na plánovanie a analýzu tréningov",
   "status": {
     "planned": "Naplánovaný",
     "completed": "Dokončený",

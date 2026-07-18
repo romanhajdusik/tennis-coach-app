@@ -1,0 +1,42 @@
+{
+  "eyebrow": "For tennis coaches",
+  "heroTitle": "Training sessions under control. Right there on the court.",
+  "heroSubtitle": "CourtLog helps you plan, log and analyze every training session from your phone — no paper, no spreadsheets.",
+  "ctaPrimary": "Try it for free",
+  "ctaSecondary": "Sign in",
+  "featuresTitle": "Everything you need, on the court and off it",
+  "features": [
+    {
+      "title": "Session planning",
+      "description": "Plan a session in seconds, including duration and focus. If you've connected Google Calendar, the event gets added automatically."
+    },
+    {
+      "title": "Logging and review",
+      "description": "After the session, add the actual time and notes, and mark individual drills as skipped or swapped — the exact course of the session stays on record."
+    },
+    {
+      "title": "Your own drill codes",
+      "description": "20 slots per focus area, matching your own shorthand system — no need to adapt to someone else's terminology."
+    },
+    {
+      "title": "Analytics and charts",
+      "description": "Breakdowns by week, month, quarter and year with a comparison to last season, split by drill code and by stroke character."
+    },
+    {
+      "title": "Sharing with parents",
+      "description": "A player's parent or manager gets their own access to the training history — nothing to forward manually."
+    },
+    {
+      "title": "Built for the phone",
+      "description": "The app is designed mobile first, so it's comfortable to use right on the court, not just at a desk."
+    }
+  ],
+  "pricingTitle": "Pricing",
+  "pricingBadge": "Coming soon",
+  "pricingText": "We're working on simple monthly and annual plans. Until then, registration is free.",
+  "pricingCta": "Sign up for free",
+  "finalCtaTitle": "Get ready for the season with a clear overview",
+  "finalCtaSubtitle": "Create an account in a couple of minutes and plan your first session today.",
+  "finalCtaButton": "Create account",
+  "footerTagline": "CourtLog — a training log for tennis coaches"
+}
