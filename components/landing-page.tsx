@@ -47,18 +47,13 @@ export async function LandingPage() {
 
       <header className="sticky top-0 z-40 w-full border-b border-zinc-200/70 bg-white/80 backdrop-blur-md dark:border-zinc-800/70 dark:bg-black/70">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
-          <span className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-green-600 text-sm font-bold text-white">
-              P
-            </span>
-            <span className="flex flex-col leading-none">
-              <span className="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-                P.L.A.W
-              </span>
-              <span className="hidden text-[10px] font-medium uppercase tracking-wider text-zinc-500 sm:block dark:text-zinc-500">
-                Plan · Log · Analyze · Win
-              </span>
-            </span>
+          <span className="rounded-md bg-[#eef0f0] p-1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/plaw-logo.png"
+              alt="P.L.A.W — Plan. Log. Analyze. Win."
+              className="block h-7 w-auto"
+            />
           </span>
           <div className="flex items-center gap-3">
             <LandingLanguageSwitcher currentLocale={locale} />
@@ -73,6 +68,14 @@ export async function LandingPage() {
       </header>
 
       <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-16 pt-16 text-center sm:px-6 sm:pb-24 sm:pt-24">
+        <span className="rounded-2xl border border-zinc-200 bg-[#eef0f0] p-3 shadow-sm dark:border-zinc-800">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/plaw-logo.png"
+            alt="P.L.A.W — Plan. Log. Analyze. Win. Timing for progress. plaw.win"
+            className="block h-auto w-full max-w-[260px] sm:max-w-[340px]"
+          />
+        </span>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800 ring-1 ring-green-600/10 dark:bg-green-900/40 dark:text-green-300">
           <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
           {t.eyebrow}

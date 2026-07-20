@@ -1,10 +1,14 @@
-# CLAUDE.md — Aplikácia pre tenisových trénerov
+# CLAUDE.md — P.L.A.W (Plan.Log.Analyze.Win)
 
 Tento súbor riadi prácu Claude Code na projekte. Vždy sa ním riaď.
 
 ## O projekte
 
-SaaS aplikácia pre tenisových trénerov a rodičov na plánovanie, správu a analýzu tréningov. Model 1:1 — tréner spravuje vždy len jedného aktívneho hráča. Responzívna webová aplikácia (Mobile First, použiteľná na smartfóne priamo na kurte).
+**P.L.A.W** ("Plan. Log. Analyze. Win.") — SaaS aplikácia pre tenisových trénerov a rodičov na plánovanie, správu a analýzu tréningov. Model 1:1 — tréner spravuje vždy len jedného aktívneho hráča. Responzívna webová aplikácia (Mobile First, použiteľná na smartfóne priamo na kurte).
+
+Názov appky sa v kóde nastavuje cez `Common.appTitle`/`appShortName` v `messages/{sk,en}/common.json` (PWA názov aj titulok stránky) a je hardcodovaný vo wordmarku/tagline v hlavičke `components/landing-page.tsx` — pri prípadnej ďalšej zmene názvu treba upraviť oba miesta. Doména **plaw.win** je kúpená, ale zatiaľ nepripojená na Vercel — appka beží na `*.vercel.app` URL, kým sa doména nepripojí (Vercel dashboard → Settings → Domains + DNS u registrátora).
+
+Jadrom appky sú **kódy cvičení** (`drill_codes`, pozri dátový model nižšie) — tréner si nimi personalizuje vlastné skratky cvičení, ktoré sa potom vyberajú pri zázname tréningu a presne podľa nich sa rozpadá Analytika. Landing page aj návod pre trénerov toto zámerne zdôrazňujú ako prvý krok po pridaní hráča, nie ako voliteľnú drobnosť.
 
 ## Jazyk a konvencie
 
@@ -50,9 +54,9 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
    - `status` (`played` / `not_played` / `replaced`) — review označenie, defaultne `played`
    - `replaces_drill_id` — väzba náhradného cvičenia na to, ktoré nahrádza (len informatívna, na poradie sa už nepoužíva)
    - `sort_order` (integer, not null) — **jediný zdroj poradia v zozname**, tréner ho vie meniť šípkami hore/dole (`lib/actions/session-drills.ts#moveDrill`), len kým je tréning `planned` (RLS zablokuje update pri `completed`). `addDrill` pridáva na koniec, `replaceDrill` vloží nové cvičenie hneď za nahradzované (posunie zvyšok o jedno miesto)
-6. **drill_codes** — trénerom personalizované kódy cvičení, 20 slotov na zameranie (`coach_id`, `category`, `slot` 1–20, `code`)
-   - Bez uložených riadkov pre danú kategóriu sa použije predvolený zoznam z `lib/drill-options.ts` (`DRILLS`); po prvom uložení je DB autoritatívna
-   - Editovateľné na `/drill-codes`
+6. **drill_codes** — trénerom personalizované kódy cvičení, **jadro celej appky** (pozri "O projekte" vyššie): 20 slotov na zameranie (`coach_id`, `category`, `slot` 1–20, `code`)
+   - Bez uložených riadkov pre danú kategóriu sa použije predvolený zoznam z `lib/drill-options.ts` (`DRILLS`); po prvom uložení je DB autoritatívna. Tréner tak na `/drill-codes` od začiatku vidí kompletný, hneď použiteľný zoznam — nič nemusí nastavovať, ale môže ktorýkoľvek slot premenovať na vlastnú skratku
+   - Editovateľné na `/drill-codes`. Presne tieto kódy sa ponúkajú vo výbere pri zázname cvičenia (`session_drills.drill_code`) a presne podľa nich sa rozpadá Analytika (pozri nižšie) — zmena kódu tu sa neprejaví spätne na už zaznamenaných cvičeniach
 7. **google_calendar_connections** — OAuth tokeny pripojenia trénerovho Google Kalendára (`coach_id` PK, `access_token`, `refresh_token`, `token_expires_at`, `calendar_id`)
    - Jeden riadok na trénera, spravované cez `/settings` (pripojiť/odpojiť), logika v `lib/google/calendar.ts`
 8. **player_connections** — prepojenie rodiča/manažéra/hráča s hráčom u konkrétneho trénera (`coach_id`, `player_id`, `parent_id` nullable kým nie je zaklaimované, `connect_code`, `status` `pending`/`active`/`revoked`, `connected_role` nullable text — snapshot `profiles.role` z momentu zaklaimovania, pozri nižšie prečo)
@@ -108,7 +112,8 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 - Appka podporuje slovenčinu a angličtinu (`next-intl`), **bez URL prefixov** (`/en/...` neexistuje) — jazyk sa zisťuje z cookie `NEXT_LOCALE` (`i18n/request.ts`, `getRequestConfig`), predvolená hodnota je `sk`
 - Prepínač jazyka (`components/locale-switcher.tsx`) je zobrazený raz globálne v `app/layout.tsx` (fixed pozícia v rohu), nie na každej stránke zvlášť — mení cookie cez `lib/actions/locale.ts` (`setLocale`) a spraví `router.refresh()`
-- Preklady sú v `messages/sk/<oblasť>.json` a `messages/en/<oblasť>.json`, jeden súbor na oblasť appky (`common`, `auth`, `home`, `players`, `sessions`, `drill-codes`, `analytics`, `calendar`, `settings`) — pri pridaní novej oblasti treba pridať import do `loadMessages` v `i18n/request.ts`
+- Preklady sú v `messages/sk/<oblasť>.json` a `messages/en/<oblasť>.json`, jeden súbor na oblasť appky (`common`, `auth`, `home`, `players`, `sessions`, `drill-codes`, `analytics`, `calendar`, `settings`, `parent`) — pri pridaní novej oblasti treba pridať import do `loadMessages` v `i18n/request.ts`
+- **Výnimka: landing page (`/`, len pre odhlásených) nejde cez next-intl.** Má vlastnú, appke nezávislú jazykovú vrstvu s 4 jazykmi SK/EN/DE/ES (`lib/landing-locale.ts`, `messages/{sk,en,de,es}/landing.json`, cookie `LANDING_LOCALE` nastavovaná cez `lib/actions/landing-locale.ts`/`components/landing-language-switcher.tsx`) — appka ako celok podporuje len SK/EN. Dôvod: rozšíriť `next-intl` na 4 jazyky by si vyžiadalo preklad všetkých oblastí vyššie, nielen landing page, keďže `loadMessages` v `i18n/request.ts` natiahne všetky súbory naraz pre daný locale
 - Server Components používajú `getTranslations()`/`getFormatter()` z `next-intl/server`, Client Components (`"use client"`) používajú `useTranslations()`/`useFormatter()` z `next-intl`. Server actions môžu tiež volať `getTranslations()` (funguje mimo renderovania) pre preklad chybových hlášok
 - Formátovanie dátumov ide vždy cez `format.dateTime(date, options)` (nikdy natvrdo `toLocaleString("sk-SK", ...)`), automaticky podľa aktuálneho jazyka
 - **Čo sa NEPREKLADÁ**: `lib/drill-options.ts` (kategórie cvičení, kódy cvičení, skupinové názvy ako "Forhand return") — sú to dáta/konvencie trénera, nie UI text. Kódové komentáre a interné diagnostické hlášky (napr. `console.error` v `lib/google/calendar.ts`) ostávajú po slovensky, keďže sa nikdy nezobrazujú používateľovi
@@ -145,8 +150,9 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 ### Fáza 3 — SaaS predaj
 - [x] Deploy na Vercel (produkcia beží, coach appku reálne používa na telefóne)
+- [x] Landing page (Hero, Features, Cenník, CTA) — `app/page.tsx` (logika) + `components/landing-page.tsx` (markup), zobrazuje sa na `/` len odhláseným návštevníkom. Vlastná jazyková vrstva SK/EN/DE/ES nezávislá od appky (`lib/landing-locale.ts`, cookie `LANDING_LOCALE`) — appka samotná ostáva len SK/EN (`i18n/request.ts`). Cenník je zatiaľ len "čoskoro" placeholder, keďže Stripe nie je implementovaný
+- [x] Názov appky: **P.L.A.W** (2026-07-20, predtým CourtLog, predtým bez mena) — doména `plaw.win` kúpená, zatiaľ nepripojená na Vercel
 - [ ] Stripe Checkout + Customer Portal (mesačné/ročné predplatné)
-- [ ] Landing page (Hero, Features, Pricing, CTA) — v tom istom Next.js projekte
 
 **Dôležité:** Neimplementuj funkcie z neskorších fáz, pokiaľ to nie je výslovne požadované. Architektúru však navrhuj tak, aby ich neskoršie pridanie neprekážalo (napr. `google_event_id` v sessions už teraz).
 
