@@ -219,6 +219,7 @@ export type Database = {
         Row: {
           coach_id: string
           connect_code: string
+          connected_role: string | null
           created_at: string
           id: string
           parent_id: string | null
@@ -229,6 +230,7 @@ export type Database = {
         Insert: {
           coach_id: string
           connect_code: string
+          connected_role?: string | null
           created_at?: string
           id?: string
           parent_id?: string | null
@@ -239,6 +241,7 @@ export type Database = {
         Update: {
           coach_id?: string
           connect_code?: string
+          connected_role?: string | null
           created_at?: string
           id?: string
           parent_id?: string | null

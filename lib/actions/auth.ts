@@ -47,7 +47,7 @@ export async function register(
     return { error: t("missingRegisterFields") };
   }
 
-  if (!["coach", "parent", "manager"].includes(role)) {
+  if (!["coach", "parent", "manager", "player"].includes(role)) {
     return { error: t("invalidRole") };
   }
 
