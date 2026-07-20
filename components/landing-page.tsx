@@ -49,10 +49,15 @@ export async function LandingPage() {
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
           <span className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-green-600 text-sm font-bold text-white">
-              C
+              P
             </span>
-            <span className="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-              CourtLog
+            <span className="flex flex-col leading-none">
+              <span className="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+                P.L.A.W
+              </span>
+              <span className="hidden text-[10px] font-medium uppercase tracking-wider text-zinc-500 sm:block dark:text-zinc-500">
+                Plan · Log · Analyze · Win
+              </span>
             </span>
           </span>
           <div className="flex items-center gap-3">
