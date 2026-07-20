@@ -48,6 +48,7 @@ export function RegisterForm() {
             <option value="coach">{t("roleCoach")}</option>
             <option value="parent">{t("roleParent")}</option>
             <option value="manager">{t("roleManager")}</option>
+            <option value="player">{t("rolePlayer")}</option>
           </select>
         </div>
         <div className="flex flex-col gap-1">

@@ -4,7 +4,18 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { generateConnectCode, revokeConnection } from "@/lib/actions/player-connections";
 
-type Connection = { id: string; connect_code: string; status: string } | null;
+type Connection = {
+  id: string;
+  connect_code: string;
+  status: string;
+  connected_role: string | null;
+} | null;
+
+const ROLE_LABEL_KEYS: Record<string, string> = {
+  parent: "roleParent",
+  manager: "roleManager",
+  player: "rolePlayer",
+};
 
 export function SharePlayerSection({
   playerId,
@@ -14,6 +25,7 @@ export function SharePlayerSection({
   connection: Connection;
 }) {
   const t = useTranslations("Players.share");
+  const tRole = useTranslations("Auth.register");
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
 
@@ -93,7 +105,13 @@ export function SharePlayerSection({
       {connection && connection.status === "active" && (
         <div className="flex flex-col gap-2">
           <p className="text-sm text-emerald-700 dark:text-emerald-400">
-            ✓ {t("activeStatus")}
+            ✓{" "}
+            {connection.connected_role &&
+            ROLE_LABEL_KEYS[connection.connected_role]
+              ? t("activeStatus", {
+                  role: tRole(ROLE_LABEL_KEYS[connection.connected_role]),
+                })
+              : t("activeStatusUnknown")}
           </p>
           <button
             type="button"

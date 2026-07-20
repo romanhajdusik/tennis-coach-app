@@ -1,7 +1,7 @@
 {
   "login": {
-    "heading": "Prihlásenie pre rodiča",
-    "subtitle": "Sleduj tréningy a analytiku svojho dieťaťa.",
+    "heading": "Prihlásenie",
+    "subtitle": "Sleduj tréningy a analytiku.",
     "emailLabel": "E-mail",
     "passwordLabel": "Heslo",
     "submit": "Prihlásiť sa",
@@ -11,7 +11,7 @@
   },
   "connect": {
     "heading": "Pripojiť trénera",
-    "description": "Ak si rodič / manažér hráča, zadaj kód, ktorý ti poslal tréner.",
+    "description": "Ak si rodič, manažér alebo hráč, zadaj kód, ktorý ti poslal tréner.",
     "codePlaceholder": "napr. 4GMQZKVP",
     "submit": "Pripojiť",
     "submitPending": "Pripájam..."

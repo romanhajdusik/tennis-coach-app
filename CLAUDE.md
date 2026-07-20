@@ -55,10 +55,10 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
    - Editovateľné na `/drill-codes`
 7. **google_calendar_connections** — OAuth tokeny pripojenia trénerovho Google Kalendára (`coach_id` PK, `access_token`, `refresh_token`, `token_expires_at`, `calendar_id`)
    - Jeden riadok na trénera, spravované cez `/settings` (pripojiť/odpojiť), logika v `lib/google/calendar.ts`
-8. **player_connections** — prepojenie rodiča/manažéra s hráčom u konkrétneho trénera (`coach_id`, `player_id`, `parent_id` nullable kým nie je zaklaimované, `connect_code`, `status` `pending`/`active`/`revoked`)
-   - `CREATE UNIQUE INDEX one_active_connection_per_parent ON player_connections (parent_id) WHERE status = 'active'` — jeden rodič = jedno aktívne prepojenie naraz, nový kód automaticky nahradí staré
-   - RPC `claim_player_connection(p_code)` (`security definer`) — rodič zadá kód, funkcia nájde `pending` riadok, zruší predošlé aktívne prepojenie toho istého rodiča a aktivuje nové
-9. **parent_session_records** / **parent_session_drill_records** — **trvalá kópia** tréningov pre pripojeného rodiča, nie live pohľad (pozri sekciu "Zdieľanie s rodičom" nižšie prečo)
+8. **player_connections** — prepojenie rodiča/manažéra/hráča s hráčom u konkrétneho trénera (`coach_id`, `player_id`, `parent_id` nullable kým nie je zaklaimované, `connect_code`, `status` `pending`/`active`/`revoked`, `connected_role` nullable text — snapshot `profiles.role` z momentu zaklaimovania, pozri nižšie prečo)
+   - `CREATE UNIQUE INDEX one_active_connection_per_parent ON player_connections (parent_id) WHERE status = 'active'` — jeden rodič/manažér/hráč = jedno aktívne prepojenie naraz, nový kód automaticky nahradí staré
+   - RPC `claim_player_connection(p_code)` (`security definer`) — rodič/manažér/hráč zadá kód, funkcia nájde `pending` riadok, zruší predošlé aktívne prepojenie toho istého používateľa, aktivuje nové a zároveň doň nasnímne `connected_role` (trénerova appka nemá RLS prístup k cudziemu `profiles` riadku, aby si rolu dočítala joinom, preto kópia priamo v RPC — rovnaký princíp ako `parent_session_records`)
+9. **parent_session_records** / **parent_session_drill_records** — **trvalá kópia** tréningov pre pripojeného rodiča/manažéra/hráča, nie live pohľad (pozri sekciu "Zdieľanie s rodičom/manažérom/hráčom" nižšie prečo)
 
 ### Bezpečnostné pravidlá (povinné)
 
@@ -91,10 +91,11 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - Ak tréner nemá pripojený kalendár alebo Google API zlyhá, tréning sa vytvorí bez neho — kalendárová synchronizácia nikdy neblokuje základné plánovanie
 - **Zatiaľ len jednosmerne** (app → kalendár): úprava/zrušenie tréningu sa do Google Kalendára nepremieta, kým appka nemá UI na editáciu naplánovaného tréningu. Obojsmerná synchronizácia (webhooks) je neskoršia fáza.
 
-## Zdieľanie s rodičom/manažérom
+## Zdieľanie s rodičom/manažérom/hráčom
 
-- Rodič/manažér má **vlastný, oddelený vstupný bod** appky — `/parent/login` (nie ten istý `/login` ako tréner), aj keď ide o rovnaký Supabase Auth a rovnaký kód/deploy. Po registrácii s rolou `parent`/`manager` appka presmeruje na `/parent` namiesto `/`.
-- Tréner vygeneruje kód pre aktívneho hráča na `/players` (sekcia "Zdieľať s rodičom", `lib/actions/player-connections.ts#generateConnectCode`) a pošle ho rodičovi mimo appky (SMS a pod.). Rodič ho raz zadá na `/parent` (`claimConnection` → RPC `claim_player_connection`).
+- Rola `player` (hráč) sa pridala 2026-07-18 k `parent`/`manager` — **rovnaké oprávnenia ako oni** (rola je len UI štítok, žiadna rozdielna logika), takže hráč sa môže prihlásiť sám za seba a sledovať vlastné tréningy. Všetko nižšie v tejto sekcii platí pre všetky tri role rovnako, pokiaľ nie je uvedené inak.
+- Rodič/manažér/hráč má **vlastný, oddelený vstupný bod** appky — `/parent/login` (nie ten istý `/login` ako tréner), aj keď ide o rovnaký Supabase Auth a rovnaký kód/deploy. Po registrácii s rolou `parent`/`manager`/`player` appka presmeruje na `/parent` namiesto `/` (`app/page.tsx` a `register()` v `lib/actions/auth.ts` kontrolujú len `role !== "coach"`, takže pridanie novej neterénerskej roly nevyžadovalo zmenu redirect logiky).
+- Tréner vygeneruje kód pre aktívneho hráča na `/players` (sekcia "Zdieľať prístup", `lib/actions/player-connections.ts#generateConnectCode`) a pošle ho rodičovi/manažérovi/hráčovi mimo appky (SMS a pod.). Ten ho raz zadá na `/parent` (`claimConnection` → RPC `claim_player_connection`). Tréner potom na `/players` vidí presnú rolu pripojeného účtu (`share-player-section.tsx`, "Pripojený: Rodič/Manažér/Hráč" — čerpá z `connected_role`, staršie prepojenia bez snapshotu zobrazia neutrálny fallback "Pripojené").
 - **Kľúčové architektonické rozhodnutie: appka dáta pre rodiča priebežne KOPÍRUJE, nezobrazuje ich cez live RLS pohľad nad `sessions`/`session_drills`.** Dôvod: keď tréner zmení aktívneho hráča, ukončí spoluprácu, alebo tréning/účet zmaže, rodič **nesmie prísť o doteraz nazbieranú históriu**. `AFTER INSERT OR UPDATE` triggery (`sync_session_to_parent`, `sync_drill_to_parent`) upsertujú zmeny do `parent_session_records`/`parent_session_drill_records`, len ak pre daného hráča existuje aktívne prepojenie — appka o tejto synchronizácii vôbec nemusí vedieť, funguje pre všetky existujúce cesty zápisu (`createSession`, `updateSessionReview`, `completeSession`, `addDrill`, `replaceDrill`, `setDrillPlayed`).
   - **DELETE sa zámerne nepropaguje** (napr. "Zrušiť tréning") — kópia u rodiča ostáva aj po zmazaní pôvodnej session. `parent_session_records.source_session_id` je zámerne **bez foreign key** na `sessions`, aby kópia prežila aj zmazanie celého trénerovho účtu.
   - Pri `claim_player_connection` sa jednorazovo spätne doplní aj existujúca história hráča (nielen budúce zmeny) — rodič po pripojení hneď vidí, čo sa dovtedy odohralo.

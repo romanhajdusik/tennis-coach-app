@@ -13,14 +13,15 @@
     "submitPending": "Adding..."
   },
   "share": {
-    "heading": "Share with a parent",
-    "description": "Generate a code and send it to the parent (SMS, WhatsApp...). They enter it once in their own app and will see this player's sessions and analytics.",
+    "heading": "Share access",
+    "description": "Generate a code and send it to the parent, manager, or player (SMS, WhatsApp...). They enter it once in their own app and will see this player's sessions and analytics.",
     "generateButton": "Generate code",
-    "codeLabel": "Code for the parent",
+    "codeLabel": "Access code",
     "copyButton": "Copy",
     "copiedButton": "Copied!",
-    "pendingStatus": "Waiting for the parent to enter the code",
-    "activeStatus": "Parent is connected",
+    "pendingStatus": "Waiting for the code to be entered",
+    "activeStatus": "Connected: {role}",
+    "activeStatusUnknown": "Connected",
     "revokeButton": "Stop sharing"
   },
   "errors": {

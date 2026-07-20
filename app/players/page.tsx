@@ -31,7 +31,7 @@ export default async function PlayersPage() {
   const { data: connection } = activePlayer
     ? await supabase
         .from("player_connections")
-        .select("id, connect_code, status")
+        .select("id, connect_code, status, connected_role")
         .eq("coach_id", user.id)
         .eq("player_id", activePlayer.id)
         .in("status", ["pending", "active"])

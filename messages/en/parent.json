@@ -1,7 +1,7 @@
 {
   "login": {
-    "heading": "Parent sign in",
-    "subtitle": "Track your child's sessions and analytics.",
+    "heading": "Sign in",
+    "subtitle": "Track sessions and analytics.",
     "emailLabel": "Email",
     "passwordLabel": "Password",
     "submit": "Sign in",
@@ -11,7 +11,7 @@
   },
   "connect": {
     "heading": "Connect a coach",
-    "description": "If you're the player's parent / manager, enter the code your coach sent you.",
+    "description": "If you're the player's parent, manager, or the player themselves, enter the code your coach sent you.",
     "codePlaceholder": "e.g. 4GMQZKVP",
     "submit": "Connect",
     "submitPending": "Connecting..."

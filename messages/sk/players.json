@@ -13,14 +13,15 @@
     "submitPending": "Pridávam..."
   },
   "share": {
-    "heading": "Zdieľať s rodičom",
-    "description": "Vygeneruj kód a pošli ho rodičovi (SMS, WhatsApp...). Rodič ho raz zadá vo svojej appke a uvidí tréningy a analytiku tohto hráča.",
+    "heading": "Zdieľať prístup",
+    "description": "Vygeneruj kód a pošli ho rodičovi, manažérovi alebo hráčovi (SMS, WhatsApp...). Zadá si ho raz vo svojej appke a uvidí tréningy a analytiku tohto hráča.",
     "generateButton": "Vygenerovať kód",
-    "codeLabel": "Kód pre rodiča",
+    "codeLabel": "Prístupový kód",
     "copyButton": "Kopírovať",
     "copiedButton": "Skopírované!",
-    "pendingStatus": "Čaká, kým rodič kód zadá",
-    "activeStatus": "Rodič je pripojený",
+    "pendingStatus": "Čaká, kým sa kód zadá",
+    "activeStatus": "Pripojený: {role}",
+    "activeStatusUnknown": "Pripojené",
     "revokeButton": "Zrušiť zdieľanie"
   },
   "errors": {
