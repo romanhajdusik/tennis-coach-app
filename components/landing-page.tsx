@@ -50,7 +50,7 @@ export async function LandingPage() {
           <span className="rounded-md bg-[#eef0f0] p-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/plaw-logo.png"
+              src="/plaw-logo.webp"
               alt="P.L.A.W — Plan. Log. Analyze. Win."
               className="block h-7 w-auto"
             />
@@ -71,7 +71,7 @@ export async function LandingPage() {
         <span className="rounded-2xl border border-zinc-200 bg-[#eef0f0] p-3 shadow-sm dark:border-zinc-800">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/plaw-logo.png"
+            src="/plaw-logo.webp"
             alt="P.L.A.W — Plan. Log. Analyze. Win. Timing for progress. plaw.win"
             className="block h-auto w-full max-w-[260px] sm:max-w-[340px]"
           />
