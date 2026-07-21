@@ -11,6 +11,7 @@
     "calendarWarning": "This practice overlaps with another event in your Google Calendar.",
     "totalDuration": "Total duration: {minutes} min",
     "drillsHeading": "Drills",
+    "locked": "Locked",
     "noDrills": "No drills yet."
   },
   "newForm": {

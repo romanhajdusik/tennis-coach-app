@@ -110,9 +110,16 @@ export default async function SessionDetailPage({
       </div>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          {t("drillsHeading")}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            {t("drillsHeading")}
+          </h2>
+          {!canEdit && (
+            <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-950 dark:text-red-300">
+              {t("locked")}
+            </span>
+          )}
+        </div>
         {orderedDrills.length === 0 ? (
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {t("noDrills")}

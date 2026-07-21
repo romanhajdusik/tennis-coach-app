@@ -17,6 +17,13 @@ const STATUS_STYLES: Record<string, string> = {
     "border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950",
 };
 
+// Rovnaký princíp ako v app/calendar/page.tsx — naplánovaný zelenou,
+// dokončený červenou.
+const SESSION_STATUS_TEXT_CLASSES: Record<string, string> = {
+  planned: "text-emerald-700 dark:text-emerald-400",
+  completed: "text-red-700 dark:text-red-400",
+};
+
 export default async function ParentSessionDetailPage({
   params,
 }: {
@@ -86,7 +93,12 @@ export default async function ParentSessionDetailPage({
                 })
               : tSessions("noDate")}
           </p>
-          <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <span
+            className={`text-xs font-medium ${
+              SESSION_STATUS_TEXT_CLASSES[record.status] ??
+              "text-zinc-500 dark:text-zinc-400"
+            }`}
+          >
             {tCommon(`status.${record.status}`)}
           </span>
         </div>
