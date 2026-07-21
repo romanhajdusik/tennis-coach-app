@@ -9,8 +9,9 @@ import { LandingPage, getLandingLocale } from "@/components/landing-page";
 import { loadLandingMessages } from "@/lib/landing-locale";
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
-// má defaultne robots noindex (appka je inak celá za prihlásením), tu ho
-// zámerne prepisujeme, aby ju vedeli nájsť vyhľadávače. Landing page má
+// má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
+// zámerne zatiaľ mimo vyhľadávačov aj na vlastnej doméne (pred verejným
+// spustením) — až pri ostrom launchi zmeniť na index:true. Landing page má
 // vlastnú jazykovú vrstvu (SK/EN/DE/ES, lib/landing-locale.ts), nie
 // next-intl "Landing" namespace — metadata preto čítajú z rovnakého zdroja.
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t.heroTitle,
     description: t.heroSubtitle,
-    robots: { index: true, follow: true },
+    robots: { index: false, follow: false },
   };
 }
 
