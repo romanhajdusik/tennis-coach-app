@@ -12,7 +12,7 @@
     },
     {
       "title": "Záznam a review",
-      "description": "Po tréningu doplň reálny čas a poznámky, jednotlivé cvičenia označ ako neodohrané alebo nahradené — presný priebeh tréningu ostáva zachovaný."
+      "description": "Po tréningu doplň reálny čas a poznámky, jednotlivé cvičenia označ ako neodohrané alebo nahradené — presný priebeh tréningu ostáva zachovaný. Poradie cvičení vieš kedykoľvek zmeniť šípkami hore/dole, kým je tréning ešte len naplánovaný."
     },
     {
       "title": "Vlastné kódy cvičení",
@@ -23,8 +23,8 @@
       "description": "Prehľad podľa týždňa, mesiaca, kvartálu aj roka s porovnaním voči minulej sezóne, rozpad podľa kódu cvičenia aj charakteru úderu."
     },
     {
-      "title": "Zdieľanie s rodičom",
-      "description": "Rodič alebo manažér hráča dostane vlastný prístup s históriou tréningov — nič netreba posielať ručne."
+      "title": "Zdieľanie s hráčom, rodičom a manažérom",
+      "description": "Hráč, rodič alebo manažér dostane vlastný prístup s históriou tréningov — nič netreba posielať ručne."
     },
     {
       "title": "Postavené pre telefón",

@@ -12,7 +12,7 @@
     },
     {
       "title": "Erfassung und Review",
-      "description": "Trage nach dem Training die tatsächliche Zeit und Notizen ein und markiere einzelne Übungen als ausgefallen oder ersetzt — der genaue Ablauf bleibt dokumentiert."
+      "description": "Trage nach dem Training die tatsächliche Zeit und Notizen ein und markiere einzelne Übungen als ausgefallen oder ersetzt — der genaue Ablauf bleibt dokumentiert. Die Reihenfolge der Übungen lässt sich jederzeit mit den Pfeiltasten ändern, solange das Training noch geplant ist."
     },
     {
       "title": "Eigene Übungscodes",
@@ -23,8 +23,8 @@
       "description": "Auswertung nach Woche, Monat, Quartal und Jahr im Vergleich zur Vorsaison, aufgeschlüsselt nach Übungscode und Schlagcharakter."
     },
     {
-      "title": "Teilen mit den Eltern",
-      "description": "Eltern oder Manager eines Spielers erhalten einen eigenen Zugang zur Trainingshistorie — nichts muss manuell weitergeleitet werden."
+      "title": "Teilen mit Spielern, Eltern und Managern",
+      "description": "Spieler, Eltern oder Manager erhalten einen eigenen Zugang zur Trainingshistorie — nichts muss manuell weitergeleitet werden."
     },
     {
       "title": "Für unterwegs gebaut",

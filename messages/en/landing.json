@@ -1,18 +1,18 @@
 {
   "eyebrow": "For tennis coaches",
-  "heroTitle": "Training sessions under control. Right there on the court.",
-  "heroSubtitle": "P.L.A.W helps you plan, log and analyze every training session from your phone — no paper, no spreadsheets.",
+  "heroTitle": "Training practices under control. Right there on the court.",
+  "heroSubtitle": "P.L.A.W helps you plan, log and analyze every training practice from your phone — no paper, no spreadsheets.",
   "ctaPrimary": "Try it for free",
   "ctaSecondary": "Sign in",
   "featuresTitle": "Everything you need, on the court and off it",
   "features": [
     {
-      "title": "Session planning",
-      "description": "Plan a session in seconds, including duration and focus. If you've connected Google Calendar, the event gets added automatically."
+      "title": "Practice planning",
+      "description": "Plan a practice in seconds, including duration and focus. If you've connected Google Calendar, the event gets added automatically."
     },
     {
       "title": "Logging and review",
-      "description": "After the session, add the actual time and notes, and mark individual drills as skipped or swapped — the exact course of the session stays on record."
+      "description": "After the practice, add the actual time and notes, and mark individual drills as skipped or swapped — the exact course of the practice stays on record. You can reorder drills anytime with the up/down arrows, as long as the practice is still planned."
     },
     {
       "title": "Your own drill codes",
@@ -23,8 +23,8 @@
       "description": "Breakdowns by week, month, quarter and year with a comparison to last season, split by drill code and by stroke character."
     },
     {
-      "title": "Sharing with parents",
-      "description": "A player's parent or manager gets their own access to the training history — nothing to forward manually."
+      "title": "Sharing with players, parents and managers",
+      "description": "A player, their parent or their manager gets their own access to the training history — nothing to forward manually."
     },
     {
       "title": "Built for the phone",
@@ -36,7 +36,7 @@
   "pricingText": "We're working on simple monthly and annual plans. Until then, registration is free.",
   "pricingCta": "Sign up for free",
   "finalCtaTitle": "Get ready for the season with a clear overview",
-  "finalCtaSubtitle": "Create an account in a couple of minutes and plan your first session today.",
+  "finalCtaSubtitle": "Create an account in a couple of minutes and plan your first practice today.",
   "finalCtaButton": "Create account",
   "footerTagline": "P.L.A.W — a training log for tennis coaches"
 }

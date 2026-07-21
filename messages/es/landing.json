@@ -12,7 +12,7 @@
     },
     {
       "title": "Registro y revisión",
-      "description": "Después del entrenamiento, añade el tiempo real y notas, y marca cada ejercicio como no realizado o sustituido — el desarrollo exacto queda registrado."
+      "description": "Después del entrenamiento, añade el tiempo real y notas, y marca cada ejercicio como no realizado o sustituido — el desarrollo exacto queda registrado. Puedes reordenar los ejercicios en cualquier momento con las flechas arriba/abajo, mientras el entrenamiento siga planificado."
     },
     {
       "title": "Códigos de ejercicios propios",
@@ -23,8 +23,8 @@
       "description": "Resumen por semana, mes, trimestre y año con comparación respecto a la temporada anterior, desglosado por código de ejercicio y carácter del golpe."
     },
     {
-      "title": "Compartir con los padres",
-      "description": "El padre o representante del jugador obtiene su propio acceso al historial de entrenamientos — nada que reenviar manualmente."
+      "title": "Compartir con jugadores, padres y representantes",
+      "description": "El jugador, su padre/madre o su representante obtiene su propio acceso al historial de entrenamientos — nada que reenviar manualmente."
     },
     {
       "title": "Pensada para el móvil",
