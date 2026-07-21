@@ -14,7 +14,7 @@
   },
   "share": {
     "heading": "Zdieľať prístup",
-    "description": "Vygeneruj kód a pošli ho rodičovi, manažérovi alebo hráčovi (SMS, WhatsApp...). Zadá si ho raz vo svojej appke a uvidí tréningy a analytiku tohto hráča.",
+    "description": "Vygeneruj kód a pošli ho hráčovi, rodičovi alebo manažérovi (SMS, WhatsApp...). Zadá si ho raz vo svojej appke a uvidí tréningy a analytiku tohto hráča.",
     "generateButton": "Vygenerovať kód",
     "codeLabel": "Prístupový kód",
     "copyButton": "Kopírovať",

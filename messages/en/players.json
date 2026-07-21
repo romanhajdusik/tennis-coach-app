@@ -14,7 +14,7 @@
   },
   "share": {
     "heading": "Share access",
-    "description": "Generate a code and send it to the parent, manager, or player (SMS, WhatsApp...). They enter it once in their own app and will see this player's sessions and analytics.",
+    "description": "Generate a code and send it to the player, parent, or manager (SMS, WhatsApp...). They enter it once in their own app and will see this player's sessions and analytics.",
     "generateButton": "Generate code",
     "codeLabel": "Access code",
     "copyButton": "Copy",
