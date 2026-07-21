@@ -25,6 +25,24 @@ function monthParam(year: number, monthIndex: number) {
   return `${year}-${pad(monthIndex + 1)}`;
 }
 
+// Naplánované tréningy zelenou, dokončené červenou — ak má deň oboje,
+// naplánovaný (ešte nadchádzajúci) vyhráva, nech si ho tréner nepremkne.
+function dayStatus(daySessions: { status: string }[]) {
+  if (daySessions.some((session) => session.status === "planned")) return "planned";
+  if (daySessions.some((session) => session.status === "completed")) return "completed";
+  return null;
+}
+
+const DAY_DOT_CLASSES: Record<string, string> = {
+  planned: "bg-emerald-600 font-medium text-white dark:bg-emerald-500 dark:text-emerald-950",
+  completed: "bg-red-600 font-medium text-white dark:bg-red-500 dark:text-red-950",
+};
+
+const STATUS_TEXT_CLASSES: Record<string, string> = {
+  planned: "text-emerald-700 dark:text-emerald-400",
+  completed: "text-red-700 dark:text-red-400",
+};
+
 export default async function CalendarPage({
   searchParams,
 }: {
@@ -151,13 +169,14 @@ export default async function CalendarPage({
               const key = toDayKey(new Date(year, monthIndex, dayNumber));
               const daySessions = sessionsByDay.get(key) ?? [];
               const hasSessions = daySessions.length > 0;
+              const status = dayStatus(daySessions);
               return (
                 <a
                   key={key}
                   href={hasSessions ? `#day-${key}` : undefined}
                   className={`flex flex-col items-center gap-0.5 rounded-lg py-1.5 text-sm ${
-                    hasSessions
-                      ? "bg-zinc-900 font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+                    status
+                      ? DAY_DOT_CLASSES[status]
                       : "text-zinc-700 dark:text-zinc-300"
                   }`}
                 >
@@ -189,7 +208,12 @@ export default async function CalendarPage({
                           timeStyle: "short",
                         })}
                       </p>
-                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                      <span
+                        className={`text-xs font-medium ${
+                          STATUS_TEXT_CLASSES[session.status] ??
+                          "text-zinc-500 dark:text-zinc-400"
+                        }`}
+                      >
                         {tCommon(`status.${session.status}`)}
                       </span>
                     </Link>
