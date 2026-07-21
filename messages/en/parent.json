@@ -1,7 +1,7 @@
 {
   "login": {
     "heading": "Sign in",
-    "subtitle": "Track sessions and analytics.",
+    "subtitle": "Track practices and analytics.",
     "emailLabel": "Email",
     "passwordLabel": "Password",
     "submit": "Sign in",
@@ -22,8 +22,8 @@
     "connectedTo": "Connected player: {name}",
     "calendar": "Calendar",
     "analytics": "Analytics",
-    "sessionsHeading": "Sessions",
-    "noSessions": "No sessions yet."
+    "sessionsHeading": "Practices",
+    "noSessions": "No practices yet."
   },
   "calendar": {
     "back": "Back",

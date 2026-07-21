@@ -1,9 +1,9 @@
 {
   "title": "Calendar",
-  "noActivePlayer": "First <link>set an active player</link>, then you'll see their sessions in the calendar.",
+  "noActivePlayer": "First <link>set an active player</link>, then you'll see their practices in the calendar.",
   "prev": "← Prev",
   "next": "Next →",
   "weekdays": ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-  "monthSessionsHeading": "Sessions this month",
-  "noSessionsInMonth": "No sessions this month."
+  "monthSessionsHeading": "Practices this month",
+  "noSessionsInMonth": "No practices this month."
 }

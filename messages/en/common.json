@@ -2,7 +2,7 @@
   "back": "Back",
   "appTitle": "P.L.A.W",
   "appShortName": "P.L.A.W",
-  "appDescription": "An app for tennis coaches to plan and analyze training sessions",
+  "appDescription": "An app for tennis coaches to plan and analyze training practices",
   "status": {
     "planned": "Planned",
     "completed": "Completed",
