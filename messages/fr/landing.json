@@ -1,0 +1,42 @@
+{
+  "eyebrow": "Pour les entraîneurs de tennis",
+  "heroTitle": "Les entraînements sous contrôle. Directement sur le court.",
+  "heroSubtitle": "P.L.A.W vous aide à planifier, enregistrer et analyser chaque entraînement depuis votre téléphone — sans papier ni tableurs.",
+  "ctaPrimary": "Essayer gratuitement",
+  "ctaSecondary": "Se connecter",
+  "featuresTitle": "Tout ce qu'il vous faut, sur le court et en dehors",
+  "features": [
+    {
+      "title": "Planification des entraînements",
+      "description": "Planifiez un entraînement en quelques secondes, avec durée et thème inclus. Si Google Agenda est connecté, l'événement y est ajouté automatiquement."
+    },
+    {
+      "title": "Suivi et bilan",
+      "description": "Après l'entraînement, ajoutez l'heure réelle et des notes, et marquez chaque exercice comme non joué ou remplacé — le déroulé exact reste enregistré. Vous pouvez à tout moment réordonner les exercices avec les flèches haut/bas, tant que l'entraînement est encore planifié."
+    },
+    {
+      "title": "Vos propres codes d'exercices",
+      "description": "20 emplacements par thème, selon votre propre système d'abréviations — pas besoin de vous adapter à la terminologie de quelqu'un d'autre."
+    },
+    {
+      "title": "Analyses et graphiques",
+      "description": "Répartition par semaine, mois, trimestre et année avec comparaison à la saison précédente, par code d'exercice et par caractère du coup."
+    },
+    {
+      "title": "Partage avec le joueur, le parent et le manager",
+      "description": "Le joueur, son parent ou son manager obtient son propre accès à l'historique des entraînements — rien à transférer manuellement."
+    },
+    {
+      "title": "Conçu pour le téléphone",
+      "description": "L'application est conçue Mobile First, pour être utilisée confortablement directement sur le court, pas seulement à un bureau."
+    }
+  ],
+  "pricingTitle": "Tarifs",
+  "pricingBadge": "Bientôt disponible",
+  "pricingText": "Nous préparons des formules mensuelles et annuelles simples. En attendant, l'inscription est gratuite.",
+  "pricingCta": "S'inscrire gratuitement",
+  "finalCtaTitle": "Préparez la saison en toute clarté",
+  "finalCtaSubtitle": "Créez un compte en quelques minutes et planifiez votre premier entraînement dès aujourd'hui.",
+  "finalCtaButton": "Créer un compte",
+  "footerTagline": "P.L.A.W — un journal d'entraînement pour les entraîneurs de tennis"
+}
