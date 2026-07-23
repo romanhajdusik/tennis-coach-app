@@ -6,7 +6,7 @@ Tento súbor riadi prácu Claude Code na projekte. Vždy sa ním riaď.
 
 **P.L.A.W** ("Plan. Log. Analyze. Win.") — SaaS aplikácia pre tenisových trénerov a rodičov na plánovanie, správu a analýzu tréningov. Model 1:1 — tréner spravuje vždy len jedného aktívneho hráča. Responzívna webová aplikácia (Mobile First, použiteľná na smartfóne priamo na kurte).
 
-Názov appky sa v kóde nastavuje cez `Common.appTitle`/`appShortName` v `messages/{sk,en}/common.json` (PWA názov aj titulok stránky) a je hardcodovaný vo wordmarku/tagline v hlavičke `components/landing-page.tsx` — pri prípadnej ďalšej zmene názvu treba upraviť oba miesta. Doména **plaw.win** je kúpená, ale zatiaľ nepripojená na Vercel — appka beží na `*.vercel.app` URL, kým sa doména nepripojí (Vercel dashboard → Settings → Domains + DNS u registrátora).
+Názov appky sa v kóde nastavuje cez `Common.appTitle`/`appShortName` v `messages/{sk,en}/common.json` (PWA názov aj titulok stránky) a je hardcodovaný vo wordmarku/tagline v hlavičke `components/landing-page.tsx` — pri prípadnej ďalšej zmene názvu treba upraviť oba miesta. Doména **plaw.win** je od 2026-07-23 pripojená na Vercel a funguje (`plaw.win`/`www.plaw.win`, DNS spravovaný cez Websupport.sk). Appka beží súbežne aj na `*.vercel.app` URL. Landing page má zámerne `robots: noindex` (viď nižšie) — appka je teda funkčná, ale zatiaľ mimo vyhľadávačov, kým nebude pripravená na verejné spustenie.
 
 Jadrom appky sú **kódy cvičení** (`drill_codes`, pozri dátový model nižšie) — tréner si nimi personalizuje vlastné skratky cvičení, ktoré sa potom vyberajú pri zázname tréningu a presne podľa nich sa rozpadá Analytika. Landing page aj návod pre trénerov toto zámerne zdôrazňujú ako prvý krok po pridaní hráča, nie ako voliteľnú drobnosť.
 
@@ -151,7 +151,7 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 ### Fáza 3 — SaaS predaj
 - [x] Deploy na Vercel (produkcia beží, coach appku reálne používa na telefóne)
 - [x] Landing page (Hero, Features, Cenník, CTA) — `app/page.tsx` (logika) + `components/landing-page.tsx` (markup), zobrazuje sa na `/` len odhláseným návštevníkom. Vlastná jazyková vrstva SK/EN/DE/ES nezávislá od appky (`lib/landing-locale.ts`, cookie `LANDING_LOCALE`) — appka samotná ostáva len SK/EN (`i18n/request.ts`). Cenník je zatiaľ len "čoskoro" placeholder, keďže Stripe nie je implementovaný
-- [x] Názov appky: **P.L.A.W** (2026-07-20, predtým CourtLog, predtým bez mena) — doména `plaw.win` kúpená, zatiaľ nepripojená na Vercel
+- [x] Názov appky: **P.L.A.W** (2026-07-20, predtým CourtLog, predtým bez mena) — doména `plaw.win` kúpená a od 2026-07-23 pripojená na Vercel (funguje popri `*.vercel.app`), zatiaľ zámerne mimo vyhľadávačov (`robots: noindex` na landing page, kým appka nie je pripravená na verejný launch)
 - [ ] Stripe Checkout + Customer Portal (mesačné/ročné predplatné)
 
 **Dôležité:** Neimplementuj funkcie z neskorších fáz, pokiaľ to nie je výslovne požadované. Architektúru však navrhuj tak, aby ich neskoršie pridanie neprekážalo (napr. `google_event_id` v sessions už teraz).
