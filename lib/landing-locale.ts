@@ -1,8 +1,8 @@
-// Landing page má vlastnú, samostatnú jazykovú vrstvu (SK/EN/DE/ES),
+// Landing page má vlastnú, samostatnú jazykovú vrstvu (SK/EN/DE/ES/RU),
 // oddelenú od appky (i18n/request.ts, len SK/EN). Appka ako celok sa
-// neprekladá do nemčiny/španielčiny — len táto verejná marketingová
+// neprekladá do nemčiny/španielčiny/ruštiny — len táto verejná marketingová
 // stránka, preto vlastný cookie a vlastný loader mimo next-intl.
-export const LANDING_LOCALES = ["sk", "en", "de", "es"] as const;
+export const LANDING_LOCALES = ["sk", "en", "de", "es", "ru"] as const;
 export type LandingLocale = (typeof LANDING_LOCALES)[number];
 export const defaultLandingLocale: LandingLocale = "sk";
 
