@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { HomeButton } from "@/components/home-button";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { TimezoneDetector } from "@/components/timezone-detector";
 import "./globals.css";
@@ -40,6 +41,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
           {children}
+          <HomeButton />
           <LocaleSwitcher />
           <TimezoneDetector />
         </NextIntlClientProvider>
