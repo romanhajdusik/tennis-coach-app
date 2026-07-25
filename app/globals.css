@@ -1,54 +1,48 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ---------------------------------------------------------------------------
+   Jednotná tmavá téma — tmavosivé pozadie + antuková (tehlová) primárna farba.
+   Appka má zámerne len jeden vzhľad, žiadny svetlý režim (color-scheme: dark).
+   Odtiene sa menia na jednom mieste tu, komponenty používajú sémantické triedy
+   (bg-background, bg-surface, bg-primary, text-foreground, text-muted, ...).
+--------------------------------------------------------------------------- */
+@theme {
+  --color-background: #1e1e21; /* pozadie stránky (tmavosivá) */
+  --color-surface: #27262b; /* karty, panely, vyvýšené plochy */
+  --color-input: #191819; /* vnorené polia (inputy) */
+  --color-border: #3a383f; /* orámovania, oddeľovače */
+  --color-foreground: #ededee; /* primárny text */
+  --color-muted: #a3a2aa; /* sekundárny/tlmený text */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-primary: #a24236; /* antuková tehlová — tlačidlá, aktívne prvky */
+  --color-primary-hover: #b64e40; /* hover stav primárnej */
+  --color-primary-foreground: #fdeee9; /* text na primárnej ploche */
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-background);
+  color: var(--color-foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Paleta pre dátové vizualizácie (Recharts grafy v analytike) — jeden zdroj
-   pravdy pre všetky grafové komponenty (napr. CategoryCharts,
-   CategoryShareChart). Hodnoty overené dataviz palette validátorom, nemeniť
-   bez opätovnej validácie. */
+   pravdy pre všetky grafové komponenty (CategoryCharts, CategoryShareChart).
+   Appka je vždy tmavá, takže jedna sada hodnôt (dark). --surface zodpovedá
+   farbe karty, aby oddeľovacie okraje výsekov splynuli s pozadím karty. */
 .viz-root {
-  --surface: #fcfcfb;
-  --series-1: #2a78d6;
-  --series-2: #1baf7a;
-  --series-3: #eda100;
+  --surface: #27262b;
+  --series-1: #3987e5;
+  --series-2: #199e70;
+  --series-3: #c98500;
   --series-4: #008300;
-  --series-5: #4a3aa7;
-  --series-6: #e34948;
-  --series-other: #c3c2b7;
-}
-
-@media (prefers-color-scheme: dark) {
-  .viz-root {
-    --surface: #1a1a19;
-    --series-1: #3987e5;
-    --series-2: #199e70;
-    --series-3: #c98500;
-    --series-4: #008300;
-    --series-5: #9085e9;
-    --series-6: #e66767;
-    --series-other: #52514e;
-  }
+  --series-5: #9085e9;
+  --series-6: #e66767;
+  --series-other: #52514e;
 }

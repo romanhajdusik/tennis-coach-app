@@ -8,13 +8,13 @@ export default async function RegisterPage() {
 
   if (!registrationEnabled) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-zinc-50 px-4 text-center dark:bg-black">
-        <p className="max-w-sm text-sm text-zinc-600 dark:text-zinc-400">
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background px-4 text-center ">
+        <p className="max-w-sm text-sm text-muted ">
           {t("closed")}
         </p>
         <Link
           href="/login"
-          className="font-medium text-zinc-900 underline dark:text-zinc-50"
+          className="font-medium text-foreground underline "
         >
           {t("loginLink")}
         </Link>
@@ -23,7 +23,7 @@ export default async function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-black">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-4 ">
       <RegisterForm />
     </div>
   );

@@ -109,11 +109,11 @@ export function AddDrillForm({
       {lastAdded && (
         <div
           ref={confirmationRef}
-          className={`flex items-center justify-between rounded-xl border border-emerald-300 bg-emerald-50 p-3 text-sm transition-shadow duration-300 dark:border-emerald-800 dark:bg-emerald-950 ${
-            justConfirmed ? "ring-2 ring-emerald-400 dark:ring-emerald-600" : ""
+          className={`flex items-center justify-between rounded-xl border p-3 text-sm transition-shadow duration-300 border-emerald-800 bg-emerald-950 ${
+            justConfirmed ? "ring-2 ring-emerald-600" : ""
           }`}
         >
-          <span className="text-emerald-800 dark:text-emerald-200">
+          <span className=" text-emerald-200">
             <span aria-hidden="true">✓</span> {t("addedPrefix")}{" "}
             {lastAdded.category} · {lastAdded.drillCode}
           </span>
@@ -121,7 +121,7 @@ export function AddDrillForm({
             type="button"
             onClick={handleUndo}
             disabled={isRemoving}
-            className="rounded-lg border border-emerald-400 px-3 py-1 text-xs font-medium text-emerald-800 disabled:opacity-50 dark:border-emerald-700 dark:text-emerald-200"
+            className="rounded-lg border px-3 py-1 text-xs font-medium disabled:opacity-50 border-emerald-700 text-emerald-200"
           >
             {t("undo")}
           </button>
@@ -131,16 +131,16 @@ export function AddDrillForm({
       <form
         ref={formRef}
         action={formAction}
-        className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+        className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 "
       >
-        <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-sm font-medium text-muted ">
           {t("heading")}
         </h2>
 
         <div className="flex flex-col gap-1">
           <label
             htmlFor="category"
-            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="text-sm font-medium text-foreground "
           >
             {t("categoryLabel")}
           </label>
@@ -149,7 +149,7 @@ export function AddDrillForm({
             name="category"
             value={category}
             onChange={(event) => handleCategoryChange(event.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
           >
             {CATEGORY_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -162,7 +162,7 @@ export function AddDrillForm({
         <div className="flex flex-col gap-1">
           <label
             htmlFor="character"
-            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="text-sm font-medium text-foreground "
           >
             {t("characterLabel")}
           </label>
@@ -171,7 +171,7 @@ export function AddDrillForm({
             name="character"
             value={character}
             onChange={(event) => setCharacter(event.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
           >
             {CHARACTER_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -184,7 +184,7 @@ export function AddDrillForm({
         <div className="flex flex-col gap-1">
           <label
             htmlFor="drill_code"
-            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="text-sm font-medium text-foreground "
           >
             {t("drillLabel")}
           </label>
@@ -194,7 +194,7 @@ export function AddDrillForm({
               name="drill_code"
               value={drillCode}
               onChange={(event) => setDrillCode(event.target.value)}
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
             >
               {drillOptions.map((code) => (
                 <option key={code} value={code}>
@@ -211,7 +211,7 @@ export function AddDrillForm({
               value={drillCode}
               onChange={(event) => setDrillCode(event.target.value)}
               placeholder={t("drillPlaceholder")}
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
             />
           )}
         </div>
@@ -219,7 +219,7 @@ export function AddDrillForm({
         <div className="flex flex-col gap-1">
           <label
             htmlFor="duration_minutes"
-            className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            className="text-sm font-medium text-foreground "
           >
             {t("durationLabel")}
           </label>
@@ -228,7 +228,7 @@ export function AddDrillForm({
             name="duration_minutes"
             value={duration}
             onChange={(event) => handleDurationChange(event.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
           >
             <option value="" disabled>
               {t("selectDuration")}
@@ -242,7 +242,7 @@ export function AddDrillForm({
         </div>
 
         {state?.error && (
-          <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
+          <p className="text-sm text-red-400">{state.error}</p>
         )}
       </form>
     </div>

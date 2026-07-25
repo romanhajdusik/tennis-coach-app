@@ -24,10 +24,10 @@ export type Drill = {
 
 const STATUS_STYLES: Record<string, string> = {
   played:
-    "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950",
-  not_played: "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950",
+    " border-emerald-900 bg-emerald-950",
+  not_played: " border-red-900 bg-red-950",
   replaced:
-    "border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950",
+    " border-yellow-900 bg-yellow-950",
 };
 
 function ReplaceDrillForm({
@@ -60,13 +60,13 @@ function ReplaceDrillForm({
   return (
     <form
       action={formAction}
-      className="mt-2 flex flex-col gap-2 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950"
+      className="mt-2 flex flex-col gap-2 rounded-lg border border-border bg-surface p-3 "
     >
       <select
         name="category"
         value={category}
         onChange={(event) => handleCategoryChange(event.target.value)}
-        className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+        className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
       >
         {CATEGORY_OPTIONS.map((option) => (
           <option key={option} value={option}>
@@ -79,7 +79,7 @@ function ReplaceDrillForm({
         name="character"
         value={character}
         onChange={(event) => setCharacter(event.target.value)}
-        className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+        className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
       >
         {CHARACTER_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
@@ -93,7 +93,7 @@ function ReplaceDrillForm({
           name="drill_code"
           value={drillCode}
           onChange={(event) => setDrillCode(event.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
         >
           {drillOptions.map((code) => (
             <option key={code} value={code}>
@@ -109,7 +109,7 @@ function ReplaceDrillForm({
           value={drillCode}
           onChange={(event) => setDrillCode(event.target.value)}
           placeholder={t("drillPlaceholder")}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
         />
       )}
 
@@ -117,7 +117,7 @@ function ReplaceDrillForm({
         name="duration_minutes"
         defaultValue=""
         required
-        className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+        className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
       >
         <option value="" disabled>
           {t("selectDuration")}
@@ -130,21 +130,21 @@ function ReplaceDrillForm({
       </select>
 
       {state?.error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
+        <p className="text-sm text-red-400">{state.error}</p>
       )}
 
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
+          className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-50 "
         >
           {pending ? t("replaceSubmitPending") : t("replaceSubmit")}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+          className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground "
         >
           {t("cancel")}
         </button>
@@ -195,7 +195,7 @@ export function DrillRow({
                   startMoveTransition(() => moveDrill(sessionId, drill.id, "up"))
                 }
                 aria-label={t("moveUp")}
-                className="px-1 leading-none text-zinc-500 disabled:opacity-25 dark:text-zinc-400"
+                className="px-1 leading-none text-muted disabled:opacity-25 "
               >
                 ▲
               </button>
@@ -206,28 +206,28 @@ export function DrillRow({
                   startMoveTransition(() => moveDrill(sessionId, drill.id, "down"))
                 }
                 aria-label={t("moveDown")}
-                className="px-1 leading-none text-zinc-500 disabled:opacity-25 dark:text-zinc-400"
+                className="px-1 leading-none text-muted disabled:opacity-25 "
               >
                 ▼
               </button>
             </div>
           )}
           <div>
-            <p className="font-medium text-zinc-900 dark:text-zinc-50">
+            <p className="font-medium text-foreground ">
               {drill.category} · {drill.drill_code}
             </p>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-muted ">
               {CHARACTER_LABELS[drill.character] ?? drill.character}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {statusBadge && (
-            <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+            <span className="text-xs font-medium text-muted ">
               {statusBadge}
             </span>
           )}
-          <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          <span className="text-sm font-medium text-muted ">
             {drill.duration_minutes} min
           </span>
         </div>
@@ -241,14 +241,14 @@ export function DrillRow({
             onClick={() =>
               startTransition(() => setDrillPlayed(sessionId, drill.id, false))
             }
-            className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
+            className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground disabled:opacity-50 "
           >
             {t("markNotPlayed")}
           </button>
           <button
             type="button"
             onClick={() => setIsReplacing(true)}
-            className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+            className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground "
           >
             {t("markReplaced")}
           </button>
@@ -263,7 +263,7 @@ export function DrillRow({
             onClick={() =>
               startTransition(() => setDrillPlayed(sessionId, drill.id, true))
             }
-            className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
+            className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground disabled:opacity-50 "
           >
             {t("restore")}
           </button>

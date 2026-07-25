@@ -39,19 +39,19 @@ export default async function SessionsPage() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-xl font-semibold text-foreground ">
           {t("title")}
         </h1>
         <Link
           href="/"
-          className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
+          className="text-sm font-medium text-muted underline "
         >
           {tCommon("back")}
         </Link>
       </div>
 
       {!activePlayer ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-muted ">
           {t.rich("noActivePlayer", {
             link: (chunks) => (
               <Link href="/players" className="underline">
@@ -62,18 +62,18 @@ export default async function SessionsPage() {
         </p>
       ) : (
         <>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm text-muted ">
             {t("activePlayer", { name: activePlayer.name })}
           </p>
 
           <NewSessionForm />
 
           <section className="flex flex-col gap-2">
-            <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            <h2 className="text-sm font-medium text-muted ">
               {t("planHeading")}
             </h2>
             {!sessions || sessions.length === 0 ? (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="text-sm text-muted ">
                 {t("noSessions")}
               </p>
             ) : (
@@ -84,9 +84,9 @@ export default async function SessionsPage() {
                     <li key={session.id}>
                       <Link
                         href={`/sessions/${session.id}`}
-                        className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+                        className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 "
                       >
-                        <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                        <p className="font-medium text-foreground ">
                           {planned?.date
                             ? format.dateTime(new Date(planned.date), {
                                 dateStyle: "medium",
@@ -94,7 +94,7 @@ export default async function SessionsPage() {
                               })
                             : t("noDate")}
                         </p>
-                        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                        <span className="text-xs font-medium text-muted ">
                           {tCommon(`status.${session.status}`)}
                         </span>
                       </Link>

@@ -27,17 +27,17 @@ export default async function DrillCodesPage() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-xl font-semibold text-foreground ">
           {t("title")}
         </h1>
         <Link
           href="/"
-          className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
+          className="text-sm font-medium text-muted underline "
         >
           {tCommon("back")}
         </Link>
       </div>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm text-muted ">
         {t("description")}
       </p>
 

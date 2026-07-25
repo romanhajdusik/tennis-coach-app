@@ -16,9 +16,9 @@ export function NewSessionForm() {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+      className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 "
     >
-      <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+      <h2 className="text-sm font-medium text-muted ">
         {t("heading")}
       </h2>
 
@@ -27,7 +27,7 @@ export function NewSessionForm() {
           <div className="flex flex-col gap-1">
             <label
               htmlFor="date"
-              className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="text-sm font-medium text-foreground "
             >
               {t("dateLabel")}
             </label>
@@ -39,13 +39,13 @@ export function NewSessionForm() {
               required
               value={date}
               onChange={(event) => setDate(event.target.value)}
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
             />
           </div>
           <div className="flex flex-col gap-1">
             <label
               htmlFor="duration_minutes"
-              className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="text-sm font-medium text-foreground "
             >
               {t("durationLabel")}
             </label>
@@ -54,7 +54,7 @@ export function NewSessionForm() {
               name="duration_minutes"
               value={duration}
               onChange={(event) => setDuration(event.target.value)}
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
             >
               <option value="60">60 min</option>
               <option value="90">90 min</option>
@@ -67,14 +67,14 @@ export function NewSessionForm() {
               if (!dateInputRef.current?.reportValidity()) return;
               setConfirming(true);
             }}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("submit")}
           </button>
         </>
       ) : (
-        <div className="flex flex-col gap-2 rounded-lg border border-zinc-300 p-3 dark:border-zinc-700">
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">
+        <div className="flex flex-col gap-2 rounded-lg border border-border p-3 ">
+          <p className="text-sm text-foreground ">
             {t("confirmMessage", {
               date: date
                 ? format.dateTime(new Date(date), {
@@ -92,13 +92,13 @@ export function NewSessionForm() {
           />
           <input type="hidden" name="duration_minutes" value={duration} />
           {state?.error && (
-            <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
+            <p className="text-sm text-red-400">{state.error}</p>
           )}
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={pending}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50 "
             >
               {pending ? t("confirmSubmitPending") : t("confirmSubmit")}
             </button>
@@ -106,7 +106,7 @@ export function NewSessionForm() {
               type="button"
               onClick={() => setConfirming(false)}
               disabled={pending}
-              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
+              className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground disabled:opacity-50 "
             >
               {t("confirmEdit")}
             </button>

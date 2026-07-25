@@ -41,29 +41,29 @@ export default async function PlayersPage() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-xl font-semibold text-foreground ">
           {t("title")}
         </h1>
         <Link
           href="/"
-          className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
+          className="text-sm font-medium text-muted underline "
         >
           {tCommon("back")}
         </Link>
       </div>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+        <h2 className="text-sm font-medium text-muted ">
           {t("activePlayerHeading")}
         </h2>
         {activePlayer ? (
-          <div className="flex items-center justify-between rounded-xl border border-zinc-300 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-950">
+          <div className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 ">
             <div>
-              <p className="font-medium text-zinc-900 dark:text-zinc-50">
+              <p className="font-medium text-foreground ">
                 {activePlayer.name}
               </p>
               {activePlayer.birth_date && (
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="text-sm text-muted ">
                   {activePlayer.birth_date}
                 </p>
               )}
@@ -71,14 +71,14 @@ export default async function PlayersPage() {
             <form action={deactivatePlayer.bind(null, activePlayer.id)}>
               <button
                 type="submit"
-                className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-700"
+                className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium "
               >
                 {t("archive")}
               </button>
             </form>
           </div>
         ) : (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm text-muted ">
             {t("noActivePlayer")}
           </p>
         )}
@@ -92,21 +92,21 @@ export default async function PlayersPage() {
 
       {archivedPlayers.length > 0 && (
         <section className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          <h2 className="text-sm font-medium text-muted ">
             {t("archiveHeading")}
           </h2>
           <ul className="flex flex-col gap-2">
             {archivedPlayers.map((player) => (
               <li
                 key={player.id}
-                className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+                className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 "
               >
                 <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                  <p className="font-medium text-foreground ">
                     {player.name}
                   </p>
                   {player.birth_date && (
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    <p className="text-sm text-muted ">
                       {player.birth_date}
                     </p>
                   )}
@@ -114,7 +114,7 @@ export default async function PlayersPage() {
                 <form action={activatePlayer.bind(null, player.id)}>
                   <button
                     type="submit"
-                    className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium dark:border-zinc-700"
+                    className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium "
                   >
                     {t("activate")}
                   </button>

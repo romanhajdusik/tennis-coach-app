@@ -34,13 +34,13 @@ function dayStatus(daySessions: { status: string }[]) {
 }
 
 const DAY_DOT_CLASSES: Record<string, string> = {
-  planned: "bg-emerald-600 font-medium text-white dark:bg-emerald-500 dark:text-emerald-950",
-  completed: "bg-red-600 font-medium text-white dark:bg-red-500 dark:text-red-950",
+  planned: "font-medium bg-emerald-500 text-emerald-950",
+  completed: "font-medium bg-red-500 text-red-950",
 };
 
 const STATUS_TEXT_CLASSES: Record<string, string> = {
-  planned: "text-emerald-700 dark:text-emerald-400",
-  completed: "text-red-700 dark:text-red-400",
+  planned: " text-emerald-400",
+  completed: " text-red-400",
 };
 
 export default async function CalendarPage({
@@ -114,19 +114,19 @@ export default async function CalendarPage({
   return (
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-xl font-semibold text-foreground ">
           {t("title")}
         </h1>
         <Link
           href="/"
-          className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
+          className="text-sm font-medium text-muted underline "
         >
           {tCommon("back")}
         </Link>
       </div>
 
       {!activePlayer ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-muted ">
           {t.rich("noActivePlayer", {
             link: (chunks) => (
               <Link href="/players" className="underline">
@@ -140,22 +140,22 @@ export default async function CalendarPage({
           <div className="flex items-center justify-between">
             <Link
               href={`/calendar?month=${monthParam(prevMonth.year, prevMonth.monthIndex)}`}
-              className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
+              className="text-sm font-medium text-muted underline "
             >
               {t("prev")}
             </Link>
-            <p className="text-sm font-medium capitalize text-zinc-900 dark:text-zinc-50">
+            <p className="text-sm font-medium capitalize text-foreground ">
               {monthLabel}
             </p>
             <Link
               href={`/calendar?month=${monthParam(nextMonth.year, nextMonth.monthIndex)}`}
-              className="text-sm font-medium text-zinc-600 underline dark:text-zinc-400"
+              className="text-sm font-medium text-muted underline "
             >
               {t("next")}
             </Link>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 text-center text-xs text-zinc-500 dark:text-zinc-400">
+          <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted ">
             {weekdays.map((label) => (
               <div key={label} className="py-1 font-medium">
                 {label}
@@ -177,7 +177,7 @@ export default async function CalendarPage({
                   className={`flex flex-col items-center gap-0.5 rounded-lg py-1.5 text-sm ${
                     status
                       ? DAY_DOT_CLASSES[status]
-                      : "text-zinc-700 dark:text-zinc-300"
+                      : "text-foreground "
                   }`}
                 >
                   {dayNumber}
@@ -187,11 +187,11 @@ export default async function CalendarPage({
           </div>
 
           <section className="flex flex-col gap-2">
-            <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            <h2 className="text-sm font-medium text-muted ">
               {t("monthSessionsHeading")}
             </h2>
             {monthSessions.length === 0 ? (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="text-sm text-muted ">
                 {t("noSessionsInMonth")}
               </p>
             ) : (
@@ -200,9 +200,9 @@ export default async function CalendarPage({
                   <li key={session.id} id={`day-${toDayKey(new Date(session.date))}`}>
                     <Link
                       href={`/sessions/${session.id}`}
-                      className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950"
+                      className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 "
                     >
-                      <p className="font-medium text-zinc-900 dark:text-zinc-50">
+                      <p className="font-medium text-foreground ">
                         {format.dateTime(new Date(session.date), {
                           dateStyle: "medium",
                           timeStyle: "short",
@@ -211,7 +211,7 @@ export default async function CalendarPage({
                       <span
                         className={`text-xs font-medium ${
                           STATUS_TEXT_CLASSES[session.status] ??
-                          "text-zinc-500 dark:text-zinc-400"
+                          "text-muted "
                         }`}
                       >
                         {tCommon(`status.${session.status}`)}

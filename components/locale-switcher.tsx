@@ -14,7 +14,7 @@ export function LocaleSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="fixed bottom-3 right-3 z-50 flex gap-1 rounded-full border border-zinc-300 bg-white/90 px-2 py-1 text-xs shadow-sm backdrop-blur dark:border-zinc-700 dark:bg-zinc-950/90">
+    <div className="fixed bottom-3 right-3 z-50 flex gap-1 rounded-full border border-border bg-surface/90 px-2 py-1 text-xs shadow-sm backdrop-blur ">
       {LOCALES.map((value) => (
         <button
           key={value}
@@ -28,8 +28,8 @@ export function LocaleSwitcher() {
           }}
           className={
             value === locale
-              ? "font-semibold text-zinc-900 dark:text-zinc-50"
-              : "text-zinc-500 underline dark:text-zinc-400"
+              ? "font-semibold text-foreground "
+              : "text-muted underline "
           }
         >
           {value.toUpperCase()}

@@ -40,15 +40,15 @@ function ShareTooltip({
   if (!active || !payload?.length) return null;
   const { payload: item, fill, color } = payload[0];
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="flex items-center gap-1.5 font-medium text-zinc-900 dark:text-zinc-50">
+    <div className="rounded-lg border border-border bg-surface px-3 py-2 text-xs shadow-sm ">
+      <div className="flex items-center gap-1.5 font-medium text-foreground ">
         <span
           className="inline-block h-2 w-4 rounded-full"
           style={{ backgroundColor: fill ?? color }}
         />
         {item.category}
       </div>
-      <p className="mt-1 text-zinc-500 dark:text-zinc-400">
+      <p className="mt-1 text-muted ">
         {t("characterStatsLine", {
           minutes: item.minutes,
           percentage: Math.round(item.percentage),
@@ -78,8 +78,8 @@ export function CategoryShareChart({
     !highlightCurrent || category === currentCategory ? 1 : 0.4;
 
   return (
-    <div className="viz-root flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-      <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+    <div className="viz-root flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 ">
+      <h2 className="text-sm font-medium text-muted ">
         {t("generalShareHeading")}
       </h2>
       <ResponsiveContainer width="100%" height={240}>
@@ -121,13 +121,13 @@ export function CategoryShareChart({
                 }}
               />
               <span
-                className={`shrink-0 text-zinc-900 dark:text-zinc-50 ${
+                className={`shrink-0 text-foreground ${
                   isCurrent ? "font-semibold" : "font-medium"
                 }`}
               >
                 {entry.category}
               </span>
-              <span className="min-w-0 flex-1 truncate text-zinc-500 dark:text-zinc-400">
+              <span className="min-w-0 flex-1 truncate text-muted ">
                 —{" "}
                 {t("characterStatsLine", {
                   minutes: entry.minutes,

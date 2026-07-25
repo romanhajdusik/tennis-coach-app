@@ -51,54 +51,54 @@ export default async function Home() {
   }
 
   return (
-    <div className="flex min-h-dvh w-full min-w-0 flex-col items-center justify-center gap-6 bg-zinc-50 px-4 dark:bg-black">
+    <div className="flex min-h-dvh w-full min-w-0 flex-col items-center justify-center gap-6 bg-background px-4 ">
       <div className="flex flex-col items-center gap-1">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-2xl font-semibold text-foreground ">
           {t("title")}
         </h1>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="text-xs text-muted ">
           plan.log.analyze.win
         </p>
-        <p className="text-xs text-zinc-400 dark:text-zinc-600">plaw.win</p>
+        <p className="text-xs text-muted ">plaw.win</p>
       </div>
       <div className="flex flex-col items-center gap-3">
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-muted ">
           {t("loggedInAs")} <span className="font-medium">{user.email}</span>
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
             href="/players"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("players")}
           </Link>
           <Link
             href="/sessions"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("sessions")}
           </Link>
           <Link
             href="/calendar"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("calendar")}
           </Link>
           <Link
             href="/drill-codes"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("drillCodes")}
           </Link>
           <Link
             href={`/analytics/${DEFAULT_CATEGORY}`}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("analytics")}
           </Link>
           <Link
             href="/settings"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-zinc-900"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("settings")}
           </Link>
@@ -106,7 +106,7 @@ export default async function Home() {
         <form action={logout.bind(null, "/login")}>
           <button
             type="submit"
-            className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+            className="rounded-lg border border-border px-4 py-2 text-sm font-medium "
           >
             {t("logout")}
           </button>

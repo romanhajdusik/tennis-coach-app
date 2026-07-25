@@ -50,11 +50,11 @@ export function SharePlayerSection({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-      <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+    <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4 ">
+      <h2 className="text-sm font-medium text-muted ">
         {t("heading")}
       </h2>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm text-muted ">
         {t("description")}
       </p>
 
@@ -63,7 +63,7 @@ export function SharePlayerSection({
           type="button"
           onClick={handleGenerate}
           disabled={isPending}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50 "
         >
           {t("generateButton")}
         </button>
@@ -72,30 +72,30 @@ export function SharePlayerSection({
       {connection && connection.status === "pending" && (
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <span className="text-sm font-medium text-foreground ">
               {t("codeLabel")}
             </span>
             <div className="flex items-center gap-2">
-              <span className="rounded-lg border border-zinc-300 px-3 py-2 font-mono text-lg tracking-widest dark:border-zinc-700">
+              <span className="rounded-lg border border-border px-3 py-2 font-mono text-lg tracking-widest ">
                 {connection.connect_code}
               </span>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+                className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground "
               >
                 {copied ? t("copiedButton") : t("copyButton")}
               </button>
             </div>
           </div>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs text-muted ">
             {t("pendingStatus")}
           </p>
           <button
             type="button"
             onClick={handleRevoke}
             disabled={isPending}
-            className="self-start rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 disabled:opacity-50 dark:border-red-800 dark:text-red-400"
+            className="self-start rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50 border-red-800 text-red-400"
           >
             {t("revokeButton")}
           </button>
@@ -104,7 +104,7 @@ export function SharePlayerSection({
 
       {connection && connection.status === "active" && (
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-emerald-700 dark:text-emerald-400">
+          <p className="text-sm text-emerald-400">
             ✓{" "}
             {connection.connected_role &&
             ROLE_LABEL_KEYS[connection.connected_role]
@@ -117,7 +117,7 @@ export function SharePlayerSection({
             type="button"
             onClick={handleRevoke}
             disabled={isPending}
-            className="self-start rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 disabled:opacity-50 dark:border-red-800 dark:text-red-400"
+            className="self-start rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50 border-red-800 text-red-400"
           >
             {t("revokeButton")}
           </button>

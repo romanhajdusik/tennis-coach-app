@@ -34,7 +34,7 @@ export function HomeButton() {
     <Link
       href={href}
       aria-label={t("home")}
-      className="fixed bottom-3 left-3 z-50 flex items-center gap-1.5 rounded-full border border-zinc-300 bg-white/90 px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm backdrop-blur transition-colors hover:bg-white dark:border-zinc-700 dark:bg-zinc-950/90 dark:text-zinc-300 dark:hover:bg-zinc-900"
+      className="fixed bottom-3 left-3 z-50 flex items-center gap-1.5 rounded-full border border-border bg-surface/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur transition-colors hover:bg-surface "
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
