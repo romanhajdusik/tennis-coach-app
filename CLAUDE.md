@@ -26,6 +26,20 @@ Jadrom appky sú **kódy cvičení** (`drill_codes`, pozri dátový model nižš
 - **Hosting:** Vercel — appka je nasadená na produkcii, automatický deploy pri pushi do `master` (žiadny `vercel.json`/CI gate). Zmeny sa musia commitnúť a pushnúť, inak sa k trénerovi na telefón nedostanú — lokálny build/test nestačí
 - **Platby:** Stripe (fáza 3, zatiaľ neimplementovať)
 
+## Dizajn a farby
+
+Appka má **jednotnú tmavosivú tému, žiadny svetlý režim** (`color-scheme: dark`). Farby sú **sémantické tokeny** v `app/globals.css` cez Tailwind v4 `@theme` — odtieň sa mení na jednom mieste, komponenty ho nikdy nemajú natvrdo:
+
+- **Plochy:** `bg-background` (#1e1e21), `bg-surface` (#27262b — karty/panely), `bg-input` (#191819 — polia), `border-border` (#3a383f)
+- **Text:** `text-foreground` (#ededee), `text-muted` (#a3a2aa)
+- **Primárna = antuková tehlová:** `bg-primary` (#a24236), `hover:bg-primary-hover` (#b64e40), text na nej `text-primary-foreground` (#fdeee9) — tlačidlá, aktívne záložky, chart-type toggle
+
+**Pravidlá:**
+- Používaj tokenové triedy (`bg-primary`, `bg-surface`, `text-foreground`, `text-muted`, `border-border`, `bg-input`, `text-primary-foreground`). **Nepridávaj** späť natvrdo `bg-zinc-*`/`text-zinc-*`/`dark:*` triedy ani svetlý režim.
+- Stavové/chybové farby (červená = dokončený/chyba/deštrukcia, emerald = naplánovaný/potvrdené, green = úspech v nastaveniach, amber = kolízia kalendára, yellow = nahradené) ostávajú ako jednohodnotové tmavé triedy (napr. `bg-red-950 text-red-300`), zámerne odlíšené od brandovej antukovej. Kalendárové štítky dní: `bg-emerald-500 text-emerald-950` / `bg-red-500 text-red-950`.
+- Paleta grafov (`.viz-root` v `globals.css`) je tiež len tmavá sada; `--surface` = #27262b, aby splynula s kartou.
+- **Landing page (`components/landing-page.tsx`) je z tohto systému zámerne vynechaná** — má vlastný vzhľad a vlastnú SK/EN/DE/ES/RU/FR jazykovú vrstvu; pri prefarbovaní appky sa jej nedotýkaj, pokiaľ nie je povedané inak.
+
 ## Príkazy
 
 ```bash
