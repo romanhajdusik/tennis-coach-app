@@ -34,7 +34,8 @@
   "chartPie": "Koláč",
   "chartBar": "Stĺpce",
   "otherGroupLabel": "Ostatné",
-  "codeStatsLine": "{minutes} min · {strokes} úderov · {percentage} %",
+  "codeStatsLine": "{minutes} min · ~{strokes} úderov · {percentage} %",
+  "strokesApprox": "~ Počet úderov je približný odhad.",
   "characterStatsLine": "{minutes} min · {percentage} %",
   "percentageOnly": "{percentage} %"
 }

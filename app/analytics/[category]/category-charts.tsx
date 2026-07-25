@@ -329,6 +329,7 @@ export function CategoryCharts({
             </li>
           ))}
         </ul>
+        <p className="text-xs text-muted">{t("strokesApprox")}</p>
       </div>
 
       <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 ">

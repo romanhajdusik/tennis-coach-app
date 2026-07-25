@@ -34,7 +34,8 @@
   "chartPie": "Pie",
   "chartBar": "Bars",
   "otherGroupLabel": "Other",
-  "codeStatsLine": "{minutes} min · {strokes} strokes · {percentage} %",
+  "codeStatsLine": "{minutes} min · ~{strokes} strokes · {percentage} %",
+  "strokesApprox": "~ Stroke count is an approximate estimate.",
   "characterStatsLine": "{minutes} min · {percentage} %",
   "percentageOnly": "{percentage} %"
 }
