@@ -84,6 +84,23 @@ export function RegisterForm() {
             className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
           />
         </div>
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="password_confirm"
+            className="text-sm font-medium text-foreground "
+          >
+            {t("passwordConfirmLabel")}
+          </label>
+          <input
+            id="password_confirm"
+            name="password_confirm"
+            type="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
+          />
+        </div>
         {state?.error && (
           <p className="text-sm text-red-400">{state.error}</p>
         )}

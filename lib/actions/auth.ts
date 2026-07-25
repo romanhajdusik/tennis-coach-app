@@ -36,6 +36,7 @@ export async function register(
   const fullName = formData.get("full_name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const passwordConfirm = formData.get("password_confirm") as string;
   const role = formData.get("role") as string;
   const t = await getTranslations("Auth.errors");
 
@@ -53,6 +54,10 @@ export async function register(
 
   if (password.length < 8) {
     return { error: t("passwordTooShort") };
+  }
+
+  if (password !== passwordConfirm) {
+    return { error: t("passwordsDoNotMatch") };
   }
 
   const supabase = await createClient();
