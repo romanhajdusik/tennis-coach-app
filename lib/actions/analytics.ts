@@ -134,6 +134,12 @@ export type CharacterStat = {
   percentage: number;
 };
 
+export type CategoryShareStat = {
+  category: string;
+  minutes: number;
+  percentage: number;
+};
+
 type DrillForStats = {
   character: string;
   drill_code: string | null;
@@ -191,13 +197,39 @@ export function aggregateDrillStats(
   return { byCode, byCharacter };
 }
 
-export async function getCategoryAnalytics(
+// Podiel jednotlivých zameraní na celkovom odohranom čase — vstup pre
+// "generálny" graf v analytike (dané zameranie oproti ostatným).
+export function aggregateCategoryShares(
+  drills: { category: string; duration_minutes: number }[],
+): CategoryShareStat[] {
+  const totals = new Map<string, number>();
+  let totalMinutes = 0;
+
+  for (const drill of drills) {
+    totals.set(
+      drill.category,
+      (totals.get(drill.category) ?? 0) + drill.duration_minutes,
+    );
+    totalMinutes += drill.duration_minutes;
+  }
+
+  return Array.from(totals.entries())
+    .map(([category, minutes]) => ({
+      category,
+      minutes,
+      percentage: totalMinutes > 0 ? (minutes / totalMinutes) * 100 : 0,
+    }))
+    .sort((a, b) => b.minutes - a.minutes);
+}
+
+// Zdieľané pre všetky analytické dotazy: id tréningov aktívneho hráča, ktoré
+// spadajú do zvoleného obdobia (podľa reálneho, inak plánovaného dátumu).
+async function getActivePlayerSessionIdsInPeriod(
   supabase: SupabaseServerClient,
   userId: string,
-  category: string,
   start: Date,
   end: Date,
-): Promise<{ byCode: CodeStat[]; byCharacter: CharacterStat[] }> {
+): Promise<string[]> {
   const { data: activePlayer } = await supabase
     .from("players")
     .select("id")
@@ -206,7 +238,7 @@ export async function getCategoryAnalytics(
     .maybeSingle();
 
   if (!activePlayer) {
-    return { byCode: [], byCharacter: [] };
+    return [];
   }
 
   const { data: sessions } = await supabase
@@ -214,7 +246,7 @@ export async function getCategoryAnalytics(
     .select("id, planned_data, actual_data")
     .eq("player_id", activePlayer.id);
 
-  const sessionIds = (sessions ?? [])
+  return (sessions ?? [])
     .filter((session) => {
       const planned = session.planned_data as PlannedData | null;
       const actual = session.actual_data as ActualData | null;
@@ -224,6 +256,21 @@ export async function getCategoryAnalytics(
       return date >= start && date < end;
     })
     .map((session) => session.id);
+}
+
+export async function getCategoryAnalytics(
+  supabase: SupabaseServerClient,
+  userId: string,
+  category: string,
+  start: Date,
+  end: Date,
+): Promise<{ byCode: CodeStat[]; byCharacter: CharacterStat[] }> {
+  const sessionIds = await getActivePlayerSessionIdsInPeriod(
+    supabase,
+    userId,
+    start,
+    end,
+  );
 
   if (sessionIds.length === 0) {
     return { byCode: [], byCharacter: [] };
@@ -237,4 +284,32 @@ export async function getCategoryAnalytics(
     .eq("status", "played");
 
   return aggregateDrillStats(drills ?? [], category);
+}
+
+// Podiel všetkých zameraní na celkovom odohranom čase v období (naprieč
+// kategóriami) — pre generálny graf na stránke ktoréhokoľvek zamerania.
+export async function getCategoryMinuteShares(
+  supabase: SupabaseServerClient,
+  userId: string,
+  start: Date,
+  end: Date,
+): Promise<CategoryShareStat[]> {
+  const sessionIds = await getActivePlayerSessionIdsInPeriod(
+    supabase,
+    userId,
+    start,
+    end,
+  );
+
+  if (sessionIds.length === 0) {
+    return [];
+  }
+
+  const { data: drills } = await supabase
+    .from("session_drills")
+    .select("category, duration_minutes")
+    .in("session_id", sessionIds)
+    .eq("status", "played");
+
+  return aggregateCategoryShares(drills ?? []);
 }

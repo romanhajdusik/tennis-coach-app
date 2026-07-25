@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   getCategoryAnalytics,
+  getCategoryMinuteShares,
   getDefaultPeriodValue,
   getPeriodRange,
   getPreviousYearValue,
@@ -16,6 +17,7 @@ import {
   CATEGORY_OPTIONS,
 } from "@/lib/drill-options";
 import { CategoryCharts } from "./category-charts";
+import { CategoryShareChart } from "./category-share-chart";
 
 const RANGE_VALUES: PeriodRangeType[] = ["week", "month", "quarter", "year"];
 
@@ -81,6 +83,12 @@ export default async function AnalyticsPage({
     supabase,
     user.id,
     category,
+    start,
+    end,
+  );
+  const categoryShares = await getCategoryMinuteShares(
+    supabase,
+    user.id,
     start,
     end,
   );
@@ -208,6 +216,12 @@ export default async function AnalyticsPage({
           fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(category)}
           groups={ANALYTICS_GROUPED_CATEGORIES[category]}
         />
+      )}
+
+      {/* Generálny graf: podiel tohto zamerania na celkovom odohranom čase
+          oproti ostatným — posledný graf v každom zameraní. */}
+      {categoryShares.length > 0 && (
+        <CategoryShareChart shares={categoryShares} currentCategory={category} />
       )}
     </div>
   );

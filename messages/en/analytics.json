@@ -28,6 +28,7 @@
   "byCodeHeading": "By drill code — time, strokes, % usage",
   "detailHeading": "Detail — {group}",
   "byCharacterHeading": "By shot character",
+  "generalShareHeading": "Share of total training time",
   "chartPie": "Pie",
   "chartBar": "Bars",
   "otherGroupLabel": "Other",
