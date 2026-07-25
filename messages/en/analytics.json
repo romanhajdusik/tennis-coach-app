@@ -7,7 +7,9 @@
   "show": "Show",
   "previousYear": "◀ Last year",
   "noDrillsInPeriod": "No drills played in this period.",
-  "totalTimeHeading": "Total time played in drills",
+  "pointsMatchHeading": "MATCH vs other drills",
+  "pointsOtherLabel": "Other drills",
+  "pointsTotal": "Total {minutes} min",
   "weekLabel": "Week {week}, {year}",
   "yearLabel": "Year {year}",
   "months": [

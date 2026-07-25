@@ -7,7 +7,9 @@
   "show": "Zobraziť",
   "previousYear": "◀ Minulý rok",
   "noDrillsInPeriod": "Žiadne odohrané cvičenia v tomto období.",
-  "totalTimeHeading": "Celkový čas odohraný v cvičeniach",
+  "pointsMatchHeading": "MATCH vs ostatné cvičenia",
+  "pointsOtherLabel": "Ostatné cvičenia",
+  "pointsTotal": "Celkovo {minutes} min",
   "weekLabel": "Týždeň {week}, {year}",
   "yearLabel": "Rok {year}",
   "months": [

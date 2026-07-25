@@ -82,9 +82,11 @@ export const ANALYTICS_FULL_BREAKDOWN_CATEGORIES = [
   "GAME DRILLS",
 ];
 
-// Tieto zamerania nemajú rozpad podľa kódu ani charakteru — v analytike sa
-// zobrazí jediný graf: celkový odohraný čas za obdobie.
-export const ANALYTICS_TOTAL_TIME_ONLY_CATEGORIES = ["POINTS"];
+// Tieto zamerania majú v analytike graf rozdeľujúci odohraný čas na MATCH
+// (zápasové body) vs ostatné cvičenia — minutáž a percento. MATCH sa
+// rozpoznáva podľa prefixu kódu "MATCH" (ak si tréner kód premenuje mimo
+// tento prefix, spadne do "Ostatné").
+export const ANALYTICS_MATCH_SPLIT_CATEGORIES = ["POINTS"];
 
 export type AnalyticsCodeGroup = { label: string; prefix: string };
 
