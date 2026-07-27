@@ -1,0 +1,52 @@
+{
+  "metaTitle": "Návod — P.L.A.W",
+  "metaDescription": "Ako používať P.L.A.W: od registrácie cez plánovanie a záznam tréningov až po analýzu.",
+  "eyebrow": "Návod pre trénerov",
+  "title": "Ako používať P.L.A.W",
+  "subtitle": "Od registrácie po analýzu — všetko, čo potrebuješ, krok za krokom.",
+  "backToHome": "Späť na úvod",
+  "stepWord": "Krok",
+  "steps": [
+    {
+      "title": "Vytvor si účet",
+      "body": "Zaregistruj sa ako tréner a prihlás sa. Registrácia je zatiaľ zadarmo."
+    },
+    {
+      "title": "Pridaj svojho hráča",
+      "body": "P.L.A.W pracuje vždy s jedným aktívnym hráčom. Pridaj ho v sekcii Hráči — kedykoľvek môžeš prepnúť na iného."
+    },
+    {
+      "title": "Nastav si kódy cvičení",
+      "body": "Srdce celej appky. Pre každé zameranie máš 20 slotov, ktoré si premenuješ na vlastné skratky cvičení. Presne podľa nich sa neskôr rozpadá analytika, tak si ich nastav ako prvé."
+    },
+    {
+      "title": "Naplánuj tréning",
+      "body": "Vytvor tréning s dátumom, časom a dĺžkou. Ak máš pripojený Google Kalendár, udalosť sa doň pridá automaticky."
+    },
+    {
+      "title": "Zaznamenaj priebeh",
+      "body": "Pridávaj do tréningu cvičenia — zameranie, charakter úderu, kód a trvanie. Poradie vieš kedykoľvek zmeniť šípkami, kým je tréning naplánovaný."
+    },
+    {
+      "title": "Vyhodnoť a uzamkni",
+      "body": "Po tréningu doplň reálny čas a poznámky, jednotlivé cvičenia označ ako neodohrané alebo nahradené. Hotový tréning uzamkni — stane sa nemenným záznamom."
+    },
+    {
+      "title": "Sleduj analytiku",
+      "body": "Prehľady podľa týždňa, mesiaca, kvartálu a roka, s porovnaním voči minulej sezóne. Rozpad podľa kódu cvičenia aj charakteru úderu."
+    },
+    {
+      "title": "Zdieľaj s hráčom, rodičom či manažérom",
+      "body": "Vygeneruj prístupový kód a pošli ho. Hráč, rodič alebo manažér dostane vlastný pohľad s históriou tréningov — bez možnosti čokoľvek meniť."
+    }
+  ],
+  "tipsTitle": "Dobré vedieť",
+  "tips": [
+    "Appku si pridaj na plochu telefónu a používaj ju ako natívnu appku priamo na kurte.",
+    "Neaktívnych hráčov nájdeš v archíve — ich kompletná história ostáva prístupná, len na čítanie.",
+    "Appka funguje v slovenčine aj angličtine a čas zobrazuje vždy v tvojom časovom pásme."
+  ],
+  "ctaTitle": "Pripravený začať?",
+  "ctaText": "Založ si účet za pár minút a naplánuj prvý tréning ešte dnes.",
+  "ctaButton": "Vytvoriť účet"
+}

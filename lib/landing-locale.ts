@@ -20,6 +20,10 @@ export async function loadLandingMessages(locale: LandingLocale) {
     heroSubtitle: string;
     ctaPrimary: string;
     ctaSecondary: string;
+    guideLink: string;
+    showcaseTitle: string;
+    showcaseSubtitle: string;
+    showcaseCaptions: { calendar: string; session: string; analytics: string };
     featuresTitle: string;
     features: { title: string; description: string }[];
     pricingTitle: string;
@@ -31,4 +35,30 @@ export async function loadLandingMessages(locale: LandingLocale) {
     finalCtaButton: string;
     footerTagline: string;
   };
+}
+
+// Návod (stránka /navod) používa tú istú jazykovú vrstvu ako landing page
+// (LANDING_LOCALE, 6 jazykov), nie appkové next-intl SK/EN — je to verejná
+// časť webu plaw.online popri landingu.
+export type NavodMessages = {
+  metaTitle: string;
+  metaDescription: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  backToHome: string;
+  stepWord: string;
+  steps: { title: string; body: string }[];
+  tipsTitle: string;
+  tips: string[];
+  ctaTitle: string;
+  ctaText: string;
+  ctaButton: string;
+};
+
+export async function loadNavodMessages(
+  locale: LandingLocale,
+): Promise<NavodMessages> {
+  const messages = await import(`../messages/${locale}/navod.json`);
+  return messages.default as NavodMessages;
 }

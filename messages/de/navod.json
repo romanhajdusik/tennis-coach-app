@@ -1,0 +1,52 @@
+{
+  "metaTitle": "Anleitung — P.L.A.W",
+  "metaDescription": "So nutzt du P.L.A.W: von der Registrierung über Planung und Protokollierung der Trainings bis zur Auswertung.",
+  "eyebrow": "Trainer-Anleitung",
+  "title": "So nutzt du P.L.A.W",
+  "subtitle": "Von der Registrierung bis zur Auswertung — alles, was du brauchst, Schritt für Schritt.",
+  "backToHome": "Zurück zur Startseite",
+  "stepWord": "Schritt",
+  "steps": [
+    {
+      "title": "Konto erstellen",
+      "body": "Registriere dich als Trainer und melde dich an. Die Registrierung ist vorerst kostenlos."
+    },
+    {
+      "title": "Spieler hinzufügen",
+      "body": "P.L.A.W arbeitet immer mit einem aktiven Spieler. Füge ihn im Bereich Spieler hinzu — du kannst jederzeit zu einem anderen wechseln."
+    },
+    {
+      "title": "Übungscodes einrichten",
+      "body": "Das Herzstück der App. Für jeden Schwerpunkt hast du 20 Felder, die du in deine eigenen Übungskürzel umbenennst. Die Auswertung gliedert sich später genau danach, also richte sie zuerst ein."
+    },
+    {
+      "title": "Training planen",
+      "body": "Erstelle ein Training mit Datum, Uhrzeit und Dauer. Wenn dein Google Kalender verbunden ist, wird der Termin automatisch dort eingetragen."
+    },
+    {
+      "title": "Verlauf protokollieren",
+      "body": "Füge dem Training Übungen hinzu — Schwerpunkt, Schlagcharakter, Code und Dauer. Die Reihenfolge kannst du mit Pfeilen ändern, solange das Training geplant ist."
+    },
+    {
+      "title": "Auswerten und sperren",
+      "body": "Trage nach dem Training die tatsächliche Zeit und Notizen ein und markiere Übungen als nicht gespielt oder ersetzt. Sperre ein fertiges Training — es wird zu einem unveränderlichen Eintrag."
+    },
+    {
+      "title": "Auswertung verfolgen",
+      "body": "Übersichten nach Woche, Monat, Quartal und Jahr, im Vergleich zur letzten Saison. Aufgeschlüsselt nach Übungscode und Schlagcharakter."
+    },
+    {
+      "title": "Mit Spieler, Eltern oder Manager teilen",
+      "body": "Erzeuge einen Zugangscode und schicke ihn. Spieler, Eltern oder Manager erhalten ihre eigene Ansicht der Trainingshistorie — schreibgeschützt."
+    }
+  ],
+  "tipsTitle": "Gut zu wissen",
+  "tips": [
+    "Füge die App zum Startbildschirm deines Handys hinzu und nutze sie wie eine native App direkt auf dem Platz.",
+    "Inaktive Spieler findest du im Archiv — ihre gesamte Historie bleibt verfügbar, nur lesbar.",
+    "Die App funktioniert auf Slowakisch und Englisch und zeigt die Zeit immer in deiner Zeitzone."
+  ],
+  "ctaTitle": "Bereit loszulegen?",
+  "ctaText": "Erstelle in wenigen Minuten ein Konto und plane noch heute dein erstes Training.",
+  "ctaButton": "Konto erstellen"
+}

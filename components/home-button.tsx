@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 // je landing page, tá je tiež v zozname).
 const HIDDEN_PATHS = new Set([
   "/",
+  "/navod",
   "/login",
   "/register",
   "/parent",

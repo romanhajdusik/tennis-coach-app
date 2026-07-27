@@ -1,0 +1,52 @@
+{
+  "metaTitle": "Guide — P.L.A.W",
+  "metaDescription": "How to use P.L.A.W: from sign-up through planning and logging practices to analytics.",
+  "eyebrow": "Coach guide",
+  "title": "How to use P.L.A.W",
+  "subtitle": "From sign-up to analytics — everything you need, step by step.",
+  "backToHome": "Back to home",
+  "stepWord": "Step",
+  "steps": [
+    {
+      "title": "Create your account",
+      "body": "Sign up as a coach and log in. Registration is free for now."
+    },
+    {
+      "title": "Add your player",
+      "body": "P.L.A.W always works with one active player. Add them in the Players section — you can switch to another one anytime."
+    },
+    {
+      "title": "Set up your drill codes",
+      "body": "The heart of the whole app. For each focus you get 20 slots to rename into your own drill shortcuts. Your analytics later break down exactly by these, so set them up first."
+    },
+    {
+      "title": "Plan a practice",
+      "body": "Create a practice with a date, time and duration. If your Google Calendar is connected, the event is added there automatically."
+    },
+    {
+      "title": "Log what happened",
+      "body": "Add drills to the practice — focus, shot character, code and duration. You can reorder them with arrows while the practice is still planned."
+    },
+    {
+      "title": "Review and lock",
+      "body": "After the practice, fill in the actual time and notes, and mark drills as not played or replaced. Lock a finished practice — it becomes a permanent record."
+    },
+    {
+      "title": "Track your analytics",
+      "body": "Overviews by week, month, quarter and year, compared to last season. Broken down by drill code and shot character."
+    },
+    {
+      "title": "Share with player, parent or manager",
+      "body": "Generate an access code and send it. The player, parent or manager gets their own view of the practice history — read-only."
+    }
+  ],
+  "tipsTitle": "Good to know",
+  "tips": [
+    "Add the app to your phone's home screen and use it like a native app right on the court.",
+    "Inactive players live in the archive — their full history stays available, read-only.",
+    "The app works in Slovak and English and always shows time in your own time zone."
+  ],
+  "ctaTitle": "Ready to start?",
+  "ctaText": "Create an account in a few minutes and plan your first practice today.",
+  "ctaButton": "Create account"
+}

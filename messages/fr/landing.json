@@ -4,6 +4,14 @@
   "heroSubtitle": "P.L.A.W vous aide à planifier, enregistrer et analyser chaque entraînement depuis votre téléphone — sans papier ni tableurs.",
   "ctaPrimary": "Essayer gratuitement",
   "ctaSecondary": "Se connecter",
+  "guideLink": "Guide",
+  "showcaseTitle": "Découvrez l'application",
+  "showcaseSubtitle": "Conçue pour ton téléphone — planifie, enregistre et analyse directement sur le court.",
+  "showcaseCaptions": {
+    "calendar": "Un calendrier d'entraînements clair",
+    "session": "Un journal détaillé de chaque séance",
+    "analytics": "Analyse par code d'exercice"
+  },
   "featuresTitle": "Tout ce qu'il vous faut, sur le court et en dehors",
   "features": [
     {

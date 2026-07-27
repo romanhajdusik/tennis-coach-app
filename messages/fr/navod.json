@@ -1,0 +1,52 @@
+{
+  "metaTitle": "Guide — P.L.A.W",
+  "metaDescription": "Comment utiliser P.L.A.W : de l'inscription à la planification, l'enregistrement des séances et l'analyse.",
+  "eyebrow": "Guide de l'entraîneur",
+  "title": "Comment utiliser P.L.A.W",
+  "subtitle": "De l'inscription à l'analyse — tout ce qu'il te faut, étape par étape.",
+  "backToHome": "Retour à l'accueil",
+  "stepWord": "Étape",
+  "steps": [
+    {
+      "title": "Crée ton compte",
+      "body": "Inscris-toi en tant qu'entraîneur et connecte-toi. L'inscription est gratuite pour le moment."
+    },
+    {
+      "title": "Ajoute ton joueur",
+      "body": "P.L.A.W travaille toujours avec un seul joueur actif. Ajoute-le dans la section Joueurs — tu peux passer à un autre à tout moment."
+    },
+    {
+      "title": "Configure tes codes d'exercice",
+      "body": "Le cœur de toute l'application. Pour chaque axe, tu disposes de 20 emplacements à renommer avec tes propres raccourcis d'exercices. L'analyse se décompose exactement selon eux, alors configure-les en premier."
+    },
+    {
+      "title": "Planifie une séance",
+      "body": "Crée une séance avec date, heure et durée. Si ton Google Agenda est connecté, l'événement y est ajouté automatiquement."
+    },
+    {
+      "title": "Enregistre le déroulé",
+      "body": "Ajoute des exercices à la séance — axe, caractère du coup, code et durée. Tu peux les réordonner avec les flèches tant que la séance est planifiée."
+    },
+    {
+      "title": "Évalue et verrouille",
+      "body": "Après la séance, renseigne le temps réel et les notes, et marque les exercices comme non joués ou remplacés. Verrouille une séance terminée — elle devient un enregistrement inaltérable."
+    },
+    {
+      "title": "Suis ton analyse",
+      "body": "Aperçus par semaine, mois, trimestre et année, comparés à la saison précédente. Décomposés par code d'exercice et caractère du coup."
+    },
+    {
+      "title": "Partage avec le joueur, le parent ou le manager",
+      "body": "Génère un code d'accès et envoie-le. Le joueur, le parent ou le manager obtient sa propre vue de l'historique des séances — en lecture seule."
+    }
+  ],
+  "tipsTitle": "Bon à savoir",
+  "tips": [
+    "Ajoute l'application à l'écran d'accueil de ton téléphone et utilise-la comme une app native directement sur le court.",
+    "Les joueurs inactifs sont dans les archives — tout leur historique reste disponible, en lecture seule.",
+    "L'application fonctionne en slovaque et en anglais et affiche toujours l'heure dans ton fuseau horaire."
+  ],
+  "ctaTitle": "Prêt à commencer ?",
+  "ctaText": "Crée un compte en quelques minutes et planifie ta première séance dès aujourd'hui.",
+  "ctaButton": "Créer un compte"
+}

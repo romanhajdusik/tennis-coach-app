@@ -4,6 +4,14 @@
   "heroSubtitle": "P.L.A.W hilft dir, jedes Training vom Handy aus zu planen, zu erfassen und auszuwerten — ganz ohne Papier und Excel.",
   "ctaPrimary": "Kostenlos testen",
   "ctaSecondary": "Anmelden",
+  "guideLink": "Anleitung",
+  "showcaseTitle": "So funktioniert es",
+  "showcaseSubtitle": "Für dein Smartphone gemacht — planen, protokollieren und analysieren direkt am Platz.",
+  "showcaseCaptions": {
+    "calendar": "Übersichtlicher Trainingskalender",
+    "session": "Detaillierte Aufzeichnung jedes Trainings",
+    "analytics": "Auswertung nach Übungscode"
+  },
   "featuresTitle": "Alles, was du auf und neben dem Platz brauchst",
   "features": [
     {

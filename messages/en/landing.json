@@ -4,6 +4,14 @@
   "heroSubtitle": "P.L.A.W helps you plan, log and analyze every training practice from your phone — no paper, no spreadsheets.",
   "ctaPrimary": "Try it for free",
   "ctaSecondary": "Sign in",
+  "guideLink": "Guide",
+  "showcaseTitle": "See it in action",
+  "showcaseSubtitle": "Built for your phone — plan, log and analyze right on the court.",
+  "showcaseCaptions": {
+    "calendar": "A clear training calendar",
+    "session": "A detailed log of every practice",
+    "analytics": "Analytics by drill code"
+  },
   "featuresTitle": "Everything you need, on the court and off it",
   "features": [
     {

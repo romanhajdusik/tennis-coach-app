@@ -4,6 +4,14 @@
   "heroSubtitle": "P.L.A.W ti pomôže naplánovať, zaznamenať a analyzovať každý tréning z telefónu — bez papierov a excelov.",
   "ctaPrimary": "Vyskúšať zadarmo",
   "ctaSecondary": "Prihlásiť sa",
+  "guideLink": "Návod",
+  "showcaseTitle": "Pozri sa, ako to funguje",
+  "showcaseSubtitle": "Celá appka je navrhnutá pre telefón — plánuj, zaznamenávaj a analyzuj priamo na kurte.",
+  "showcaseCaptions": {
+    "calendar": "Prehľadný kalendár tréningov",
+    "session": "Detailný záznam každého tréningu",
+    "analytics": "Analytika podľa kódu cvičenia"
+  },
   "featuresTitle": "Všetko, čo potrebuješ na kurte aj mimo neho",
   "features": [
     {

@@ -4,6 +4,14 @@
   "heroSubtitle": "P.L.A.W te ayuda a planificar, registrar y analizar cada entrenamiento desde el móvil — sin papeles ni hojas de cálculo.",
   "ctaPrimary": "Probar gratis",
   "ctaSecondary": "Iniciar sesión",
+  "guideLink": "Guía",
+  "showcaseTitle": "Míralo en acción",
+  "showcaseSubtitle": "Diseñada para tu teléfono: planifica, registra y analiza directamente en la pista.",
+  "showcaseCaptions": {
+    "calendar": "Un calendario de entrenamientos claro",
+    "session": "Registro detallado de cada entrenamiento",
+    "analytics": "Analítica por código de ejercicio"
+  },
   "featuresTitle": "Todo lo que necesitas, dentro y fuera de la pista",
   "features": [
     {

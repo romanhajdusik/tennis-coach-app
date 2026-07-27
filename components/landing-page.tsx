@@ -24,6 +24,14 @@ const FEATURE_ICONS = [
   DeviceMobileIcon,
 ];
 
+// Reálne mobilné screenshoty appky (v poradí plán → záznam → analýza).
+// Appka samotná je len SK/EN, takže existujú dve sady záberov: slovenská
+// (public/screenshots/sk) a anglická (public/screenshots/en). Slovenský
+// landing ukazuje slovenské zábery, všetky ostatné jazyky (EN/DE/ES/RU/FR)
+// anglické — angličtina je univerzálnejší fallback než slovenčina. Popisky
+// pod zábermi sú preložené do každého jazyka (showcaseCaptions).
+const SHOWCASE = ["calendar", "session", "analytics"] as const;
+
 export async function getLandingLocale() {
   const cookieStore = await cookies();
   const cookieLocale = cookieStore.get("LANDING_LOCALE")?.value;
@@ -33,19 +41,22 @@ export async function getLandingLocale() {
 export async function LandingPage() {
   const locale = await getLandingLocale();
   const t = await loadLandingMessages(locale);
+  // Appka je len SK/EN — slovenský landing dostane slovenské zábery,
+  // ostatné jazyky anglické.
+  const shotLocale = locale === "sk" ? "sk" : "en";
 
   return (
-    <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-white dark:bg-black">
-      {/* Dekoratívne rozmazané pozadie za hero sekciou */}
+    <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
+      {/* Dekoratívne rozmazané pozadie za hero sekciou (antukový nádych) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px] overflow-hidden"
       >
-        <div className="absolute left-1/2 top-[-180px] h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-green-400/25 blur-3xl dark:bg-green-500/10" />
-        <div className="absolute right-[-120px] top-[80px] h-[320px] w-[320px] rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-500/10" />
+        <div className="absolute left-1/2 top-[-180px] h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute right-[-120px] top-[80px] h-[320px] w-[320px] rounded-full bg-primary/10 blur-3xl" />
       </div>
 
-      <header className="sticky top-0 z-40 w-full border-b border-zinc-200/70 bg-white/80 backdrop-blur-md dark:border-zinc-800/70 dark:bg-black/70">
+      <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
           <span className="rounded-md bg-[#eef0f0] p-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -58,8 +69,14 @@ export async function LandingPage() {
           <div className="flex items-center gap-3">
             <LandingLanguageSwitcher currentLocale={locale} />
             <Link
+              href="/navod"
+              className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"
+            >
+              {t.guideLink}
+            </Link>
+            <Link
               href="/login"
-              className="hidden text-sm font-medium text-zinc-600 hover:text-zinc-900 sm:inline dark:text-zinc-400 dark:hover:text-zinc-50"
+              className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"
             >
               {t.ctaSecondary}
             </Link>
@@ -68,7 +85,7 @@ export async function LandingPage() {
       </header>
 
       <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-16 pt-16 text-center sm:px-6 sm:pb-24 sm:pt-24">
-        <span className="rounded-2xl border border-zinc-200 bg-[#eef0f0] p-3 shadow-sm dark:border-zinc-800">
+        <span className="rounded-2xl border border-border bg-[#eef0f0] p-3 shadow-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/plaw-logo.webp"
@@ -76,26 +93,26 @@ export async function LandingPage() {
             className="block h-auto w-full max-w-[260px] sm:max-w-[340px]"
           />
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800 ring-1 ring-green-600/10 dark:bg-green-900/40 dark:text-green-300">
-          <span className="h-1.5 w-1.5 rounded-full bg-green-600" />
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/30">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {t.eyebrow}
         </span>
-        <h1 className="text-4xl font-bold tracking-tight text-balance text-zinc-900 sm:text-5xl dark:text-zinc-50">
+        <h1 className="text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl">
           {t.heroTitle}
         </h1>
-        <p className="max-w-xl text-base text-balance text-zinc-600 sm:text-lg dark:text-zinc-400">
+        <p className="max-w-xl text-base text-balance text-muted sm:text-lg">
           {t.heroSubtitle}
         </p>
         <div className="flex flex-wrap justify-center gap-3 pt-2">
           <Link
             href="/register"
-            className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-green-600/25 transition hover:bg-green-700 hover:shadow-green-600/35"
+            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary-hover"
           >
             {t.ctaPrimary}
           </Link>
           <Link
             href="/login"
-            className="rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-900 transition hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-900"
+            className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface"
           >
             {t.ctaSecondary}
           </Link>
@@ -103,7 +120,39 @@ export async function LandingPage() {
       </section>
 
       <section className="w-full max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
-        <h2 className="mb-10 text-center text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl dark:text-zinc-50">
+        <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          {t.showcaseTitle}
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-base text-balance text-muted">
+          {t.showcaseSubtitle}
+        </p>
+        <div className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 md:flex-wrap md:justify-center md:overflow-visible md:pb-0">
+          {SHOWCASE.map((key) => (
+            <figure
+              key={key}
+              className="flex shrink-0 snap-center flex-col items-center gap-3"
+            >
+              <div className="w-[220px] rounded-[2rem] bg-input p-2.5 shadow-2xl ring-1 ring-border transition hover:-translate-y-1">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/screenshots/${shotLocale}/${key}.webp`}
+                  alt={t.showcaseCaptions[key]}
+                  width={640}
+                  height={1385}
+                  loading="lazy"
+                  className="block w-full rounded-[1.5rem]"
+                />
+              </div>
+              <figcaption className="max-w-[220px] text-center text-sm text-muted">
+                {t.showcaseCaptions[key]}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className="w-full max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
+        <h2 className="mb-10 text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           {t.featuresTitle}
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -112,15 +161,15 @@ export async function LandingPage() {
             return (
               <div
                 key={feature.title}
-                className="group rounded-2xl border border-zinc-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+                className="group rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm shadow-primary/25">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="mb-1.5 font-semibold text-zinc-900 dark:text-zinc-50">
+                <h3 className="mb-1.5 font-semibold text-foreground">
                   {feature.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="text-sm leading-relaxed text-muted">
                   {feature.description}
                 </p>
               </div>
@@ -130,45 +179,45 @@ export async function LandingPage() {
       </section>
 
       <section className="w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-gradient-to-b from-zinc-50 to-white p-8 text-center dark:border-zinc-800 dark:from-zinc-950 dark:to-black">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-white dark:bg-zinc-50 dark:text-zinc-900">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-8 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-xs font-medium text-muted ring-1 ring-inset ring-border">
             {t.pricingBadge}
           </span>
-          <h2 className="mt-4 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
             {t.pricingTitle}
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mx-auto mt-2 max-w-md text-sm text-muted">
             {t.pricingText}
           </p>
           <Link
             href="/register"
-            className="mt-5 inline-block rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-green-600/25 transition hover:bg-green-700"
+            className="mt-5 inline-block rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary-hover"
           >
             {t.pricingCta}
           </Link>
         </div>
       </section>
 
-      <section className="relative mt-6 w-full overflow-hidden bg-zinc-950 py-16 sm:py-20">
+      <section className="relative mt-6 w-full overflow-hidden bg-primary py-16 sm:py-20">
         <div
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-600/20 blur-3xl"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-3xl"
         />
         <div className="relative mx-auto flex w-full max-w-2xl flex-col items-center gap-4 px-4 text-center sm:px-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          <h2 className="text-2xl font-semibold tracking-tight text-primary-foreground sm:text-3xl">
             {t.finalCtaTitle}
           </h2>
-          <p className="text-sm text-zinc-300">{t.finalCtaSubtitle}</p>
+          <p className="text-sm text-primary-foreground/80">{t.finalCtaSubtitle}</p>
           <Link
             href="/register"
-            className="mt-2 rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100"
+            className="mt-2 rounded-lg bg-primary-foreground px-5 py-2.5 text-sm font-medium text-primary transition hover:opacity-90"
           >
             {t.finalCtaButton}
           </Link>
         </div>
       </section>
 
-      <footer className="w-full max-w-5xl px-4 py-8 text-center text-xs text-zinc-500 sm:px-6 dark:text-zinc-500">
+      <footer className="w-full max-w-5xl px-4 py-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
       </footer>
     </div>
