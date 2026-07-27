@@ -8,6 +8,8 @@ Tento súbor riadi prácu Claude Code na projekte. Vždy sa ním riaď.
 
 Názov appky sa v kóde nastavuje cez `Common.appTitle`/`appShortName` v `messages/{sk,en}/common.json` (PWA názov aj titulok stránky) a je hardcodovaný vo wordmarku/tagline v hlavičke `components/landing-page.tsx` — pri prípadnej ďalšej zmene názvu treba upraviť oba miesta. Doména **plaw.win** je od 2026-07-23 pripojená na Vercel a funguje (`plaw.win`/`www.plaw.win`, DNS spravovaný cez Websupport.sk). Appka beží súbežne aj na `*.vercel.app` URL. Landing page má zámerne `robots: noindex` (viď nižšie) — appka je teda funkčná, ale zatiaľ mimo vyhľadávačov, kým nebude pripravená na verejné spustenie.
 
+**Druhá doména plaw.online = samostatná verejná tvár (od 2026-07-27).** Ten istý Vercel projekt, ale `proxy.ts` (Next 16 ekvivalent middleware — POZOR, v Next 16 sa `middleware.ts` premenoval na `proxy.ts`, projekt už `proxy.ts` má na Supabase session cez `updateSession`) rozdeľuje obsah podľa hostname: na `plaw.online`/`www.plaw.online` sa zobrazia LEN verejné cesty (`/` landing, `/navod`), všetko ostatné (appkové cesty, login, API) sa 307 presmeruje na rovnakú cestu na `plaw.win`. Cookies sú per-doména, takže na plaw.online je návštevník vždy odhlásený → `/` prirodzene ukáže landing. Doménu plaw.online treba pripojiť vo Verceli (Settings → Domains) + nastaviť DNS (A `@` a CNAME `www` na hodnoty z Vercelu), rovnako ako pri plaw.win.
+
 Jadrom appky sú **kódy cvičení** (`drill_codes`, pozri dátový model nižšie) — tréner si nimi personalizuje vlastné skratky cvičení, ktoré sa potom vyberajú pri zázname tréningu a presne podľa nich sa rozpadá Analytika. Landing page aj návod pre trénerov toto zámerne zdôrazňujú ako prvý krok po pridaní hráča, nie ako voliteľnú drobnosť.
 
 ## Jazyk a konvencie
@@ -38,7 +40,7 @@ Appka má **jednotnú tmavosivú tému, žiadny svetlý režim** (`color-scheme:
 - Používaj tokenové triedy (`bg-primary`, `bg-surface`, `text-foreground`, `text-muted`, `border-border`, `bg-input`, `text-primary-foreground`). **Nepridávaj** späť natvrdo `bg-zinc-*`/`text-zinc-*`/`dark:*` triedy ani svetlý režim.
 - Stavové/chybové farby (červená = dokončený/chyba/deštrukcia, emerald = naplánovaný/potvrdené, green = úspech v nastaveniach, amber = kolízia kalendára, yellow = nahradené) ostávajú ako jednohodnotové tmavé triedy (napr. `bg-red-950 text-red-300`), zámerne odlíšené od brandovej antukovej. Kalendárové štítky dní: `bg-emerald-500 text-emerald-950` / `bg-red-500 text-red-950`.
 - Paleta grafov (`.viz-root` v `globals.css`) je tiež len tmavá sada; `--surface` = #27262b, aby splynula s kartou.
-- **Landing page (`components/landing-page.tsx`) je z tohto systému zámerne vynechaná** — má vlastný vzhľad a vlastnú SK/EN/DE/ES/RU/FR jazykovú vrstvu; pri prefarbovaní appky sa jej nedotýkaj, pokiaľ nie je povedané inak.
+- **Landing page (`components/landing-page.tsx`) aj návod (`app/navod/page.tsx`) používajú rovnaké antukové tmavé tokeny ako appka** (prefarbené 2026-07-27), takže verejný web ladí s produktom. Majú však vlastnú SK/EN/DE/ES/RU/FR jazykovú vrstvu (`LANDING_LOCALE`), oddelenú od appkového SK/EN. Pozor: antuka `#a24236` je tmavá — funguje ako **výplň** (`bg-primary` + `text-primary-foreground`), nie ako farba textu na tmavom pozadí; na akcenty textu použi `text-foreground`, antuku len na tlačidlá/odznaky/ikony/CTA pruhy.
 
 ## Príkazy
 
