@@ -2,7 +2,9 @@
 // oddelenú od appky (i18n/request.ts, len SK/EN). Appka ako celok sa
 // neprekladá do nemčiny/španielčiny/ruštiny/francúzštiny — len táto verejná
 // marketingová stránka, preto vlastný cookie a vlastný loader mimo next-intl.
-export const LANDING_LOCALES = ["sk", "en", "de", "es", "ru", "fr"] as const;
+// Poradie v prepínači jazykov (landing + návody). SK je zámerne posledné,
+// hoci ostáva predvolený jazyk (defaultLandingLocale nižšie).
+export const LANDING_LOCALES = ["en", "de", "es", "ru", "fr", "sk"] as const;
 export type LandingLocale = (typeof LANDING_LOCALES)[number];
 export const defaultLandingLocale: LandingLocale = "sk";
 
@@ -21,6 +23,8 @@ export async function loadLandingMessages(locale: LandingLocale) {
     ctaPrimary: string;
     ctaSecondary: string;
     guideLink: string;
+    guideCoach: string;
+    guidePlayer: string;
     showcaseTitle: string;
     showcaseSubtitle: string;
     showcaseCaptions: { calendar: string; session: string; analytics: string };

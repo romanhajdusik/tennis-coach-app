@@ -69,12 +69,6 @@ export async function LandingPage() {
           <div className="flex items-center gap-3">
             <LandingLanguageSwitcher currentLocale={locale} />
             <Link
-              href="/navod"
-              className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"
-            >
-              {t.guideLink}
-            </Link>
-            <Link
               href="/login"
               className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"
             >
@@ -115,6 +109,20 @@ export async function LandingPage() {
             className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface"
           >
             {t.ctaSecondary}
+          </Link>
+        </div>
+        <div className="flex w-full flex-col justify-center gap-3 pt-1 sm:flex-row">
+          <Link
+            href="/navod"
+            className="rounded-lg border border-border bg-surface px-5 py-2.5 text-center text-sm font-medium text-foreground transition hover:border-primary/50"
+          >
+            {t.guideCoach}
+          </Link>
+          <Link
+            href="/navod-hrac"
+            className="rounded-lg border border-border bg-surface px-5 py-2.5 text-center text-sm font-medium text-foreground transition hover:border-primary/50"
+          >
+            {t.guidePlayer}
           </Link>
         </div>
       </section>
