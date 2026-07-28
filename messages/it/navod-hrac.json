@@ -1,0 +1,33 @@
+{
+  "metaTitle": "Guida per giocatore, genitore e manager — P.L.A.W",
+  "metaDescription": "Come seguire gli allenamenti del tuo giocatore in P.L.A.W: registrazione, il codice di accesso dell'allenatore e la panoramica degli allenamenti.",
+  "eyebrow": "Per giocatore, genitore e manager",
+  "title": "Segui gli allenamenti",
+  "subtitle": "Una breve guida per collegarti all'allenatore e tenere d'occhio gli allenamenti — in soli 3 passi.",
+  "backToHome": "Torna alla home",
+  "stepWord": "Passo",
+  "steps": [
+    {
+      "title": "Crea il tuo account",
+      "body": "Registrati e scegli il tuo ruolo — giocatore, genitore o manager. Se hai già un account, accedi e basta."
+    },
+    {
+      "title": "Inserisci il codice dell'allenatore",
+      "body": "L'allenatore ti invia un breve codice di accesso (ad esempio via SMS). Inseriscilo una volta per collegarti al tuo giocatore."
+    },
+    {
+      "title": "Segui gli allenamenti",
+      "body": "Vedrai subito il calendario degli allenamenti, il dettaglio di ogni allenamento e le analisi del tuo giocatore. Tutto è in sola lettura — non puoi rovinare nulla."
+    }
+  ],
+  "tipsTitle": "Buono a sapersi",
+  "tips": [
+    "Il tuo storico resta — anche se la collaborazione con l'allenatore finisce o ricevi un nuovo codice, gli allenamenti passati non spariscono.",
+    "Per ora l'accesso è gratuito."
+  ],
+  "ctaTitle": "Hai ricevuto un codice dal tuo allenatore?",
+  "ctaText": "Accedi o crea un account e inizia a seguire gli allenamenti.",
+  "ctaButton": "Accedi o registrati",
+  "crossLinkText": "Sei un allenatore?",
+  "crossLinkCta": "Vedi la guida per l'allenatore"
+}

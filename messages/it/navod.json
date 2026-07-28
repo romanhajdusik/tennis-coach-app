@@ -1,0 +1,54 @@
+{
+  "metaTitle": "Guida — P.L.A.W",
+  "metaDescription": "Come usare P.L.A.W: dalla registrazione alla pianificazione e registrazione degli allenamenti, fino alle analisi.",
+  "eyebrow": "Guida per l'allenatore",
+  "title": "Come usare P.L.A.W",
+  "subtitle": "Dalla registrazione alle analisi — tutto ciò che ti serve, passo dopo passo.",
+  "backToHome": "Torna alla home",
+  "stepWord": "Passo",
+  "steps": [
+    {
+      "title": "Crea il tuo account",
+      "body": "Registrati come allenatore e accedi. Per ora la registrazione è gratuita."
+    },
+    {
+      "title": "Aggiungi il tuo giocatore",
+      "body": "P.L.A.W lavora sempre con un solo giocatore attivo. Aggiungilo nella sezione Giocatori — puoi passare a un altro in qualsiasi momento."
+    },
+    {
+      "title": "Configura i tuoi codici di esercizio",
+      "body": "Il cuore di tutta l'app. Per ogni obiettivo hai 20 posizioni da rinominare con le tue abbreviazioni di esercizio. Le tue analisi si suddivideranno esattamente in base a questi, quindi configurali per primi."
+    },
+    {
+      "title": "Pianifica un allenamento",
+      "body": "Crea un allenamento con data, ora e durata. Se il tuo Google Calendar è collegato, l'evento viene aggiunto lì automaticamente."
+    },
+    {
+      "title": "Registra ciò che è successo",
+      "body": "Aggiungi gli esercizi all'allenamento — obiettivo, carattere del colpo, codice e durata. Puoi riordinarli con le frecce finché l'allenamento è ancora pianificato."
+    },
+    {
+      "title": "Rivedi e blocca",
+      "body": "Dopo l'allenamento, inserisci il tempo effettivo e le note, e segna gli esercizi come non svolti o sostituiti. Blocca un allenamento concluso — diventa un registro permanente."
+    },
+    {
+      "title": "Segui le tue analisi",
+      "body": "Riepiloghi per settimana, mese, trimestre e anno, confrontati con la stagione precedente. Suddivisi per codice di esercizio e carattere del colpo."
+    },
+    {
+      "title": "Condividi con giocatore, genitore o manager",
+      "body": "Genera un codice di accesso e invialo. Il giocatore, il genitore o il manager ottiene una propria vista dello storico degli allenamenti — in sola lettura."
+    }
+  ],
+  "tipsTitle": "Buono a sapersi",
+  "tips": [
+    "Aggiungi l'app alla schermata home del telefono e usala come un'app nativa direttamente in campo.",
+    "I giocatori inattivi restano nell'archivio — il loro storico completo rimane disponibile, in sola lettura.",
+    "L'app funziona in slovacco e in inglese e mostra sempre l'ora nel tuo fuso orario."
+  ],
+  "ctaTitle": "Pronto a iniziare?",
+  "ctaText": "Crea un account in pochi minuti e pianifica oggi il tuo primo allenamento.",
+  "ctaButton": "Crea un account",
+  "crossLinkText": "Sei un giocatore, un genitore o un manager?",
+  "crossLinkCta": "Vedi la guida pensata per te"
+}

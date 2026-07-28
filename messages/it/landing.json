@@ -1,0 +1,52 @@
+{
+  "eyebrow": "Per allenatori di tennis",
+  "heroTitle": "Allenamenti sotto controllo. Direttamente in campo.",
+  "heroSubtitle": "P.L.A.W ti aiuta a pianificare, registrare e analizzare ogni allenamento dal telefono — niente carta, niente fogli di calcolo.",
+  "ctaPrimary": "Provalo gratis",
+  "ctaSecondary": "Accedi",
+  "guideLink": "Guida",
+  "guideCoach": "Guida per l'allenatore",
+  "guidePlayer": "Guida per giocatore, genitore e manager",
+  "showcaseTitle": "Guardalo in azione",
+  "showcaseSubtitle": "Pensato per il tuo telefono — pianifica, registra e analizza direttamente in campo.",
+  "showcaseCaptions": {
+    "calendar": "Un calendario degli allenamenti chiaro",
+    "session": "Un registro dettagliato di ogni allenamento",
+    "analytics": "Analisi per codice di esercizio"
+  },
+  "featuresTitle": "Tutto ciò che ti serve, in campo e fuori",
+  "features": [
+    {
+      "title": "Pianificazione degli allenamenti",
+      "description": "Pianifica un allenamento in pochi secondi, con durata e obiettivo. Se hai collegato Google Calendar, l'evento viene aggiunto automaticamente."
+    },
+    {
+      "title": "Registrazione e revisione",
+      "description": "Dopo l'allenamento, aggiungi il tempo effettivo e le note, e segna i singoli esercizi come saltati o sostituiti — lo svolgimento esatto dell'allenamento resta registrato. Puoi riordinare gli esercizi in qualsiasi momento con le frecce su/giù, finché l'allenamento è ancora pianificato."
+    },
+    {
+      "title": "I tuoi codici di esercizio",
+      "description": "20 posizioni per ogni area di lavoro, in linea con il tuo sistema di abbreviazioni — senza doverti adattare alla terminologia di altri."
+    },
+    {
+      "title": "Analisi e grafici",
+      "description": "Riepiloghi per settimana, mese, trimestre e anno con il confronto con la stagione precedente, suddivisi per codice di esercizio e per carattere del colpo."
+    },
+    {
+      "title": "Condivisione con giocatori, genitori e manager",
+      "description": "Il giocatore, il suo genitore o il suo manager ottengono un proprio accesso allo storico degli allenamenti — niente da inoltrare a mano."
+    },
+    {
+      "title": "Pensato per il telefono",
+      "description": "L'app è progettata mobile first, così è comoda da usare direttamente in campo, non solo alla scrivania."
+    }
+  ],
+  "pricingTitle": "Prezzi",
+  "pricingBadge": "In arrivo",
+  "pricingText": "Stiamo lavorando a semplici piani mensili e annuali. Fino ad allora, la registrazione è gratuita.",
+  "pricingCta": "Registrati gratis",
+  "finalCtaTitle": "Preparati alla stagione con una visione d'insieme chiara",
+  "finalCtaSubtitle": "Crea un account in un paio di minuti e pianifica oggi il tuo primo allenamento.",
+  "finalCtaButton": "Crea un account",
+  "footerTagline": "P.L.A.W — il registro degli allenamenti per allenatori di tennis"
+}

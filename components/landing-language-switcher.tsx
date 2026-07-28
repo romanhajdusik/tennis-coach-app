@@ -14,7 +14,7 @@ export function LandingLanguageSwitcher({
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="flex gap-1 rounded-full border border-zinc-200 bg-white/80 px-1.5 py-1 text-xs backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
+    <div className="flex flex-wrap justify-end gap-1 rounded-2xl border border-zinc-200 bg-white/80 px-1.5 py-1 text-xs backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
       {LANDING_LOCALES.map((value) => (
         <button
           key={value}

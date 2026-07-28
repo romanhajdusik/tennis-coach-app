@@ -1,0 +1,52 @@
+{
+  "eyebrow": "专为网球教练打造",
+  "heroTitle": "训练尽在掌握，就在球场上。",
+  "heroSubtitle": "P.L.A.W 让你用手机就能规划、记录和分析每一堂训练课——告别纸笔和表格。",
+  "ctaPrimary": "免费试用",
+  "ctaSecondary": "登录",
+  "guideLink": "使用指南",
+  "guideCoach": "教练指南",
+  "guidePlayer": "球员、家长和管理者指南",
+  "showcaseTitle": "实际体验一下",
+  "showcaseSubtitle": "专为手机设计——在球场上即可规划、记录和分析。",
+  "showcaseCaptions": {
+    "calendar": "清晰的训练日历",
+    "session": "每堂训练的详细记录",
+    "analytics": "按练习代码分类的数据分析"
+  },
+  "featuresTitle": "球场内外，一切所需一应俱全",
+  "features": [
+    {
+      "title": "训练规划",
+      "description": "几秒钟就能安排一堂训练，包括时长和训练重点。若已连接 Google 日历，日程会自动添加。"
+    },
+    {
+      "title": "记录与复盘",
+      "description": "训练结束后，填入实际时间和备注，并把个别练习标记为未进行或已替换——训练的完整过程都会留存下来。只要训练仍处于计划状态，你随时可以用上下箭头调整练习顺序。"
+    },
+    {
+      "title": "你自己的练习代码",
+      "description": "每个训练重点有 20 个位置，配合你自己的速记系统——无需迁就别人的术语。"
+    },
+    {
+      "title": "数据分析与图表",
+      "description": "按周、月、季度和年份细分，并与上一赛季对比，按练习代码和击球性质拆分。"
+    },
+    {
+      "title": "与球员、家长和管理者共享",
+      "description": "球员、家长或管理者都能获得自己的训练历史访问权限——无需手动转发。"
+    },
+    {
+      "title": "为手机而生",
+      "description": "应用采用移动优先设计，让你在球场上也能轻松使用，而不只是坐在桌前。"
+    }
+  ],
+  "pricingTitle": "价格",
+  "pricingBadge": "即将推出",
+  "pricingText": "我们正在准备简单的月付和年付方案。在此之前，注册完全免费。",
+  "pricingCta": "免费注册",
+  "finalCtaTitle": "用清晰的全局视野，为新赛季做好准备",
+  "finalCtaSubtitle": "几分钟即可创建账户，今天就规划你的第一堂训练。",
+  "finalCtaButton": "创建账户",
+  "footerTagline": "P.L.A.W — 网球教练的训练记录工具"
+}
