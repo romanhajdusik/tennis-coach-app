@@ -43,6 +43,13 @@ const STATUS_TEXT_CLASSES: Record<string, string> = {
   completed: " text-red-400",
 };
 
+// Rámček karty tréningu v zozname podľa stavu — dokončený červený,
+// naplánovaný zelený (ostatné stavy neutrálny sivý).
+const CARD_BORDER_CLASSES: Record<string, string> = {
+  planned: "border-emerald-500",
+  completed: "border-red-500",
+};
+
 export default async function ParentCalendarPage({
   searchParams,
 }: {
@@ -195,7 +202,9 @@ export default async function ParentCalendarPage({
                   <li key={session.id} id={`day-${toDayKey(new Date(session.date))}`}>
                     <Link
                       href={`/parent/sessions/${session.id}`}
-                      className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 "
+                      className={`flex items-center justify-between rounded-xl border ${
+                        CARD_BORDER_CLASSES[session.status] ?? "border-border"
+                      } bg-surface p-4`}
                     >
                       <p className="font-medium text-foreground ">
                         {format.dateTime(new Date(session.date), {
