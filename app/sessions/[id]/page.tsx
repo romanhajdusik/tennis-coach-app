@@ -95,7 +95,7 @@ export default async function SessionDetailPage({
         />
       )}
 
-      <div className="rounded-xl border border-border bg-surface p-4 ">
+      <div className="rounded-xl border border-yellow-500 bg-yellow-950/40 p-4">
         <p className="font-medium text-foreground ">
           {planned?.date
             ? format.dateTime(new Date(planned.date), {
@@ -104,8 +104,15 @@ export default async function SessionDetailPage({
               })
             : tSessions("noDate")}
         </p>
-        <p className="text-sm text-muted ">
-          {t("totalDuration", { minutes: totalMinutes })}
+        <p className="mt-1 text-sm text-yellow-200">
+          {t.rich("totalDuration", {
+            minutes: totalMinutes,
+            b: (chunks) => (
+              <span className="text-2xl font-bold text-yellow-300">
+                {chunks}
+              </span>
+            ),
+          })}
         </p>
       </div>
 

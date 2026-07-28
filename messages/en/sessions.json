@@ -9,7 +9,7 @@
   "detail": {
     "heading": "Practice",
     "calendarWarning": "This practice overlaps with another event in your Google Calendar.",
-    "totalDuration": "Total duration: {minutes} min",
+    "totalDuration": "Total duration: <b>{minutes} min</b>",
     "drillsHeading": "Drills",
     "locked": "Locked",
     "noDrills": "No drills yet."
