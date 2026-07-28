@@ -1,0 +1,33 @@
+{
+  "metaTitle": "Guide pour joueur, parent et manager — P.L.A.W",
+  "metaDescription": "Comment suivre les séances de ton joueur dans P.L.A.W : inscription, code d'accès du coach et aperçu des séances.",
+  "eyebrow": "Pour joueur, parent et manager",
+  "title": "Suis les séances de ton joueur",
+  "subtitle": "Un guide court pour te connecter au coach et garder un œil sur les séances — seulement 3 étapes.",
+  "backToHome": "Retour à l'accueil",
+  "stepWord": "Étape",
+  "steps": [
+    {
+      "title": "Crée ton compte",
+      "body": "Inscris-toi et choisis ton rôle — joueur, parent ou manager. Si tu as déjà un compte, connecte-toi simplement."
+    },
+    {
+      "title": "Saisis le code du coach",
+      "body": "Le coach t'envoie un court code d'accès (par exemple par SMS). Saisis-le une fois pour te connecter à ton joueur."
+    },
+    {
+      "title": "Suis les séances",
+      "body": "Tu verras tout de suite le calendrier des séances, le détail de chaque séance et l'analyse de ton joueur. Tout est en lecture seule — tu ne peux rien casser."
+    }
+  ],
+  "tipsTitle": "Bon à savoir",
+  "tips": [
+    "Ton historique reste — même si la collaboration avec le coach se termine ou que tu reçois un nouveau code, les séances passées ne disparaissent pas.",
+    "L'accès est gratuit pour le moment."
+  ],
+  "ctaTitle": "Tu as un code de ton coach ?",
+  "ctaText": "Connecte-toi ou crée un compte et commence à suivre les séances.",
+  "ctaButton": "Se connecter ou s'inscrire",
+  "crossLinkText": "Tu es coach ?",
+  "crossLinkCta": "Voir le guide du coach"
+}

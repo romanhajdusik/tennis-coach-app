@@ -1,0 +1,33 @@
+{
+  "metaTitle": "Guide for player, parent and manager — P.L.A.W",
+  "metaDescription": "How to follow your player's practices in P.L.A.W: sign up, the access code from the coach, and the practice overview.",
+  "eyebrow": "For player, parent & manager",
+  "title": "Follow your player's practices",
+  "subtitle": "A short guide to connect with the coach and keep track of practices — just 3 steps.",
+  "backToHome": "Back to home",
+  "stepWord": "Step",
+  "steps": [
+    {
+      "title": "Create your account",
+      "body": "Sign up and pick your role — player, parent or manager. If you already have an account, just log in."
+    },
+    {
+      "title": "Enter the coach's code",
+      "body": "The coach sends you a short access code (for example by SMS). Enter it once to connect with your player."
+    },
+    {
+      "title": "Follow the practices",
+      "body": "You'll immediately see the practice calendar, the detail of every practice and your player's analytics. Everything is read-only — you can't break anything."
+    }
+  ],
+  "tipsTitle": "Good to know",
+  "tips": [
+    "Your history stays — even if the collaboration with the coach ends or you get a new code, past practices don't disappear.",
+    "Access is free for now."
+  ],
+  "ctaTitle": "Got a code from your coach?",
+  "ctaText": "Log in or create an account and start following the practices.",
+  "ctaButton": "Log in or sign up",
+  "crossLinkText": "Are you a coach?",
+  "crossLinkCta": "See the coach guide"
+}

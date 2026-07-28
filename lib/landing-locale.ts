@@ -54,11 +54,22 @@ export type NavodMessages = {
   ctaTitle: string;
   ctaText: string;
   ctaButton: string;
+  crossLinkText: string;
+  crossLinkCta: string;
 };
 
 export async function loadNavodMessages(
   locale: LandingLocale,
 ): Promise<NavodMessages> {
   const messages = await import(`../messages/${locale}/navod.json`);
+  return messages.default as NavodMessages;
+}
+
+// Krátky návod pre pripojeného hráča/rodiča/manažéra (/navod-hrac) — rovnaká
+// štruktúra aj jazyková vrstva ako trénerský návod.
+export async function loadNavodHracMessages(
+  locale: LandingLocale,
+): Promise<NavodMessages> {
+  const messages = await import(`../messages/${locale}/navod-hrac.json`);
   return messages.default as NavodMessages;
 }

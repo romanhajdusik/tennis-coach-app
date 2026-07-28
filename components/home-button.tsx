@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 const HIDDEN_PATHS = new Set([
   "/",
   "/navod",
+  "/navod-hrac",
   "/login",
   "/register",
   "/parent",

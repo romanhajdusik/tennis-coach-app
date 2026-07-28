@@ -1,0 +1,33 @@
+{
+  "metaTitle": "Guía para jugador, padre y mánager — P.L.A.W",
+  "metaDescription": "Cómo seguir los entrenamientos de tu jugador en P.L.A.W: registro, código de acceso del entrenador y resumen de entrenamientos.",
+  "eyebrow": "Para jugador, padre y mánager",
+  "title": "Sigue los entrenamientos de tu jugador",
+  "subtitle": "Una guía corta para conectarte con el entrenador y estar al tanto de los entrenamientos — solo 3 pasos.",
+  "backToHome": "Volver al inicio",
+  "stepWord": "Paso",
+  "steps": [
+    {
+      "title": "Crea tu cuenta",
+      "body": "Regístrate y elige tu rol — jugador, padre o mánager. Si ya tienes cuenta, simplemente inicia sesión."
+    },
+    {
+      "title": "Introduce el código del entrenador",
+      "body": "El entrenador te envía un código de acceso corto (por ejemplo por SMS). Introdúcelo una vez para conectarte con tu jugador."
+    },
+    {
+      "title": "Sigue los entrenamientos",
+      "body": "Verás enseguida el calendario de entrenamientos, el detalle de cada entrenamiento y la analítica de tu jugador. Todo es solo lectura — no puedes estropear nada."
+    }
+  ],
+  "tipsTitle": "Bueno saber",
+  "tips": [
+    "Tu historial se mantiene — aunque la colaboración con el entrenador termine o recibas un código nuevo, los entrenamientos anteriores no desaparecen.",
+    "El acceso es gratuito por ahora."
+  ],
+  "ctaTitle": "¿Tienes un código del entrenador?",
+  "ctaText": "Inicia sesión o crea una cuenta y empieza a seguir los entrenamientos.",
+  "ctaButton": "Iniciar sesión o registrarse",
+  "crossLinkText": "¿Eres entrenador?",
+  "crossLinkCta": "Ver la guía para entrenadores"
+}

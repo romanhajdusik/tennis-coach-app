@@ -1,0 +1,33 @@
+{
+  "metaTitle": "Návod pre hráča, rodiča a manažéra — P.L.A.W",
+  "metaDescription": "Ako sledovať tréningy svojho hráča v P.L.A.W: registrácia, prístupový kód od trénera a prehľad tréningov.",
+  "eyebrow": "Pre hráča, rodiča a manažéra",
+  "title": "Sleduj tréningy svojho hráča",
+  "subtitle": "Krátky návod, ako sa pripojiť k trénerovi a mať prehľad o tréningoch — stačia 3 kroky.",
+  "backToHome": "Späť na úvod",
+  "stepWord": "Krok",
+  "steps": [
+    {
+      "title": "Vytvor si účet",
+      "body": "Zaregistruj sa a vyber si svoju rolu — hráč, rodič alebo manažér. Ak už účet máš, jednoducho sa prihlás."
+    },
+    {
+      "title": "Zadaj kód od trénera",
+      "body": "Tréner ti pošle krátky prístupový kód (napríklad cez SMS). Zadáš ho raz a tým sa prepojíš so svojím hráčom."
+    },
+    {
+      "title": "Sleduj tréningy",
+      "body": "Hneď uvidíš kalendár tréningov, detail každého tréningu aj analytiku svojho hráča. Všetko je len na čítanie — nič nepokazíš."
+    }
+  ],
+  "tipsTitle": "Dobré vedieť",
+  "tips": [
+    "História ti ostáva — aj keď sa spolupráca s trénerom skončí alebo dostaneš nový kód, doterajšie tréningy nezmiznú.",
+    "Prístup je zatiaľ zadarmo."
+  ],
+  "ctaTitle": "Máš kód od trénera?",
+  "ctaText": "Prihlás sa alebo si vytvor účet a začni sledovať tréningy.",
+  "ctaButton": "Prihlásiť sa alebo registrovať",
+  "crossLinkText": "Si tréner?",
+  "crossLinkCta": "Pozri návod pre trénerov"
+}

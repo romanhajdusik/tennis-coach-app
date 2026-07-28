@@ -1,16 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getLandingLocale } from "@/components/landing-page";
-import { loadNavodMessages } from "@/lib/landing-locale";
+import { loadNavodHracMessages } from "@/lib/landing-locale";
 import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
 
-// Návod je verejná stránka (súčasť plaw.online popri landingu) — používa tú
-// istú jazykovú vrstvu ako landing (LANDING_LOCALE, 6 jazykov), nie appkové
-// next-intl. Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
-// landing, pozri app/page.tsx). Farby: antuková tmavá téma ako appka.
+// Krátky verejný návod pre pripojeného hráča/rodiča/manažéra (druhá strana
+// appky). Rovnaká jazyková vrstva (LANDING_LOCALE, 6 jazykov) aj antuková
+// téma ako trénerský návod (/navod). Zámerne noindex.
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLandingLocale();
-  const t = await loadNavodMessages(locale);
+  const t = await loadNavodHracMessages(locale);
   return {
     title: t.metaTitle,
     description: t.metaDescription,
@@ -18,13 +17,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function NavodPage() {
+export default async function NavodHracPage() {
   const locale = await getLandingLocale();
-  const t = await loadNavodMessages(locale);
+  const t = await loadNavodHracMessages(locale);
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
-      {/* Dekoratívne rozmazané pozadie za hlavičkou (antukový nádych) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] overflow-hidden"
@@ -132,7 +130,7 @@ export default async function NavodPage() {
           </h2>
           <p className="text-sm text-primary-foreground/80">{t.ctaText}</p>
           <Link
-            href="/register"
+            href="/parent/login"
             className="mt-2 rounded-lg bg-primary-foreground px-5 py-2.5 text-sm font-medium text-primary transition hover:opacity-90"
           >
             {t.ctaButton}
@@ -143,7 +141,7 @@ export default async function NavodPage() {
       <div className="w-full max-w-3xl px-4 py-6 text-center text-sm text-muted sm:px-6">
         {t.crossLinkText}{" "}
         <Link
-          href="/navod-hrac"
+          href="/navod"
           className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
         >
           {t.crossLinkCta}

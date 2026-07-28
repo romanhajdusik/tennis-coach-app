@@ -48,5 +48,7 @@
   ],
   "ctaTitle": "Prêt à commencer ?",
   "ctaText": "Crée un compte en quelques minutes et planifie ta première séance dès aujourd'hui.",
-  "ctaButton": "Créer un compte"
+  "ctaButton": "Créer un compte",
+  "crossLinkText": "Tu es joueur, parent ou manager ?",
+  "crossLinkCta": "Voir le guide pour toi"
 }

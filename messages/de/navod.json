@@ -48,5 +48,7 @@
   ],
   "ctaTitle": "Bereit loszulegen?",
   "ctaText": "Erstelle in wenigen Minuten ein Konto und plane noch heute dein erstes Training.",
-  "ctaButton": "Konto erstellen"
+  "ctaButton": "Konto erstellen",
+  "crossLinkText": "Bist du Spieler, Elternteil oder Manager?",
+  "crossLinkCta": "Zur Anleitung für dich"
 }

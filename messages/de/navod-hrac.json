@@ -1,0 +1,33 @@
+{
+  "metaTitle": "Anleitung für Spieler, Eltern und Manager — P.L.A.W",
+  "metaDescription": "So verfolgst du die Trainings deines Spielers in P.L.A.W: Registrierung, Zugangscode vom Trainer und Trainingsübersicht.",
+  "eyebrow": "Für Spieler, Eltern & Manager",
+  "title": "Verfolge die Trainings deines Spielers",
+  "subtitle": "Eine kurze Anleitung, um dich mit dem Trainer zu verbinden und den Überblick zu behalten — nur 3 Schritte.",
+  "backToHome": "Zurück zur Startseite",
+  "stepWord": "Schritt",
+  "steps": [
+    {
+      "title": "Konto erstellen",
+      "body": "Registriere dich und wähle deine Rolle — Spieler, Elternteil oder Manager. Wenn du schon ein Konto hast, melde dich einfach an."
+    },
+    {
+      "title": "Code vom Trainer eingeben",
+      "body": "Der Trainer schickt dir einen kurzen Zugangscode (zum Beispiel per SMS). Gib ihn einmal ein, um dich mit deinem Spieler zu verbinden."
+    },
+    {
+      "title": "Trainings verfolgen",
+      "body": "Du siehst sofort den Trainingskalender, die Details jedes Trainings und die Auswertung deines Spielers. Alles ist schreibgeschützt — du kannst nichts kaputt machen."
+    }
+  ],
+  "tipsTitle": "Gut zu wissen",
+  "tips": [
+    "Deine Historie bleibt — auch wenn die Zusammenarbeit mit dem Trainer endet oder du einen neuen Code bekommst, verschwinden vergangene Trainings nicht.",
+    "Der Zugang ist vorerst kostenlos."
+  ],
+  "ctaTitle": "Hast du einen Code vom Trainer?",
+  "ctaText": "Melde dich an oder erstelle ein Konto und verfolge die Trainings.",
+  "ctaButton": "Anmelden oder registrieren",
+  "crossLinkText": "Bist du Trainer?",
+  "crossLinkCta": "Zur Trainer-Anleitung"
+}

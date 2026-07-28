@@ -48,5 +48,7 @@
   ],
   "ctaTitle": "Ready to start?",
   "ctaText": "Create an account in a few minutes and plan your first practice today.",
-  "ctaButton": "Create account"
+  "ctaButton": "Create account",
+  "crossLinkText": "Are you a player, parent or manager?",
+  "crossLinkCta": "See the guide for you"
 }

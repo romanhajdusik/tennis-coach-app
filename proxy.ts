@@ -7,7 +7,7 @@ import { updateSession } from "@/lib/supabase/middleware";
 // podľa hostname: na plaw.online povolíme len verejné cesty a všetko ostatné
 // presmerujeme na rovnakú cestu na plaw.win.
 const PUBLIC_ONLY_HOSTS = new Set(["plaw.online", "www.plaw.online"]);
-const PUBLIC_PATHS = new Set(["/", "/navod"]);
+const PUBLIC_PATHS = new Set(["/", "/navod", "/navod-hrac"]);
 const APP_ORIGIN = "https://plaw.win";
 
 export async function proxy(request: NextRequest) {
