@@ -1,5 +1,5 @@
 export const CATEGORY_OPTIONS = [
-  "Forhand",
+  "Forehand",
   "Backhand",
   "Volley",
   "Return",
@@ -25,7 +25,7 @@ export const DURATION_OPTIONS = [5, 10, 15, 20, 30];
 // Kódy cvičení podľa kategórie — kategória bez zoznamu (žiadna zatiaľ)
 // by použila voľné textové pole
 export const DRILLS: Record<string, string[]> = {
-  Forhand: ["FRH-CRS", "FRH-DTL", "FRH-IOU", "FRH-IIN", "FRH-SLC", "FRH-DRP"],
+  Forehand: ["FRH-CRS", "FRH-DTL", "FRH-IOU", "FRH-IIN", "FRH-SLC", "FRH-DRP"],
   Backhand: ["BKH-CRS", "BKH-DTL", "BKH-IOU", "BKH-IIN", "BKH-SLC", "BKH-DRP"],
   Volley: [
     "VOL-FRH",
@@ -76,7 +76,7 @@ export const DEFAULT_CHARACTER = "neutral";
 // Tieto zamerania zobrazujú v analytike vždy úplný rozpad (bez zbaľovania
 // do "Ostatné") a umožňujú prepnutie grafu na stĺpce.
 export const ANALYTICS_FULL_BREAKDOWN_CATEGORIES = [
-  "Forhand",
+  "Forehand",
   "Backhand",
   "Volley",
   "GAME DRILLS",
@@ -97,7 +97,7 @@ export type AnalyticsCodeGroup = { label: string; prefix: string };
 // stĺpec zobrazí detail jednotlivých kódov v rámci vybranej skupiny.
 export const ANALYTICS_GROUPED_CATEGORIES: Record<string, AnalyticsCodeGroup[]> = {
   Return: [
-    { label: "Forhand return", prefix: "RET-FRH" },
+    { label: "Forehand return", prefix: "RET-FRH" },
     { label: "Backhand return", prefix: "RET-BKH" },
   ],
   Serve: [
