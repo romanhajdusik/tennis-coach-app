@@ -2,8 +2,8 @@
 // oddelenú od appky (i18n/request.ts, len SK/EN). Appka ako celok sa
 // neprekladá do týchto ďalších jazykov — len táto verejná marketingová
 // stránka a návody, preto vlastný cookie a vlastný loader mimo next-intl.
-// Poradie v prepínači jazykov (landing + návody). SK je zámerne posledné,
-// hoci ostáva predvolený jazyk (defaultLandingLocale nižšie).
+// Poradie v prepínači jazykov (landing + návody). EN je prvé a je to
+// predvolený jazyk (defaultLandingLocale nižšie). SK je zámerne posledné.
 export const LANDING_LOCALES = [
   "en",
   "de",
@@ -16,7 +16,7 @@ export const LANDING_LOCALES = [
   "sk",
 ] as const;
 export type LandingLocale = (typeof LANDING_LOCALES)[number];
-export const defaultLandingLocale: LandingLocale = "sk";
+export const defaultLandingLocale: LandingLocale = "en";
 
 export function isValidLandingLocale(
   value: string | undefined,

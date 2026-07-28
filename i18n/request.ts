@@ -1,9 +1,13 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies } from "next/headers";
 
-export const locales = ["sk", "en"] as const;
+// Appka samotná je výhradne anglická. Slovenčina zostáva len na verejnom
+// webe (landing + návody, vlastná vrstva v lib/landing-locale.ts) a v kóde,
+// commitoch a dokumentácii — nie v UI produktu. Preto tu už nie je žiadny
+// prepínač jazyka ani SK locale.
+export const locales = ["en"] as const;
 export type AppLocale = (typeof locales)[number];
-export const defaultLocale: AppLocale = "sk";
+export const defaultLocale: AppLocale = "en";
 
 // Appka sa používa medzinárodne — každý používateľ má vidieť čas vo
 // vlastnom časovom pásme (zisťuje sa v prehliadači, pozri
@@ -58,10 +62,9 @@ async function loadMessages(locale: AppLocale) {
 
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();
-  const cookieLocale = cookieStore.get("NEXT_LOCALE")?.value;
-  const locale = (locales as readonly string[]).includes(cookieLocale ?? "")
-    ? (cookieLocale as AppLocale)
-    : defaultLocale;
+
+  // Jazyk appky je vždy angličtina (žiadna cookie NEXT_LOCALE sa už nečíta).
+  const locale: AppLocale = defaultLocale;
 
   const cookieTimeZone = cookieStore.get("NEXT_TIMEZONE")?.value;
   const timeZone = isValidTimeZone(cookieTimeZone) ? cookieTimeZone : defaultTimeZone;
