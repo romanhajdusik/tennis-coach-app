@@ -7,9 +7,6 @@
   "show": "Show",
   "previousYear": "◀ Last year",
   "noDrillsInPeriod": "No drills played in this period.",
-  "pointsMatchHeading": "MATCH vs other drills",
-  "pointsOtherLabel": "Other drills",
-  "pointsTotal": "Total {minutes} min",
   "weekLabel": "Week {week}, {year}",
   "yearLabel": "Year {year}",
   "months": [
@@ -28,6 +25,7 @@
   ],
   "byCodeGroupsHeading": "By drill code — groups",
   "byCodeHeading": "By drill code — time, strokes, % usage",
+  "byCodeHeadingNoStrokes": "By drill code — time, % usage",
   "detailHeading": "Detail — {group}",
   "byCharacterHeading": "By shot character",
   "generalShareHeading": "Share of total training time",
@@ -35,6 +33,7 @@
   "chartBar": "Bars",
   "otherGroupLabel": "Other",
   "codeStatsLine": "{minutes} min · ~{strokes} strokes · {percentage} %",
+  "codeStatsLineNoStrokes": "{minutes} min · {percentage} %",
   "strokesApprox": "~ Stroke count is an approximate estimate.",
   "characterStatsLine": "{minutes} min · {percentage} %",
   "percentageOnly": "{percentage} %"

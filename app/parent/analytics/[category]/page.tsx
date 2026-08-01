@@ -12,11 +12,10 @@ import { getParentCategoryAnalytics } from "@/lib/actions/parent-data";
 import {
   ANALYTICS_FULL_BREAKDOWN_CATEGORIES,
   ANALYTICS_GROUPED_CATEGORIES,
-  ANALYTICS_MATCH_SPLIT_CATEGORIES,
+  ANALYTICS_HIDE_STROKES_CATEGORIES,
   CATEGORY_OPTIONS,
 } from "@/lib/drill-options";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
-import { PointsChart } from "@/app/analytics/[category]/points-chart";
 
 const RANGE_VALUES: PeriodRangeType[] = ["week", "month", "quarter", "year"];
 
@@ -202,14 +201,13 @@ export default async function ParentAnalyticsPage({
             <p className="text-sm text-muted ">
               {t("noDrillsInPeriod")}
             </p>
-          ) : ANALYTICS_MATCH_SPLIT_CATEGORIES.includes(category) ? (
-            <PointsChart byCode={byCode} />
           ) : (
             <CategoryCharts
               byCode={byCode}
               byCharacter={byCharacter}
               fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(category)}
               groups={ANALYTICS_GROUPED_CATEGORIES[category]}
+              showStrokes={!ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)}
             />
           )}
         </>

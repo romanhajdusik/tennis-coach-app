@@ -84,9 +84,11 @@ function foldIntoOther(byCode: CodeStat[]): CodeStat[] {
 function CodeTooltip({
   active,
   payload,
+  showStrokes = true,
 }: {
   active?: boolean;
   payload?: { payload: CodeStat; fill?: string; color?: string }[];
+  showStrokes?: boolean;
 }) {
   const t = useTranslations("Analytics");
   if (!active || !payload?.length) return null;
@@ -101,11 +103,16 @@ function CodeTooltip({
         {item.code}
       </div>
       <p className="mt-1 text-muted ">
-        {t("codeStatsLine", {
-          minutes: item.minutes,
-          strokes: item.strokes,
-          percentage: Math.round(item.percentage),
-        })}
+        {showStrokes
+          ? t("codeStatsLine", {
+              minutes: item.minutes,
+              strokes: item.strokes,
+              percentage: Math.round(item.percentage),
+            })
+          : t("codeStatsLineNoStrokes", {
+              minutes: item.minutes,
+              percentage: Math.round(item.percentage),
+            })}
       </p>
     </div>
   );
@@ -179,11 +186,13 @@ export function CategoryCharts({
   byCharacter,
   fullBreakdown,
   groups,
+  showStrokes = true,
 }: {
   byCode: CodeStat[];
   byCharacter: CharacterStat[];
   fullBreakdown: boolean;
   groups?: AnalyticsCodeGroup[];
+  showStrokes?: boolean;
 }) {
   const t = useTranslations("Analytics");
   const otherLabel = t("otherGroupLabel");
@@ -237,7 +246,7 @@ export function CategoryCharts({
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="code" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-              <Tooltip content={<CodeTooltip />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
+              <Tooltip content={<CodeTooltip showStrokes={showStrokes} />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
               <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
                 {groupStatsRaw.map((entry, index) => (
                   <Cell
@@ -259,7 +268,9 @@ export function CategoryCharts({
           <h2 className="text-sm font-medium text-muted ">
             {groups
               ? t("detailHeading", { group: activeGroupLabel })
-              : t("byCodeHeading")}
+              : showStrokes
+                ? t("byCodeHeading")
+                : t("byCodeHeadingNoStrokes")}
           </h2>
           {fullBreakdown && (
             <ChartTypeToggle value={codeChartType} onChange={setCodeChartType} />
@@ -282,7 +293,7 @@ export function CategoryCharts({
                   <Cell key={entry.code} fill={codeColors[index]} />
                 ))}
               </Pie>
-              <Tooltip content={<CodeTooltip />} />
+              <Tooltip content={<CodeTooltip showStrokes={showStrokes} />} />
             </PieChart>
           ) : (
             <BarChart data={codeSlices} margin={{ top: 8, right: 8, bottom: 32, left: 0 }}>
@@ -296,7 +307,7 @@ export function CategoryCharts({
                 tick={{ fontSize: 11 }}
               />
               <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-              <Tooltip content={<CodeTooltip />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
+              <Tooltip content={<CodeTooltip showStrokes={showStrokes} />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
               <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
                 {codeSlices.map((entry, index) => (
                   <Cell key={entry.code} fill={codeColors[index]} />
@@ -320,16 +331,23 @@ export function CategoryCharts({
               </span>
               <span className="min-w-0 flex-1 truncate text-muted ">
                 —{" "}
-                {t("codeStatsLine", {
-                  minutes: entry.minutes,
-                  strokes: entry.strokes,
-                  percentage: Math.round(entry.percentage),
-                })}
+                {showStrokes
+                  ? t("codeStatsLine", {
+                      minutes: entry.minutes,
+                      strokes: entry.strokes,
+                      percentage: Math.round(entry.percentage),
+                    })
+                  : t("codeStatsLineNoStrokes", {
+                      minutes: entry.minutes,
+                      percentage: Math.round(entry.percentage),
+                    })}
               </span>
             </li>
           ))}
         </ul>
-        <p className="text-xs text-muted">{t("strokesApprox")}</p>
+        {showStrokes && (
+          <p className="text-xs text-muted">{t("strokesApprox")}</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 ">
