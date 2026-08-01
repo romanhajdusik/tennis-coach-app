@@ -24,6 +24,20 @@ const FIXED_STROKES_PER_MIN_CATEGORIES: Record<string, number> = {
   "GAME DRILLS": 22,
 };
 
+// Odhad úderov sa u mladších hráčov znižuje — deti a juniori majú kratšie
+// a pomalšie výmeny, takže odhad odvodený z dospelej sadzby by ich preceňoval.
+// Stupňovito podľa veku (z players.birth_year), najmladšia hranica má prednosť:
+//   vek < 13 → −20 %, < 15 → −15 %, < 17 → −10 %, 17+ (alebo ročník neznámy) → bez zmeny.
+// Vek = aktuálny rok − ročník narodenia (v DB máme len ročník, nie presný dátum).
+export function ageStrokeFactor(birthYear: number | null | undefined): number {
+  if (!birthYear) return 1;
+  const age = new Date().getFullYear() - birthYear;
+  if (age < 13) return 0.8;
+  if (age < 15) return 0.85;
+  if (age < 17) return 0.9;
+  return 1;
+}
+
 function isoWeekRange(year: number, week: number): { start: Date; end: Date } {
   const jan4 = new Date(Date.UTC(year, 0, 4));
   const jan4Day = jan4.getUTCDay() || 7; // Po=1 .. Ne=7
@@ -152,6 +166,7 @@ type DrillForStats = {
 export function aggregateDrillStats(
   drills: DrillForStats[],
   category: string,
+  strokeFactor = 1,
 ): { byCode: CodeStat[]; byCharacter: CharacterStat[] } {
   const codeTotals = new Map<string, { minutes: number; strokes: number }>();
   const characterTotals = new Map<string, number>();
@@ -162,7 +177,8 @@ export function aggregateDrillStats(
   for (const drill of drills) {
     const code = drill.drill_code ?? "—";
     const strokesPerMin = fixedStrokesPerMin ?? STROKES_PER_MIN[drill.character] ?? 0;
-    const strokes = drill.duration_minutes * BREAK_FACTOR * strokesPerMin;
+    const strokes =
+      drill.duration_minutes * BREAK_FACTOR * strokesPerMin * strokeFactor;
 
     const codeEntry = codeTotals.get(code) ?? { minutes: 0, strokes: 0 };
     codeEntry.minutes += drill.duration_minutes;
@@ -229,16 +245,16 @@ async function getActivePlayerSessionIdsInPeriod(
   userId: string,
   start: Date,
   end: Date,
-): Promise<string[]> {
+): Promise<{ sessionIds: string[]; birthYear: number | null }> {
   const { data: activePlayer } = await supabase
     .from("players")
-    .select("id")
+    .select("id, birth_year")
     .eq("coach_id", userId)
     .eq("is_active", true)
     .maybeSingle();
 
   if (!activePlayer) {
-    return [];
+    return { sessionIds: [], birthYear: null };
   }
 
   const { data: sessions } = await supabase
@@ -246,7 +262,7 @@ async function getActivePlayerSessionIdsInPeriod(
     .select("id, planned_data, actual_data")
     .eq("player_id", activePlayer.id);
 
-  return (sessions ?? [])
+  const sessionIds = (sessions ?? [])
     .filter((session) => {
       const planned = session.planned_data as PlannedData | null;
       const actual = session.actual_data as ActualData | null;
@@ -256,6 +272,8 @@ async function getActivePlayerSessionIdsInPeriod(
       return date >= start && date < end;
     })
     .map((session) => session.id);
+
+  return { sessionIds, birthYear: activePlayer.birth_year };
 }
 
 export async function getCategoryAnalytics(
@@ -265,7 +283,7 @@ export async function getCategoryAnalytics(
   start: Date,
   end: Date,
 ): Promise<{ byCode: CodeStat[]; byCharacter: CharacterStat[] }> {
-  const sessionIds = await getActivePlayerSessionIdsInPeriod(
+  const { sessionIds, birthYear } = await getActivePlayerSessionIdsInPeriod(
     supabase,
     userId,
     start,
@@ -283,7 +301,7 @@ export async function getCategoryAnalytics(
     .eq("category", category)
     .eq("status", "played");
 
-  return aggregateDrillStats(drills ?? [], category);
+  return aggregateDrillStats(drills ?? [], category, ageStrokeFactor(birthYear));
 }
 
 // Podiel všetkých zameraní na celkovom odohranom čase v období (naprieč
@@ -294,7 +312,7 @@ export async function getCategoryMinuteShares(
   start: Date,
   end: Date,
 ): Promise<CategoryShareStat[]> {
-  const sessionIds = await getActivePlayerSessionIdsInPeriod(
+  const { sessionIds } = await getActivePlayerSessionIdsInPeriod(
     supabase,
     userId,
     start,

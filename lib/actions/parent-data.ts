@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import {
+  ageStrokeFactor,
   aggregateDrillStats,
   type CharacterStat,
   type CodeStat,
@@ -48,5 +49,38 @@ export async function getParentCategoryAnalytics(
     .eq("category", category)
     .eq("status", "played");
 
-  return aggregateDrillStats(drills ?? [], category);
+  // Odhad úderov znižujeme podľa veku hráča rovnako ako u trénera. Rodič
+  // vidí ročník aktívne pripojeného hráča priamo cez RLS policy
+  // players_select_connected_parent, takže netreba snapshot na strane kópie.
+  const birthYear = await getConnectedPlayerBirthYear(supabase, parentId);
+
+  return aggregateDrillStats(drills ?? [], category, ageStrokeFactor(birthYear));
+}
+
+// Ročník aktívne pripojeného hráča daného rodiča/hráča/manažéra. Číta sa
+// z players (nie z kópie) — RLS policy players_select_connected_parent to
+// pri aktívnom prepojení povoľuje. Bez aktívneho prepojenia vráti null
+// (odhad úderov sa potom nekráti).
+async function getConnectedPlayerBirthYear(
+  supabase: SupabaseServerClient,
+  parentId: string,
+): Promise<number | null> {
+  const { data: connection } = await supabase
+    .from("player_connections")
+    .select("player_id")
+    .eq("parent_id", parentId)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (!connection) {
+    return null;
+  }
+
+  const { data: player } = await supabase
+    .from("players")
+    .select("birth_year")
+    .eq("id", connection.player_id)
+    .maybeSingle();
+
+  return player?.birth_year ?? null;
 }
