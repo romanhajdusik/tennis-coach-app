@@ -20,7 +20,7 @@ export default async function PlayersPage() {
 
   const { data: players } = await supabase
     .from("players")
-    .select("id, name, birth_date, is_active")
+    .select("id, name, birth_year, is_active")
     .eq("coach_id", user.id)
     .order("is_active", { ascending: false })
     .order("created_at", { ascending: true });
@@ -62,9 +62,9 @@ export default async function PlayersPage() {
               <p className="font-medium text-foreground ">
                 {activePlayer.name}
               </p>
-              {activePlayer.birth_date && (
+              {activePlayer.birth_year && (
                 <p className="text-sm text-muted ">
-                  {activePlayer.birth_date}
+                  {activePlayer.birth_year}
                 </p>
               )}
             </div>
@@ -105,9 +105,9 @@ export default async function PlayersPage() {
                   <p className="font-medium text-foreground ">
                     {player.name}
                   </p>
-                  {player.birth_date && (
+                  {player.birth_year && (
                     <p className="text-sm text-muted ">
-                      {player.birth_date}
+                      {player.birth_year}
                     </p>
                   )}
                 </div>

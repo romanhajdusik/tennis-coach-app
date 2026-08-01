@@ -7,8 +7,10 @@
   "archiveHeading": "Archive",
   "addForm": {
     "heading": "Add player",
-    "nameLabel": "Name",
-    "birthDateLabel": "Date of birth",
+    "nameLabel": "Name or nickname",
+    "nameHint": "A first name or nickname is enough — no full name required.",
+    "birthYearLabel": "Year of birth",
+    "birthYearPlaceholder": "e.g. 2011",
     "submit": "Add player",
     "submitPending": "Adding..."
   },
@@ -26,6 +28,7 @@
   },
   "errors": {
     "missingName": "Enter the player's name.",
+    "invalidBirthYear": "Enter a valid year of birth.",
     "createFailed": "Failed to create the player."
   }
 }

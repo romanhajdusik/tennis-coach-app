@@ -262,6 +262,7 @@ export type Database = {
       players: {
         Row: {
           birth_date: string | null
+          birth_year: number | null
           coach_id: string
           created_at: string
           id: string
@@ -271,6 +272,7 @@ export type Database = {
         }
         Insert: {
           birth_date?: string | null
+          birth_year?: number | null
           coach_id: string
           created_at?: string
           id?: string
@@ -280,6 +282,7 @@ export type Database = {
         }
         Update: {
           birth_date?: string | null
+          birth_year?: number | null
           coach_id?: string
           created_at?: string
           id?: string

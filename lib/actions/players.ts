@@ -11,12 +11,22 @@ export async function createPlayer(
   _prevState: PlayerFormState,
   formData: FormData,
 ): Promise<PlayerFormState> {
-  const name = formData.get("name") as string;
-  const birthDate = formData.get("birth_date") as string;
+  const name = (formData.get("name") as string)?.trim();
+  const birthYearRaw = (formData.get("birth_year") as string)?.trim();
   const t = await getTranslations("Players.errors");
 
   if (!name) {
     return { error: t("missingName") };
+  }
+
+  let birthYear: number | null = null;
+  if (birthYearRaw) {
+    const parsed = Number.parseInt(birthYearRaw, 10);
+    const currentYear = new Date().getFullYear();
+    if (!Number.isInteger(parsed) || parsed < 1900 || parsed > currentYear) {
+      return { error: t("invalidBirthYear") };
+    }
+    birthYear = parsed;
   }
 
   const supabase = await createClient();
@@ -38,7 +48,7 @@ export async function createPlayer(
   const { error } = await supabase.from("players").insert({
     coach_id: user.id,
     name,
-    birth_date: birthDate || null,
+    birth_year: birthYear,
     is_active: !existingActive,
   });
 

@@ -7,6 +7,7 @@ import { createPlayer } from "@/lib/actions/players";
 export function AddPlayerForm() {
   const t = useTranslations("Players.addForm");
   const [state, formAction, pending] = useActionState(createPlayer, undefined);
+  const currentYear = new Date().getFullYear();
 
   return (
     <form
@@ -30,18 +31,24 @@ export function AddPlayerForm() {
           required
           className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
         />
+        <p className="text-xs text-muted">{t("nameHint")}</p>
       </div>
       <div className="flex flex-col gap-1">
         <label
-          htmlFor="birth_date"
+          htmlFor="birth_year"
           className="text-sm font-medium text-foreground "
         >
-          {t("birthDateLabel")}
+          {t("birthYearLabel")}
         </label>
         <input
-          id="birth_date"
-          name="birth_date"
-          type="date"
+          id="birth_year"
+          name="birth_year"
+          type="number"
+          inputMode="numeric"
+          min={1900}
+          max={currentYear}
+          step={1}
+          placeholder={t("birthYearPlaceholder")}
           className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
         />
       </div>
