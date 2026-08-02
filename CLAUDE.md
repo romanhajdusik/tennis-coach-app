@@ -173,6 +173,38 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 ### Nápady na neskôr (nepotvrdené, nezaradené do fázy)
 
+> Podrobné architektonické návrhy (multi-šport platforma + kondičná appka + Garmin/Polar,
+> vrátane odporúčaných modelov a otvorených otázok) sú vo verbatim znení v
+> [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md). Nižšie len stručné body.
+
+- **Multi-šport platforma (tenis → padel, bedminton, pickleball)** (2026-08-01): tenisová
+  appka je „inštancia #1" spoločného enginu; športy sa líšia len v ~10 % (zamerania + drills
+  + pár analytických pravidiel). Zlaté pravidlo: **šport-špecifické = konfigurácia (SportConfig),
+  engine = zdieľaný kód, engine nikdy neforkovať na šport.** Appka je na ~80 % pripravená —
+  šport-špecifiká už žijú prevažne v `lib/drill-options.ts` + analytických konštantách
+  `lib/actions/analytics.ts`. Pri ďalšej práci na tenise nič nehardcodovať „tenisovo" mimo
+  konfig vrstvy (vzorec/slovo „strokes", serve/return prefix zoskupenie, sadzby charakteru).
+  Budúci mechanizmus: **A) jeden repo, šport podľa nasadenia (`SPORT=padel`) — odporúčané**,
+  nie kopírovať repo na každý šport. Detaily + audit-plán v docs dokumente.
+- **Kondičná appka (samostatná doména, 1:N)** (2026-08-01): samostatná appka pre kondičný
+  tréning; v tenisovom kalendári hráča sa majú zobraziť aj kondičné tréningy. Obmedzenia:
+  viac aktívnych hráčov (1:N), dáta vlastní príslušný tréner, funguje aj bez tenisu (opt-in),
+  predáva sa samostatne. Odporúčaný model: **jeden Supabase projekt + spoločné Auth, dve
+  oddelené domény, prepojenie voliteľným connect-code linkom, read-only cross-read.**
+  „Samostatný predaj ≠ samostatná databáza" (predplatné je per-app). Jediné rozhodnutie,
+  čo mení „jeden backend vs dva": či obe appky prevádzkuje používateľ, alebo neskôr iná firma.
+  Detaily v docs dokumente.
+- **Organizačný riadiaci pult pre federácie/kluby/akadémie (B2B)** (2026-08-02): federácia
+  si objedná multiprístup (napr. 10 trénerov), **športový riaditeľ** má read-only „riadiaci
+  pult" s prehľadom spolupráce každého trénera a jeho zverenca (v budúcnosti aj kondičného
+  trénera). Nová os *nad* trénermi (nie vedľa hráča ako `player_connections`). Rozhodnutia:
+  (1) tréner má v appke len hráčov z organizácie → žiadny per-hráč „org-visible" flag;
+  (2) riaditeľ read-only; (3) jedna org = jeden šport. Model: nové tabuľky `organizations` +
+  `organization_members` (rola `director`, pozývací kód ako connect-code), **živý read-only
+  pohľad cez RLS** (nie kópie), reuse `app/parent/` read-only stránok + agregátov. Aditívne
+  k jadru, páruje sa so Stripe („sedadlá" = predplatné na N miest, najhodnotnejší B2B tier).
+  **Toto je konkrétna licencovaná verzia nižšieho bodu „Manažér/športový riaditeľ" — zlúčiť.**
+  Detaily verbatim v [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md) §4.
 - **Manažér/športový riaditeľ pre viacerých hráčov naraz** (akadémie, zväzy): dnes má rola `manager` v DB rovnaké obmedzenie ako `parent` — `one_active_connection_per_parent` (`supabase/migrations/20260715100000_player_connections.sql`) dovoľuje len jedno aktívne prepojenie naraz, nový kód automaticky zruší predošlé. Nápad: uvoľniť tento limit len pre rolu `manager` (rodič ostáva 1:1) a postaviť prehľadovú stránku so zoznamom/tabuľkou hráčov zoskupených podľa trénera (`player_connections.coach_id`), s indikátorom "bez tréningu X dní" a agregovanou analytikou naprieč akadémiou. Dva mockupy (mobil aj tablet/laptop s grafmi) boli spravené 2026-07-17, zatiaľ len ako Claude Artifacts na diskusiu, nič nie je implementované. Ide o B2B rozšírenie scope-u (akadémie/zväzy majú iné potreby aj cenotvorbu než 1:1 tréner-hráč) — netreba to robiť mimochodom pri inej úlohe, len ako vedomé rozhodnutie o rozsahu.
 - **Import dát z Garminu/Polaru** (pripomenuté 2026-07-20, zatiaľ len nápad): hráč (rola `player`, zaklaimovaná cez `player_connections`) by si mal vedieť pripojiť/stiahnuť dáta zo svojich fitness hodiniek (Garmin Connect / Polar). Dáta sa majú zobraziť pri konkrétnom tréningu (asi treba spárovať aktivitu s `sessions` podľa dátumu/času, podobne ako kolízna kontrola pri Google Calendar) aj v analytike (`lib/actions/analytics.ts`). Zatiaľ nerozhodnuté: ktoré metriky (tep, vzdialenosť, kalórie...), OAuth pripojenie per hráč (analogicky k `google_calendar_connections`, ale na strane hráča/rodičovskej appky, nie trénera), nová tabuľka na surové/spárované dáta. Nezačínaj implementovať bez ďalšieho spresnenia zadania.
 
