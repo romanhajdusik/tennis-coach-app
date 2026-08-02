@@ -1,0 +1,878 @@
+<style>
+  /* ===========================================================================
+     P.L.A.W — Riadiaci pult šéftrénera (federácia) — klikací mockup
+     Domov → Hráči / Tréneri (rozpady) · Admin (šéftréner vypĺňa) ·
+     Detail hráča = TIE ISTÉ štatistiky ako trénerská appka.
+     Dáta vlastní federácia (tréner = zamestnanec). Tréningové dáta read-only,
+     organizačná klasifikácia je writable admin metadáta.
+     Antuková tmavá téma (app/globals.css) + .viz-root paleta. Len dark režim.
+     =========================================================================== */
+  :root {
+    --background:#1e1e21; --surface:#27262b; --surface-2:#302f36; --input:#191819;
+    --border:#3a383f; --border-soft:#322f37; --foreground:#ededee; --muted:#a3a2aa; --muted-2:#77767d;
+    --primary:#a24236; --primary-hover:#b64e40; --primary-foreground:#fdeee9; --primary-tint:rgba(162,66,54,0.16);
+    --series-1:#3987e5; --series-2:#199e70; --series-3:#c98500; --series-4:#008300; --series-5:#9085e9; --series-6:#e66767; --series-other:#52514e;
+    --ok:#10b981; --ok-text:#34d399; --ok-bg:rgba(16,185,129,0.14);
+    --warn:#f59e0b; --warn-text:#fbbf24; --warn-bg:rgba(245,158,11,0.14);
+    --crit:#ef4444; --crit-text:#f87171; --crit-bg:rgba(239,68,68,0.14);
+    --radius:14px; --radius-sm:10px;
+    --shadow:0 1px 0 rgba(255,255,255,0.02) inset, 0 8px 24px -12px rgba(0,0,0,0.6);
+    --font:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; background:var(--background); color:var(--foreground); font-family:var(--font); font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+  .tnum { font-variant-numeric:tabular-nums; }
+  button, select { font-family:inherit; }
+  ::selection { background:var(--primary); color:var(--primary-foreground); }
+  :focus-visible { outline:2px solid var(--primary-hover); outline-offset:2px; border-radius:6px; }
+
+  /* ============================ SHELL ============================ */
+  .app { display:grid; grid-template-columns:244px 1fr; min-height:100vh; }
+  .sidebar { background:#201f23; border-right:1px solid var(--border-soft); display:flex; flex-direction:column; padding:18px 14px; gap:22px; position:sticky; top:0; height:100vh; }
+  .brand { display:flex; align-items:center; gap:11px; padding:4px 6px; }
+  .brand .mark { width:34px; height:34px; border-radius:9px; background:var(--primary); display:grid; place-items:center; color:var(--primary-foreground); flex:none; box-shadow:0 4px 12px -4px rgba(162,66,54,0.6); }
+  .brand .mark svg { width:19px; height:19px; }
+  .brand .name { font-weight:700; letter-spacing:0.06em; font-size:15px; }
+  .brand .sub { font-size:11px; color:var(--muted); letter-spacing:0.02em; margin-top:1px; }
+  .nav { display:flex; flex-direction:column; gap:3px; }
+  .nav-label { font-size:10.5px; letter-spacing:0.13em; text-transform:uppercase; color:var(--muted-2); padding:4px 10px 6px; font-weight:600; }
+  .nav-item { display:flex; align-items:center; gap:11px; padding:9px 11px; border-radius:var(--radius-sm); background:none; border:0; width:100%; text-align:left; color:var(--muted); font-size:13.5px; cursor:pointer; transition:background 0.14s, color 0.14s; }
+  .nav-item svg { width:17px; height:17px; flex:none; opacity:0.9; }
+  .nav-item:hover { background:var(--surface); color:var(--foreground); }
+  .nav-item.active { background:var(--primary-tint); color:var(--primary-foreground); font-weight:600; }
+  .nav-item.active svg { color:var(--primary-hover); opacity:1; }
+  .nav-item .badge { margin-left:auto; background:var(--crit-bg); color:var(--crit-text); font-size:11px; font-weight:700; padding:1px 7px; border-radius:20px; }
+  .sidebar-foot { margin-top:auto; }
+  .director-card { display:flex; align-items:center; gap:10px; padding:10px; border-radius:var(--radius-sm); background:var(--surface); border:1px solid var(--border-soft); }
+  .director-card .avatar { width:34px; height:34px; border-radius:50%; flex:none; background:linear-gradient(135deg,#b64e40,#7d332a); display:grid; place-items:center; font-weight:700; font-size:13px; color:#fff; }
+  .director-card .who .n { font-size:13px; font-weight:600; }
+  .director-card .who .r { font-size:11px; color:var(--muted); }
+
+  .main { display:flex; flex-direction:column; min-width:0; }
+  .topbar { position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:14px; padding:13px 26px; background:rgba(30,30,33,0.82); backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft); }
+  .hamburger { display:none; background:none; border:0; color:var(--foreground); cursor:pointer; padding:4px; }
+  .hamburger svg { width:22px; height:22px; }
+  .academy { display:flex; align-items:center; gap:10px; min-width:0; }
+  .academy .a-name { font-weight:650; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chip { display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:20px; background:var(--surface); border:1px solid var(--border); color:var(--muted); white-space:nowrap; }
+  .chip .dot { width:6px; height:6px; border-radius:50%; background:var(--series-3); }
+  .topbar .spacer { margin-left:auto; }
+  .ro-badge { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:20px; background:var(--warn-bg); color:var(--warn-text); }
+  .ro-badge svg { width:13px; height:13px; }
+  .content { padding:26px; max-width:1180px; width:100%; }
+
+  /* ============================ VIEWS ============================ */
+  .view { display:none; animation:fade 0.22s ease; }
+  .view.active { display:block; }
+  @keyframes fade { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce) { .view, .toast, .squad { animation:none !important; } }
+  .page-head { margin-bottom:20px; }
+  .page-head h1 { margin:0; font-size:21px; font-weight:650; letter-spacing:-0.01em; }
+  .page-head .ph-sub { color:var(--muted); font-size:13.5px; margin-top:3px; }
+
+  /* ============================ KPI ============================ */
+  .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+  .kpi { background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius); padding:15px 16px; box-shadow:var(--shadow); position:relative; overflow:hidden; }
+  .kpi .k-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .kpi .k-label { font-size:12px; color:var(--muted); font-weight:500; }
+  .kpi .k-ico { width:30px; height:30px; border-radius:8px; display:grid; place-items:center; background:var(--surface-2); color:var(--muted); flex:none; }
+  .kpi .k-ico svg { width:16px; height:16px; }
+  .kpi .k-val { font-size:30px; font-weight:700; letter-spacing:-0.02em; margin-top:10px; line-height:1; }
+  .kpi .k-foot { font-size:12px; color:var(--muted); margin-top:7px; }
+  .kpi.attention { cursor:pointer; }
+  .kpi.attention .k-ico { background:var(--warn-bg); color:var(--warn-text); }
+  .kpi.attention .k-val { color:var(--warn-text); }
+  .kpi.attention::after { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--warn); }
+  .kpi.attention:hover { border-color:var(--warn); }
+
+  /* ============================ ENTRY BUTTONS (Domov) ============================ */
+  .entry-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:22px; }
+  .entry-card { display:flex; align-items:center; gap:18px; background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius); padding:22px 24px; box-shadow:var(--shadow); cursor:pointer; text-align:left; width:100%; transition:border-color 0.14s, transform 0.14s; }
+  .entry-card:hover { border-color:var(--primary); transform:translateY(-2px); }
+  .entry-card .ec-ico { width:56px; height:56px; border-radius:14px; flex:none; display:grid; place-items:center; background:var(--primary-tint); color:var(--primary-hover); }
+  .entry-card .ec-ico svg { width:28px; height:28px; }
+  .entry-card .ec-body { flex:1; min-width:0; }
+  .entry-card .ec-title { font-size:19px; font-weight:700; display:flex; align-items:baseline; gap:10px; }
+  .entry-card .ec-title .ec-count { font-size:15px; color:var(--muted); font-weight:600; }
+  .entry-card .ec-split { font-size:12.5px; color:var(--muted); margin-top:5px; display:flex; gap:12px; flex-wrap:wrap; }
+  .entry-card .ec-split span { display:inline-flex; align-items:center; gap:5px; }
+  .entry-card .ec-split .d { width:7px; height:7px; border-radius:2px; }
+  .entry-card .ec-arrow { color:var(--muted-2); flex:none; }
+  .entry-card:hover .ec-arrow { color:var(--primary-hover); }
+  .entry-card .ec-arrow svg { width:22px; height:22px; display:block; }
+
+  /* ============================ CARDS / CHARTS ============================ */
+  .grid-2 { display:grid; grid-template-columns:1.1fr 0.9fr; gap:14px; }
+  .card { background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); }
+  .card-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:4px; }
+  .card-head h3 { margin:0; font-size:14.5px; font-weight:600; }
+  .card-head .c-sub { font-size:12px; color:var(--muted); }
+  .card > .c-sub { font-size:12px; color:var(--muted); margin:0 0 14px; }
+  .chart-wrap { position:relative; margin-top:8px; }
+  .trend-svg { width:100%; height:auto; display:block; overflow:visible; }
+  .grid-line { stroke:var(--border-soft); stroke-width:1; }
+  .axis-x text { fill:var(--muted-2); font-size:10.5px; }
+  .axis-y text { fill:var(--muted-2); font-size:10px; }
+  .trend-area { fill:url(#trendGrad); }
+  .trend-line { fill:none; stroke:var(--series-1); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+  .trend-end { fill:var(--series-1); stroke:var(--surface); stroke-width:2.5; }
+  .hover-dot { fill:var(--series-1); stroke:var(--surface); stroke-width:2.5; opacity:0; }
+  .hover-line { stroke:var(--muted-2); stroke-width:1; stroke-dasharray:3 3; opacity:0; }
+
+  .bars { display:flex; flex-direction:column; gap:11px; margin-top:6px; }
+  .bar-row { display:grid; grid-template-columns:130px 1fr auto; align-items:center; gap:12px; }
+  .bar-row .b-label { font-size:12.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-track { height:12px; background:var(--input); border-radius:6px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:6px; transition:filter 0.14s; }
+  .bar-row:hover .bar-fill { filter:brightness(1.18); }
+  .bar-row .b-val { font-size:12.5px; font-weight:600; color:var(--foreground); min-width:52px; text-align:right; }
+
+  .donut-wrap { display:flex; align-items:center; gap:22px; flex-wrap:wrap; margin-top:6px; }
+  .donut { position:relative; width:168px; height:168px; flex:none; }
+  .donut svg { transform:rotate(-90deg); width:168px; height:168px; }
+  .donut .seg { transition:opacity 0.14s; }
+  .donut.dim .seg:not(.hi) { opacity:0.32; }
+  .donut-center { position:absolute; inset:0; display:grid; place-content:center; text-align:center; }
+  .donut-center .dc-val { font-size:22px; font-weight:700; letter-spacing:-0.02em; }
+  .donut-center .dc-lbl { font-size:11px; color:var(--muted); margin-top:2px; }
+  .legend { display:flex; flex-direction:column; gap:8px; flex:1; min-width:170px; }
+  .legend-row { display:flex; align-items:center; gap:10px; padding:3px 6px; border-radius:7px; }
+  .legend-row:hover { background:var(--surface-2); }
+  .legend-row .sw { width:11px; height:11px; border-radius:3px; flex:none; }
+  .legend-row .l-name { font-size:12.5px; color:var(--foreground); }
+  .legend-row .l-val { margin-left:auto; font-size:12.5px; color:var(--muted); }
+  .legend-row .l-val b { color:var(--foreground); font-weight:600; }
+
+  /* ============================ ATTENTION ============================ */
+  .attn-list { display:flex; flex-direction:column; gap:9px; }
+  .attn-item { display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:11px 12px; border-radius:var(--radius-sm); background:var(--surface-2); border:1px solid var(--border-soft); cursor:pointer; transition:border-color 0.14s, transform 0.14s; }
+  .attn-item:hover { border-color:var(--muted-2); transform:translateX(2px); }
+  .attn-item .a-dot { width:9px; height:9px; border-radius:50%; flex:none; }
+  .attn-item .a-body { min-width:0; flex:1; }
+  .attn-item .a-body .a-p { font-size:13.5px; font-weight:600; }
+  .attn-item .a-body .a-c { font-size:12px; color:var(--muted); }
+  .attn-item .a-chip { font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:20px; white-space:nowrap; }
+
+  /* ============================ SEGMENT / SEARCH ============================ */
+  .toolbar { display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .seg-ctrl { display:inline-flex; background:var(--input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:3px; gap:3px; flex-wrap:wrap; }
+  .seg-ctrl button { border:0; background:none; color:var(--muted); cursor:pointer; font-size:12.5px; font-weight:500; padding:6px 12px; border-radius:7px; transition:background 0.14s, color 0.14s; display:inline-flex; align-items:center; gap:6px; }
+  .seg-ctrl button.active { background:var(--primary); color:var(--primary-foreground); font-weight:600; }
+  .seg-ctrl button .badge { background:rgba(0,0,0,0.22); border-radius:20px; padding:0 6px; font-size:11px; }
+  .search { display:flex; align-items:center; gap:8px; flex:1; min-width:200px; max-width:320px; background:var(--input); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 12px; }
+  .search svg { width:15px; height:15px; color:var(--muted-2); flex:none; }
+  .search input { background:none; border:0; outline:0; color:var(--foreground); font-size:13.5px; width:100%; }
+
+  /* ============================ GROUP SECTIONS ============================ */
+  .group { margin-bottom:24px; }
+  .group-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .group-head .gh-ico { width:26px; height:26px; border-radius:7px; display:grid; place-items:center; flex:none; }
+  .group-head .gh-ico svg { width:15px; height:15px; }
+  .group-head h2 { margin:0; font-size:15px; font-weight:650; }
+  .group-head .gh-count { font-size:12.5px; color:var(--muted); background:var(--surface); border:1px solid var(--border-soft); padding:2px 9px; border-radius:20px; font-weight:600; }
+  .group-head .gh-rule { flex:1; height:1px; background:var(--border-soft); }
+
+  .player-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:11px; }
+  .player-card { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:12px 14px; cursor:pointer; text-align:left; width:100%; transition:border-color 0.14s, transform 0.14s; }
+  .player-card:hover { border-color:var(--muted-2); transform:translateY(-1px); }
+  .player-card .pc-dot { width:9px; height:9px; border-radius:50%; flex:none; }
+  .player-card .pc-id { flex:1; min-width:0; }
+  .player-card .pc-name { font-size:14px; font-weight:600; display:flex; align-items:center; gap:7px; }
+  .player-card .pc-name .yr { font-size:11.5px; color:var(--muted-2); font-weight:500; }
+  .player-card .pc-meta { font-size:12px; color:var(--muted); margin-top:1px; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .loc-badge { font-size:10.5px; font-weight:600; padding:1.5px 7px; border-radius:20px; display:inline-flex; align-items:center; gap:4px; }
+  .loc-badge .lb-dot { width:5px; height:5px; border-radius:50%; }
+  .loc-center { background:rgba(57,135,229,0.14); color:#8fbdf3; }
+  .loc-off { background:var(--surface-2); color:var(--muted); }
+  .player-card .pc-stats { text-align:right; }
+  .player-card .pc-stats .pv { font-size:13.5px; font-weight:650; }
+  .player-card .pc-stats .pl { font-size:10px; color:var(--muted-2); text-transform:uppercase; letter-spacing:0.03em; }
+  .player-card .pc-chev { color:var(--muted-2); flex:none; }
+  .player-card:hover .pc-chev { color:var(--primary-hover); }
+  .player-card .pc-chev svg { width:16px; height:16px; display:block; }
+
+  /* ============================ COACH GROUPS ============================ */
+  .coach-group { background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; margin-bottom:11px; }
+  .coach-hdr { display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:none; border:0; cursor:pointer; padding:15px 17px; transition:background 0.14s; }
+  .coach-hdr:hover { background:var(--surface-2); }
+  .coach-hdr .ch-avatar { width:42px; height:42px; border-radius:11px; flex:none; display:grid; place-items:center; font-weight:700; font-size:15px; color:#fff; }
+  .coach-hdr .ch-id { min-width:0; flex:1; }
+  .coach-hdr .ch-name { font-size:15px; font-weight:650; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .coach-hdr .ch-role { font-size:12px; color:var(--muted); margin-top:1px; }
+  .coach-hdr .ch-stats { display:flex; gap:20px; text-align:right; }
+  .coach-hdr .ch-stat .cs-v { font-size:15px; font-weight:650; }
+  .coach-hdr .ch-stat .cs-l { font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin-top:1px; }
+  .coach-hdr .ch-chev { color:var(--muted-2); transition:transform 0.2s; flex:none; }
+  .coach-hdr .ch-chev svg { width:20px; height:20px; display:block; }
+  .coach-group.open .ch-chev { transform:rotate(90deg); }
+  .attn-tag { font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; white-space:nowrap; display:inline-flex; align-items:center; gap:5px; }
+  .attn-tag .t-dot { width:6px; height:6px; border-radius:50%; }
+  .squad { display:none; border-top:1px solid var(--border-soft); padding:8px; background:#232228; }
+  .coach-group.open .squad { display:block; animation:fade 0.2s ease; }
+  .squad .player-card { background:var(--surface-2); }
+
+  /* ============================ ADMIN ============================ */
+  .admin-note { display:flex; align-items:flex-start; gap:10px; font-size:12.5px; color:var(--muted); background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:11px 14px; margin-bottom:18px; line-height:1.5; }
+  .admin-note svg { width:16px; height:16px; color:var(--warn-text); flex:none; margin-top:1px; }
+  .admin-note b { color:var(--foreground); font-weight:600; }
+  .tbl-wrap { overflow-x:auto; border:1px solid var(--border-soft); border-radius:var(--radius-sm); }
+  table.admin { width:100%; border-collapse:collapse; font-size:13px; min-width:520px; }
+  table.admin th { text-align:left; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); font-weight:600; padding:11px 14px; background:#232228; border-bottom:1px solid var(--border-soft); }
+  table.admin td { padding:9px 14px; border-bottom:1px solid var(--border-soft); }
+  table.admin tr:last-child td { border-bottom:0; }
+  table.admin tr:hover td { background:var(--surface-2); }
+  table.admin .nm { font-weight:600; }
+  table.admin .sub { color:var(--muted-2); font-size:11.5px; }
+  .adm-select { background:var(--input); border:1px solid var(--border); color:var(--foreground); font-size:12.5px; padding:6px 9px; border-radius:8px; cursor:pointer; max-width:180px; }
+  .adm-select:hover { border-color:var(--muted-2); }
+
+  .invite-code { display:flex; align-items:center; gap:12px; background:var(--input); border:1px dashed var(--border); border-radius:var(--radius-sm); padding:12px 15px; margin-top:12px; }
+  .invite-code code { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:17px; letter-spacing:0.06em; font-weight:600; }
+  .btn { display:inline-flex; align-items:center; gap:7px; border:0; cursor:pointer; background:var(--primary); color:var(--primary-foreground); font-weight:600; font-size:13px; padding:8px 14px; border-radius:var(--radius-sm); transition:background 0.14s; }
+  .btn:hover { background:var(--primary-hover); }
+  .btn.ghost { background:var(--surface-2); color:var(--foreground); border:1px solid var(--border); }
+  .btn.ghost:hover { background:var(--border); }
+  .btn svg { width:15px; height:15px; }
+
+  /* ============================ DETAIL ============================ */
+  .backlink { display:inline-flex; align-items:center; gap:7px; background:none; border:0; color:var(--muted); cursor:pointer; font-size:13px; padding:4px 0; margin-bottom:14px; }
+  .backlink:hover { color:var(--foreground); }
+  .backlink svg { width:16px; height:16px; }
+  .ro-banner { display:flex; align-items:center; gap:11px; padding:12px 15px; border-radius:var(--radius-sm); background:var(--warn-bg); border:1px solid rgba(245,158,11,0.28); margin-bottom:18px; font-size:13px; color:#fadfab; }
+  .ro-banner svg { width:18px; height:18px; color:var(--warn-text); flex:none; }
+  .detail-head { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  .detail-head .d-avatar { width:56px; height:56px; border-radius:14px; flex:none; display:grid; place-items:center; font-weight:700; font-size:20px; color:#fff; }
+  .detail-head .d-id { flex:1; min-width:200px; }
+  .detail-head .d-name { font-size:22px; font-weight:700; letter-spacing:-0.01em; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .detail-head .d-name .yr { font-size:13px; color:var(--muted); font-weight:500; }
+  .detail-head .d-meta { font-size:13px; color:var(--muted); margin-top:5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .status-pill { font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
+  .status-pill .sp-dot { width:6px; height:6px; border-radius:50%; }
+
+  .anl-toolbar { display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap; justify-content:space-between; }
+  .cat-tabs { display:flex; gap:4px; flex-wrap:wrap; }
+  .cat-tabs button { border:1px solid var(--border-soft); background:var(--surface); color:var(--muted); cursor:pointer; font-size:12.5px; font-weight:500; padding:6px 13px; border-radius:20px; transition:all 0.14s; }
+  .cat-tabs button:hover { color:var(--foreground); border-color:var(--muted-2); }
+  .cat-tabs button.active { background:var(--primary); color:var(--primary-foreground); border-color:var(--primary); font-weight:600; }
+
+  .stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
+  .stat-tile { background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:13px 15px; }
+  .stat-tile .st-v { font-size:22px; font-weight:700; letter-spacing:-0.01em; }
+  .stat-tile .st-v .u { font-size:12px; color:var(--muted-2); font-weight:400; }
+  .stat-tile .st-l { font-size:11.5px; color:var(--muted); margin-top:3px; }
+  .delta { font-size:12px; font-weight:600; }
+  .delta.up { color:var(--ok-text); }
+  .delta.down { color:var(--crit-text); }
+
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .char-bars { display:flex; flex-direction:column; gap:13px; margin-top:10px; }
+  .char-row .cr-top { display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:5px; }
+  .char-row .cr-top b { font-weight:600; }
+  .sess-list { display:flex; flex-direction:column; gap:9px; margin-top:14px; }
+  .sess-item { display:flex; align-items:center; gap:13px; padding:11px 13px; border-radius:var(--radius-sm); background:var(--surface-2); border:1px solid var(--border-soft); border-left-width:3px; }
+  .sess-item .s-date { font-size:12px; color:var(--muted); width:58px; flex:none; font-weight:500; }
+  .sess-item .s-main { flex:1; min-width:0; }
+  .sess-item .s-focus { font-size:13px; font-weight:500; }
+  .sess-item .s-dur { font-size:11.5px; color:var(--muted); margin-top:1px; }
+  .sess-item .s-status { font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px; white-space:nowrap; }
+  .note-box { font-size:12.5px; color:var(--muted); background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius-sm); padding:13px 15px; margin-top:16px; line-height:1.55; }
+  .note-box b { color:var(--foreground); font-weight:600; }
+  .subhead { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted-2); font-weight:600; margin:18px 0 10px; }
+
+  /* ============================ tooltip / toast ============================ */
+  .chart-tip { position:fixed; z-index:60; pointer-events:none; opacity:0; background:#141317; border:1px solid var(--border); border-radius:9px; padding:8px 11px; font-size:12px; box-shadow:0 10px 30px -8px rgba(0,0,0,0.8); transition:opacity 0.1s; max-width:220px; }
+  .chart-tip .t-t { color:var(--muted); font-size:11px; margin-bottom:3px; }
+  .chart-tip .t-v { font-weight:700; font-size:14px; }
+  .chart-tip .t-v .u { color:var(--muted); font-weight:400; font-size:11px; }
+  .toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:#141317; border:1px solid var(--border); color:var(--foreground); padding:11px 18px; border-radius:10px; font-size:13px; font-weight:500; box-shadow:0 12px 34px -8px rgba(0,0,0,0.85); opacity:0; pointer-events:none; transition:opacity 0.2s, transform 0.2s; z-index:80; display:flex; align-items:center; gap:9px; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast svg { width:16px; height:16px; color:var(--ok-text); }
+  .scrim { display:none; }
+
+  /* ============================ RESPONSIVE ============================ */
+  @media (max-width:980px) {
+    .grid-2, .detail-grid, .entry-grid { grid-template-columns:1fr; }
+    .kpi-row, .stat-row { grid-template-columns:repeat(2,1fr); }
+    .player-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width:860px) {
+    .app { grid-template-columns:1fr; }
+    .sidebar { position:fixed; z-index:50; left:0; top:0; width:262px; transform:translateX(-100%); transition:transform 0.24s ease; }
+    .app.nav-open .sidebar { transform:translateX(0); }
+    .app.nav-open .scrim { display:block; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:40; }
+    .hamburger { display:inline-flex; }
+    .content { padding:18px 16px; }
+    .topbar { padding:12px 16px; }
+    .coach-hdr .ch-stats { display:none; }
+  }
+  @media (max-width:560px) {
+    .kpi-row { grid-template-columns:1fr 1fr; }
+    .academy .chip { display:none; }
+    .bar-row { grid-template-columns:100px 1fr auto; }
+  }
+</style>
+
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V7l8-3 8 3v13" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 13h16M9 4v9m6-9v9" stroke="currentColor" stroke-width="2"/></svg></span>
+      <div><div class="name">P.L.A.W</div><div class="sub">Riadiaci pult</div></div>
+    </div>
+    <nav class="nav" aria-label="Navigácia">
+      <div class="nav-label">Federácia</div>
+      <button class="nav-item active" data-view="home">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1v-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        Domov
+      </button>
+      <button class="nav-item" data-view="players">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="currentColor" stroke-width="1.8"/></svg>
+        Hráči <span class="badge tnum" id="navAttn">0</span>
+      </button>
+      <button class="nav-item" data-view="coaches">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 5.5a3 3 0 0 1 0 5.5m1.5 3.2c1.9.6 3.5 2.3 3.5 4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Tréneri
+      </button>
+      <button class="nav-item" data-view="admin">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.6h-4l-.3 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4L4.1 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.6h4l.3-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5a7 7 0 0 0 .1-1Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        Admin
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="director-card">
+        <div class="avatar">TV</div>
+        <div class="who"><div class="n">Tibor Varga</div><div class="r">Šéftréner</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <div class="academy"><span class="a-name">Baseline Tennis Federation</span><span class="chip"><span class="dot"></span>Tenis</span></div>
+      <div class="spacer"></div>
+      <span class="ro-badge"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.8"/></svg>Tréningové dáta: len na čítanie</span>
+    </header>
+
+    <div class="content">
+
+      <!-- ============ DOMOV ============ -->
+      <section class="view active" id="view-home">
+        <div class="page-head"><h1>Riadiaci pult federácie</h1><div class="ph-sub" id="homeSub">Nedeľa 2. august 2026</div></div>
+
+        <div class="kpi-row">
+          <div class="kpi"><div class="k-top"><span class="k-label">Hráči</span><span class="k-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="currentColor" stroke-width="1.8"/></svg></span></div><div class="k-val tnum" id="kHraci">–</div><div class="k-foot" id="kHraciFoot">–</div></div>
+          <div class="kpi"><div class="k-top"><span class="k-label">Tréneri</span><span class="k-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.8"/></svg></span></div><div class="k-val tnum" id="kTreneri">–</div><div class="k-foot" id="kTreneriFoot">–</div></div>
+          <div class="kpi"><div class="k-top"><span class="k-label">Tréningy tento týždeň</span><span class="k-ico"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9h17M8 3v4m8-4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span></div><div class="k-val tnum" id="kWeek">–</div><div class="k-foot">naprieč federáciou</div></div>
+          <div class="kpi attention" id="kpiAttn" role="button" tabindex="0"><div class="k-top"><span class="k-label">Vyžaduje pozornosť</span><span class="k-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4 3 19h18L12 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 10v4m0 3h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span></div><div class="k-val tnum" id="kAttn">–</div><div class="k-foot">hráči 5+ dní bez tréningu ›</div></div>
+        </div>
+
+        <div class="entry-grid">
+          <button class="entry-card" data-go="players">
+            <span class="ec-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7.5" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 21c0-4.1 3.4-7.5 7.5-7.5s7.5 3.4 7.5 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            <span class="ec-body">
+              <span class="ec-title">Hráči <span class="ec-count tnum" id="ecHraci">–</span></span>
+              <span class="ec-split" id="ecHraciSplit"></span>
+            </span>
+            <span class="ec-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+          <button class="entry-card" data-go="coaches">
+            <span class="ec-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 5.5a3 3 0 0 1 0 5.5m1.5 3.2c1.9.6 3.5 2.3 3.5 4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            <span class="ec-body">
+              <span class="ec-title">Tréneri <span class="ec-count tnum" id="ecTreneri">–</span></span>
+              <span class="ec-split" id="ecTreneriSplit"></span>
+            </span>
+            <span class="ec-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3>Týždenná tréningová záťaž</h3></div>
+            <p class="c-sub">Súčet hodín naprieč federáciou · posledných 8 týždňov</p>
+            <div class="chart-wrap" id="trendChart"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Vyžaduje pozornosť</h3></div>
+            <p class="c-sub">Hráči zoradení podľa dní bez tréningu</p>
+            <div class="attn-list" id="attnList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ HRÁČI ============ -->
+      <section class="view" id="view-players">
+        <div class="page-head"><h1>Hráči</h1><div class="ph-sub" id="playersSub">–</div></div>
+        <div class="toolbar">
+          <div class="seg-ctrl" role="group" aria-label="Rozpad">
+            <button class="active" data-pmode="location">Podľa umiestnenia</button>
+            <button data-pmode="age">Podľa vekovej kategórie</button>
+          </div>
+          <label class="search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input type="text" id="playerSearch" placeholder="Hľadať hráča…" autocomplete="off"></label>
+        </div>
+        <div id="playersBody"></div>
+      </section>
+
+      <!-- ============ TRÉNERI ============ -->
+      <section class="view" id="view-coaches">
+        <div class="page-head"><h1>Tréneri</h1><div class="ph-sub" id="coachesSub">–</div></div>
+        <div id="coachesBody"></div>
+      </section>
+
+      <!-- ============ ADMIN ============ -->
+      <section class="view" id="view-admin">
+        <div class="page-head"><h1>Admin</h1><div class="ph-sub">Klasifikáciu vypĺňa šéftréner — mení, kam hráč/tréner patrí v rozpadoch</div></div>
+        <div class="admin-note">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 3h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          <span><b>Rozdiel oproti tréningovým dátam:</b> tréningy, cvičenia a analytiku vytvára tréner a sú <b>len na čítanie</b>. Tu je organizačná <b>klasifikácia</b> (umiestnenie, kategória, priradenie, typ trénera), ktorú spravuje šéftréner — zmena sa hneď prejaví v rozpadoch Hráči/Tréneri.</span>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-head"><h3>Hráči — klasifikácia</h3><span class="c-sub">umiestnenie a priradený tréner</span></div>
+          <div class="tbl-wrap" style="margin-top:12px"><table class="admin" id="admPlayers"></table></div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-head"><h3>Tréneri — typ pôsobenia</h3><span class="c-sub">v centre federácie vs externý</span></div>
+          <div class="tbl-wrap" style="margin-top:12px"><table class="admin" id="admCoaches"></table></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3>Pozvať trénera</h3></div>
+            <p class="c-sub">Kód obsadí jedno sedadlo; jeho hráči sa stanú hráčmi federácie (dáta vlastní federácia).</p>
+            <div class="invite-code"><code id="inviteCode">BTF-7QK2</code><button class="btn ghost" id="copyBtn" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15V5a2 2 0 0 1 2-2h8" stroke="currentColor" stroke-width="1.8"/></svg>Kopírovať</button></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Sedadlá</h3></div>
+            <p class="c-sub">Balík „Federácia 10" · fakturované ročne</p>
+            <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:6px">
+              <div style="font-size:30px;font-weight:700" class="tnum">9<span style="font-size:15px;color:var(--muted);font-weight:400">/10</span></div>
+              <div style="flex:1;min-width:160px;height:12px;background:var(--input);border-radius:6px;overflow:hidden;display:flex"><div style="width:80%;background:var(--primary)"></div><div style="width:10%;background:var(--warn);opacity:0.7"></div></div>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap"><span class="chip"><span class="dot" style="background:var(--primary)"></span>8 aktívnych</span><span class="chip"><span class="dot" style="background:var(--warn)"></span>1 pozvaný</span><span class="chip"><span class="dot" style="background:var(--border)"></span>1 voľné</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DETAIL ============ -->
+      <section class="view" id="view-detail">
+        <button class="backlink" id="backLink"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="backText">Späť</span></button>
+        <div class="ro-banner"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.8"/></svg><span>Rovnaké štatistiky ako v trénerskej appke, v režime <b>len na čítanie</b>. Dáta vlastní federácia.</span></div>
+
+        <div class="detail-head">
+          <div class="d-avatar" id="dAvatar"></div>
+          <div class="d-id"><div class="d-name" id="dName"></div><div class="d-meta" id="dMeta"></div></div>
+          <span class="status-pill" id="dStatus"></span>
+        </div>
+
+        <div class="anl-toolbar">
+          <div class="cat-tabs" id="catTabs"></div>
+          <div class="seg-ctrl" id="periodCtrl" role="group" aria-label="Obdobie">
+            <button data-per="week">Týždeň</button>
+            <button class="active" data-per="month">Mesiac</button>
+            <button data-per="quarter">Kvartál</button>
+            <button data-per="year">Rok</button>
+          </div>
+        </div>
+
+        <div class="stat-row" id="dStats"></div>
+
+        <div class="detail-grid">
+          <div class="card">
+            <div class="card-head"><h3 id="dDonutTitle">Kódy cvičení</h3></div>
+            <p class="c-sub" id="dDonutSub">rozpad odohraného času podľa kódu</p>
+            <div class="donut-wrap"><div class="donut" id="dDonut"><div class="donut-center"><div class="dc-val tnum" id="dCenterVal"></div><div class="dc-lbl">spolu</div></div></div><div class="legend" id="dLegend"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Charakter cvičení</h3></div>
+            <p class="c-sub">ofenzíva / neutrál / defenzíva</p>
+            <div class="char-bars" id="dChar"></div>
+            <div class="subhead">Posledné tréningy</div>
+            <div class="sess-list" id="dSessions"></div>
+          </div>
+        </div>
+
+        <div class="note-box">
+          Šéftréner vidí <b>presne tie isté grafy a čísla ako tréner</b> vo svojej appke (kategórie, kódy cvičení, charakter, obdobia, odhad úderov) — cez živú SELECT policy nad dátami federácie, bez kópií. Rozdiel je len oprávnenie: <b>read-only</b>.
+        </div>
+      </section>
+
+    </div>
+  </div>
+  <div class="scrim" id="scrim"></div>
+</div>
+
+<div class="chart-tip" id="chartTip"></div>
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="toastMsg"></span></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =========================================================================
+     DEMO DÁTA — fiktívna federácia s centrom.
+     coach.location: "center" | "external"   ·   player.location: "center" | "off"
+     ========================================================================= */
+  var coaches = [
+    { id:"c1", name:"Andrea Kolárová", hue:"#3987e5", location:"center" },
+    { id:"c2", name:"Peter Novák",     hue:"#199e70", location:"center" },
+    { id:"c3", name:"Lucia Balážová",  hue:"#c98500", location:"center" },
+    { id:"c4", name:"Martin Tóth",     hue:"#9085e9", location:"external" },
+    { id:"c5", name:"Simona Reháková", hue:"#e66767", location:"center" },
+    { id:"c6", name:"Tomáš Beňo",      hue:"#3987e5", location:"external" },
+    { id:"c7", name:"Katarína Urban",  hue:"#008300", location:"center" },
+    { id:"c8", name:"Dávid Šimko",     hue:"#c98500", location:"external" }
+  ];
+  var players = [
+    { id:"p1",  name:"Adam Kováč",        yr:2012, coachId:"c1", location:"center", lastDays:1,  sessMonth:9,  minMonth:760 },
+    { id:"p2",  name:"Ema Horváthová",    yr:2011, coachId:"c1", location:"center", lastDays:2,  sessMonth:8,  minMonth:630 },
+    { id:"p3",  name:"Sofia Molnárová",   yr:2014, coachId:"c1", location:"off",    lastDays:3,  sessMonth:7,  minMonth:550 },
+    { id:"p4",  name:"Jakub Szabó",       yr:2013, coachId:"c2", location:"center", lastDays:6,  sessMonth:4,  minMonth:300 },
+    { id:"p5",  name:"Matej Lukáč",       yr:2011, coachId:"c2", location:"center", lastDays:5,  sessMonth:5,  minMonth:380 },
+    { id:"p6",  name:"Nina Vargová",      yr:2010, coachId:"c3", location:"center", lastDays:12, sessMonth:2,  minMonth:150 },
+    { id:"p7",  name:"Laura Danková",     yr:2013, coachId:"c3", location:"center", lastDays:2,  sessMonth:8,  minMonth:600 },
+    { id:"p8",  name:"Filip Král",        yr:2012, coachId:"c3", location:"center", lastDays:1,  sessMonth:10, minMonth:810 },
+    { id:"p9",  name:"Timea Kollárová",   yr:2012, coachId:"c4", location:"off",    lastDays:9,  sessMonth:2,  minMonth:180 },
+    { id:"p10", name:"Oliver Baláž",      yr:2014, coachId:"c4", location:"off",    lastDays:3,  sessMonth:6,  minMonth:480 },
+    { id:"p11", name:"Viktória Nagyová",  yr:2011, coachId:"c5", location:"center", lastDays:1,  sessMonth:9,  minMonth:720 },
+    { id:"p12", name:"Samuel Kmeť",       yr:2013, coachId:"c5", location:"center", lastDays:4,  sessMonth:6,  minMonth:460 },
+    { id:"p13", name:"Dominika Farkašová",yr:2010, coachId:"c5", location:"off",    lastDays:2,  sessMonth:7,  minMonth:560 },
+    { id:"p14", name:"Alex Rusnák",       yr:2012, coachId:"c6", location:"off",    lastDays:7,  sessMonth:3,  minMonth:260 },
+    { id:"p15", name:"Nela Bartošová",    yr:2014, coachId:"c6", location:"off",    lastDays:2,  sessMonth:8,  minMonth:540 },
+    { id:"p16", name:"Michal Kováčik",    yr:2011, coachId:"c7", location:"center", lastDays:3,  sessMonth:7,  minMonth:520 },
+    { id:"p17", name:"Bianka Tóthová",    yr:2013, coachId:"c7", location:"center", lastDays:1,  sessMonth:9,  minMonth:690 },
+    { id:"p18", name:"Patrik Horák",      yr:2012, coachId:"c8", location:"off",    lastDays:2,  sessMonth:8,  minMonth:610 },
+    { id:"p19", name:"Hana Danielová",    yr:2014, coachId:"c8", location:"off",    lastDays:5,  sessMonth:5,  minMonth:400 },
+    { id:"p20", name:"Marek Sedlák",      yr:2010, coachId:"c8", location:"off",    lastDays:14, sessMonth:1,  minMonth:90  }
+  ];
+
+  var CATEGORIES = ["Forehand","Backhand","Volley","Serve","Return","GAME DRILLS","POINTS"];
+  var DRILL_CODES = {
+    "Forehand":    ["FH krížom","FH po čiare","FH inside-out","FH nábeh"],
+    "Backhand":    ["BH krížom","BH po čiare","BH slice","BH obojručný"],
+    "Volley":      ["Volej FH","Volej BH","Smeč","Half-volley"],
+    "Serve":       ["1. podanie do T","1. podanie do rohu","2. podanie kick","2. podanie istota"],
+    "Return":      ["Return FH","Return BH","Return 1. podania","Return 2. podania"],
+    "GAME DRILLS": ["Hra z dna kurtu","Prechod k sieti","Bod od podania","Kondičná výmena"],
+    "POINTS":      ["Zápas (MATCH)","Tréningové body","Turnajová príprava"]
+  };
+  var CODE_COLORS = ["#3987e5","#199e70","#9085e9","#e66767"];
+  var STROKE_RATE = { "Return":6, "Serve":6, "GAME DRILLS":22, "POINTS":10, "Forehand":20, "Backhand":20, "Volley":16 };
+  var PERIOD = { week:{ f:0.25, l:"tento týždeň" }, month:{ f:1, l:"tento mesiac" }, quarter:{ f:3.1, l:"tento kvartál" }, year:{ f:12.4, l:"tento rok" } };
+
+  /* — helpers — */
+  function statusOf(d) {
+    if (d >= 8) return { key:"crit", rank:2, label:"Neaktívny", color:"var(--crit)", text:"var(--crit-text)", bg:"var(--crit-bg)" };
+    if (d >= 5) return { key:"warn", rank:1, label:"Pozor", color:"var(--warn)", text:"var(--warn-text)", bg:"var(--warn-bg)" };
+    return { key:"ok", rank:0, label:"Aktívny", color:"var(--ok)", text:"var(--ok-text)", bg:"var(--ok-bg)" };
+  }
+  function lastLabel(d) { return d === 0 ? "dnes" : d === 1 ? "včera" : "pred " + d + " dňami"; }
+  function hm(min) { var h = Math.floor(min / 60), m = min % 60; return h + "h" + (m ? " " + m + "m" : ""); }
+  function initials(n) { var p = n.trim().split(/\s+/); return ((p[0]||"")[0] + (p[1]||"")[0]).toUpperCase(); }
+  function coachById(id) { return coaches.find(function (c) { return c.id === id; }); }
+  function playerById(id) { return players.find(function (p) { return p.id === id; }); }
+  function playersOf(cid) { return players.filter(function (p) { return p.coachId === cid; }); }
+  function weekSess(p) { return p.lastDays >= 8 ? 0 : p.lastDays >= 5 ? 1 : Math.min(4, Math.round(p.sessMonth / 4)); }
+  function shade(hex, pct) { var n = parseInt(hex.slice(1),16), r=(n>>16)&255, g=(n>>8)&255, b=n&255, f=(100+pct)/100; r=Math.max(0,Math.min(255,Math.round(r*f))); g=Math.max(0,Math.min(255,Math.round(g*f))); b=Math.max(0,Math.min(255,Math.round(b*f))); return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+  function hashStr(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
+  function rand01(seed) { var x = Math.sin(seed) * 10000; return x - Math.floor(x); }
+  function locBadge(loc) { return loc === "center" ? '<span class="loc-badge loc-center"><span class="lb-dot" style="background:#3987e5"></span>V centre</span>' : '<span class="loc-badge loc-off"><span class="lb-dot" style="background:var(--muted-2)"></span>Mimo centra</span>'; }
+
+  /* =========================================================================
+     TOOLTIP / DONUT / TREND  (zdieľané)
+     ========================================================================= */
+  var tip = document.getElementById("chartTip");
+  function showTip(html, x, y) { tip.innerHTML = html; tip.style.opacity = "1"; var w = tip.offsetWidth, h = tip.offsetHeight, left = x + 14, top = y - h - 12; if (left + w > window.innerWidth - 8) left = x - w - 14; if (top < 8) top = y + 16; tip.style.left = left + "px"; tip.style.top = top + "px"; }
+  function hideTip() { tip.style.opacity = "0"; }
+
+  function renderDonut(donutId, legendId, centerValId, items, fmt) {
+    var donut = document.getElementById(donutId), legend = document.getElementById(legendId);
+    var R = 66, CX = 84, CY = 84, SW = 24, C = 2 * Math.PI * R;
+    var total = items.reduce(function (s, it) { return s + it.min; }, 0) || 1, gap = 3, offset = 0;
+    var segs = items.map(function (it, idx) {
+      var frac = it.min / total, len = Math.max(0, frac * C - gap);
+      var s = '<circle class="seg" data-i="' + idx + '" cx="' + CX + '" cy="' + CY + '" r="' + R + '" fill="none" stroke="' + it.color + '" stroke-width="' + SW + '" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-offset).toFixed(2) + '"/>';
+      offset += frac * C; return s;
+    }).join("");
+    var old = donut.querySelector("svg"); if (old) old.remove();
+    donut.insertAdjacentHTML("afterbegin", '<svg viewBox="0 0 168 168" role="img" aria-label="Rozloženie">' + segs + '</svg>');
+    document.getElementById(centerValId).textContent = fmt(total);
+    legend.innerHTML = items.map(function (it, idx) { return '<div class="legend-row" data-i="' + idx + '"><span class="sw" style="background:' + it.color + '"></span><span class="l-name">' + it.label + '</span><span class="l-val"><b class="tnum">' + Math.round((it.min/total)*100) + ' %</b> · ' + hm(it.min) + '</span></div>'; }).join("");
+    var cv = document.getElementById(centerValId), cl = cv.nextElementSibling, bv = fmt(total), bl = cl.textContent;
+    function hi(i, on) { var seg = donut.querySelector('.seg[data-i="' + i + '"]'), row = legend.querySelector('.legend-row[data-i="' + i + '"]'); if (on) { donut.classList.add("dim"); if (seg) seg.classList.add("hi"); if (row) row.style.background = "var(--surface-2)"; cv.textContent = hm(items[i].min); cl.textContent = items[i].label; } else { donut.classList.remove("dim"); if (seg) seg.classList.remove("hi"); if (row) row.style.background = ""; cv.textContent = bv; cl.textContent = bl; } }
+    donut.querySelectorAll(".seg").forEach(function (s) { var i = s.dataset.i; s.addEventListener("mouseenter", function () { hi(i, true); }); s.addEventListener("mouseleave", function () { hi(i, false); }); });
+    legend.querySelectorAll(".legend-row").forEach(function (r) { var i = r.dataset.i; r.addEventListener("mouseenter", function () { hi(i, true); }); r.addEventListener("mouseleave", function () { hi(i, false); }); });
+  }
+
+  var weeklyLoad = [{ wk:"9.6",h:82 },{ wk:"16.6",h:94 },{ wk:"23.6",h:78 },{ wk:"30.6",h:101 },{ wk:"7.7",h:96 },{ wk:"14.7",h:110 },{ wk:"21.7",h:88 },{ wk:"28.7",h:104 }];
+  function renderTrend(containerId) {
+    var el = document.getElementById(containerId), W = 560, H = 210, pad = { l:38, r:14, t:16, b:26 }, data = weeklyLoad, max = 120;
+    var iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+    var X = function (i) { return pad.l + (iw * i) / (data.length - 1); }, Y = function (v) { return pad.t + ih - (ih * v) / max; };
+    var line = ""; data.forEach(function (d, i) { line += (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(d.h).toFixed(1) + " "; });
+    var area = line + "L" + X(data.length - 1).toFixed(1) + " " + Y(0) + " L" + X(0).toFixed(1) + " " + Y(0) + " Z";
+    var gy = [0,40,80,120].map(function (t) { return '<line class="grid-line" x1="' + pad.l + '" y1="' + Y(t) + '" x2="' + (W-pad.r) + '" y2="' + Y(t) + '"/><text x="' + (pad.l-8) + '" y="' + (Y(t)+3) + '" text-anchor="end">' + t + '</text>'; }).join("");
+    var gx = data.map(function (d, i) { return '<text x="' + X(i) + '" y="' + (H-6) + '" text-anchor="middle">' + d.wk + '</text>'; }).join("");
+    var last = data.length - 1;
+    el.innerHTML = '<svg class="trend-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="Záťaž"><defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3987e5" stop-opacity="0.34"/><stop offset="100%" stop-color="#3987e5" stop-opacity="0"/></linearGradient></defs><g class="axis-y">' + gy + '</g><path class="trend-area" d="' + area + '"/><path class="trend-line" d="' + line + '"/><line class="hover-line" id="' + containerId + '-hl" y1="' + pad.t + '" y2="' + (pad.t+ih) + '"/><circle class="trend-end" cx="' + X(last) + '" cy="' + Y(data[last].h) + '" r="4.5"/><circle class="hover-dot" id="' + containerId + '-hd" r="5"/><g class="axis-x">' + gx + '</g></svg>';
+    var svg = el.querySelector("svg"), hl = document.getElementById(containerId + "-hl"), hd = document.getElementById(containerId + "-hd");
+    svg.addEventListener("mousemove", function (e) { var r = svg.getBoundingClientRect(), relx = ((e.clientX-r.left)/r.width)*W, i = Math.max(0, Math.min(data.length-1, Math.round((relx-pad.l)/(iw/(data.length-1))))); var cx = X(i), cy = Y(data[i].h); hl.setAttribute("x1",cx); hl.setAttribute("x2",cx); hl.style.opacity="1"; hd.setAttribute("cx",cx); hd.setAttribute("cy",cy); hd.style.opacity="1"; showTip('<div class="t-t">Týždeň od ' + data[i].wk + '</div><div class="t-v tnum">' + data[i].h + '<span class="u"> h</span></div>', e.clientX, e.clientY); });
+    svg.addEventListener("mouseleave", function () { hl.style.opacity="0"; hd.style.opacity="0"; hideTip(); });
+  }
+
+  /* =========================================================================
+     HOME
+     ========================================================================= */
+  function counts() {
+    var cP = players.filter(function (p) { return p.location === "center"; }).length;
+    var offP = players.length - cP;
+    var cC = coaches.filter(function (c) { return c.location === "center"; }).length;
+    var extC = coaches.length - cC;
+    var attn = players.filter(function (p) { return p.lastDays >= 5; }).length;
+    var wk = players.reduce(function (s, p) { return s + weekSess(p); }, 0);
+    return { cP:cP, offP:offP, cC:cC, extC:extC, attn:attn, wk:wk };
+  }
+  function renderHome() {
+    var k = counts();
+    document.getElementById("kHraci").textContent = players.length;
+    document.getElementById("kHraciFoot").textContent = k.cP + " v centre · " + k.offP + " mimo";
+    document.getElementById("kTreneri").textContent = coaches.length;
+    document.getElementById("kTreneriFoot").textContent = k.cC + " v centre · " + k.extC + " externí";
+    document.getElementById("kWeek").textContent = k.wk;
+    document.getElementById("kAttn").textContent = k.attn;
+    document.getElementById("navAttn").textContent = k.attn;
+    document.getElementById("ecHraci").textContent = players.length;
+    document.getElementById("ecTreneri").textContent = coaches.length;
+    document.getElementById("ecHraciSplit").innerHTML =
+      '<span><span class="d" style="background:#3987e5"></span>' + k.cP + ' v centre</span><span><span class="d" style="background:var(--muted-2)"></span>' + k.offP + ' mimo</span><span><span class="d" style="background:var(--series-3)"></span>5 ročníkov</span>';
+    document.getElementById("ecTreneriSplit").innerHTML =
+      '<span><span class="d" style="background:#3987e5"></span>' + k.cC + ' v centre</span><span><span class="d" style="background:var(--muted-2)"></span>' + k.extC + ' externí</span>';
+    document.getElementById("homeSub").textContent = "Nedeľa 2. august 2026 · " + coaches.length + " trénerov · " + players.length + " hráčov";
+    // attention list
+    var flagged = players.filter(function (p) { return p.lastDays >= 5; }).sort(function (a, b) { return b.lastDays - a.lastDays; });
+    document.getElementById("attnList").innerHTML = flagged.map(function (p) {
+      var st = statusOf(p.lastDays);
+      return '<button class="attn-item" data-pid="' + p.id + '"><span class="a-dot" style="background:' + st.color + '"></span><span class="a-body"><span class="a-p">' + p.name + '</span><span class="a-c">' + coachById(p.coachId).name + ' · ' + (p.location === "center" ? "v centre" : "mimo centra") + '</span></span><span class="a-chip" style="background:' + st.bg + ';color:' + st.text + '">' + p.lastDays + ' dní</span></button>';
+    }).join("");
+    document.getElementById("attnList").querySelectorAll(".attn-item").forEach(function (b) { b.addEventListener("click", function () { openDetail(b.dataset.pid, "home"); }); });
+  }
+
+  /* =========================================================================
+     PLAYERS  (rozpad: location / age)
+     ========================================================================= */
+  var playersMode = "location", playerSearch = "";
+  function playerCardHTML(p) {
+    var st = statusOf(p.lastDays);
+    return '<button class="player-card" data-pid="' + p.id + '">' +
+      '<span class="pc-dot" style="background:' + st.color + '"></span>' +
+      '<span class="pc-id"><span class="pc-name">' + p.name + ' <span class="yr tnum">' + p.yr + '</span></span><span class="pc-meta">' + coachById(p.coachId).name + ' ' + locBadge(p.location) + '</span></span>' +
+      '<span class="pc-stats"><span class="pv tnum">' + p.sessMonth + '</span><span class="pl">tréningov</span></span>' +
+      '<span class="pc-chev"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+    '</button>';
+  }
+  function groupSection(title, icoColor, ico, list) {
+    if (!list.length) return "";
+    return '<div class="group"><div class="group-head"><span class="gh-ico" style="background:' + icoColor + '22;color:' + icoColor + '">' + ico + '</span><h2>' + title + '</h2><span class="gh-count tnum">' + list.length + '</span><span class="gh-rule"></span></div><div class="player-grid">' + list.map(playerCardHTML).join("") + '</div></div>';
+  }
+  function renderPlayers() {
+    var el = document.getElementById("playersBody");
+    var q = playerSearch.trim().toLowerCase();
+    var pool = players.filter(function (p) { return q === "" || p.name.toLowerCase().indexOf(q) >= 0; });
+    var k = counts();
+    document.getElementById("playersSub").textContent = players.length + " hráčov · " + k.cP + " v centre · " + k.offP + " mimo centra · 5 ročníkov";
+    var html = "";
+    var pinLoc = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>';
+    var calIco = '<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M4 9h16M8 3v4m8-4v4" stroke="currentColor" stroke-width="1.8"/></svg>';
+    if (playersMode === "location") {
+      html += groupSection("Trénujúci v centre federácie", "#3987e5", pinLoc, pool.filter(function (p) { return p.location === "center"; }));
+      html += groupSection("Trénujúci mimo centra", "#a3a2aa", pinLoc, pool.filter(function (p) { return p.location === "off"; }));
+    } else {
+      var years = Array.from(new Set(players.map(function (p) { return p.yr; }))).sort();
+      years.forEach(function (y) { html += groupSection("Ročník " + y, "#c98500", calIco, pool.filter(function (p) { return p.yr === y; })); });
+    }
+    if (!html) html = '<div style="text-align:center;color:var(--muted);padding:50px 0">Nič nezodpovedá hľadaniu.</div>';
+    el.innerHTML = html;
+    el.querySelectorAll(".player-card").forEach(function (c) { c.addEventListener("click", function () { openDetail(c.dataset.pid, "players"); }); });
+  }
+
+  /* =========================================================================
+     COACHES  (v centre / externí, rozbaliteľné na hráčov)
+     ========================================================================= */
+  var expanded = {};
+  function coachGroupHTML(c) {
+    var pl = playersOf(c.id);
+    var attn = pl.filter(function (p) { return p.lastDays >= 5; }).length;
+    var worstDays = pl.reduce(function (m, p) { return Math.max(m, p.lastDays); }, 0);
+    var sess = pl.reduce(function (s, p) { return s + p.sessMonth; }, 0), min = pl.reduce(function (s, p) { return s + p.minMonth; }, 0);
+    var ws = statusOf(attn ? worstDays : 0);
+    var tag = attn ? '<span class="attn-tag" style="background:' + ws.bg + ';color:' + ws.text + '"><span class="t-dot" style="background:' + ws.color + '"></span>' + attn + ' vyžaduj' + (attn === 1 ? "e" : "ú") + ' pozornosť</span>' : '<span class="attn-tag" style="background:var(--ok-bg);color:var(--ok-text)"><span class="t-dot" style="background:var(--ok)"></span>všetci aktívni</span>';
+    var isOpen = !!expanded[c.id];
+    return '<div class="coach-group' + (isOpen ? " open" : "") + '" data-id="' + c.id + '">' +
+      '<button class="coach-hdr" aria-expanded="' + isOpen + '"><span class="ch-avatar" style="background:linear-gradient(135deg,' + c.hue + ',' + shade(c.hue,-26) + ')">' + initials(c.name) + '</span>' +
+      '<span class="ch-id"><span class="ch-name">' + c.name + ' ' + tag + '</span><span class="ch-role">' + (c.location === "center" ? "V centre federácie" : "Externý — mimo centra") + ' · ' + pl.length + ' hráč' + (pl.length === 1 ? "" : (pl.length < 5 ? "i" : "ov")) + '</span></span>' +
+      '<span class="ch-stats"><span class="ch-stat"><span class="cs-v tnum">' + sess + '</span><span class="cs-l">tréningov</span></span><span class="ch-stat"><span class="cs-v tnum">' + hm(min) + '</span><span class="cs-l">čas / mes.</span></span></span>' +
+      '<span class="ch-chev"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>' +
+      '<div class="squad"><div class="player-grid">' + pl.map(playerCardHTML).join("") + '</div></div></div>';
+  }
+  function renderCoaches() {
+    var el = document.getElementById("coachesBody");
+    var k = counts();
+    document.getElementById("coachesSub").textContent = coaches.length + " trénerov · " + k.cC + " v centre · " + k.extC + " externí";
+    var center = coaches.filter(function (c) { return c.location === "center"; });
+    var ext = coaches.filter(function (c) { return c.location === "external"; });
+    var pinLoc = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>';
+    var extIco = '<svg viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    function sec(title, color, ico, list) { return '<div class="group"><div class="group-head"><span class="gh-ico" style="background:' + color + '22;color:' + color + '">' + ico + '</span><h2>' + title + '</h2><span class="gh-count tnum">' + list.length + '</span><span class="gh-rule"></span></div>' + list.map(coachGroupHTML).join("") + '</div>'; }
+    el.innerHTML = sec("V centre federácie", "#3987e5", pinLoc, center) + sec("Externí — pracujúci mimo centra", "#c98500", extIco, ext);
+    el.querySelectorAll(".coach-hdr").forEach(function (h) { h.addEventListener("click", function () { var g = h.closest(".coach-group"), id = g.dataset.id; expanded[id] = !expanded[id]; g.classList.toggle("open", expanded[id]); h.setAttribute("aria-expanded", expanded[id]); }); });
+    el.querySelectorAll(".player-card").forEach(function (c) { c.addEventListener("click", function (e) { e.stopPropagation(); openDetail(c.dataset.pid, "coaches"); }); });
+  }
+
+  /* =========================================================================
+     ADMIN  (editovateľné — mení klasifikáciu, prejaví sa v rozpadoch)
+     ========================================================================= */
+  function renderAdmin() {
+    var tP = document.getElementById("admPlayers");
+    tP.innerHTML = '<thead><tr><th>Hráč</th><th>Ročník</th><th>Umiestnenie</th><th>Priradený tréner</th></tr></thead><tbody>' +
+      players.map(function (p) {
+        var opts = coaches.map(function (c) { return '<option value="' + c.id + '"' + (c.id === p.coachId ? " selected" : "") + '>' + c.name + '</option>'; }).join("");
+        return '<tr><td class="nm">' + p.name + '</td><td class="tnum">' + p.yr + '</td>' +
+          '<td><select class="adm-select" data-pid="' + p.id + '" data-field="location"><option value="center"' + (p.location === "center" ? " selected" : "") + '>V centre federácie</option><option value="off"' + (p.location === "off" ? " selected" : "") + '>Mimo centra</option></select></td>' +
+          '<td><select class="adm-select" data-pid="' + p.id + '" data-field="coach">' + opts + '</select></td></tr>';
+      }).join("") + '</tbody>';
+
+    var tC = document.getElementById("admCoaches");
+    tC.innerHTML = '<thead><tr><th>Tréner</th><th>Hráčov</th><th>Typ pôsobenia</th></tr></thead><tbody>' +
+      coaches.map(function (c) {
+        return '<tr><td class="nm">' + c.name + '</td><td class="tnum">' + playersOf(c.id).length + '</td>' +
+          '<td><select class="adm-select" data-cid="' + c.id + '" data-field="cloc"><option value="center"' + (c.location === "center" ? " selected" : "") + '>V centre federácie</option><option value="external"' + (c.location === "external" ? " selected" : "") + '>Externý — mimo centra</option></select></td></tr>';
+      }).join("") + '</tbody>';
+
+    tP.querySelectorAll("select").forEach(function (s) {
+      s.addEventListener("change", function () {
+        var p = playerById(s.dataset.pid);
+        if (s.dataset.field === "location") p.location = s.value;
+        else p.coachId = s.value;
+        refreshAll(); showToast("Uložené — klasifikácia hráča aktualizovaná");
+      });
+    });
+    tC.querySelectorAll("select").forEach(function (s) {
+      s.addEventListener("change", function () { coachById(s.dataset.cid).location = s.value; refreshAll(); showToast("Uložené — typ trénera aktualizovaný"); });
+    });
+  }
+
+  /* =========================================================================
+     DETAIL  (rovnaké štatistiky ako trénerská appka)
+     ========================================================================= */
+  var detailState = { pid:null, cat:"Forehand", per:"month", back:"players" };
+
+  function catCodeData(p, cat) {
+    var codes = DRILL_CODES[cat], seed = hashStr(p.id + cat);
+    return codes.map(function (code, i) {
+      var base = 12 + Math.round(rand01(seed + i * 3.3) * 46); // mesačná báza min
+      return { code:code, base:base };
+    });
+  }
+  function catCharacter(p, cat) {
+    var seed = hashStr(p.id + cat + "chr");
+    var o = 0.25 + rand01(seed) * 0.35, d = 0.15 + rand01(seed + 5) * 0.3, n = Math.max(0.1, 1 - o - d);
+    var t = o + n + d;
+    return [{ name:"Ofenzívne", w:o/t, color:"#e66767" }, { name:"Neutrálne", w:n/t, color:"#c98500" }, { name:"Defenzívne", w:d/t, color:"#3987e5" }];
+  }
+
+  function renderCatStats() {
+    var p = playerById(detailState.pid), cat = detailState.cat, per = detailState.per, f = PERIOD[per].f;
+    var codeData = catCodeData(p, cat);
+    var items = codeData.map(function (d, i) { return { label:d.code, min:Math.max(1, Math.round(d.base * f)), color:CODE_COLORS[i % CODE_COLORS.length] }; });
+    var totalMin = items.reduce(function (s, it) { return s + it.min; }, 0);
+    var sess = Math.max(1, Math.round(totalMin / 75));
+    var strokes = Math.round(totalMin * (STROKE_RATE[cat] || 18) * 0.8);
+    var seedYoY = hashStr(p.id + cat + per + "yoy");
+    var yoy = Math.round((rand01(seedYoY) * 40) - 15); // -15..+25 %
+
+    document.getElementById("dStats").innerHTML =
+      '<div class="stat-tile"><div class="st-v tnum">' + hm(totalMin) + '</div><div class="st-l">Odohraný čas · ' + PERIOD[per].l + '</div></div>' +
+      '<div class="stat-tile"><div class="st-v tnum">' + sess + '</div><div class="st-l">Tréningov s kategóriou</div></div>' +
+      '<div class="stat-tile"><div class="st-v tnum">' + strokes.toLocaleString("sk-SK") + '</div><div class="st-l">Odhad úderov</div></div>' +
+      '<div class="stat-tile"><div class="st-v"><span class="delta ' + (yoy >= 0 ? "up" : "down") + '">' + (yoy >= 0 ? "▲ +" : "▼ ") + yoy + ' %</span></div><div class="st-l">vs. minulý rok</div></div>';
+
+    document.getElementById("dDonutTitle").textContent = cat === "POINTS" ? "Rozdelenie bodov" : "Kódy cvičení — " + cat;
+    document.getElementById("dDonutSub").textContent = "rozpad odohraného času · " + PERIOD[per].l;
+    renderDonut("dDonut", "dLegend", "dCenterVal", items, function (t) { return hm(t); });
+
+    var chr = catCharacter(p, cat);
+    document.getElementById("dChar").innerHTML = chr.map(function (c) {
+      return '<div class="char-row"><div class="cr-top"><b>' + c.name + '</b><span class="tnum">' + Math.round(c.w * 100) + ' % · ' + hm(Math.round(totalMin * c.w)) + '</span></div><div class="bar-track"><div class="bar-fill" style="width:' + (c.w * 100).toFixed(1) + '%;background:' + c.color + '"></div></div></div>';
+    }).join("");
+  }
+
+  var MONTHS = ["jan","feb","mar","apr","máj","jún","júl","aug","sep","okt","nov","dec"];
+  function absDate(dayFromAug1) { var mo = 7, d = dayFromAug1; while (d < 1) { mo--; d += 31; } return { d:d, mo:mo }; }
+  function renderSessions(p) {
+    var pairs = [["Forehand","Serve"],["Backhand","GAME DRILLS"],["Volley","Return"],["Serve","POINTS"],["Forehand","Backhand"]], durs = [90,80,90,75,90], out = [];
+    out.push({ d:3, mo:7, planned:true, focus:["Forehand","Serve"], dur:90 });
+    var n = Math.min(5, Math.max(2, p.sessMonth));
+    for (var i = 0; i < n; i++) { var dm = absDate(1 - i * 2 - Math.floor(p.lastDays / 3)); out.push({ d:dm.d, mo:dm.mo, planned:false, focus:pairs[(i + p.yr) % pairs.length], dur:durs[i % durs.length] }); }
+    document.getElementById("dSessions").innerHTML = out.map(function (s) {
+      var color = s.planned ? "var(--ok)" : "var(--crit)";
+      var pill = s.planned ? '<span class="s-status" style="background:var(--ok-bg);color:var(--ok-text)">Naplánovaný</span>' : '<span class="s-status" style="background:var(--crit-bg);color:var(--crit-text)">Dokončený</span>';
+      return '<div class="sess-item" style="border-left-color:' + color + '"><span class="s-date tnum">' + s.d + '. ' + MONTHS[s.mo] + '</span><span class="s-main"><span class="s-focus">' + s.focus.join(" · ") + '</span><span class="s-dur tnum">' + s.dur + ' min</span></span>' + pill + '</div>';
+    }).join("");
+  }
+
+  var BACK_LABEL = { home:"Späť na domov", players:"Späť na hráčov", coaches:"Späť na trénerov" };
+  function openDetail(pid, from) {
+    var p = playerById(pid); if (!p) return;
+    detailState.pid = pid; detailState.cat = "Forehand"; detailState.per = "month"; detailState.back = from || "players";
+    var c = coachById(p.coachId), st = statusOf(p.lastDays);
+    document.getElementById("backText").textContent = BACK_LABEL[detailState.back] || "Späť";
+    var av = document.getElementById("dAvatar"); av.textContent = initials(p.name); av.style.background = "linear-gradient(135deg," + c.hue + "," + shade(c.hue, -26) + ")";
+    document.getElementById("dName").innerHTML = p.name + ' <span class="yr tnum">ročník ' + p.yr + '</span>';
+    document.getElementById("dMeta").innerHTML = '<span>Priradený tréner: <b style="color:var(--foreground);font-weight:600">' + c.name + '</b></span>' + locBadge(p.location) + '<span>· ' + lastLabel(p.lastDays) + '</span>';
+    var sp = document.getElementById("dStatus"); sp.style.background = st.bg; sp.style.color = st.text; sp.innerHTML = '<span class="sp-dot" style="background:' + st.color + '"></span>' + st.label + (p.lastDays >= 5 ? " · " + p.lastDays + " dní" : "");
+    // category tabs
+    document.getElementById("catTabs").innerHTML = CATEGORIES.map(function (cat) { return '<button data-cat="' + cat + '"' + (cat === detailState.cat ? ' class="active"' : '') + '>' + cat + '</button>'; }).join("");
+    document.getElementById("catTabs").querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { detailState.cat = b.dataset.cat; document.getElementById("catTabs").querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); }); b.classList.add("active"); renderCatStats(); }); });
+    // period reset
+    document.getElementById("periodCtrl").querySelectorAll("button").forEach(function (b) { b.classList.toggle("active", b.dataset.per === "month"); });
+    renderCatStats(); renderSessions(p);
+    showView("detail");
+  }
+
+  /* =========================================================================
+     NAV
+     ========================================================================= */
+  function showView(name) {
+    document.querySelectorAll(".view").forEach(function (v) { v.classList.remove("active"); });
+    var v = document.getElementById("view-" + name); if (v) v.classList.add("active");
+    document.querySelectorAll(".nav-item").forEach(function (n) { n.classList.toggle("active", n.dataset.view === name); });
+    window.scrollTo(0, 0); closeNav();
+  }
+  document.querySelectorAll(".nav-item").forEach(function (n) { n.addEventListener("click", function () { showView(n.dataset.view); }); });
+  document.querySelectorAll(".entry-card").forEach(function (b) { b.addEventListener("click", function () { showView(b.dataset.go); }); });
+  document.getElementById("backLink").addEventListener("click", function () { showView(detailState.back); });
+  document.getElementById("kpiAttn").addEventListener("click", function () { showView("players"); });
+  document.getElementById("kpiAttn").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); showView("players"); } });
+
+  document.querySelectorAll('#view-players .seg-ctrl button').forEach(function (b) { b.addEventListener("click", function () { document.querySelectorAll('#view-players .seg-ctrl button').forEach(function (x) { x.classList.remove("active"); }); b.classList.add("active"); playersMode = b.dataset.pmode; renderPlayers(); }); });
+  document.getElementById("playerSearch").addEventListener("input", function (e) { playerSearch = e.target.value; renderPlayers(); });
+  document.getElementById("periodCtrl").querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { document.getElementById("periodCtrl").querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); }); b.classList.add("active"); detailState.per = b.dataset.per; renderCatStats(); }); });
+
+  var app = document.getElementById("app");
+  function closeNav() { app.classList.remove("nav-open"); }
+  document.getElementById("hamburger").addEventListener("click", function () { app.classList.toggle("nav-open"); });
+  document.getElementById("scrim").addEventListener("click", closeNav);
+
+  var toast = document.getElementById("toast"), toastTimer;
+  function showToast(msg) { document.getElementById("toastMsg").textContent = msg; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 2200); }
+  document.getElementById("copyBtn").addEventListener("click", function () { var code = document.getElementById("inviteCode").textContent; if (navigator.clipboard) navigator.clipboard.writeText(code).catch(function () {}); showToast("Kód " + code + " skopírovaný"); });
+
+  /* =========================================================================
+     INIT
+     ========================================================================= */
+  function refreshAll() { renderHome(); renderPlayers(); renderCoaches(); renderAdmin(); }
+  renderTrend("trendChart");
+  refreshAll();
+})();
+</script>
