@@ -1,0 +1,450 @@
+<style>
+  /* ===========================================================================
+     P.L.A.W — Trénerova appka v B2B (federačnom) režime — klikací mockup
+     Jadro 1:N: roster + prepínač hráča. Navigácia: Dnes / Hráči / Nastavenia.
+     Mobile-first. Antuková tmavá téma, len dark režim.
+     =========================================================================== */
+  :root {
+    --background:#1e1e21; --surface:#27262b; --surface-2:#302f36; --input:#191819;
+    --border:#3a383f; --border-soft:#322f37; --foreground:#ededee; --muted:#a3a2aa; --muted-2:#77767d;
+    --primary:#a24236; --primary-hover:#b64e40; --primary-foreground:#fdeee9; --primary-tint:rgba(162,66,54,0.16);
+    --series-1:#3987e5;
+    --ok:#10b981; --ok-text:#34d399; --ok-bg:rgba(16,185,129,0.14);
+    --warn:#f59e0b; --warn-text:#fbbf24; --warn-bg:rgba(245,158,11,0.14);
+    --crit:#ef4444; --crit-text:#f87171; --crit-bg:rgba(239,68,68,0.14);
+    --radius:14px; --radius-sm:10px;
+    --font:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(1200px 700px at 30% -10%, #26252b, #191819 60%); color:var(--foreground); font-family:var(--font); font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh; }
+  .tnum { font-variant-numeric:tabular-nums; }
+  button { font-family:inherit; }
+  ::selection { background:var(--primary); color:var(--primary-foreground); }
+  :focus-visible { outline:2px solid var(--primary-hover); outline-offset:2px; }
+
+  .stage { display:flex; gap:40px; align-items:flex-start; justify-content:center; flex-wrap:wrap; max-width:1000px; margin:0 auto; padding:40px 20px 60px; }
+
+  /* ============================ PHONE ============================ */
+  .phone { flex:none; width:392px; max-width:100%; height:min(824px, 86vh); background:#0b0b0d; border-radius:46px; padding:11px; box-shadow:0 40px 90px -30px rgba(0,0,0,0.9), 0 0 0 2px #2a2930, inset 0 0 0 1px rgba(255,255,255,0.04); position:relative; }
+  .screen { background:var(--background); border-radius:36px; height:100%; overflow:hidden; display:flex; flex-direction:column; position:relative; }
+  .statusbar { display:flex; align-items:center; justify-content:space-between; padding:12px 26px 6px; font-size:13px; font-weight:600; flex:none; }
+  .statusbar .sb-r { display:flex; align-items:center; gap:6px; }
+  .statusbar svg { width:16px; height:16px; }
+  .app-scroll { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
+  .app-scroll::-webkit-scrollbar { width:0; }
+
+  /* ============================ APP BAR ============================ */
+  .appbar { position:sticky; top:0; z-index:10; background:rgba(30,30,33,0.9); backdrop-filter:blur(8px); border-bottom:1px solid var(--border-soft); padding:8px 16px 12px; }
+  .appbar-top { display:flex; align-items:center; gap:10px; }
+  .wordmark { display:flex; align-items:center; gap:8px; }
+  .wordmark .mk { width:26px; height:26px; border-radius:7px; background:var(--primary); display:grid; place-items:center; color:var(--primary-foreground); flex:none; }
+  .wordmark .mk svg { width:15px; height:15px; }
+  .wordmark .nm { font-weight:700; letter-spacing:0.05em; font-size:14px; }
+  .fed-chip { display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; padding:3px 8px; border-radius:20px; background:var(--surface); border:1px solid var(--border); color:var(--muted); margin-left:auto; }
+  .fed-chip .d { width:5px; height:5px; border-radius:50%; background:var(--primary-hover); }
+  .back-btn { background:none; border:0; color:var(--foreground); cursor:pointer; padding:5px; border-radius:8px; display:grid; place-items:center; }
+  .back-btn svg { width:22px; height:22px; }
+
+  .switch-pill { display:flex; align-items:center; gap:10px; width:100%; margin-top:10px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:8px 12px; cursor:pointer; text-align:left; transition:border-color 0.14s; }
+  .switch-pill:hover { border-color:var(--primary); }
+  .switch-pill .sp-av { width:36px; height:36px; border-radius:10px; flex:none; display:grid; place-items:center; font-weight:700; font-size:14px; color:#fff; }
+  .switch-pill .sp-id { flex:1; min-width:0; }
+  .switch-pill .sp-lbl { font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted-2); font-weight:600; }
+  .switch-pill .sp-name { font-size:15px; font-weight:650; display:flex; align-items:center; gap:7px; }
+  .switch-pill .sp-name .yr { font-size:11px; color:var(--muted-2); font-weight:500; }
+  .switch-pill .sp-chev { color:var(--muted-2); flex:none; }
+  .switch-pill .sp-chev svg { width:20px; height:20px; display:block; }
+
+  /* ============================ CONTENT ============================ */
+  .scr-body { padding:16px; }
+  .scr-title { font-size:20px; font-weight:700; letter-spacing:-0.01em; }
+  .scr-sub { font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .summary { display:flex; gap:8px; margin:14px 0 6px; }
+  .sum-tile { flex:1; background:var(--surface); border:1px solid var(--border-soft); border-radius:12px; padding:11px 12px; }
+  .sum-tile .sv { font-size:20px; font-weight:700; }
+  .sum-tile .sl { font-size:10.5px; color:var(--muted); margin-top:2px; line-height:1.25; }
+  .sum-tile.warn .sv { color:var(--warn-text); }
+  .section-label { font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted-2); font-weight:600; margin:18px 2px 9px; }
+
+  /* schedule (Dnes) */
+  .sesh { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--border-soft); border-left:3px solid var(--ok); border-radius:14px; padding:11px 13px; cursor:pointer; margin-bottom:9px; transition:border-color 0.14s, transform 0.14s; }
+  .sesh:hover { transform:translateY(-1px); border-color:var(--muted-2); border-left-color:var(--ok); }
+  .sesh.done { border-left-color:var(--crit); }
+  .sesh.done:hover { border-left-color:var(--crit); }
+  .sesh.soft { background:var(--surface-2); border-left-color:var(--border); }
+  .sesh .se-time { font-size:15px; font-weight:700; width:50px; flex:none; }
+  .sesh .se-av { width:34px; height:34px; border-radius:9px; flex:none; display:grid; place-items:center; font-weight:700; font-size:13px; color:#fff; }
+  .sesh .se-id { flex:1; min-width:0; }
+  .sesh .se-name { font-size:14px; font-weight:600; }
+  .sesh .se-focus { font-size:11.5px; color:var(--muted); margin-top:1px; }
+  .sesh .se-status { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; white-space:nowrap; }
+  .nudge { display:flex; align-items:center; gap:11px; width:100%; text-align:left; background:var(--warn-bg); border:1px solid rgba(245,158,11,0.28); border-radius:14px; padding:12px 13px; cursor:pointer; margin-top:4px; }
+  .nudge .nu-ic { width:32px; height:32px; border-radius:9px; background:rgba(245,158,11,0.2); color:var(--warn-text); display:grid; place-items:center; flex:none; }
+  .nudge .nu-ic svg { width:17px; height:17px; }
+  .nudge .nu-b { flex:1; min-width:0; }
+  .nudge .nu-t { font-size:13px; font-weight:600; }
+  .nudge .nu-s { font-size:11.5px; color:#e7c98f; }
+  .nudge .nu-chev { color:var(--warn-text); flex:none; }
+  .nudge .nu-chev svg { width:18px; height:18px; display:block; }
+
+  /* roster card */
+  .p-card { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--border-soft); border-radius:14px; padding:12px 13px; cursor:pointer; margin-bottom:9px; transition:border-color 0.14s, transform 0.14s; }
+  .p-card:hover { border-color:var(--muted-2); transform:translateY(-1px); }
+  .p-card .pc-av { width:44px; height:44px; border-radius:12px; flex:none; display:grid; place-items:center; font-weight:700; font-size:15px; color:#fff; position:relative; }
+  .p-card .pc-av .pc-status { position:absolute; right:-2px; bottom:-2px; width:13px; height:13px; border-radius:50%; border:2.5px solid var(--surface); }
+  .p-card .pc-id { flex:1; min-width:0; }
+  .p-card .pc-name { font-size:15px; font-weight:650; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .p-card .pc-name .yr { font-size:11px; color:var(--muted-2); font-weight:500; }
+  .p-card .pc-next { font-size:12px; margin-top:2px; display:flex; align-items:center; gap:6px; color:var(--muted); }
+  .p-card .pc-next svg { width:13px; height:13px; flex:none; }
+  .p-card .pc-next.today { color:var(--ok-text); }
+  .p-card .pc-next.none { color:var(--muted-2); }
+  .loc-badge { font-size:10px; font-weight:600; padding:1.5px 7px; border-radius:20px; }
+  .loc-center { background:rgba(57,135,229,0.16); color:#8fbdf3; }
+  .loc-off { background:var(--surface-2); color:var(--muted); }
+  .p-card .pc-chev { color:var(--muted-2); flex:none; }
+  .p-card:hover .pc-chev { color:var(--primary-hover); }
+  .p-card .pc-chev svg { width:18px; height:18px; display:block; }
+
+  /* player dashboard */
+  .d-hero { display:flex; align-items:center; gap:13px; margin-bottom:14px; }
+  .d-hero .dh-av { width:52px; height:52px; border-radius:14px; flex:none; display:grid; place-items:center; font-weight:700; font-size:18px; color:#fff; }
+  .d-hero .dh-name { font-size:19px; font-weight:700; }
+  .d-hero .dh-meta { font-size:12px; color:var(--muted); margin-top:3px; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .status-pill { font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px; display:inline-flex; align-items:center; gap:4px; }
+  .status-pill .spd { width:5px; height:5px; border-radius:50%; }
+  .next-card { background:var(--surface); border:1px solid var(--border-soft); border-radius:14px; padding:14px; margin-bottom:12px; border-left:3px solid var(--ok); }
+  .next-card.none { border-left-color:var(--border); }
+  .next-card .nc-lbl { font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); font-weight:600; }
+  .next-card .nc-when { font-size:17px; font-weight:700; margin-top:4px; }
+  .next-card .nc-focus { font-size:12.5px; color:var(--muted); margin-top:3px; }
+  .next-card .nc-none { font-size:14px; color:var(--muted); margin-top:4px; }
+  .nc-actions { display:flex; align-items:center; gap:10px; margin-top:11px; padding-top:11px; border-top:1px solid var(--border-soft); flex-wrap:wrap; }
+  .nc-cancel { background:none; border:1px solid var(--border); color:var(--muted); font-size:12px; font-weight:600; padding:5px 11px; border-radius:8px; cursor:pointer; }
+  .nc-cancel:hover { border-color:var(--crit); color:var(--crit-text); }
+  .nc-hint { font-size:11px; color:var(--muted-2); }
+  .stat2 { display:flex; gap:9px; margin-bottom:14px; }
+  .stat2 .st { flex:1; background:var(--surface); border:1px solid var(--border-soft); border-radius:12px; padding:12px 13px; }
+  .stat2 .st .v { font-size:19px; font-weight:700; }
+  .stat2 .st .l { font-size:10.5px; color:var(--muted); margin-top:2px; }
+  .tile-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .app-tile { display:flex; flex-direction:column; gap:9px; background:var(--surface); border:1px solid var(--border-soft); border-radius:14px; padding:14px; cursor:pointer; text-align:left; transition:border-color 0.14s, transform 0.14s; position:relative; }
+  .app-tile:hover { border-color:var(--primary); transform:translateY(-1px); }
+  .app-tile .at-ico { width:36px; height:36px; border-radius:10px; background:var(--primary-tint); color:var(--primary-hover); display:grid; place-items:center; }
+  .app-tile .at-ico svg { width:19px; height:19px; }
+  .app-tile .at-name { font-size:13.5px; font-weight:600; }
+  .app-tile .at-sub { font-size:11px; color:var(--muted-2); }
+  .app-tile .at-lock { position:absolute; top:12px; right:12px; color:var(--muted-2); }
+  .app-tile .at-lock svg { width:13px; height:13px; display:block; }
+
+  .own-note { font-size:11.5px; color:var(--muted); background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:11px 13px; margin-top:16px; line-height:1.5; display:flex; gap:9px; }
+  .own-note svg { width:15px; height:15px; color:var(--muted-2); flex:none; margin-top:1px; }
+  .own-note b { color:var(--foreground); font-weight:600; }
+
+  /* settings */
+  .set-hero { display:flex; align-items:center; gap:13px; background:var(--surface); border:1px solid var(--border-soft); border-radius:14px; padding:14px; margin-bottom:14px; }
+  .set-hero .sh-av { width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#b64e40,#7d332a); display:grid; place-items:center; font-weight:700; font-size:16px; color:#fff; flex:none; }
+  .set-hero .sh-n { font-size:16px; font-weight:700; }
+  .set-hero .sh-r { font-size:12px; color:var(--muted); margin-top:2px; }
+  .set-list { background:var(--surface); border:1px solid var(--border-soft); border-radius:14px; overflow:hidden; }
+  .set-row { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:none; border:0; border-bottom:1px solid var(--border-soft); padding:13px 14px; cursor:pointer; }
+  .set-row:last-child { border-bottom:0; }
+  .set-row:hover { background:var(--surface-2); }
+  .set-row .sr-ic { color:var(--muted); flex:none; } .set-row .sr-ic svg { width:19px; height:19px; display:block; }
+  .set-row .sr-b { flex:1; min-width:0; } .set-row .sr-t { font-size:14px; font-weight:600; } .set-row .sr-s { font-size:11.5px; color:var(--muted-2); }
+  .set-row .sr-v { font-size:12.5px; color:var(--muted); } .set-row .sr-chev { color:var(--muted-2); } .set-row .sr-chev svg { width:17px; height:17px; display:block; }
+  .set-row.danger .sr-t { color:var(--crit-text); } .set-row.danger .sr-ic { color:var(--crit-text); }
+
+  /* ============================ BOTTOM TABS ============================ */
+  .tabbar { flex:none; display:flex; border-top:1px solid var(--border-soft); background:rgba(24,24,27,0.96); backdrop-filter:blur(10px); padding:8px 8px 16px; z-index:15; }
+  .tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:0; color:var(--muted-2); cursor:pointer; padding:4px 0; font-size:10.5px; font-weight:600; transition:color 0.14s; }
+  .tab svg { width:23px; height:23px; }
+  .tab:hover { color:var(--muted); }
+  .tab.active { color:var(--primary-hover); }
+  .tab .tb-badge { position:relative; }
+  .tab .tb-badge .dot { position:absolute; top:-1px; right:-5px; width:8px; height:8px; border-radius:50%; background:var(--warn); border:2px solid #18181b; }
+
+  /* ============================ SHEET ============================ */
+  .sheet-scrim { position:absolute; inset:0; background:rgba(0,0,0,0.5); opacity:0; pointer-events:none; transition:opacity 0.22s; z-index:20; border-radius:36px; }
+  .sheet-scrim.show { opacity:1; pointer-events:auto; }
+  .sheet { position:absolute; left:0; right:0; bottom:0; z-index:21; background:var(--surface); border-top-left-radius:22px; border-top-right-radius:22px; border-top:1px solid var(--border); padding:8px 16px 22px; transform:translateY(102%); transition:transform 0.26s cubic-bezier(.3,.8,.3,1); max-height:80%; overflow-y:auto; }
+  .sheet.show { transform:translateY(0); }
+  .sheet-grip { width:38px; height:4px; border-radius:3px; background:var(--border); margin:6px auto 12px; }
+  .sheet-head h3 { margin:0; font-size:16px; font-weight:700; }
+  .sheet-note { font-size:11.5px; color:var(--muted); margin:2px 0 12px; }
+  .sheet-item { display:flex; align-items:center; gap:11px; width:100%; text-align:left; background:none; border:0; border-radius:12px; padding:10px; cursor:pointer; transition:background 0.14s; }
+  .sheet-item:hover { background:var(--surface-2); }
+  .sheet-item.active { background:var(--primary-tint); }
+  .sheet-item .si-av { width:38px; height:38px; border-radius:11px; flex:none; display:grid; place-items:center; font-weight:700; font-size:14px; color:#fff; position:relative; }
+  .sheet-item .si-av .sd { position:absolute; right:-2px; bottom:-2px; width:12px; height:12px; border-radius:50%; border:2.5px solid var(--surface); }
+  .sheet-item .si-id { flex:1; min-width:0; }
+  .sheet-item .si-name { font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px; }
+  .sheet-item .si-name .yr { font-size:11px; color:var(--muted-2); font-weight:500; }
+  .sheet-item .si-last { font-size:11.5px; color:var(--muted); }
+  .sheet-item .si-check { color:var(--primary-hover); flex:none; } .sheet-item .si-check svg { width:18px; height:18px; display:block; }
+  .sheet-roster-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:10px; background:var(--surface-2); border:1px solid var(--border); color:var(--foreground); font-weight:600; font-size:13px; padding:11px; border-radius:12px; cursor:pointer; }
+  .sheet-roster-btn:hover { background:var(--border); } .sheet-roster-btn svg { width:16px; height:16px; }
+
+  /* ============================ NOTES ============================ */
+  .notes { flex:1; min-width:280px; max-width:410px; padding-top:6px; }
+  .notes h1 { font-size:22px; font-weight:700; letter-spacing:-0.01em; margin:0 0 6px; }
+  .notes .lead { font-size:14px; color:var(--muted); margin:0 0 20px; line-height:1.55; }
+  .notes .badge-1n { display:inline-flex; align-items:center; gap:7px; background:var(--primary-tint); color:var(--primary-foreground); font-weight:700; font-size:12px; padding:5px 12px; border-radius:20px; margin-bottom:16px; }
+  .note-list { display:flex; flex-direction:column; gap:14px; }
+  .note-item { display:flex; gap:12px; }
+  .note-item .ni-ico { width:32px; height:32px; border-radius:9px; background:var(--surface); border:1px solid var(--border-soft); display:grid; place-items:center; color:var(--primary-hover); flex:none; }
+  .note-item .ni-ico svg { width:16px; height:16px; }
+  .note-item .ni-body h4 { margin:0 0 2px; font-size:13.5px; font-weight:650; }
+  .note-item .ni-body p { margin:0; font-size:12.5px; color:var(--muted); line-height:1.5; }
+  .note-item .ni-body code { background:var(--input); border:1px solid var(--border-soft); border-radius:5px; padding:1px 5px; font-size:11.5px; font-family:ui-monospace,Menlo,monospace; }
+  .resolved { margin-top:20px; font-size:12px; color:var(--muted); background:var(--surface); border:1px solid var(--border-soft); border-left:3px solid var(--ok); border-radius:10px; padding:11px 13px; line-height:1.5; }
+  .resolved b.k { color:var(--ok-text); font-weight:600; } .resolved b { color:var(--foreground); font-weight:600; }
+
+  /* ============================ toast ============================ */
+  .toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:#141317; border:1px solid var(--border); color:var(--foreground); padding:11px 18px; border-radius:10px; font-size:13px; box-shadow:0 12px 34px -8px rgba(0,0,0,0.85); opacity:0; pointer-events:none; transition:opacity 0.2s, transform 0.2s; z-index:80; max-width:320px; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) { .sheet, .sheet-scrim, .toast { transition:none !important; } }
+  @media (max-width: 720px) { .stage { gap:24px; padding:20px 14px 40px; } .notes { max-width:100%; } .phone { height:min(780px, 82vh); } }
+</style>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="statusbar">
+        <span class="tnum">9:41</span>
+        <span class="sb-r">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 17h3v3H2zm5-3h3v6H7zm5-4h3v10h-3zm5-4h3v14h-3z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0M12 19h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="8" width="18" height="9" rx="2.5" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="10" width="12" height="5" rx="1" fill="currentColor"/><path d="M22 11v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+
+      <div class="app-scroll">
+        <div class="appbar" id="appbar"></div>
+        <div class="scr-body" id="scrBody"></div>
+      </div>
+
+      <nav class="tabbar" id="tabbar"></nav>
+
+      <div class="sheet-scrim" id="scrim"></div>
+      <div class="sheet" id="sheet"></div>
+    </div>
+  </div>
+
+  <aside class="notes">
+    <span class="badge-1n"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Jadro B2B zmeny: 1 : N</span>
+    <h1>Trénerova appka — federačný režim</h1>
+    <p class="lead">Tá istá trénerská appka, ale tréner je <b>zamestnanec federácie</b> s <b>viacerými aktívnymi hráčmi</b>. Pribúda <b>roster</b>, <b>prepínač hráča</b> a denný domov <b>„Dnes"</b>.</p>
+
+    <div class="note-list">
+      <div class="note-item">
+        <span class="ni-ico"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9h17M8 3v4m8-4v4M9 14l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="ni-body"><h4>„Dnes" = denný domov</h4><p>Rozvrh dňa <b>naprieč všetkými hráčmi</b> v poradí podľa času — pri viacerých hráčoch to tréner potrebuje ako prvé. Ťuk na tréning → hráč.</p></div>
+      </div>
+      <div class="note-item">
+        <span class="ni-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.8"/></svg></span>
+        <div class="ni-body"><h4>„Hráči" = roster</h4><p>Všetci pridelení hráči so stavom a najbližším tréningom. Ťuk → dashboard hráča.</p></div>
+      </div>
+      <div class="note-item">
+        <span class="ni-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M8 9l4-4 4 4M8 15l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="ni-body"><h4>Prepínač hráča v hlavičke</h4><p>Na dashboarde hráča ťukni na pill → prehodíš aktívneho hráča bez návratu na roster. Kalendár, záznam, analytika sa viažu na vybraného.</p></div>
+      </div>
+      <div class="note-item">
+        <span class="ni-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+        <div class="ni-body"><h4>Federácia prideľuje a vlastní</h4><p>Hráčov prideľuje šéftréner; dáta vlastní federácia. <code>one_active_player</code> sa pre org uvoľní na 1:N.</p></div>
+      </div>
+      <div class="note-item">
+        <span class="ni-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13M4 4l16 16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="ni-body"><h4>Tréner nemaže dáta</h4><p>Uložené dáta hráča vlastní federácia — tréner ich vytvára a upravuje, ale <b>nevie zmazať</b>. Namiesto zmazania sa tréning zruší (<code>status = cancelled</code>, už v schéme) → federácii ostáva úplný záznam.</p></div>
+      </div>
+    </div>
+
+    <div class="resolved">
+      <b class="k">Rozhodnuté:</b> kódy cvičení sú v B2B <b>štandardizované federáciou</b> pre všetkých trénerov (tréner ich len používa, read-only). Jednotné kódy = <b>porovnateľná analytika naprieč federáciou</b> v riadiacom pulte.
+    </div>
+  </aside>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var COACH = "Andrea Kolárová", FED = "Baseline Tennis Federation", TODAY_LABEL = "Nedeľa 2. august 2026";
+  var players = [
+    { id:"p1", name:"Adam Kováč",      yr:2012, loc:"center", lastDays:1, sessMonth:9, minMonth:760, next:"Dnes 16:00",   nextFocus:"Forehand · Serve · 90 min",       today:true },
+    { id:"p2", name:"Ema Horváthová",  yr:2011, loc:"center", lastDays:2, sessMonth:8, minMonth:630, next:"Dnes 17:30",   nextFocus:"Backhand · GAME DRILLS · 90 min", today:true },
+    { id:"p3", name:"Sofia Molnárová", yr:2014, loc:"off",    lastDays:3, sessMonth:7, minMonth:550, next:"Zajtra 15:00", nextFocus:"Volley · Return · 60 min",        today:false },
+    { id:"p4", name:"Jakub Šimon",     yr:2013, loc:"center", lastDays:6, sessMonth:4, minMonth:300, next:"",             nextFocus:"",                                today:false },
+    { id:"p5", name:"Nina Baková",     yr:2010, loc:"off",    lastDays:1, sessMonth:9, minMonth:720, next:"Piatok 14:00", nextFocus:"Serve · POINTS · 90 min",         today:false }
+  ];
+  var HUES = { p1:"#3987e5", p2:"#199e70", p3:"#c98500", p4:"#9085e9", p5:"#e66767" };
+  var todaySessions = [
+    { time:"09:30", pid:"p5", focus:"Serve · POINTS", dur:90, done:true },
+    { time:"16:00", pid:"p1", focus:"Forehand · Serve", dur:90, done:false },
+    { time:"17:30", pid:"p2", focus:"Backhand · GAME DRILLS", dur:90, done:false }
+  ];
+  var tomorrowSessions = [ { time:"15:00", pid:"p3", focus:"Volley · Return", dur:60 } ];
+
+  function statusOf(d) { if (d >= 8) return { label:"Neaktívny", color:"var(--crit)", text:"var(--crit-text)", bg:"var(--crit-bg)" }; if (d >= 5) return { label:"Pozor", color:"var(--warn)", text:"var(--warn-text)", bg:"var(--warn-bg)" }; return { label:"Aktívny", color:"var(--ok)", text:"var(--ok-text)", bg:"var(--ok-bg)" }; }
+  function lastLabel(d) { return d === 0 ? "dnes" : d === 1 ? "včera" : "pred " + d + " dňami"; }
+  function hm(m) { var h = Math.floor(m/60), mm = m%60; return h + "h" + (mm ? " " + mm + "m" : ""); }
+  function initials(n) { var p = n.trim().split(/\s+/); return ((p[0]||"")[0] + (p[1]||"")[0]).toUpperCase(); }
+  function shade(hex, pct) { var n = parseInt(hex.slice(1),16), r=(n>>16)&255, g=(n>>8)&255, b=n&255, f=(100+pct)/100; r=Math.max(0,Math.min(255,Math.round(r*f))); g=Math.max(0,Math.min(255,Math.round(g*f))); b=Math.max(0,Math.min(255,Math.round(b*f))); return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+  function av(hue) { return "linear-gradient(135deg," + hue + "," + shade(hue,-26) + ")"; }
+  function playerById(id) { return players.find(function (p) { return p.id === id; }); }
+  function locBadge(loc) { return loc === "center" ? '<span class="loc-badge loc-center">V centre</span>' : '<span class="loc-badge loc-off">Mimo centra</span>'; }
+  var CHEV = '<svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var CAL = '<svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9h17M8 3v4m8-4v4" stroke="currentColor" stroke-width="1.8"/></svg>';
+
+  var view = "today", activeTab = "today", selectedId = null;
+  var scrBody = document.getElementById("scrBody");
+
+  /* ---------- APP BAR ---------- */
+  function renderAppbar() {
+    var el = document.getElementById("appbar");
+    if (view === "player") {
+      var p = playerById(selectedId);
+      el.innerHTML =
+        '<div class="appbar-top"><button class="back-btn" id="backBtn" aria-label="Späť"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="nm" style="font-size:13px;color:var(--muted)">' + (activeTab === "today" ? "Dnes" : "Moji hráči") + '</span><span class="fed-chip"><span class="d"></span>' + FED + '</span></div>' +
+        '<button class="switch-pill" id="switchPill"><span class="sp-av" style="background:' + av(HUES[p.id]) + '">' + initials(p.name) + '</span><span class="sp-id"><span class="sp-lbl">Aktívny hráč · ťukni pre zmenu</span><span class="sp-name">' + p.name + ' <span class="yr tnum">' + p.yr + '</span></span></span><span class="sp-chev"><svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>';
+      document.getElementById("backBtn").addEventListener("click", function () { view = activeTab; render(); });
+      document.getElementById("switchPill").addEventListener("click", openSheet);
+    } else {
+      el.innerHTML = '<div class="appbar-top"><div class="wordmark"><span class="mk"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V7l8-3 8 3v13" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 13h16M9 4v9m6-9v9" stroke="currentColor" stroke-width="2"/></svg></span><span class="nm">P.L.A.W</span></div><span class="fed-chip"><span class="d"></span>' + FED + '</span></div>';
+    }
+  }
+
+  /* ---------- DNES ---------- */
+  function seshHTML(s, soft) {
+    var p = playerById(s.pid), st = statusOf(p.lastDays);
+    var cls = "sesh" + (s.done ? " done" : "") + (soft ? " soft" : "");
+    var pill = soft ? '<span class="se-status" style="background:var(--surface);color:var(--muted)">Zajtra</span>'
+      : (s.done ? '<span class="se-status" style="background:var(--crit-bg);color:var(--crit-text)">Dokončený</span>' : '<span class="se-status" style="background:var(--ok-bg);color:var(--ok-text)">Naplánovaný</span>');
+    return '<button class="' + cls + '" data-pid="' + p.id + '"><span class="se-time tnum">' + s.time + '</span><span class="se-av" style="background:' + av(HUES[p.id]) + '">' + initials(p.name) + '</span><span class="se-id"><span class="se-name">' + p.name + ' <span style="font-size:11px;color:var(--muted-2);font-weight:500">' + p.yr + '</span></span><span class="se-focus">' + s.focus + ' · ' + s.dur + ' min</span></span>' + pill + '</button>';
+  }
+  function renderToday() {
+    var attn = players.filter(function (p) { return p.lastDays >= 5; });
+    var upcoming = todaySessions.filter(function (s) { return !s.done; }).length;
+    var html =
+      '<div class="scr-title">Dnes</div><div class="scr-sub">' + TODAY_LABEL + ' · ' + COACH + '</div>' +
+      '<div class="summary"><div class="sum-tile"><div class="sv tnum">' + todaySessions.length + '</div><div class="sl">tréningov dnes</div></div><div class="sum-tile"><div class="sv tnum">' + upcoming + '</div><div class="sl">ešte nasleduje</div></div><div class="sum-tile ' + (attn.length ? "warn" : "") + '"><div class="sv tnum">' + attn.length + '</div><div class="sl">vyžaduje pozornosť</div></div></div>' +
+      '<div class="section-label">Rozvrh dňa</div>' +
+      todaySessions.map(function (s) { return seshHTML(s, false); }).join("");
+    if (attn.length) {
+      var a = attn.sort(function (x, y) { return y.lastDays - x.lastDays; })[0];
+      html += '<button class="nudge" data-pid="' + a.id + '"><span class="nu-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8v5m0 3h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><span class="nu-b"><span class="nu-t">' + a.name + ' — ' + a.lastDays + ' dní bez tréningu</span><span class="nu-s">Naplánuj mu tréning</span></span><span class="nu-chev">' + CHEV + '</span></button>';
+    }
+    html += '<div class="section-label">Zajtra</div>' + tomorrowSessions.map(function (s) { return seshHTML(s, true); }).join("");
+    scrBody.innerHTML = html;
+    scrBody.querySelectorAll("[data-pid]").forEach(function (b) { b.addEventListener("click", function () { openPlayer(b.dataset.pid); }); });
+  }
+
+  /* ---------- HRÁČI (roster) ---------- */
+  function renderRoster() {
+    var attn = players.filter(function (p) { return p.lastDays >= 5; }).length;
+    var html =
+      '<div class="scr-title">Moji hráči</div><div class="scr-sub">' + COACH + ' · pridelení federáciou</div>' +
+      '<div class="summary"><div class="sum-tile"><div class="sv tnum">' + players.length + '</div><div class="sl">aktívnych hráčov</div></div><div class="sum-tile"><div class="sv tnum">' + todaySessions.length + '</div><div class="sl">tréningy dnes</div></div><div class="sum-tile ' + (attn ? "warn" : "") + '"><div class="sv tnum">' + attn + '</div><div class="sl">vyžaduje pozornosť</div></div></div>' +
+      '<div class="section-label">Roster</div>';
+    html += players.map(function (p) {
+      var st = statusOf(p.lastDays), nextCls = p.next ? (p.today ? "today" : "") : "none", nextTxt = p.next ? p.next : "Žiadny naplánovaný tréning";
+      return '<button class="p-card" data-pid="' + p.id + '"><span class="pc-av" style="background:' + av(HUES[p.id]) + '">' + initials(p.name) + '<span class="pc-status" style="background:' + st.color + '"></span></span><span class="pc-id"><span class="pc-name">' + p.name + ' <span class="yr tnum">' + p.yr + '</span> ' + locBadge(p.loc) + '</span><span class="pc-next ' + nextCls + '">' + CAL + nextTxt + '</span></span><span class="pc-chev">' + CHEV + '</span></button>';
+    }).join("");
+    html += '<div class="own-note"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span>Prihlásený ako tréner federácie <b>' + FED + '</b>. Hráčov ti prideľuje šéftréner; dáta patria federácii.</span></div>';
+    scrBody.innerHTML = html;
+    scrBody.querySelectorAll(".p-card").forEach(function (c) { c.addEventListener("click", function () { openPlayer(c.dataset.pid); }); });
+  }
+
+  /* ---------- DASHBOARD HRÁČA ---------- */
+  function renderPlayer() {
+    var p = playerById(selectedId), st = statusOf(p.lastDays);
+    var next = p.next ? '<div class="next-card"><div class="nc-lbl">Najbližší tréning</div><div class="nc-when">' + p.next + '</div><div class="nc-focus">' + p.nextFocus + '</div><div class="nc-actions"><button class="nc-cancel" data-toast="V B2B sa tréning nemaže — označí sa ako Zrušený (status=cancelled). Záznam ostáva federácii. Trvalé mazanie tréner nemá.">Zrušiť tréning</button><span class="nc-hint">tréner môže zrušiť, nie zmazať</span></div></div>' : '<div class="next-card none"><div class="nc-lbl">Najbližší tréning</div><div class="nc-none">Žiadny naplánovaný — <b style="color:var(--primary-hover)">naplánuj tréning</b></div></div>';
+    var tiles = [
+      { n:"Kalendár", s:"plánovanie tréningov", ico:CAL },
+      { n:"Záznam tréningu", s:"log cvičení", ico:'<svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h16M4 19h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="19" cy="19" r="2.5" stroke="currentColor" stroke-width="1.8"/></svg>' },
+      { n:"Analytika", s:"grafy a úderovosť", ico:'<svg viewBox="0 0 24 24" fill="none"><path d="M4 20V4M4 20h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 16v-4m4 4V8m4 8v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' },
+      { n:"Kódy cvičení", s:"štandard federácie · len čítať", lock:true, toast:"Kódy cvičení sú štandardizované federáciou — tréner ich iba používa; nastavuje ich šéftréner. Len na čítanie.", ico:'<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>' }
+    ];
+    var lockIco = '<span class="at-lock"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.8"/></svg></span>';
+    var html =
+      '<div class="d-hero"><span class="dh-av" style="background:' + av(HUES[p.id]) + '">' + initials(p.name) + '</span><div><div class="dh-name">' + p.name + '</div><div class="dh-meta"><span>ročník ' + p.yr + '</span>' + locBadge(p.loc) + '<span class="status-pill" style="background:' + st.bg + ';color:' + st.text + '"><span class="spd" style="background:' + st.color + '"></span>' + st.label + (p.lastDays >= 5 ? " · " + p.lastDays + " dní" : "") + '</span></div></div></div>' +
+      next +
+      '<div class="stat2"><div class="st"><div class="v tnum">' + p.sessMonth + '</div><div class="l">tréningov tento mesiac</div></div><div class="st"><div class="v tnum">' + hm(p.minMonth) + '</div><div class="l">odohraný čas</div></div></div>' +
+      '<div class="section-label">Workspace hráča</div>' +
+      '<div class="tile-grid">' + tiles.map(function (t) { return '<button class="app-tile" data-toast="' + (t.toast || (t.n + ' sa otvorí ako v dnešnej appke — viazané na hráča ' + p.name + ' (mimo rozsahu mockupu)')) + '">' + (t.lock ? lockIco : '') + '<span class="at-ico">' + t.ico + '</span><span class="at-name">' + t.n + '</span><span class="at-sub">' + t.s + '</span></button>'; }).join("") + '</div>' +
+      '<div class="own-note"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.7"/></svg><span><b>Tréner dáta nemaže.</b> Vytvára a upravuje ich, ale mazať nevie — vlastní ich federácia. Namiesto zmazania sa tréning <b>zruší</b> (záznam ostáva). Obrazovky sú tie isté ako dnes, viazané na vybraného hráča.</span></div>';
+    scrBody.innerHTML = html;
+    scrBody.querySelectorAll("[data-toast]").forEach(function (b) { b.addEventListener("click", function () { toast(b.dataset.toast); }); });
+  }
+
+  /* ---------- NASTAVENIA ---------- */
+  function renderSettings() {
+    scrBody.innerHTML =
+      '<div class="scr-title">Nastavenia</div><div class="scr-sub">Účet a členstvo</div>' +
+      '<div style="height:14px"></div>' +
+      '<div class="set-hero"><span class="sh-av">' + initials(COACH) + '</span><div><div class="sh-n">' + COACH + '</div><div class="sh-r">Tréner · ' + FED + '</div></div></div>' +
+      '<div class="set-list">' +
+        setRow('<path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>', "Členstvo vo federácii", "aktívne · sedadlo pridelené", "", true) +
+        setRow('<rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>', "Kódy cvičení", "štandard federácie · len na čítanie", "", true) +
+        setRow('<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 9h17M3.5 15h17M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" stroke="currentColor" stroke-width="1.4"/>', "Jazyk appky", "", "English", true) +
+        setRowDanger('<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>', "Odhlásiť sa") +
+      '</div>' +
+      '<div class="own-note"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span>Si zamestnanec federácie <b>' + FED + '</b>. Hráčov aj kódy cvičení spravuje šéftréner; <b>dáta vlastní federácia</b>. Pri odchode ostávajú organizácii.</span></div>';
+    scrBody.querySelectorAll("[data-toast]").forEach(function (b) { b.addEventListener("click", function () { toast(b.dataset.toast); }); });
+  }
+  function setRow(path, title, sub, val, ro) {
+    return '<button class="set-row" data-toast="' + (ro ? title + ' — spravuje federácia / mimo rozsahu mockupu" ' : 'Otvorí sa nastavenie" ') + '><span class="sr-ic"><svg viewBox="0 0 24 24" fill="none">' + path + '</svg></span><span class="sr-b"><span class="sr-t">' + title + '</span>' + (sub ? '<span class="sr-s">' + sub + '</span>' : '') + '</span>' + (val ? '<span class="sr-v">' + val + '</span>' : '') + '<span class="sr-chev">' + CHEV + '</span></button>';
+  }
+  function setRowDanger(path, title) {
+    return '<button class="set-row danger" data-toast="Odhlásenie — mimo rozsahu mockupu"><span class="sr-ic"><svg viewBox="0 0 24 24" fill="none">' + path + '</svg></span><span class="sr-b"><span class="sr-t">' + title + '</span></span></button>';
+  }
+
+  /* ---------- SHEET (prepínač) ---------- */
+  function renderSheet() {
+    var html = '<div class="sheet-grip"></div><div class="sheet-head"><h3>Prepnúť hráča</h3></div><p class="sheet-note">Pridelení federáciou ' + FED + '</p>';
+    html += players.map(function (p) {
+      var st = statusOf(p.lastDays), active = p.id === selectedId;
+      return '<button class="sheet-item ' + (active ? "active" : "") + '" data-pid="' + p.id + '"><span class="si-av" style="background:' + av(HUES[p.id]) + '">' + initials(p.name) + '<span class="sd" style="background:' + st.color + '"></span></span><span class="si-id"><span class="si-name">' + p.name + ' <span class="yr tnum">' + p.yr + '</span></span><span class="si-last">Posledný tréning ' + lastLabel(p.lastDays) + (p.next ? ' · ďalší ' + p.next.toLowerCase() : '') + '</span></span>' + (active ? '<span class="si-check"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '') + '</button>';
+    }).join("");
+    html += '<button class="sheet-roster-btn" id="toRoster"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 19c0-2.5 2.2-4 5-4s5 1.5 5 4m3-4c2.2.3 4 1.8 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Zobraziť všetkých (roster)</button>';
+    document.getElementById("sheet").innerHTML = html;
+    document.getElementById("sheet").querySelectorAll(".sheet-item").forEach(function (b) { b.addEventListener("click", function () { selectedId = b.dataset.pid; closeSheet(); view = "player"; render(); }); });
+    document.getElementById("toRoster").addEventListener("click", function () { closeSheet(); activeTab = "roster"; view = "roster"; render(); });
+  }
+  function openSheet() { renderSheet(); document.getElementById("sheet").classList.add("show"); document.getElementById("scrim").classList.add("show"); }
+  function closeSheet() { document.getElementById("sheet").classList.remove("show"); document.getElementById("scrim").classList.remove("show"); }
+  document.getElementById("scrim").addEventListener("click", closeSheet);
+
+  /* ---------- BOTTOM TABS ---------- */
+  function renderTabbar() {
+    var attn = players.filter(function (p) { return p.lastDays >= 5; }).length;
+    var tabs = [
+      { id:"today", label:"Dnes", ico:'<svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9h17M8 3v4m8-4v4M9 14l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>', badge:!!attn },
+      { id:"roster", label:"Hráči", ico:'<svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.8"/><path d="M16 5.5a3 3 0 0 1 0 5.5m1.5 3.2c1.9.6 3.5 2.3 3.5 4.3" stroke="currentColor" stroke-width="1.8"/></svg>', badge:false },
+      { id:"settings", label:"Nastavenia", ico:'<svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.6h-4l-.3 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4L4.1 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.6h4l.3-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5a7 7 0 0 0 .1-1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>', badge:false }
+    ];
+    document.getElementById("tabbar").innerHTML = tabs.map(function (t) {
+      return '<button class="tab ' + (activeTab === t.id ? "active" : "") + '" data-tab="' + t.id + '"><span class="tb-badge">' + t.ico + (t.badge ? '<span class="dot"></span>' : '') + '</span>' + t.label + '</button>';
+    }).join("");
+    document.getElementById("tabbar").querySelectorAll(".tab").forEach(function (b) { b.addEventListener("click", function () { activeTab = b.dataset.tab; view = b.dataset.tab; render(); }); });
+  }
+
+  /* ---------- toast / render ---------- */
+  var toastEl = document.getElementById("toast"), tt;
+  function toast(msg) { toastEl.textContent = msg; toastEl.classList.add("show"); clearTimeout(tt); tt = setTimeout(function () { toastEl.classList.remove("show"); }, 2600); }
+  function openPlayer(id) { selectedId = id; view = "player"; render(); }
+  function render() {
+    renderAppbar();
+    if (view === "today") renderToday();
+    else if (view === "roster") renderRoster();
+    else if (view === "settings") renderSettings();
+    else renderPlayer();
+    renderTabbar();
+    document.querySelector(".app-scroll").scrollTop = 0;
+  }
+  render();
+})();
+</script>

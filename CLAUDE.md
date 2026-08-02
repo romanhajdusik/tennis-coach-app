@@ -86,6 +86,7 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - **Archív (neaktívny hráč) je read-only na úrovni DB:** RLS policy blokuje UPDATE/DELETE na sessions a metrics, ak hráč má `is_active = false`. UI kontrola nestačí.
 - **Dokončený tréning (`sessions.status = 'completed'`) je tiež read-only na úrovni DB:** RLS blokuje UPDATE/DELETE na `sessions` a `session_drills` (aj INSERT nových cvičení), rovnaký princíp ako archív.
 - Všetky zmeny schémy výhradne cez migrácie (Supabase CLI), nikdy manuálne v dashboarde.
+- **Budúca org/B2B vrstva má vlastné povinné RLS pravidlá** (neimplementované, ale pri stavbe org vrstvy záväzné): dvojrežimová RLS (org riadky podľa `organization_members` vs osobné riadky `coach_id = auth.uid()`), **director SELECT-only**, **tréner-zamestnanec bez DELETE** (mazanie → `sessions.status='cancelled'`), **tenant izolácia** (`proxy.ts` hostname→org autoritatívne + Auth cookies per-subdoménu, nie zdieľané `.plaw.win`). Detaily v [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md) §5.7.
 
 ## Životný cyklus tréningu
 
@@ -205,6 +206,14 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
   k jadru, páruje sa so Stripe („sedadlá" = predplatné na N miest, najhodnotnejší B2B tier).
   **Toto je konkrétna licencovaná verzia nižšieho bodu „Manažér/športový riaditeľ" — zlúčiť.**
   Detaily verbatim v [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md) §4.
+  **Upresnené 2026-08-02 (§5 v tom istom dokumente):** multi-tenant — **každá org = `<slug>.plaw.win`**
+  (subdomény pridávané ručne, bez wildcard, cez CNAME → NS/MX nedotknuté); `plaw.win` = samostatný
+  1:1 produkt, `proxy.ts` mapuje hostname → `organizations.slug` → org. **Dáta vlastní federácia**
+  (tréner = zamestnanec; `organization_id` vlastník, `coach_id` priradenie; pri odchode ostávajú org).
+  **Kódy cvičení štandardizuje federácia** (org-owned, tréner read-only) → porovnateľná analytika.
+  **Tréner v B2B nemaže** (hard-delete → `sessions.status='cancelled'`, audit). **B2B nemá parent/player
+  sledovanie** (to je consumer feature na `plaw.win`). Trénerova appka v B2B = **1:N** (roster + prepínač
+  hráča). Bezpečnostné/RLS pravidlá org vrstvy sú v §5.7. Klikacie mockupy: `docs/mockups/`.
 - **Manažér/športový riaditeľ pre viacerých hráčov naraz** (akadémie, zväzy): dnes má rola `manager` v DB rovnaké obmedzenie ako `parent` — `one_active_connection_per_parent` (`supabase/migrations/20260715100000_player_connections.sql`) dovoľuje len jedno aktívne prepojenie naraz, nový kód automaticky zruší predošlé. Nápad: uvoľniť tento limit len pre rolu `manager` (rodič ostáva 1:1) a postaviť prehľadovú stránku so zoznamom/tabuľkou hráčov zoskupených podľa trénera (`player_connections.coach_id`), s indikátorom "bez tréningu X dní" a agregovanou analytikou naprieč akadémiou. Dva mockupy (mobil aj tablet/laptop s grafmi) boli spravené 2026-07-17, zatiaľ len ako Claude Artifacts na diskusiu, nič nie je implementované. Ide o B2B rozšírenie scope-u (akadémie/zväzy majú iné potreby aj cenotvorbu než 1:1 tréner-hráč) — netreba to robiť mimochodom pri inej úlohe, len ako vedomé rozhodnutie o rozsahu.
 - **Import dát z Garminu/Polaru** (pripomenuté 2026-07-20, zatiaľ len nápad): hráč (rola `player`, zaklaimovaná cez `player_connections`) by si mal vedieť pripojiť/stiahnuť dáta zo svojich fitness hodiniek (Garmin Connect / Polar). Dáta sa majú zobraziť pri konkrétnom tréningu (asi treba spárovať aktivitu s `sessions` podľa dátumu/času, podobne ako kolízna kontrola pri Google Calendar) aj v analytike (`lib/actions/analytics.ts`). Zatiaľ nerozhodnuté: ktoré metriky (tep, vzdialenosť, kalórie...), OAuth pripojenie per hráč (analogicky k `google_calendar_connections`, ale na strane hráča/rodičovskej appky, nie trénera), nová tabuľka na surové/spárované dáta. Nezačínaj implementovať bez ďalšieho spresnenia zadania.
 

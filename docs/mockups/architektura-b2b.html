@@ -1,0 +1,157 @@
+<style>
+  /* ===========================================================================
+     P.L.A.W — Multi-tenant architektúra: KAŽDÁ organizácia = <slug>.plaw.win.
+     plaw.win = samostatný produkt (1:1). *.plaw.win (wildcard) = federačné svety.
+     Antuková tmavá téma (ladí s mockupmi).
+     =========================================================================== */
+  :root {
+    --background:#1e1e21; --surface:#27262b; --surface-2:#302f36; --input:#191819;
+    --border:#3a383f; --border-soft:#322f37; --foreground:#ededee; --muted:#a3a2aa; --muted-2:#77767d;
+    --primary:#a24236; --primary-hover:#b64e40; --primary-foreground:#fdeee9; --primary-tint:rgba(162,66,54,0.16);
+    --blue:#3987e5; --green:#199e70; --purple:#9085e9;
+    --font:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono:ui-monospace,Menlo,monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(1100px 640px at 50% -8%, #26252b, #191819 62%); color:var(--foreground); font-family:var(--font); font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh; }
+  .wrap { max-width:980px; margin:0 auto; padding:38px 22px 64px; }
+  code.mono { font-family:var(--mono); }
+  .head { text-align:center; margin-bottom:26px; }
+  .head h1 { font-size:24px; font-weight:750; letter-spacing:-0.01em; margin:0 0 8px; }
+  .head h1 code { font-family:var(--mono); font-size:21px; color:var(--primary-hover); }
+  .head p { font-size:14px; color:var(--muted); margin:0 auto; max-width:620px; line-height:1.55; }
+  .head p b { color:var(--foreground); }
+  .head .kbadge { display:inline-flex; align-items:center; gap:7px; background:var(--primary-tint); color:var(--primary-foreground); font-weight:700; font-size:12px; padding:5px 13px; border-radius:20px; margin-bottom:14px; }
+  .head .kbadge svg { width:14px; height:14px; }
+
+  .tier-tag { font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted-2); font-weight:700; text-align:center; margin-bottom:12px; }
+  .conn { display:flex; flex-direction:column; align-items:center; gap:2px; margin:8px 0; color:var(--muted-2); }
+  .conn .line { width:2px; height:16px; background:var(--border); }
+  .conn .lbl { font-size:11.5px; color:var(--muted); background:var(--surface); border:1px solid var(--border-soft); padding:4px 12px; border-radius:20px; margin:2px 0; text-align:center; }
+  .conn .lbl b { color:var(--foreground); font-weight:600; }
+  .conn svg { width:18px; height:18px; }
+
+  .row { display:flex; gap:14px; }
+  .row > * { flex:1; min-width:0; }
+  .node { background:var(--surface); border:1px solid var(--border-soft); border-radius:14px; padding:15px 16px; box-shadow:0 8px 24px -14px rgba(0,0,0,0.6); }
+  .node .n-head { display:flex; align-items:center; gap:11px; }
+  .node .n-ico { width:36px; height:36px; border-radius:10px; display:grid; place-items:center; flex:none; }
+  .node .n-ico svg { width:19px; height:19px; }
+  .node .host { font-family:var(--mono); font-size:13px; font-weight:700; }
+  .node .n-role { font-size:11px; color:var(--muted); margin-top:1px; }
+  .node .n-desc { font-size:12px; color:var(--muted); margin-top:10px; line-height:1.5; }
+
+  .h-public .n-ico { background:rgba(163,162,170,0.14); color:var(--muted); }
+  .h-solo .n-ico { background:rgba(57,135,229,0.14); color:var(--blue); }
+  .h-wild { border-color:rgba(162,66,54,0.5); }
+  .h-wild .n-ico { background:var(--primary-tint); color:var(--primary-hover); }
+  .h-wild .host { color:var(--primary-hover); }
+  .wild-eg { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  .wild-eg span { font-family:var(--mono); font-size:10.5px; color:var(--muted); background:var(--input); border:1px solid var(--border-soft); padding:2px 7px; border-radius:6px; }
+
+  /* worlds */
+  .worlds { display:flex; gap:16px; align-items:stretch; }
+  .world { flex:1; min-width:0; border-radius:18px; padding:14px; position:relative; }
+  .world .w-label { position:absolute; top:-11px; left:16px; background:var(--background); padding:0 10px; font-family:var(--mono); font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; }
+  .world.solo { border:1.5px solid var(--border); background:rgba(57,135,229,0.04); flex:1; }
+  .world.solo .w-label { color:var(--blue); }
+  .world.fed { border:1.5px dashed rgba(162,66,54,0.55); background:rgba(162,66,54,0.05); flex:1.25; }
+  .world.fed .w-label { color:var(--primary-hover); }
+  .w-sub { font-size:11px; color:var(--muted); margin:4px 2px 12px; }
+
+  .surf { background:var(--surface); border:1px solid var(--border-soft); border-radius:12px; padding:12px 13px; margin-bottom:10px; }
+  .surf:last-child { margin-bottom:0; }
+  .surf .s-head { display:flex; align-items:center; gap:10px; }
+  .surf .s-ico { width:32px; height:32px; border-radius:9px; display:grid; place-items:center; flex:none; }
+  .surf .s-ico svg { width:17px; height:17px; }
+  .surf .s-t { font-size:13.5px; font-weight:700; }
+  .surf .s-r { font-size:10.5px; color:var(--muted); margin-top:1px; }
+  .surf .s-d { font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.45; }
+  .i-coach { background:rgba(25,158,112,0.16); color:var(--green); }
+  .i-dir { background:rgba(144,133,233,0.16); color:var(--purple); }
+  .i-parent { background:rgba(163,162,170,0.14); color:var(--muted); }
+  .ratio-tag { font-family:var(--mono); font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; margin-left:auto; }
+  .r11 { background:rgba(57,135,229,0.16); color:#8fbdf3; }
+  .r1n { background:var(--primary-tint); color:var(--primary-foreground); }
+  .own-line { font-size:11.5px; color:#d7b6ae; margin-top:12px; display:flex; gap:8px; line-height:1.5; }
+  .own-line svg { width:15px; height:15px; color:var(--primary-hover); flex:none; margin-top:1px; }
+  .own-line b { color:var(--foreground); font-weight:600; }
+
+  .foundation { margin-top:26px; background:var(--surface); border:1px solid var(--border-soft); border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .foundation .f-ico { width:34px; height:34px; border-radius:9px; background:var(--surface-2); color:var(--muted); display:grid; place-items:center; flex:none; }
+  .foundation .f-ico svg { width:18px; height:18px; }
+  .foundation .f-items { display:flex; gap:9px 16px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+  .foundation .f-items b { color:var(--foreground); font-weight:600; }
+  .foundation .f-items span { display:inline-flex; align-items:center; gap:6px; }
+  .foundation .f-items .d { width:6px; height:6px; border-radius:50%; background:var(--primary-hover); }
+  .foundation .f-items code { font-family:var(--mono); font-size:11px; }
+
+  @media (max-width: 720px) { .row, .worlds { flex-direction:column; } }
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <span class="kbadge"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M7 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Multi-tenant · každá organizácia má vlastnú subdoménu</span>
+    <h1>Organizácia = <code>&lt;slug&gt;.plaw.win</code></h1>
+    <p>Hostname nesie kontext: <b>plaw.win</b> je samostatný produkt (1:1), <b>&lt;org&gt;.plaw.win</b> je svet konkrétnej federácie. <code class="mono">proxy.ts</code> podľa hostname vie, o ktorú organizáciu ide — jeden backend, oddelené svety.</p>
+  </div>
+
+  <!-- HOSTNAME -->
+  <div class="tier-tag">Vstupné hostname</div>
+  <div class="row">
+    <div class="node h-public">
+      <div class="n-head"><span class="n-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9h17M3.5 15h17M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" stroke="currentColor" stroke-width="1.4"/></svg></span><div><div class="host">plaw.online</div><div class="n-role">Verejná tvár — landing + návody</div></div></div>
+    </div>
+    <div class="node h-solo">
+      <div class="n-head"><span class="n-ico"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M10 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><div><div class="host">plaw.win</div><div class="n-role">Samostatný produkt (1:1)</div></div></div>
+    </div>
+    <div class="node h-wild">
+      <div class="n-head"><span class="n-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V7l8-3 8 3v13" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 13h16" stroke="currentColor" stroke-width="1.8"/></svg></span><div><div class="host">&lt;org&gt;.plaw.win</div><div class="n-role">Ručne pridaná — 1 subdoména / organizáciu</div></div></div>
+      <div class="wild-eg"><span>stz.plaw.win</span><span>klub-ba.plaw.win</span><span>akademia.plaw.win</span></div>
+    </div>
+  </div>
+
+  <div class="conn"><div class="line"></div><div class="lbl"><code class="mono">proxy.ts</code> prečíta hostname → slug → <b>organizácia</b> (<code class="mono">organizations.slug</code>)</div><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <!-- WORLDS -->
+  <div class="worlds">
+    <!-- samostatný -->
+    <div class="world solo">
+      <div class="w-label"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/></svg>plaw.win</div>
+      <div class="w-sub">Samostatný svet — tréner + jeho hráč / rodič</div>
+      <div class="surf">
+        <div class="s-head"><span class="s-ico i-coach"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="currentColor" stroke-width="1.8"/></svg></span><div><div class="s-t">Trénerská appka</div><div class="s-r">coach</div></div><span class="ratio-tag r11">1:1</span></div>
+        <div class="s-d">Tréner <b style="color:var(--foreground)">vlastní dáta</b>, jeden aktívny hráč, personalizuje kódy, môže mazať.</div>
+      </div>
+      <div class="surf">
+        <div class="s-head"><span class="s-ico i-parent"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.8"/></svg></span><div><div class="s-t">Sledovanie</div><div class="s-r">parent / player / manager · read-only</div></div></div>
+        <div class="s-d">Rodič alebo hráč sa pripojí cez <b style="color:var(--foreground)">connect-code</b> (<code class="mono">player_connections</code>) a sleduje tréningy — ako dnes.</div>
+      </div>
+    </div>
+
+    <!-- federačný -->
+    <div class="world fed">
+      <div class="w-label"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V7l8-3 8 3v13" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>&lt;org&gt;.plaw.win</div>
+      <div class="w-sub">Federačný svet — jeden na organizáciu · šéftréner (pult) + tréneri (1:N)</div>
+      <div class="surf">
+        <div class="s-head"><span class="s-ico i-dir"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="12" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="16" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg></span><div><div class="s-t">Riadiaci pult</div><div class="s-r">director / šéftréner · desktop</div></div></div>
+      </div>
+      <div class="surf">
+        <div class="s-head"><span class="s-ico i-coach"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="currentColor" stroke-width="1.8"/></svg></span><div><div class="s-t">Trénerská appka</div><div class="s-r">coach · mobil</div></div><span class="ratio-tag r1n">1:N</span></div>
+      </div>
+      <div class="own-line"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span><b>Organizácia vlastní dáta</b> · kódy cvičení = štandard federácie · tréner nemaže (zruší).</span></div>
+    </div>
+  </div>
+
+  <!-- ZÁKLAD -->
+  <div class="foundation">
+    <span class="f-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7l8-4 8 4-8 4-8-4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+    <div class="f-items">
+      <span><span class="d"></span><b>Jeden backend</b> (repo · Vercel · Supabase DB+Auth)</span>
+      <span><span class="d"></span>subdomény <b>ručne</b> (CNAME / org, bez wildcard)</span>
+      <span><span class="d"></span>NS + MX ostávajú na Websupporte</span>
+      <span><span class="d"></span><code>organizations.slug</code> → subdoména</span>
+      <span><span class="d"></span>cookies <b>per-subdoménu</b> (izolácia session)</span>
+    </div>
+  </div>
+</div>

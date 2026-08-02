@@ -185,6 +185,88 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
 
 ---
 
+## 5. Federačný B2B — upresnené rozhodnutia a bezpečnosť (2026-08-02)
+
+> Nadväzuje na §4. Sada rozhodnutí z pracovnej session 2026-08-02. Stále **nič
+> neimplementované** (tenis launchuje 1:1 samostatne). Klikacie mockupy sú v repe:
+> `docs/mockups/riadiaci-pult.html` (pult šéftrénera), `trener-b2b.html` (trénerova
+> appka 1:N), `architektura-b2b.html`, `onboarding-org.html`.
+
+### 5.1 Trénerova appka v B2B = tá istá appka, ale 1:N
+- Federačný tréner je zamestnanec s **viacerými aktívnymi hráčmi** (1:N), nie 1:1. Nie je
+  to iná appka — je to ten istý coach app + **roster pridelených hráčov** + **prepínač
+  aktívneho hráča** naprieč obrazovkami. Denný „domov" = obrazovka *Dnes* (rozvrh naprieč hráčmi).
+- Najväčší reálny kus práce: dnes všetko počíta s jedným aktívnym hráčom
+  (`one_active_player`, analytika `is_active = true`) → treba **prepínač hráča** a uvoľniť
+  index len pre org kontext.
+- Šéftréner vidí **tie isté štatistiky ako tréner** (kategórie, kódy, charakter, obdobia,
+  odhad úderov) — cez živú SELECT policy, read-only.
+
+### 5.2 Doménový model — multi-tenant, subdoména na organizáciu
+- **Každá organizácia = `<slug>.plaw.win`** (nové pole `organizations.slug`, unique).
+- Subdomény sa pridávajú **RUČNE per organizácia (NIE wildcard)** — CNAME `<slug>` v zóne
+  plaw.win (Websupport) + doména `<slug>.plaw.win` vo Verceli (HTTPS auto). **Výhoda: netreba
+  presúvať nameservery na Vercel → MX/mail na plaw.win ostáva nedotknutý**; plná kontrola
+  (B2B org je málo, onboardujú sa zámerne).
+- **`plaw.win` = samostatný (consumer) produkt 1:1**; `plaw.online` = marketing.
+  `proxy.ts` prečíta hostname → slug → organizácia (kontext + branding).
+- Onboarding org = 4 kroky: (1) Vercel add domain, (2) Websupport CNAME, (3) HTTPS auto,
+  (4) Admin — vytvor org so slugom. Vlastná doména federácie (.sk) = enterprise white-label
+  (kupuje federácia), iná liga.
+
+### 5.3 Dve osi (nemiešať)
+- **Rola → plocha:** `coach` → appka, `director` → pult, `parent`/`player` → sledovanie.
+- **Kontext (subdoména/členstvo) → režim:** `plaw.win` = 1:1 (tréner vlastní),
+  `<org>.plaw.win` = 1:N (federácia vlastní).
+
+### 5.4 Vlastníctvo dát — FEDERÁCIA, nie tréner
+- V org dáta (hráči, tréningy, `session_drills`, `drill_codes`) vlastní **organizácia**;
+  tréner je *priradený zamestnanec*. Model: `organization_id` = vlastník, `coach_id` =
+  priradenie (mutable).
+- **Offboarding:** odíde tréner → hráči + história **ostávajú organizácii** a dajú sa
+  prideliť inému. Kľúčový B2B argument — tréner si klientov neodnesie.
+- Toto vysvetľuje, prečo je pri org **živý read-only RLS pohľad** správny (nie kópie ako pri
+  rodičovi — org vlastní dáta, pri odchode trénera nič nezmizne).
+
+### 5.5 Kódy cvičení štandardizuje federácia
+- `drill_codes` v org patria organizácii (nie per-tréner). Nastavuje **šéftréner (Admin)**;
+  tréner ich na `/drill-codes` iba používa (read-only).
+- Dôvod: hráči sú podporovaní federáciou → jednotná metodika; a hlavne **jednotné kódy =
+  porovnateľná analytika naprieč federáciou** (bez nich sa agregát/rozpad kódov v pulte nedá
+  zmysluplne poskladať).
+
+### 5.6 B2B nemá vrstvu sledovania rodič/hráč
+- `parent`/`player`/`manager` read-only (dnešné `/parent`, `player_connections`) je funkcia
+  **samostatného** produktu na `plaw.win`.
+- Vo federačnom svete sú len **director (pult) + coach (1:N appka)**; tréningové dáta sú
+  federačne interné, žiadny rodič/hráč login. (Director len technicky *reusuje* read-only
+  `app/parent/` stránky ako komponenty pre drill-in — code-reuse, nie parent prístup.)
+
+### 5.7 BEZPEČNOSŤ / RLS (povinné pri implementácii org vrstvy)
+- **Dvojrežimová RLS vedľa seba:**
+  - *Org riadky* (`organization_id` nie je null): prístup podľa `organization_members` usera.
+  - *Osobné riadky* (`organization_id` null): starý model `coach_id = auth.uid()` —
+    samostatný tenis nedotknutý.
+- **Director (`director`):** SELECT-only nad org riadkami svojej org — žiadny write/delete vo v1.
+- **Coach-zamestnanec:** SELECT/INSERT/UPDATE nad org riadkami priradenými jemu, ale **NIE
+  DELETE**. Mazanie rezervované pre org-admina, príp. nikoho (trvalý záznam).
+- **Tréner v B2B nevie mazať:** DELETE policies pre coach odobrané na `players`/`sessions`/
+  `session_drills`. Hard-delete naplánovaného tréningu (`deleteSession`) sa nahradí
+  **`sessions.status = 'cancelled'`** (status už v schéme existuje) → úplný audit ostáva.
+- **Tenant izolácia:** `proxy.ts` hostname→org musí byť autoritatívny (requesty jednej org
+  nesmú vidieť dáta inej). **Supabase Auth cookies per-subdoménu**, NIE zdieľané `.plaw.win` —
+  session sa nesmie preniesť medzi organizáciami.
+- **Členstvo dobrovoľné:** tréner sa do org pridá cez pozývací kód (vzor connect-code) —
+  federácia nemôže potichu „vysať" cudzieho trénera.
+- Zachovať existujúce: RLS zapnuté na každej tabuľke; completed/archív read-only cez RLS.
+
+### 5.8 Otvorené otázky (B2B)
+- Môže byť tréner súčasne nezávislý (osobní hráči = vlastník) **aj** org-zamestnanec (org
+  hráči)? → jeden účet, dva „koše" dát; ako to oddeliť v UI/RLS.
+- Kondičný tréner v org (`conditioning_coach`) — neskôr.
+
+---
+
 ## Prierezové princípy celého ekosystému
 
 - **Spoločné Supabase Auth** drží celý ekosystém — jeden účet hráča naprieč všetkým
@@ -204,3 +286,5 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
    *(Toto je jediné rozhodnutie, ktoré mení „jeden backend" vs „dva".)*
 2. **Multi-šport mechanizmus:** A (šport podľa nasadenia) vs B (šport podľa trénera v DB).
 3. **Garmin/Polar:** metriky, spôsob párovania, OAuth model.
+4. **B2B — dvojaká rola trénera:** môže byť tréner súčasne nezávislý (osobní hráči) aj
+   org-zamestnanec? Jeden účet, dva koše dát (viď §5.8).
