@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -37,32 +37,43 @@ export type Database = {
       drill_codes: {
         Row: {
           category: string
-          coach_id: string
+          coach_id: string | null
           code: string | null
           created_at: string
           id: string
+          organization_id: string | null
           slot: number
           updated_at: string
         }
         Insert: {
           category: string
-          coach_id: string
+          coach_id?: string | null
           code?: string | null
           created_at?: string
           id?: string
+          organization_id?: string | null
           slot: number
           updated_at?: string
         }
         Update: {
           category?: string
-          coach_id?: string
+          coach_id?: string | null
           code?: string | null
           created_at?: string
           id?: string
+          organization_id?: string | null
           slot?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "drill_codes_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       google_calendar_connections: {
         Row: {
@@ -100,6 +111,7 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          organization_id: string | null
           player_id: string
           results: Json | null
           test_type: string
@@ -111,6 +123,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           player_id: string
           results?: Json | null
           test_type: string
@@ -122,6 +135,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           player_id?: string
           results?: Json | null
           test_type?: string
@@ -130,6 +144,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "metrics_and_tests_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "metrics_and_tests_player_id_fkey"
             columns: ["player_id"]
             isOneToOne: false
@@ -137,6 +158,83 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      organization_members: {
+        Row: {
+          created_at: string
+          id: string
+          invite_code: string | null
+          organization_id: string
+          role: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invite_code?: string | null
+          organization_id: string
+          role: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invite_code?: string | null
+          organization_id?: string
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          seat_limit: number
+          slug: string
+          sport: string
+          subscription_status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          seat_limit?: number
+          slug: string
+          sport?: string
+          subscription_status?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          seat_limit?: number
+          slug?: string
+          sport?: string
+          subscription_status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       parent_session_drill_records: {
         Row: {
@@ -268,6 +366,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -278,6 +377,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -288,9 +388,18 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          organization_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "players_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -331,6 +440,7 @@ export type Database = {
           drill_code: string | null
           duration_minutes: number
           id: string
+          organization_id: string | null
           replaces_drill_id: string | null
           session_id: string
           sort_order: number
@@ -344,6 +454,7 @@ export type Database = {
           drill_code?: string | null
           duration_minutes: number
           id?: string
+          organization_id?: string | null
           replaces_drill_id?: string | null
           session_id: string
           sort_order: number
@@ -357,12 +468,20 @@ export type Database = {
           drill_code?: string | null
           duration_minutes?: number
           id?: string
+          organization_id?: string | null
           replaces_drill_id?: string | null
           session_id?: string
           sort_order?: number
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "session_drills_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "session_drills_replaces_drill_id_fkey"
             columns: ["replaces_drill_id"]
@@ -387,6 +506,7 @@ export type Database = {
           google_event_id: string | null
           id: string
           notes: string | null
+          organization_id: string | null
           planned_data: Json | null
           player_id: string
           status: string
@@ -399,6 +519,7 @@ export type Database = {
           google_event_id?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           planned_data?: Json | null
           player_id: string
           status?: string
@@ -411,12 +532,20 @@ export type Database = {
           google_event_id?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           planned_data?: Json | null
           player_id?: string
           status?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "sessions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "sessions_player_id_fkey"
             columns: ["player_id"]
@@ -431,11 +560,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_organization_invite: {
+        Args: { p_code: string }
+        Returns: {
+          member_role: string
+          organization_id: string
+          organization_slug: string
+        }[]
+      }
       claim_player_connection: {
         Args: { p_code: string }
         Returns: {
           coach_id: string
           player_id: string
+        }[]
+      }
+      current_org_id: { Args: never; Returns: string }
+      current_org_role: { Args: never; Returns: string }
+      organization_by_slug: {
+        Args: { p_slug: string }
+        Returns: {
+          id: string
+          name: string
+          slug: string
+          sport: string
         }[]
       }
     }

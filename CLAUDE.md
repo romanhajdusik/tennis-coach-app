@@ -60,8 +60,9 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 1. **profiles** — údaje o trénerovi, stav SaaS predplatného (predplatné zatiaľ len ako stĺpec, Stripe logika príde neskôr)
 2. **players** — všetci spravovaní hráči
-   - `is_active` (boolean) — **vždy len jeden aktívny hráč na trénera**
-   - Vynútené na úrovni DB: `CREATE UNIQUE INDEX one_active_player ON players (coach_id) WHERE is_active = true;`
+   - `is_active` (boolean) — **v samostatnom (1:1) režime vždy len jeden aktívny hráč na trénera**
+   - Vynútené na úrovni DB: `CREATE UNIQUE INDEX one_active_player ON players (coach_id) WHERE is_active = true AND organization_id IS NULL;` — od 2026-08-03 je index **čiastočný**, takže federačný tréner (org riadky) môže mať viac aktívnych hráčov naraz (1:N), samostatný tréner naďalej len jedného
+   - `organization_id` (nullable) — **vlastník riadku**: `null` = osobný hráč samostatného trénera, inak hráč patrí organizácii a `coach_id` je len *priradenie* (pozri org vrstvu nižšie)
 3. **sessions** — tréningy naviazané na hráča
    - `planned_data` (plánovaný čas a zameranie), `actual_data` (reálny čas), `notes`, `status` (`planned` / `completed` / `cancelled` — `cancelled` je v DB kvôli budúcemu použitiu, appka dnes namiesto neho naplánovaný tréning rovno **zmaže**, pozri "Životný cyklus tréningu")
    - `google_event_id` (text, nullable) — **pridať už od začiatku**, príprava na kalendárovú synchronizáciu
@@ -71,6 +72,7 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
    - `replaces_drill_id` — väzba náhradného cvičenia na to, ktoré nahrádza (len informatívna, na poradie sa už nepoužíva)
    - `sort_order` (integer, not null) — **jediný zdroj poradia v zozname**, tréner ho vie meniť šípkami hore/dole (`lib/actions/session-drills.ts#moveDrill`), len kým je tréning `planned` (RLS zablokuje update pri `completed`). `addDrill` pridáva na koniec, `replaceDrill` vloží nové cvičenie hneď za nahradzované (posunie zvyšok o jedno miesto)
 6. **drill_codes** — trénerom personalizované kódy cvičení, **jadro celej appky** (pozri "O projekte" vyššie): 20 slotov na zameranie (`coach_id`, `category`, `slot` 1–20, `code`)
+   - Vlastníka určuje dvojica `coach_id` / `organization_id` — práve jeden z nich je vyplnený (`drill_codes_single_owner`). Osobný kód = `coach_id`, federačný štandard = `organization_id` (nastavuje šéftréner, tréner ho len používa)
    - Bez uložených riadkov pre danú kategóriu sa použije predvolený zoznam z `lib/drill-options.ts` (`DRILLS`); po prvom uložení je DB autoritatívna. Tréner tak na `/drill-codes` od začiatku vidí kompletný, hneď použiteľný zoznam — nič nemusí nastavovať, ale môže ktorýkoľvek slot premenovať na vlastnú skratku
    - Editovateľné na `/drill-codes`. Presne tieto kódy sa ponúkajú vo výbere pri zázname cvičenia (`session_drills.drill_code`) a presne podľa nich sa rozpadá Analytika (pozri nižšie) — zmena kódu tu sa neprejaví spätne na už zaznamenaných cvičeniach
 7. **google_calendar_connections** — OAuth tokeny pripojenia trénerovho Google Kalendára (`coach_id` PK, `access_token`, `refresh_token`, `token_expires_at`, `calendar_id`)
@@ -79,6 +81,12 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
    - `CREATE UNIQUE INDEX one_active_connection_per_parent ON player_connections (parent_id) WHERE status = 'active'` — jeden rodič/manažér/hráč = jedno aktívne prepojenie naraz, nový kód automaticky nahradí staré
    - RPC `claim_player_connection(p_code)` (`security definer`) — rodič/manažér/hráč zadá kód, funkcia nájde `pending` riadok, zruší predošlé aktívne prepojenie toho istého používateľa, aktivuje nové a zároveň doň nasnímne `connected_role` (trénerova appka nemá RLS prístup k cudziemu `profiles` riadku, aby si rolu dočítala joinom, preto kópia priamo v RPC — rovnaký princíp ako `parent_session_records`)
 9. **parent_session_records** / **parent_session_drill_records** — **trvalá kópia** tréningov pre pripojeného rodiča/manažéra/hráča, nie live pohľad (pozri sekciu "Zdieľanie s rodičom/manažérom/hráčom" nižšie prečo)
+10. **organizations** — federácia/klub/akadémia pre B2B režim (`name`, `slug` unique = subdoména `<slug>.plaw.win`, `type` `federation`/`club`/`academy`, `sport`, `seat_limit`, `subscription_status`)
+    - Organizáciu zakladá admin cez `service_role` (onboarding krok 4, `docs/mockups/onboarding-org.html`) — appka ju smie len čítať. `proxy.ts` si ju pred prihlásením prečíta cez `security definer` funkciu `organization_by_slug(p_slug)`, ktorá vracia len verejné polia (nie predplatné ani sedadlá)
+11. **organization_members** — členstvo v organizácii (`organization_id`, `user_id` nullable kým nie je pozvánka prijatá, `role` `director`/`coach`, `status` `invited`/`active`/`removed`, `invite_code`)
+    - `CREATE UNIQUE INDEX one_active_membership_per_user ON organization_members (user_id) WHERE status = 'active'` — **účet je buď nezávislý, alebo org-zamestnanec** (rozhodnuté 2026-08-03), nikdy oboje naraz
+    - RPC `claim_organization_invite(p_code)` (`security definer`) — pozvaný zadá kód a tým sa sám pripojí; vzor prevzatý z `claim_player_connection`. Trigger `enforce_membership_rules` drží tri invarianty: (1) účet k pozvánke pripojí **len** claim (šéftréner nesmie priradiť cudzí účet priamym zápisom — členstvo je dobrovoľné), (2) kto vlastní osobných hráčov, nemôže vstúpiť do organizácie (`has_personal_data`), (3) **sedadlá** — proti `seat_limit` sa počítajú len tréneri, šéftréner sedadlo neberie (`seat_limit_reached`)
+    - Šéftréner spravuje **členstvo** vlastnej organizácie (vytvorí pozvánku, odoberie trénera) — read-only dohľad podľa §5.7 sa týka *tréningových dát*, nie organizačnej administratívy
 
 ### Bezpečnostné pravidlá (povinné)
 
@@ -86,7 +94,13 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - **Archív (neaktívny hráč) je read-only na úrovni DB:** RLS policy blokuje UPDATE/DELETE na sessions a metrics, ak hráč má `is_active = false`. UI kontrola nestačí.
 - **Dokončený tréning (`sessions.status = 'completed'`) je tiež read-only na úrovni DB:** RLS blokuje UPDATE/DELETE na `sessions` a `session_drills` (aj INSERT nových cvičení), rovnaký princíp ako archív.
 - Všetky zmeny schémy výhradne cez migrácie (Supabase CLI), nikdy manuálne v dashboarde.
-- **Budúca org/B2B vrstva má vlastné povinné RLS pravidlá** (neimplementované, ale pri stavbe org vrstvy záväzné): dvojrežimová RLS (org riadky podľa `organization_members` vs osobné riadky `coach_id = auth.uid()`), **director SELECT-only**, **tréner-zamestnanec bez DELETE** (mazanie → `sessions.status='cancelled'`), **tenant izolácia** (`proxy.ts` hostname→org autoritatívne + Auth cookies per-subdoménu, nie zdieľané `.plaw.win`). Detaily v [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md) §5.7.
+- **Dvojrežimová RLS org/B2B vrstvy (DB časť hotová 2026-08-03, migrácie `20260803090000_organizations.sql` + `20260803091000_org_rls.sql`).** Na tých istých tabuľkách bežia dva režimy vedľa seba:
+  - *Osobné riadky* (`organization_id IS NULL`) — pôvodný model `coach_id = auth.uid()`, správanie samostatného trénera nezmenené. Policy navyše platí len pre účty **bez** aktívneho členstva (`current_org_id() IS NULL`), čím sa drží pravidlo „buď nezávislý, alebo zamestnanec".
+  - *Org riadky* — **director SELECT-only** nad celou organizáciou; **tréner-zamestnanec** SELECT/INSERT/UPDATE nad hráčmi pridelenými jemu, ale **bez DELETE** (mazanie org riadkov nemá policy pre nikoho, je vyhradené `service_role`). Zrušenie naplánovaného tréningu sa v B2B robí cez `sessions.status = 'cancelled'`, nie hard-delete → federácii ostáva úplný audit.
+  - Policy sa pýtajú na členstvo cez `security definer` funkcie `current_org_id()` / `current_org_role()` — priamy poddotaz na `organization_members` by narazil na jej vlastnú RLS.
+  - **Kódy cvičení** v org vlastní federácia: tréner ich len číta, zapisuje ich šéftréner (jediné miesto, kde má director write). **Zdieľanie s rodičom/hráčom je vypnuté** pre org trénerov aj na úrovni DB — je to funkcia samostatného produktu (§5.6).
+  - Ešte **nehotové** (pri stavbe UI vrstvy záväzné): **tenant izolácia** v `proxy.ts` (hostname→org autoritatívne) + **Auth cookies per-subdoménu**, nie zdieľané `.plaw.win`.
+  - Detaily a odôvodnenie v [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md) §5.7 a §5.9.
 
 ## Životný cyklus tréningu
 

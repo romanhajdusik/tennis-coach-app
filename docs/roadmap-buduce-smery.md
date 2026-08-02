@@ -1,10 +1,11 @@
 # Budúce smery a architektonické návrhy (Claude)
 
-> **Čo to je:** návrhy z plánovacích rozhovorov s používateľom. **Nič z toho nie je
-> implementované.** Tenisová appka (P.L.A.W) sa spúšťa **prvá a samostatne**, bez
-> týchto rozšírení. Dokument slúži na to, aby sa pri ďalšej práci na tenise nerobili
-> rozhodnutia, ktoré by tieto smery neskôr zablokovali (napr. natvrdo „tenisové"
-> predpoklady mimo konfiguračnej vrstvy).
+> **Čo to je:** návrhy z plánovacích rozhovorov s používateľom. Okrem **DB základu
+> federačnej vrstvy** (§5.9, hotový 2026-08-03) **nie je nič z toho implementované.**
+> Tenisová appka (P.L.A.W) sa spúšťa **prvá a samostatne**, bez týchto rozšírení —
+> org vrstva je aditívna a samostatného trénera sa nedotýka. Dokument slúži na to,
+> aby sa pri ďalšej práci na tenise nerobili rozhodnutia, ktoré by tieto smery
+> neskôr zablokovali (napr. natvrdo „tenisové" predpoklady mimo konfiguračnej vrstvy).
 >
 > Zapísané: **2026-08-01**. Znenie je zámerne ponechané tak, ako to Claude navrhol
 > v rozhovore (používateľ chcel vedieť neskôr prečítať návrhy presne v tomto znení).
@@ -261,9 +262,46 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
 - Zachovať existujúce: RLS zapnuté na každej tabuľke; completed/archív read-only cez RLS.
 
 ### 5.8 Otvorené otázky (B2B)
-- Môže byť tréner súčasne nezávislý (osobní hráči = vlastník) **aj** org-zamestnanec (org
-  hráči)? → jeden účet, dva „koše" dát; ako to oddeliť v UI/RLS.
+- ~~Môže byť tréner súčasne nezávislý **aj** org-zamestnanec?~~ **ROZHODNUTÉ 2026-08-03: NIE
+  — účet je buď/alebo.** Jeden používateľ má najviac jedno aktívne členstvo
+  (`one_active_membership_per_user`) a kto už vlastní osobných hráčov, do organizácie
+  nevstúpi (`has_personal_data`); org účet zase nevie zakladať osobné riadky. Tréner,
+  ktorý robí oboje, si založí druhý účet (druhý e-mail). Dôvod: jednoduchšie uvažovanie
+  aj UI — netreba prepínač „koša" dát ani vysvetľovať, prečo tie isté obrazovky raz
+  patria jemu a raz federácii.
 - Kondičný tréner v org (`conditioning_coach`) — neskôr.
+
+### 5.9 Stav implementácie — DB základ HOTOVÝ (2026-08-03)
+
+**Hotové (migrácie `20260803090000_organizations.sql` + `20260803091000_org_rls.sql`):**
+- Tabuľky `organizations` (vrátane `slug` = subdoména a `seat_limit` = sedadlá) a
+  `organization_members` (rola `director`/`coach`, pozývací kód).
+- `organization_id` na `players` / `sessions` / `session_drills` / `metrics_and_tests` /
+  `drill_codes` = **vlastník riadku** (`null` = osobný). `coach_id` v org režime = len
+  *priradenie*, takže offboarding trénera je zmena priradenia, nie strata dát.
+- `one_active_player` je odteraz **čiastočný index** (`... and organization_id is null`) →
+  federačný tréner môže mať viac aktívnych hráčov naraz (1:N), samostatný naďalej jedného.
+- `claim_organization_invite(p_code)` + trigger `enforce_membership_rules`: pripojenie účtu
+  len cez claim (dobrovoľné členstvo), zákaz vstupu s osobnými dátami, kontrola sedadiel.
+- **Dvojrežimová RLS podľa §5.7** vrátane: director SELECT-only, tréner bez DELETE, org kódy
+  cvičení read-only pre trénera, vypnuté zdieľanie s rodičom pre org trénerov.
+- `organization_by_slug(p_slug)` — `security definer` čítanie pre `proxy.ts` ešte pred
+  prihlásením (vracia len verejné polia).
+- Overené 41 RLS scenármi proti lokálnej inštancii (tenant izolácia, sedadlá, uzamknutý
+  tréning, nedotknutý samostatný režim), `tsc` + `lint` + `build` čisté.
+
+**Nehotové (ďalšie kroky, v tomto poradí):**
+1. `proxy.ts`: hostname → `organizations.slug` → org kontext + **Auth cookies per-subdoménu**
+   (§5.7 tenant izolácia) — bez toho subdomény nefungujú.
+2. Trénerova appka 1:N: roster pridelených hráčov + prepínač aktívneho hráča, obrazovka *Dnes*
+   (dnes appka všade počíta s jedným aktívnym hráčom).
+3. Riadiaci pult šéftrénera (`/director`) — reuse read-only `app/parent/` stránok a agregátov.
+4. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
+   read-only pre trénera, editovateľné pre šéftrénera.
+5. Stripe „sedadlá" (`seat_limit` už v schéme).
+
+**Pozor pri nasadení:** migrácie sa na produkciu púšťajú ručne cez Supabase SQL Editor.
+Na produkcii nateraz nevzniká žiadna organizácia, takže appka sa správa presne ako dnes.
 
 ---
 
@@ -286,5 +324,5 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
    *(Toto je jediné rozhodnutie, ktoré mení „jeden backend" vs „dva".)*
 2. **Multi-šport mechanizmus:** A (šport podľa nasadenia) vs B (šport podľa trénera v DB).
 3. **Garmin/Polar:** metriky, spôsob párovania, OAuth model.
-4. **B2B — dvojaká rola trénera:** môže byť tréner súčasne nezávislý (osobní hráči) aj
-   org-zamestnanec? Jeden účet, dva koše dát (viď §5.8).
+4. ~~**B2B — dvojaká rola trénera**~~ — **rozhodnuté 2026-08-03: účet je buď/alebo**, kto
+   robí oboje, má dva účty (viď §5.8, vynútené v DB).
