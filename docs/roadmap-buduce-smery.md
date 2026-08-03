@@ -290,18 +290,31 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
 - Overené 41 RLS scenármi proti lokálnej inštancii (tenant izolácia, sedadlá, uzamknutý
   tréning, nedotknutý samostatný režim), `tsc` + `lint` + `build` čisté.
 
-**Nehotové (ďalšie kroky, v tomto poradí):**
-1. `proxy.ts`: hostname → `organizations.slug` → org kontext + **Auth cookies per-subdoménu**
-   (§5.7 tenant izolácia) — bez toho subdomény nefungujú.
-2. Trénerova appka 1:N: roster pridelených hráčov + prepínač aktívneho hráča, obrazovka *Dnes*
-   (dnes appka všade počíta s jedným aktívnym hráčom).
-3. Riadiaci pult šéftrénera (`/director`) — reuse read-only `app/parent/` stránok a agregátov.
-4. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
-   read-only pre trénera, editovateľné pre šéftrénera.
-5. Stripe „sedadlá" (`seat_limit` už v schéme).
+**Hotové (2026-08-03, druhá dávka) — multi-tenant routing subdomén:**
+- `proxy.ts` rozpozná `<slug>.plaw.win`, načíta organizáciu (`organization_by_slug`) a podá ju
+  do appky hlavičkami `x-plaw-org-*`; appka ju číta cez `getOrgContext()`
+  (`lib/org/context.ts`, `lib/org/resolve.ts`). Prichádzajúce hlavičky sa zahadzujú → org sa
+  nedá podvrhnúť zvonka. Neznámy slug → 307 na `plaw.win`.
+- **Stráž členstva:** kto nie je aktívnym členom danej org, je z jej subdomény presmerovaný
+  na `plaw.win` (len pri GET; hranicou dát ostáva RLS). Odhlásený prejde na `/login` —
+  org subdoména nemá marketingovú landing.
+- **Auth cookies sú host-only** (nikde sa nenastavuje `domain`) → session sa neprenáša medzi
+  organizáciami ani na `plaw.win`. Požiadavka §5.7 splnená bez zmeny kódu, overené.
+- Overené 10 scenármi proti dev serveru (člen, samostatný tréner, člen inej org, podvrhnutá
+  hlavička) + 8 hostname scenármi. Pozn.: Node `fetch` zahadzuje hlavičku `Host`, takže
+  virtuálne hosty sa testujú cez `curl` alebo `node:http`, nie cez `fetch`.
 
-**Pozor pri nasadení:** migrácie sa na produkciu púšťajú ručne cez Supabase SQL Editor.
-Na produkcii nateraz nevzniká žiadna organizácia, takže appka sa správa presne ako dnes.
+**Nehotové (ďalšie kroky, v tomto poradí):**
+1. Trénerova appka 1:N: roster pridelených hráčov + prepínač aktívneho hráča, obrazovka *Dnes*
+   (dnes appka všade počíta s jedným aktívnym hráčom).
+2. Riadiaci pult šéftrénera (`/director`) — reuse read-only `app/parent/` stránok a agregátov.
+3. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
+   read-only pre trénera, editovateľné pre šéftrénera.
+4. Stripe „sedadlá" (`seat_limit` už v schéme).
+
+**Pozor pri nasadení:** migrácie sa na produkciu púšťajú ručne cez Supabase SQL Editor
+(DB základ bol takto nasadený 2026-08-03). Organizácia na produkcii vzniká až vložením riadku
+do `organizations` — kým tam nie je, appka sa správa presne ako predtým.
 
 ---
 

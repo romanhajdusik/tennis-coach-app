@@ -7,6 +7,7 @@ import { logout } from "@/lib/actions/auth";
 import { DEFAULT_CATEGORY } from "@/lib/drill-options";
 import { LandingPage, getLandingLocale } from "@/components/landing-page";
 import { loadLandingMessages } from "@/lib/landing-locale";
+import { getOrgContext } from "@/lib/org/context";
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
@@ -15,6 +16,13 @@ import { loadLandingMessages } from "@/lib/landing-locale";
 // vlastnú jazykovú vrstvu (SK/EN/DE/ES, lib/landing-locale.ts), nie
 // next-intl "Landing" namespace — metadata preto čítajú z rovnakého zdroja.
 export async function generateMetadata(): Promise<Metadata> {
+  // Na subdoméne organizácie je to jej pracovný nástroj, nie marketing —
+  // titulok preto nesie názov organizácie.
+  const org = await getOrgContext();
+  if (org) {
+    return { title: org.name, robots: { index: false, follow: false } };
+  }
+
   const locale = await getLandingLocale();
   const t = await loadLandingMessages(locale);
   return {
@@ -26,6 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const t = await getTranslations("Home");
+  const org = await getOrgContext();
   const supabase = await createClient();
   const {
     data: { user },
@@ -47,6 +56,11 @@ export default async function Home() {
   }
 
   if (!user) {
+    // Subdoména organizácie nemá marketingovú landing — federačný tréner sem
+    // chodí pracovať, nie čítať o produkte (marketing žije na plaw.online).
+    if (org) {
+      redirect("/login");
+    }
     return <LandingPage />;
   }
 
@@ -59,7 +73,12 @@ export default async function Home() {
         <p className="text-xs text-muted ">
           plan.log.analyze.win
         </p>
-        <p className="text-xs text-muted ">plaw.win</p>
+        <p className="text-xs text-muted ">{org ? `${org.slug}.plaw.win` : "plaw.win"}</p>
+        {org && (
+          <p className="mt-2 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+            {org.name}
+          </p>
+        )}
       </div>
       <div className="flex flex-col items-center gap-3">
         <p className="text-muted ">
