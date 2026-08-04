@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getOrgContext } from "@/lib/org/context";
 
 export type DrillFormState =
   | { error?: string; addedDrillId?: string }
@@ -52,11 +53,16 @@ export async function addDrill(
     .limit(1)
     .maybeSingle();
 
+  // V org režime vlastní cvičenie organizácia (§5.4) — bez organization_id
+  // by ho RLS nepustila zapísať.
+  const org = await getOrgContext();
+
   const { data: drill, error } = await supabase
     .from("session_drills")
     .insert({
       session_id: sessionId,
       coach_id: user.id,
+      organization_id: org?.id ?? null,
       category,
       character,
       drill_code: drillCode,
@@ -220,11 +226,14 @@ export async function replaceDrill(
     ),
   );
 
+  const org = await getOrgContext();
+
   const { error: replacementError } = await supabase
     .from("session_drills")
     .insert({
       session_id: sessionId,
       coach_id: user.id,
+      organization_id: org?.id ?? null,
       category,
       character,
       drill_code: drillCode,

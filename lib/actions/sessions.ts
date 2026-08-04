@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { syncSessionToGoogleCalendar } from "@/lib/google/calendar";
+import { getSelectedPlayer } from "@/lib/players/selected";
+import { getOrgContext } from "@/lib/org/context";
 
 export type SessionFormState = { error?: string } | undefined;
 
@@ -33,21 +35,21 @@ export async function createSession(
     redirect("/login");
   }
 
-  const { data: activePlayer } = await supabase
-    .from("players")
-    .select("id, name")
-    .eq("coach_id", user.id)
-    .eq("is_active", true)
-    .maybeSingle();
+  const activePlayer = await getSelectedPlayer(supabase, user.id);
 
   if (!activePlayer) {
     return { error: t("noActivePlayer") };
   }
 
+  // V org režime vlastní tréning organizácia, nie tréner (§5.4) — bez
+  // organization_id by ho RLS ani nepustila zapísať.
+  const org = await getOrgContext();
+
   const { data: session, error } = await supabase
     .from("sessions")
     .insert({
       coach_id: user.id,
+      organization_id: org?.id ?? null,
       player_id: activePlayer.id,
       status: "planned",
       planned_data: { date, duration_minutes: durationMinutes },
@@ -156,11 +158,26 @@ export async function deleteSession(sessionId: string) {
     redirect("/login");
   }
 
-  await supabase
-    .from("sessions")
-    .delete()
-    .eq("id", sessionId)
-    .eq("coach_id", user.id);
+  // V org režime tréner dáta nemaže — dáta vlastní federácia (§5.4/§5.7).
+  // Naplánovaný tréning sa preto len ZRUŠÍ (status = 'cancelled'), aby
+  // organizácii ostal úplný záznam. RLS mazanie org riadkov aj tak zamietne,
+  // takže bez tejto vetvy by sa tréning ticho nezmazal a appka by tvárila,
+  // že sa zrušil.
+  const org = await getOrgContext();
+
+  if (org) {
+    await supabase
+      .from("sessions")
+      .update({ status: "cancelled" })
+      .eq("id", sessionId)
+      .eq("coach_id", user.id);
+  } else {
+    await supabase
+      .from("sessions")
+      .delete()
+      .eq("id", sessionId)
+      .eq("coach_id", user.id);
+  }
 
   revalidatePath("/sessions");
   revalidatePath("/calendar");

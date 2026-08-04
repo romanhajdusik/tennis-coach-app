@@ -104,6 +104,18 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
   - Ešte **nehotové** (pri stavbe UI vrstvy záväzné): **tenant izolácia** v `proxy.ts` (hostname→org autoritatívne) + **Auth cookies per-subdoménu**, nie zdieľané `.plaw.win`.
   - Detaily a odôvodnenie v [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md) §5.7 a §5.9.
 
+## Vybraný hráč (1:1 vs 1:N)
+
+Appka vždy zobrazuje dáta **jedného** hráča — kalendár, plánovanie, záznam aj analytika sa viažu naňho. Kto to je, určuje **jediný zdroj pravdy** `getSelectedPlayer()` v [`lib/players/selected.ts`](lib/players/selected.ts); **nikdy nedotazuj aktívneho hráča priamo** (starý vzor `.eq("is_active", true).maybeSingle()` v org režime spadne, keď je aktívnych viac).
+
+- **Samostatný režim (plaw.win):** tréner má najviac jedného aktívneho hráča (index `one_active_player`), takže „vybraný" = ten jediný. Správanie ako predtým, prepínač sa vôbec nevykreslí.
+- **Federačný režim (`<slug>.plaw.win`):** tréner je zamestnanec s viacerými pridelenými hráčmi naraz (1:N). Voľba sa pamätá v cookie `plaw_selected_player` (vec zariadenia, ako jazyk a časové pásmo — nie stav v DB), prepína ju server action `selectPlayer` a zobrazuje komponent [`components/player-switcher.tsx`](components/player-switcher.tsx) (vykreslí sa len pri 2+ aktívnych hráčoch).
+- **Cookie je len návrh, nie oprávnenie:** voľba sa vždy overuje voči zoznamu hráčov z databázy (ten je orezaný RLS), takže podvrhnutá cookie nevie vybrať cudzieho hráča — ignoruje sa a použije sa prvý v poradí. Rovnako sa výber sám zotaví, keď sa vybraný hráč archivuje.
+- **Zápisy musia v org režime niesť `organization_id`** (`players`, `sessions`, `session_drills`) — vlastníkom je organizácia, inak RLS zápis zamietne. Berie sa z `getOrgContext()`.
+- **Kódy cvičení** sa v org režime čítajú podľa `organization_id` (federačný štandard, §5.5), nie podľa `coach_id` — inak by tréner videl predvolený zoznam namiesto štandardu federácie. `/drill-codes` je pre neho read-only.
+- **Zrušenie tréningu:** v org režime `deleteSession` nastaví `status = 'cancelled'` (dáta vlastní federácia, tréner nemaže). V samostatnom režime maže ako doteraz. Bez tejto vetvy RLS mazanie ticho zamietne a appka by tvárila, že tréning zrušila.
+- **Zdieľanie s rodičom/hráčom** je funkcia samostatného produktu — v org režime je skryté v UI aj zablokované v RLS (§5.6).
+
 ## Životný cyklus tréningu
 
 1. **Plánovanie (planned):** vytvorenie zámeru — dátum, čas, zameranie. Kým je tréning v tomto stave, dá sa aj **úplne zrušiť** (`lib/actions/sessions.ts#deleteSession` — natrvalo zmaže session aj jej cvičenia cez `on delete cascade`, nie len zmena statusu; potvrdzuje sa dvojkrokovo v UI). Cvičenia sa dajú preusporiadať šípkami hore/dole (`session_drills.sort_order`)

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getDrillCodeSlots } from "@/lib/actions/drill-codes";
+import { getOrgContext } from "@/lib/org/context";
 import { ANALYTICS_GROUPED_CATEGORIES, CATEGORY_OPTIONS } from "@/lib/drill-options";
 import { DrillCodeForm } from "./drill-code-form";
 
@@ -17,6 +18,9 @@ export default async function DrillCodesPage() {
   if (!user) {
     redirect("/login");
   }
+
+  // V org režime sú kódy štandardom federácie — tréner ich len používa (§5.5).
+  const org = await getOrgContext();
 
   const slotsByCategory = await Promise.all(
     CATEGORY_OPTIONS.map((category) =>
@@ -38,7 +42,7 @@ export default async function DrillCodesPage() {
         </Link>
       </div>
       <p className="text-sm text-muted ">
-        {t("description")}
+        {org ? t("orgDescription", { organization: org.name }) : t("description")}
       </p>
 
       {CATEGORY_OPTIONS.map((category, index) => (
@@ -47,6 +51,7 @@ export default async function DrillCodesPage() {
           category={category}
           initialSlots={slotsByCategory[index]}
           groups={ANALYTICS_GROUPED_CATEGORIES[category]}
+          readOnly={Boolean(org)}
         />
       ))}
     </div>

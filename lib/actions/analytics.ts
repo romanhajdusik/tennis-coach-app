@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getSelectedPlayer } from "@/lib/players/selected";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -246,12 +247,7 @@ async function getActivePlayerSessionIdsInPeriod(
   start: Date,
   end: Date,
 ): Promise<{ sessionIds: string[]; birthYear: number | null }> {
-  const { data: activePlayer } = await supabase
-    .from("players")
-    .select("id, birth_year")
-    .eq("coach_id", userId)
-    .eq("is_active", true)
-    .maybeSingle();
+  const activePlayer = await getSelectedPlayer(supabase, userId);
 
   if (!activePlayer) {
     return { sessionIds: [], birthYear: null };

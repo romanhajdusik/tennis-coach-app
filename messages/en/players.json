@@ -1,6 +1,10 @@
 {
   "title": "Players",
   "activePlayerHeading": "Active player",
+  "rosterHeading": "My players",
+  "switcherHeading": "Viewing",
+  "switcherHint": "Calendar, practices and analytics follow the selected player.",
+  "selectPlayer": "Switch to {name}",
   "noActivePlayer": "You don't have an active player yet.",
   "archive": "Archive",
   "activate": "Activate",

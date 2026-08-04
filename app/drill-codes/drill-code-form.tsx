@@ -9,10 +9,13 @@ export function DrillCodeForm({
   category,
   initialSlots,
   groups,
+  readOnly = false,
 }: {
   category: string;
   initialSlots: string[];
   groups?: AnalyticsCodeGroup[];
+  /** V org režime kódy nastavuje šéftréner federácie — tréner ich len číta (§5.5). */
+  readOnly?: boolean;
 }) {
   const t = useTranslations("DrillCodes");
   const saveForCategory = saveDrillCodes.bind(null, category);
@@ -45,7 +48,9 @@ export function DrillCodeForm({
                   type="text"
                   defaultValue={value}
                   placeholder={`${i + 1}.`}
-                  className="w-full min-w-0 rounded-lg border border-border px-3 py-2 text-sm bg-input"
+                  readOnly={readOnly}
+                  disabled={readOnly}
+                  className="w-full min-w-0 rounded-lg border border-border px-3 py-2 text-sm bg-input disabled:opacity-70"
                 />
               ))}
             </div>
@@ -60,7 +65,9 @@ export function DrillCodeForm({
               type="text"
               defaultValue={value}
               placeholder={`${index + 1}.`}
-              className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
+              readOnly={readOnly}
+              disabled={readOnly}
+              className="rounded-lg border border-border px-3 py-2 text-sm bg-input disabled:opacity-70"
             />
           ))}
         </div>
@@ -68,13 +75,15 @@ export function DrillCodeForm({
       {state?.error && (
         <p className="text-sm text-red-400">{state.error}</p>
       )}
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50 "
-      >
-        {pending ? t("saving") : t("save")}
-      </button>
+      {!readOnly && (
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50 "
+        >
+          {pending ? t("saving") : t("save")}
+        </button>
+      )}
     </form>
   );
 }

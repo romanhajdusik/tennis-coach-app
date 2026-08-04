@@ -312,9 +312,25 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
   hlavička) + 8 hostname scenármi. Pozn.: Node `fetch` zahadzuje hlavičku `Host`, takže
   virtuálne hosty sa testujú cez `curl` alebo `node:http`, nie cez `fetch`.
 
+**Hotové (2026-08-04, tretia dávka) — trénerova appka 1:N (jadro):**
+- `lib/players/selected.ts` = jediný zdroj pravdy, ktorého hráča appka zobrazuje. Voľba v cookie
+  `plaw_selected_player`, vždy overená voči zoznamu z DB (orezanému RLS) → podvrhnutá cookie
+  nevyberie cudzieho hráča a výber sa sám zotaví po archivácii.
+- Prepínač `components/player-switcher.tsx` (vykreslí sa len pri 2+ aktívnych hráčoch),
+  `/players` sa v org režime správa ako roster.
+- Opravené 4 miesta, ktoré by v org režime spadli (`.maybeSingle()` nad aktívnym hráčom).
+- Zápisy nesú `organization_id` (players, sessions, session_drills); kódy cvičení sa v org čítajú
+  podľa organizácie a `/drill-codes` je pre trénera read-only; zdieľanie s rodičom skryté (§5.6).
+- **Zrušenie tréningu v org režime → `status = 'cancelled'`** namiesto mazania. Predtým `deleteSession`
+  ignoroval výsledok, takže RLS mazanie ticho zamietla a appka tvárila, že tréning zrušila.
+- Overené 21 scenármi cez HTTP (prepínanie, izolácia dát medzi hráčmi, podvrhnutá/neplatná cookie,
+  kódy federácie, read-only) + regresné sady 37/41/15 zelené. Pozn.: next-intl posiela do HTML
+  všetky preklady, takže testy musia porovnávať **vykreslené** HTML (bez `<script>`), inak nájdu
+  text aj pre nevykreslené prvky.
+
 **Nehotové (ďalšie kroky, v tomto poradí):**
-1. Trénerova appka 1:N: roster pridelených hráčov + prepínač aktívneho hráča, obrazovka *Dnes*
-   (dnes appka všade počíta s jedným aktívnym hráčom).
+1. Obrazovka *Dnes* (rozvrh naprieč hráčmi) a roster so stavmi „bez tréningu X dní" —
+   zvyšok mockupu `docs/mockups/trener-b2b.html`.
 2. Riadiaci pult šéftrénera (`/director`) — reuse read-only `app/parent/` stránok a agregátov.
 3. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
    read-only pre trénera, editovateľné pre šéftrénera.

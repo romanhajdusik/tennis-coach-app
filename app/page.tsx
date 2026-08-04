@@ -8,6 +8,7 @@ import { DEFAULT_CATEGORY } from "@/lib/drill-options";
 import { LandingPage, getLandingLocale } from "@/components/landing-page";
 import { loadLandingMessages } from "@/lib/landing-locale";
 import { getOrgContext } from "@/lib/org/context";
+import { PlayerSwitcher } from "@/components/player-switcher";
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
@@ -84,6 +85,9 @@ export default async function Home() {
         <p className="text-muted ">
           {t("loggedInAs")} <span className="font-medium">{user.email}</span>
         </p>
+        <div className="w-full max-w-md">
+          <PlayerSwitcher />
+        </div>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
             href="/players"

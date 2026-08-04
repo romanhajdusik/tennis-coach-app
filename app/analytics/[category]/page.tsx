@@ -16,6 +16,7 @@ import {
   ANALYTICS_HIDE_STROKES_CATEGORIES,
   CATEGORY_OPTIONS,
 } from "@/lib/drill-options";
+import { PlayerSwitcher } from "@/components/player-switcher";
 import { CategoryCharts } from "./category-charts";
 import { CategoryShareChart } from "./category-share-chart";
 
@@ -110,6 +111,8 @@ export default async function AnalyticsPage({
           {tCommon("back")}
         </Link>
       </div>
+
+      <PlayerSwitcher />
 
       <div className="flex min-w-0 flex-wrap gap-2">
         {CATEGORY_OPTIONS.map((option) => (

@@ -1,10 +1,12 @@
 {
   "title": "Drill codes",
   "description": "Each focus area has 20 slots for your own drill codes. An empty slot won't be used in a practice.",
+  "orgDescription": "These drill codes are the shared standard of {organization}. They are set by the head coach, so every coach records practices the same way and analytics stay comparable across the organization.",
   "save": "Save codes",
   "saving": "Saving...",
   "errors": {
     "invalidCategory": "Invalid focus area.",
-    "saveFailed": "Failed to save the codes."
+    "saveFailed": "Failed to save the codes.",
+    "orgReadOnly": "Drill codes are set by your organization's head coach."
   }
 }

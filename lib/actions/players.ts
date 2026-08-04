@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getOrgContext } from "@/lib/org/context";
 
 export type PlayerFormState = { error?: string } | undefined;
 
@@ -38,18 +39,29 @@ export async function createPlayer(
     redirect("/login");
   }
 
-  const { data: existingActive } = await supabase
-    .from("players")
-    .select("id")
-    .eq("coach_id", user.id)
-    .eq("is_active", true)
-    .maybeSingle();
+  // Federačný tréner je zamestnanec s viacerými hráčmi naraz (1:N), takže nový
+  // hráč je vždy aktívny a vlastní ho organizácia (§5.4). Samostatný tréner má
+  // model 1:1 — nový hráč sa aktivuje, len ak zatiaľ žiadneho aktívneho nemá.
+  const org = await getOrgContext();
+
+  let isActive = true;
+  if (!org) {
+    const { data: existingActive } = await supabase
+      .from("players")
+      .select("id")
+      .eq("coach_id", user.id)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    isActive = !existingActive;
+  }
 
   const { error } = await supabase.from("players").insert({
     coach_id: user.id,
+    organization_id: org?.id ?? null,
     name,
     birth_year: birthYear,
-    is_active: !existingActive,
+    is_active: isActive,
   });
 
   if (error) {
@@ -88,13 +100,19 @@ export async function activatePlayer(playerId: string) {
     redirect("/login");
   }
 
-  // Najprv deaktivovať doterajšieho aktívneho hráča — inak by zápis narazil
-  // na unikátny index one_active_player (vždy len jeden aktívny na trénera)
-  await supabase
-    .from("players")
-    .update({ is_active: false })
-    .eq("coach_id", user.id)
-    .eq("is_active", true);
+  // V samostatnom režime treba najprv deaktivovať doterajšieho aktívneho
+  // hráča — inak by zápis narazil na unikátny index one_active_player (vždy
+  // len jeden aktívny na trénera). V org režime je index uvoľnený (1:N),
+  // takže vrátenie hráča z archívu nesmie ostatných zhodiť.
+  const org = await getOrgContext();
+
+  if (!org) {
+    await supabase
+      .from("players")
+      .update({ is_active: false })
+      .eq("coach_id", user.id)
+      .eq("is_active", true);
+  }
 
   await supabase
     .from("players")

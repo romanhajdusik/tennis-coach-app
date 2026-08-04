@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTranslations, getFormatter } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getSelectedPlayer } from "@/lib/players/selected";
+import { PlayerSwitcher } from "@/components/player-switcher";
 import { NewSessionForm } from "./new-session-form";
 
 type PlannedData = {
@@ -21,12 +23,7 @@ export default async function SessionsPage() {
     redirect("/login");
   }
 
-  const { data: activePlayer } = await supabase
-    .from("players")
-    .select("id, name")
-    .eq("coach_id", user.id)
-    .eq("is_active", true)
-    .maybeSingle();
+  const activePlayer = await getSelectedPlayer(supabase, user.id);
 
   const { data: sessions } = activePlayer
     ? await supabase
@@ -49,6 +46,8 @@ export default async function SessionsPage() {
           {tCommon("back")}
         </Link>
       </div>
+
+      <PlayerSwitcher />
 
       {!activePlayer ? (
         <p className="text-sm text-muted ">
