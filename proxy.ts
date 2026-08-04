@@ -10,6 +10,21 @@ import { orgSlugFromHost, resolveOrgBySlug } from "@/lib/org/resolve";
 const PUBLIC_ONLY_HOSTS = new Set(["plaw.online", "www.plaw.online"]);
 const PUBLIC_PATHS = new Set(["/", "/navod", "/navod-hrac"]);
 const APP_ORIGIN = "https://plaw.win";
+const LOGIN_PATH = "/login";
+
+// Supabase ukladá session do cookies `sb-<ref>-auth-token` (dlhé hodnoty sa
+// delia na `...auth-token.0`, `.1`).
+const AUTH_COOKIE_PATTERN = /^sb-.*auth-token/;
+
+/** Zahodí session na TOMTO hostname (cookies sú host-only, inde ostáva platná). */
+function clearAuthCookies(request: NextRequest, response: NextResponse) {
+  for (const cookie of request.cookies.getAll()) {
+    if (AUTH_COOKIE_PATTERN.test(cookie.name)) {
+      response.cookies.delete(cookie.name);
+    }
+  }
+  return response;
+}
 
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host")?.split(":")[0].toLowerCase() ?? "";
@@ -29,6 +44,7 @@ export async function proxy(request: NextRequest) {
   if (orgSlug) {
     return handleOrgRequest(request, orgSlug);
   }
+
 
   // plaw.win, *.vercel.app, localhost — samostatný (1:1) produkt.
   const { response } = await updateSession(request);
@@ -66,7 +82,34 @@ async function handleOrgRequest(request: NextRequest, slug: string) {
     const { data: currentOrgId } = await supabase.rpc("current_org_id");
 
     if (currentOrgId !== org.id) {
-      return NextResponse.redirect(new URL(pathname + search, APP_ORIGIN), 307);
+      // Cudziu session na tejto subdoméne zahodíme a necháme návštevníka na
+      // prihlásení TEJTO organizácie. Skoršia verzia ho posielala na
+      // plaw.win, čím vznikla slepá ulička: stráž presmerovala aj /login,
+      // takže sa na subdoménu už nedalo prihlásiť ani správnym účtom.
+      //
+      // Session zahadzujeme zmazaním cookies, NIE cez supabase.auth.signOut():
+      // tá aj so scope "local" volá /logout na serveri a zruší refresh token
+      // danej session. Tu chceme len "na tomto hostname ťa nepoznáme" —
+      // cookies sú host-only, takže prihlásenie toho istého účtu na plaw.win
+      // ostáva nedotknuté.
+      if (pathname === LOGIN_PATH) {
+        return clearAuthCookies(request, response);
+      }
+
+      // Cieľ skladáme z hlavičky Host, nie z `request.nextUrl` — ten sa
+      // v dev serveri neriadi Hostom (ukazuje na localhost), čím by
+      // presmerovanie utieklo z org subdomény. Relatívna cesta by bola
+      // najodolnejšia, ale Next middleware ju v Location neprijme
+      // (vyžaduje absolútnu URL).
+      const protocol =
+        request.headers.get("x-forwarded-proto") ??
+        request.nextUrl.protocol.replace(":", "");
+      const loginUrl = new URL(
+        LOGIN_PATH,
+        `${protocol}://${request.headers.get("host")}`,
+      );
+
+      return clearAuthCookies(request, NextResponse.redirect(loginUrl, 307));
     }
   }
 

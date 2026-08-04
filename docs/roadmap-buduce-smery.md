@@ -295,9 +295,17 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
   do appky hlavičkami `x-plaw-org-*`; appka ju číta cez `getOrgContext()`
   (`lib/org/context.ts`, `lib/org/resolve.ts`). Prichádzajúce hlavičky sa zahadzujú → org sa
   nedá podvrhnúť zvonka. Neznámy slug → 307 na `plaw.win`.
-- **Stráž členstva:** kto nie je aktívnym členom danej org, je z jej subdomény presmerovaný
-  na `plaw.win` (len pri GET; hranicou dát ostáva RLS). Odhlásený prejde na `/login` —
-  org subdoména nemá marketingovú landing.
+- **Stráž členstva:** kto nie je aktívnym členom danej org, skončí na `/login` **tej istej
+  subdomény** a session sa mu tam zahodí (zmazaním cookies), takže sa vie prepnúť na správny
+  účet. Len pri GET; hranicou dát ostáva RLS. Odhlásený prejde na `/login` — org subdoména
+  nemá marketingovú landing. *(Prvá verzia posielala na `plaw.win` a vznikla slepá ulička —
+  stráž presmerovala aj `/login`, takže sa na subdoménu už nedalo prihlásiť ani správnym
+  účtom; odhalené pri teste naostro 2026-08-04.)*
+- **Pozor:** `supabase.auth.signOut()` volá `/logout` na serveri **aj so `scope: "local"`**
+  a zruší refresh token danej session — na „zabudni ma na tomto hostname" sa preto NEPOUŽÍVA,
+  session sa zahadzuje zmazaním `sb-*auth-token` cookies. Rovnako: Next middleware neprijme
+  relatívnu `Location`, a `request.nextUrl` sa v dev serveri neriadi hlavičkou `Host` —
+  cieľ presmerovania sa preto skladá z `Host`.
 - **Auth cookies sú host-only** (nikde sa nenastavuje `domain`) → session sa neprenáša medzi
   organizáciami ani na `plaw.win`. Požiadavka §5.7 splnená bez zmeny kódu, overené.
 - Overené 10 scenármi proti dev serveru (člen, samostatný tréner, člen inej org, podvrhnutá
