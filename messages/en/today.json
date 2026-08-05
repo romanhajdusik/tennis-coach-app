@@ -1,0 +1,22 @@
+{
+  "title": "Today",
+  "summary": {
+    "sessions": "practices today",
+    "upcoming": "still ahead",
+    "attention": "need attention"
+  },
+  "scheduleHeading": "Today's schedule",
+  "noSessionsToday": "No practices scheduled for today.",
+  "tomorrowHeading": "Tomorrow",
+  "noSessionsTomorrow": "Nothing scheduled for tomorrow.",
+  "openSession": "Open the practice with {name}",
+  "duration": "{minutes} min",
+  "noFocus": "No drills yet",
+  "nudge": {
+    "days": "{name} — {days, plural, one {# day} other {# days}} without a practice",
+    "never": "{name} — no practice in the last {days} days",
+    "action": "Schedule a practice",
+    "open": "Schedule a practice for {name}"
+  },
+  "rosterLink": "My players"
+}

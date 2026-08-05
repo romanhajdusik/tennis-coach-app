@@ -33,6 +33,7 @@ async function loadMessages(locale: AppLocale) {
     calendar,
     settings,
     parent,
+    today,
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`),
     import(`../messages/${locale}/auth.json`),
@@ -44,6 +45,7 @@ async function loadMessages(locale: AppLocale) {
     import(`../messages/${locale}/calendar.json`),
     import(`../messages/${locale}/settings.json`),
     import(`../messages/${locale}/parent.json`),
+    import(`../messages/${locale}/today.json`),
   ]);
 
   return {
@@ -57,6 +59,7 @@ async function loadMessages(locale: AppLocale) {
     Calendar: calendar.default,
     Settings: settings.default,
     Parent: parent.default,
+    Today: today.default,
   };
 }
 

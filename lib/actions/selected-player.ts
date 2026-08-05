@@ -10,7 +10,7 @@ import { SELECTED_PLAYER_COOKIE } from "@/lib/players/selected";
  * Prepnutie na iného hráča (federačný tréner má viacerých naraz).
  * Voľbu si pamätá cookie, viď lib/players/selected.ts.
  */
-export async function selectPlayer(playerId: string) {
+async function applySelectedPlayer(playerId: string) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -44,4 +44,21 @@ export async function selectPlayer(playerId: string) {
 
   // Vybraný hráč ovplyvňuje takmer každú obrazovku, preto celý layout.
   revalidatePath("/", "layout");
+}
+
+export async function selectPlayer(playerId: string) {
+  await applySelectedPlayer(playerId);
+}
+
+/**
+ * Prepnutie hráča a rovno prechod na jeho obrazovku — z rozvrhu „Dnes" a
+ * z rosteru je ťuknutie na tréning zároveň prepnutím kontextu, inak by
+ * appka ďalej zobrazovala dáta predtým vybraného hráča.
+ */
+export async function selectPlayerAndOpen(playerId: string, path: string) {
+  await applySelectedPlayer(playerId);
+
+  // Cieľ zadáva appka (bindovaný argument), nie používateľ — kontrola je len
+  // poistka, aby sa z formulára nedal spraviť otvorený presmerovávač.
+  redirect(path.startsWith("/") && !path.startsWith("//") ? path : "/");
 }

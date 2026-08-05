@@ -6,6 +6,22 @@
   "switcherHint": "Calendar, practices and analytics follow the selected player.",
   "selectPlayer": "Switch to {name}",
   "noActivePlayer": "You don't have an active player yet.",
+  "roster": {
+    "summaryPlayers": "active players",
+    "summaryToday": "practices today",
+    "summaryAttention": "need attention",
+    "lastPractice": "{days, plural, =0 {Practiced today} =1 {Practiced yesterday} other {# days without a practice}}",
+    "noRecentPractice": "No practice in the last {days} days",
+    "nextToday": "Next today at {time}",
+    "nextTomorrow": "Next tomorrow at {time}",
+    "nextOn": "Next {date}",
+    "noNextPractice": "No practice scheduled",
+    "status": {
+      "ok": "Active",
+      "warning": "Attention",
+      "critical": "Inactive"
+    }
+  },
   "archive": "Archive",
   "activate": "Activate",
   "archiveHeading": "Archive",

@@ -328,13 +328,35 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
   všetky preklady, takže testy musia porovnávať **vykreslené** HTML (bez `<script>`), inak nájdu
   text aj pre nevykreslené prvky.
 
+**Hotové (2026-08-05, štvrtá dávka) — obrazovka „Dnes" + roster so stavmi:**
+- **„Dnes" = denný domov federačného trénera** (`components/today-board.tsx`, vykreslí sa na `/`
+  **len na org subdoméne**): rozvrh dňa naprieč všetkými pridelenými hráčmi zoradený podľa času,
+  tri dlaždice zhrnutia (tréningy dnes / ešte nasleduje / vyžaduje pozornosť), upozornenie na
+  najzanedbanejšieho hráča a sekcia „Zajtra". Samostatný (1:1) rozcestník ostal nedotknutý —
+  s jediným hráčom niet čo zoraďovať.
+- **Ťuknutie na tréning zároveň prepne vybraného hráča** (`selectPlayerAndOpen` v
+  `lib/actions/selected-player.ts`) — bez toho by appka na detaile tréningu ďalej pracovala
+  s predtým vybraným hráčom. Upozornenie prepne na zanedbaného hráča a otvorí plánovanie.
+- **Roster so stavmi na `/players`** (len pri 2+ aktívnych hráčoch): farebná bodka stavu,
+  „Practiced yesterday" / „6 days without a practice" / „No practice in the last 60 days",
+  najbližší tréning („Next today at 18:00") a tie isté dlaždice zhrnutia.
+- Spoločný dátový základ je `lib/players/roster.ts` (`getRosterOverview`) — dni sa počítajú
+  **v pásme toho, kto sa pozerá** (cez `getTimeZone()` z next-intl), nie v pásme servera.
+  Prahy: 5 dní = pozornosť, 8 dní = neaktívny; hráč bez záznamu je „vyžaduje pozornosť", len
+  ak preňho nič nie je naplánované (čerstvo pridelený hráč s tréningom nie je problém).
+  Dotaz na tréningy je **ohraničený oknom 60 dní dozadu** (`PRACTICE_LOOKBACK_DAYS`) a filtruje
+  sa priamo v SQL cez `planned_data->>date` — bez toho by sa pri desiatich hráčoch ťahali tisíce
+  riadkov a narazilo by sa na `max_rows` PostgRESTu.
+- Overené 30 HTTP scenármi (org) + 12 regresnými (samostatný režim nedotknutý) + 6 klikacími cez
+  Playwright (prepnutie hráča ťukom, upozornenie, roster). Pozn.: virtuálny host sa v prehliadači
+  testuje cez `--host-resolver-rules=MAP <slug>.plaw.win 127.0.0.1:3000`, keďže org kontext sa
+  odvodzuje výhradne z hostname.
+
 **Nehotové (ďalšie kroky, v tomto poradí):**
-1. Obrazovka *Dnes* (rozvrh naprieč hráčmi) a roster so stavmi „bez tréningu X dní" —
-   zvyšok mockupu `docs/mockups/trener-b2b.html`.
-2. Riadiaci pult šéftrénera (`/director`) — reuse read-only `app/parent/` stránok a agregátov.
-3. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
+1. Riadiaci pult šéftrénera (`/director`) — reuse read-only `app/parent/` stránok a agregátov.
+2. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
    read-only pre trénera, editovateľné pre šéftrénera.
-4. Stripe „sedadlá" (`seat_limit` už v schéme).
+3. Stripe „sedadlá" (`seat_limit` už v schéme).
 
 **Pozor pri nasadení:** migrácie sa na produkciu púšťajú ručne cez Supabase SQL Editor
 (DB základ bol takto nasadený 2026-08-03). Organizácia na produkcii vzniká až vložením riadku

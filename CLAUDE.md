@@ -116,6 +116,16 @@ Appka vždy zobrazuje dáta **jedného** hráča — kalendár, plánovanie, zá
 - **Zrušenie tréningu:** v org režime `deleteSession` nastaví `status = 'cancelled'` (dáta vlastní federácia, tréner nemaže). V samostatnom režime maže ako doteraz. Bez tejto vetvy RLS mazanie ticho zamietne a appka by tvárila, že tréning zrušila.
 - **Zdieľanie s rodičom/hráčom** je funkcia samostatného produktu — v org režime je skryté v UI aj zablokované v RLS (§5.6).
 
+### Obrazovka „Dnes" a roster so stavmi (federačný režim, od 2026-08-05)
+
+Na org subdoméne je domovská stránka `/` **denný domov „Dnes"** ([`components/today-board.tsx`](components/today-board.tsx)): rozvrh dňa naprieč všetkými pridelenými hráčmi podľa času, dlaždice zhrnutia, upozornenie na najzanedbanejšieho hráča a sekcia „Zajtra". Na `plaw.win` (samostatný 1:1 tréner) sa **nevykreslí** — pôvodný rozcestník ostáva.
+
+- Spoločný dátový základ je [`lib/players/roster.ts`](lib/players/roster.ts) — `getRosterOverview()` vráti pre každého aktívneho hráča počet dní od posledného tréningu, stav pozornosti a najbližší naplánovaný tréning, plus rozvrh na dnes a zajtra. To isté používa aj roster na `/players` (zobrazí sa len pri 2+ aktívnych hráčoch).
+- **Dni sa počítajú v pásme toho, kto sa pozerá** (`getTimeZone()` z next-intl, rovnaký zdroj ako `format.dateTime`), nie v pásme servera — „dnes" musí sedieť trénerovi na kurte.
+- **Prahy pozornosti:** 5 dní bez tréningu = *warning*, 8 dní = *critical*. Hráč bez akéhokoľvek záznamu je *critical*, len ak preňho nič nie je naplánované — čerstvo pridelený hráč s tréningom v kalendári nie je zanedbaný.
+- **Dotaz na tréningy je ohraničený oknom 60 dní dozadu** (`PRACTICE_LOOKBACK_DAYS`), filtrované priamo v SQL cez `planned_data->>date`. Neruš to na „načítaj všetko": pri desiatich hráčoch a rokoch histórie to narazí na `max_rows` PostgRESTu.
+- **Ťuknutie na tréning v rozvrhu zároveň prepne vybraného hráča** (`selectPlayerAndOpen` v [`lib/actions/selected-player.ts`](lib/actions/selected-player.ts)) — inak by detail tréningu patril jednému hráčovi, ale zvyšok appky ukazoval iného.
+
 ## Životný cyklus tréningu
 
 1. **Plánovanie (planned):** vytvorenie zámeru — dátum, čas, zameranie. Kým je tréning v tomto stave, dá sa aj **úplne zrušiť** (`lib/actions/sessions.ts#deleteSession` — natrvalo zmaže session aj jej cvičenia cez `on delete cascade`, nie len zmena statusu; potvrdzuje sa dvojkrokovo v UI). Cvičenia sa dajú preusporiadať šípkami hore/dole (`session_drills.sort_order`)

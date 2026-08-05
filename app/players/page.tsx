@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getTimeZone } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { activatePlayer, deactivatePlayer } from "@/lib/actions/players";
 import { selectPlayer } from "@/lib/actions/selected-player";
@@ -10,6 +10,14 @@ import {
   pickSelectedPlayer,
   readSelectedPlayerId,
 } from "@/lib/players/selected";
+import { getRosterOverview, type RosterEntry } from "@/lib/players/roster";
+import {
+  AttentionDot,
+  ATTENTION_TEXT_CLASSES,
+  SummaryTile,
+  lastPracticeLabel,
+  nextPracticeLabel,
+} from "@/components/roster-status";
 import { AddPlayerForm } from "./add-player-form";
 import { SharePlayerSection } from "./share-player-section";
 
@@ -58,7 +66,24 @@ export default async function PlayersPage() {
           .maybeSingle()
       : { data: null };
 
+  // Roster = federačný tréner s viacerými pridelenými hráčmi (1:N). Až tam
+  // dávajú stavy „X dní bez tréningu" zmysel, preto sa dopočítavajú len preň.
   const isRoster = activePlayers.length > 1;
+  const overview = isRoster
+    ? await getRosterOverview(supabase, activePlayers, await getTimeZone())
+    : null;
+  // Texty stavov sa skladajú vopred — `map()` v JSX nevie čakať na preklady.
+  const rosterLabels = new Map<
+    string,
+    { entry: RosterEntry; last: string; next: string }
+  >();
+  for (const entry of overview?.entries ?? []) {
+    rosterLabels.set(entry.player.id, {
+      entry,
+      last: await lastPracticeLabel(entry),
+      next: await nextPracticeLabel(entry.nextSession),
+    });
+  }
 
   return (
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
@@ -74,12 +99,31 @@ export default async function PlayersPage() {
           {isRoster ? t("rosterHeading") : t("activePlayerHeading")}
         </h2>
 
+        {overview && (
+          <div className="grid grid-cols-3 gap-2">
+            <SummaryTile
+              value={activePlayers.length}
+              label={t("roster.summaryPlayers")}
+            />
+            <SummaryTile
+              value={overview.today.length}
+              label={t("roster.summaryToday")}
+            />
+            <SummaryTile
+              value={overview.attentionCount}
+              label={t("roster.summaryAttention")}
+              highlight={overview.attentionCount > 0}
+            />
+          </div>
+        )}
+
         {activePlayers.length === 0 ? (
           <p className="text-sm text-muted ">{t("noActivePlayer")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {activePlayers.map((player) => {
               const isSelected = player.id === selectedPlayer?.id;
+              const status = rosterLabels.get(player.id);
               return (
                 <li
                   key={player.id}
@@ -90,11 +134,27 @@ export default async function PlayersPage() {
                   }
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-foreground ">
-                      {player.name}
+                    <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
+                      {status && <AttentionDot level={status.entry.attention} />}
+                      <span className="truncate">{player.name}</span>
+                      {status && player.birth_year && (
+                        <span className="flex-none text-xs font-normal text-muted">
+                          {player.birth_year}
+                        </span>
+                      )}
                     </p>
-                    {player.birth_year && (
+                    {!status && player.birth_year && (
                       <p className="text-sm text-muted ">{player.birth_year}</p>
+                    )}
+                    {status && (
+                      <>
+                        <p
+                          className={`text-xs ${ATTENTION_TEXT_CLASSES[status.entry.attention]}`}
+                        >
+                          {status.last}
+                        </p>
+                        <p className="text-xs text-muted">{status.next}</p>
+                      </>
                     )}
                   </div>
                   <div className="flex flex-none items-center gap-2">

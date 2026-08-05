@@ -9,6 +9,18 @@ import { LandingPage, getLandingLocale } from "@/components/landing-page";
 import { loadLandingMessages } from "@/lib/landing-locale";
 import { getOrgContext } from "@/lib/org/context";
 import { PlayerSwitcher } from "@/components/player-switcher";
+import { TodayBoard } from "@/components/today-board";
+
+// Rozcestník federačného trénera — tie isté obrazovky ako v samostatnom
+// režime, len pod dennou nástenkou „Dnes".
+const NAV_LINKS = [
+  { href: "/players", labelKey: "players" },
+  { href: "/sessions", labelKey: "sessions" },
+  { href: "/calendar", labelKey: "calendar" },
+  { href: "/drill-codes", labelKey: "drillCodes" },
+  { href: `/analytics/${DEFAULT_CATEGORY}`, labelKey: "analytics" },
+  { href: "/settings", labelKey: "settings" },
+] as const;
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
@@ -65,6 +77,39 @@ export default async function Home() {
     return <LandingPage />;
   }
 
+  // Federačný tréner (1:N) má denný domov „Dnes" — rozvrh naprieč hráčmi.
+  // Samostatný (1:1) tréner ho nepotrebuje, jeho rozcestník ostáva ako bol.
+  if (org) {
+    return (
+      <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
+        <TodayBoard org={org} />
+
+        <PlayerSwitcher />
+
+        <nav className="flex flex-wrap gap-2">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            >
+              {t(link.labelKey)}
+            </Link>
+          ))}
+        </nav>
+
+        <form action={logout.bind(null, "/login")}>
+          <button
+            type="submit"
+            className="rounded-lg border border-border px-4 py-2 text-sm font-medium "
+          >
+            {t("logout")}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-dvh w-full min-w-0 flex-col items-center justify-center gap-6 bg-background px-4 ">
       <div className="flex flex-col items-center gap-1">
@@ -74,12 +119,7 @@ export default async function Home() {
         <p className="text-xs text-muted ">
           plan.log.analyze.win
         </p>
-        <p className="text-xs text-muted ">{org ? `${org.slug}.plaw.win` : "plaw.win"}</p>
-        {org && (
-          <p className="mt-2 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
-            {org.name}
-          </p>
-        )}
+        <p className="text-xs text-muted ">plaw.win</p>
       </div>
       <div className="flex flex-col items-center gap-3">
         <p className="text-muted ">
