@@ -1,0 +1,42 @@
+{
+  "title": "Control panel",
+  "subtitle": "{coaches, plural, one {# coach} other {# coaches}} · {players, plural, one {# player} other {# players}}",
+  "readOnlyNote": "Read-only overview. Practices are created by the coaches; the data belongs to the organization.",
+  "logout": "Log out",
+  "summary": {
+    "players": "players",
+    "coaches": "coaches",
+    "sessionsToday": "practices today",
+    "attention": "need attention"
+  },
+  "attentionHeading": "Needs attention",
+  "attentionEmpty": "Everyone has practiced recently.",
+  "coachesHeading": "Coaches and their players",
+  "noCoaches": "No coach has joined the organization yet.",
+  "noPlayers": "No players assigned yet.",
+  "formerCoach": "No longer in the organization",
+  "formerCoachNote": "These players stayed with the organization — assign them to another coach.",
+  "coachSummary": "{players, plural, one {# player} other {# players}}",
+  "allActive": "all active",
+  "attentionTag": "{count, plural, one {# needs attention} other {# need attention}}",
+  "player": {
+    "coach": "Coach: {name}",
+    "birthYear": "Year of birth: {year}",
+    "openAnalytics": "Analytics",
+    "sessionsHeading": "Practices",
+    "noSessions": "No practices recorded yet.",
+    "sessionDrills": "{count, plural, one {# drill} other {# drills}} · {minutes} min",
+    "back": "Back to the panel"
+  },
+  "session": {
+    "heading": "Practice",
+    "plannedDate": "Planned",
+    "actualDate": "Actual",
+    "notes": "Notes",
+    "noNotes": "No notes.",
+    "drillsHeading": "Drills",
+    "noDrills": "No drills.",
+    "totalDuration": "Total duration: {minutes} min",
+    "back": "Back to the player"
+  }
+}

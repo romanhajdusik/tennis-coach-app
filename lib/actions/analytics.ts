@@ -239,8 +239,34 @@ export function aggregateCategoryShares(
     .sort((a, b) => b.minutes - a.minutes);
 }
 
-// Zdieľané pre všetky analytické dotazy: id tréningov aktívneho hráča, ktoré
-// spadajú do zvoleného obdobia (podľa reálneho, inak plánovaného dátumu).
+// Id tréningov daného hráča spadajúce do obdobia (podľa reálneho, inak
+// plánovaného dátumu). Kto hráča smie vidieť, rieši RLS — trénerovi vráti
+// len jeho pridelených, šéftrénerovi ktoréhokoľvek hráča organizácie.
+export async function getPlayerSessionIdsInPeriod(
+  supabase: SupabaseServerClient,
+  playerId: string,
+  start: Date,
+  end: Date,
+): Promise<string[]> {
+  const { data: sessions } = await supabase
+    .from("sessions")
+    .select("id, planned_data, actual_data")
+    .eq("player_id", playerId);
+
+  return (sessions ?? [])
+    .filter((session) => {
+      const planned = session.planned_data as PlannedData | null;
+      const actual = session.actual_data as ActualData | null;
+      const dateStr = actual?.date ?? planned?.date;
+      if (!dateStr) return false;
+      const date = new Date(dateStr);
+      return date >= start && date < end;
+    })
+    .map((session) => session.id);
+}
+
+// Zdieľané pre analytické dotazy trénera: to isté, ale pre práve vybraného
+// hráča (lib/players/selected.ts je jediný zdroj pravdy, kto to je).
 async function getActivePlayerSessionIdsInPeriod(
   supabase: SupabaseServerClient,
   userId: string,
@@ -253,23 +279,79 @@ async function getActivePlayerSessionIdsInPeriod(
     return { sessionIds: [], birthYear: null };
   }
 
-  const { data: sessions } = await supabase
-    .from("sessions")
-    .select("id, planned_data, actual_data")
-    .eq("player_id", activePlayer.id);
+  return {
+    sessionIds: await getPlayerSessionIdsInPeriod(
+      supabase,
+      activePlayer.id,
+      start,
+      end,
+    ),
+    birthYear: activePlayer.birth_year,
+  };
+}
 
-  const sessionIds = (sessions ?? [])
-    .filter((session) => {
-      const planned = session.planned_data as PlannedData | null;
-      const actual = session.actual_data as ActualData | null;
-      const dateStr = actual?.date ?? planned?.date;
-      if (!dateStr) return false;
-      const date = new Date(dateStr);
-      return date >= start && date < end;
-    })
-    .map((session) => session.id);
+/**
+ * Analytika konkrétneho hráča — rovnaký výpočet ako trénerova, len hráč sa
+ * zadáva priamo (riadiaci pult šéftrénera sa pozerá na hráčov, ktorých sám
+ * „vybraných" nemá). Prístup stráži RLS, nie tento parameter.
+ */
+export async function getPlayerCategoryAnalytics(
+  supabase: SupabaseServerClient,
+  player: { id: string; birth_year: number | null },
+  category: string,
+  start: Date,
+  end: Date,
+): Promise<{ byCode: CodeStat[]; byCharacter: CharacterStat[] }> {
+  const sessionIds = await getPlayerSessionIdsInPeriod(
+    supabase,
+    player.id,
+    start,
+    end,
+  );
 
-  return { sessionIds, birthYear: activePlayer.birth_year };
+  if (sessionIds.length === 0) {
+    return { byCode: [], byCharacter: [] };
+  }
+
+  const { data: drills } = await supabase
+    .from("session_drills")
+    .select("character, drill_code, duration_minutes")
+    .in("session_id", sessionIds)
+    .eq("category", category)
+    .eq("status", "played");
+
+  return aggregateDrillStats(
+    drills ?? [],
+    category,
+    ageStrokeFactor(player.birth_year),
+  );
+}
+
+/** Podiel zameraní na odohranom čase konkrétneho hráča (pult, drill-in). */
+export async function getPlayerCategoryMinuteShares(
+  supabase: SupabaseServerClient,
+  playerId: string,
+  start: Date,
+  end: Date,
+): Promise<CategoryShareStat[]> {
+  const sessionIds = await getPlayerSessionIdsInPeriod(
+    supabase,
+    playerId,
+    start,
+    end,
+  );
+
+  if (sessionIds.length === 0) {
+    return [];
+  }
+
+  const { data: drills } = await supabase
+    .from("session_drills")
+    .select("category, duration_minutes")
+    .in("session_id", sessionIds)
+    .eq("status", "played");
+
+  return aggregateCategoryShares(drills ?? []);
 }
 
 export async function getCategoryAnalytics(

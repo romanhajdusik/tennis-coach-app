@@ -126,6 +126,16 @@ Na org subdoméne je domovská stránka `/` **denný domov „Dnes"** ([`compone
 - **Dotaz na tréningy je ohraničený oknom 60 dní dozadu** (`PRACTICE_LOOKBACK_DAYS`), filtrované priamo v SQL cez `planned_data->>date`. Neruš to na „načítaj všetko": pri desiatich hráčoch a rokoch histórie to narazí na `max_rows` PostgRESTu.
 - **Ťuknutie na tréning v rozvrhu zároveň prepne vybraného hráča** (`selectPlayerAndOpen` v [`lib/actions/selected-player.ts`](lib/actions/selected-player.ts)) — inak by detail tréningu patril jednému hráčovi, ale zvyšok appky ukazoval iného.
 
+### Riadiaci pult šéftrénera `/director` (federačný režim, od 2026-08-06)
+
+Šéftréner (rola `director`) má na org subdoméne **read-only pult** nad celou organizáciou — po prihlásení naň `/` rovno presmeruje (pridelených hráčov nemá, nástenka „Dnes" by bola prázdna). Vstup stráži [`app/director/guard.ts`](app/director/guard.ts) (`requireDirector`): mimo org subdomény a pre rolu `coach` presmeruje na `/`. **Je to smerovanie, nie bezpečnostná hranica — tou ostáva RLS** (§5.7: director SELECT-only).
+
+- Stránky: `/director` (dlaždice, „vyžaduje pozornosť" naprieč org, tréner → jeho hráči), `/director/players/[id]`, `/director/sessions/[id]`, `/director/players/[id]/analytics/[category]`. Všetky bez jediného editačného formulára.
+- **Dáta číta živo cez RLS, nie cez kópie.** Rodičovské stránky (`app/parent/`) sa reusovať nedajú — tie čítajú `parent_session_records`. Reusuje sa **agregát** `aggregateDrillStats` a komponent `CategoryCharts`, takže čísla v pulte a v trénerovej appke sa nemôžu rozísť. Player-scoped varianty analytiky sú `getPlayerCategoryAnalytics` / `getPlayerSessionIdsInPeriod` v [`lib/actions/analytics.ts`](lib/actions/analytics.ts).
+- Stavy hráčov počíta ten istý `getRosterOverview` ako trénerova nástenka „Dnes" ([`lib/org/director.ts`](lib/org/director.ts) mu len podá všetkých hráčov organizácie).
+- **Mená trénerov:** `profiles` má policy `id = auth.uid()`, takže pribudla úzka SELECT policy pre šéftrénera nad profilmi **aktívnych členov jeho organizácie** (migrácia `20260806090000_director_reads_member_profiles.sql`, `security definer` `is_active_member_of_my_org()`). Tréner naďalej vidí len seba.
+- **Hráči po odchode trénera** (priradení niekomu, kto už nie je aktívnym členom) sa zoskupia pod „No longer in the organization" — z pultu nesmú zmiznúť, kým ich niekto neprevezme.
+
 ## Životný cyklus tréningu
 
 1. **Plánovanie (planned):** vytvorenie zámeru — dátum, čas, zameranie. Kým je tréning v tomto stave, dá sa aj **úplne zrušiť** (`lib/actions/sessions.ts#deleteSession` — natrvalo zmaže session aj jej cvičenia cez `on delete cascade`, nie len zmena statusu; potvrdzuje sa dvojkrokovo v UI). Cvičenia sa dajú preusporiadať šípkami hore/dole (`session_drills.sort_order`)

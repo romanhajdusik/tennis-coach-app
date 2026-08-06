@@ -16,6 +16,7 @@ const HIDDEN_PATHS = new Set([
   "/register",
   "/parent",
   "/parent/login",
+  "/director",
 ]);
 
 // Globálne, vždy viditeľné plávajúce tlačidlo na rýchly návrat na rozcestník
@@ -29,8 +30,13 @@ export function HomeButton() {
     return null;
   }
 
-  // Rodičovská časť appky má vlastný rozcestník na "/parent", tréner na "/".
-  const href = pathname.startsWith("/parent") ? "/parent" : "/";
+  // Každá časť appky má vlastný rozcestník: rodič "/parent", šéftréner
+  // federácie "/director", tréner "/".
+  const href = pathname.startsWith("/parent")
+    ? "/parent"
+    : pathname.startsWith("/director")
+      ? "/director"
+      : "/";
 
   return (
     <Link

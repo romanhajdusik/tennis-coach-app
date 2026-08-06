@@ -352,11 +352,39 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
   testuje cez `--host-resolver-rules=MAP <slug>.plaw.win 127.0.0.1:3000`, keďže org kontext sa
   odvodzuje výhradne z hostname.
 
+**Hotové (2026-08-06, piata dávka) — riadiaci pult šéftrénera `/director`:**
+- **Pult** (`app/director/page.tsx`): dlaždice (hráči / tréneri / tréningy dnes / vyžaduje
+  pozornosť), zoznam „vyžaduje pozornosť" naprieč organizáciou s menom prideleného trénera
+  a rozbaliteľné skupiny **tréner → jeho hráči** so stavmi. Šéftréner sa po prihlásení na org
+  subdoméne dostane rovno sem (nástenka „Dnes" by mu ukázala prázdny rozvrh — pridelených
+  hráčov nemá).
+- **Drill-in:** `/director/players/[id]` (profil, pridelený tréner, zoznam tréningov),
+  `/director/sessions/[id]` (read-only rozpis cvičení) a `/director/players/[id]/analytics/[category]`
+  (obdobia + `CategoryCharts` ako u trénera).
+- **Upresnenie k pôvodnému plánu „reuse `app/parent/` stránok":** reusovať sa dá **agregát**
+  (`aggregateDrillStats`) a komponent grafov, nie samotné rodičovské stránky — tie čítajú
+  *kópie* v `parent_session_records`. Šéftréner má **živý** pohľad cez RLS (org vlastní dáta,
+  takže kopírovať netreba, §5.4), preto sú to nové, tenké read-only stránky nad `sessions`/
+  `session_drills`. Do analytiky pribudli player-scoped varianty
+  (`getPlayerCategoryAnalytics`, `getPlayerSessionIdsInPeriod`) — pult sa pozerá na hráčov,
+  ktorých nemá „vybraných".
+- **Nová migrácia `20260806090000_director_reads_member_profiles.sql`** (na produkcii treba
+  pustiť ručne): `profiles` mala dosiaľ jedinú policy `id = auth.uid()`, takže šéftréner videl
+  priradenia, ale nie MENÁ trénerov. Pribudla úzka SELECT policy + `security definer`
+  `is_active_member_of_my_org()`. Alternatívny snapshot mena do `organization_members` sme
+  zamietli — meno by starlo a `claim_organization_invite` by sa muselo znova prepisovať.
+- **Odchod trénera:** hráči priradení niekomu, kto už nie je aktívnym členom, sa v pulte
+  zoskupia do samostatnej skupiny „No longer in the organization" — nesmú zmiznúť, kým ich
+  niekto neprevezme (to je celý zmysel org vlastníctva).
+- Overené 13 RLS scenármi (vidí celú org; **nezaloží, nezmení, nezmaže**; tréner nevidí profily
+  kolegov; tenant izolácia), 25 HTTP scenármi (smerovanie podľa roly, pult, drill-in) a 4
+  klikacími. Regresné sady 30/12 zelené. Pozn.: testy proti seedu musia posielať cookie
+  `NEXT_TIMEZONE` — appka renderuje časy v pásme diváka a bez nej sa rozídu o offset.
+
 **Nehotové (ďalšie kroky, v tomto poradí):**
-1. Riadiaci pult šéftrénera (`/director`) — reuse read-only `app/parent/` stránok a agregátov.
-2. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
+1. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
    read-only pre trénera, editovateľné pre šéftrénera.
-3. Stripe „sedadlá" (`seat_limit` už v schéme).
+2. Stripe „sedadlá" (`seat_limit` už v schéme).
 
 **Pozor pri nasadení:** migrácie sa na produkciu púšťajú ručne cez Supabase SQL Editor
 (DB základ bol takto nasadený 2026-08-03). Organizácia na produkcii vzniká až vložením riadku

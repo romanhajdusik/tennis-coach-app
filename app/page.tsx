@@ -8,6 +8,7 @@ import { DEFAULT_CATEGORY } from "@/lib/drill-options";
 import { LandingPage, getLandingLocale } from "@/components/landing-page";
 import { loadLandingMessages } from "@/lib/landing-locale";
 import { getOrgContext } from "@/lib/org/context";
+import { getOrgRole } from "@/lib/org/membership";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import { TodayBoard } from "@/components/today-board";
 
@@ -75,6 +76,12 @@ export default async function Home() {
       redirect("/login");
     }
     return <LandingPage />;
+  }
+
+  // Šéftréner federácie nemá pridelených hráčov — nástenka „Dnes" by mu
+  // ukázala prázdny rozvrh. Jeho domov je riadiaci pult.
+  if (org && (await getOrgRole(supabase, user.id)) === "director") {
+    redirect("/director");
   }
 
   // Federačný tréner (1:N) má denný domov „Dnes" — rozvrh naprieč hráčmi.
