@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+# výstupy lokálnych overovacích skriptov (scripts/dev-tests)
+/scripts/dev-tests/screenshots
+/scripts/dev-tests/expect.json
 
 # next.js
 /.next/

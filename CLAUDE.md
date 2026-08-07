@@ -288,6 +288,15 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
 /supabase/migrations # SQL migrácie
 ```
 
+## Lokálne overovanie (scripts/dev-tests)
+
+Repo nemá test framework, ale má sadu ručne spúšťaných scenárov v [`scripts/dev-tests/`](scripts/dev-tests/) — HTTP, RLS a klikacie (Playwright) sady pre trénerovu appku aj federačný pult. **Pri zmenách v org vrstve, RLS alebo analytike ich prejdi**, ušetria hodinu hľadania. Postup, účty a pasce (časové pásmo, hydratácia org subdomény, čítanie vykresleného HTML) sú v [`scripts/dev-tests/README.md`](scripts/dev-tests/README.md).
+
+```bash
+node scripts/dev-tests/seed.js        # dáta (idempotentné)
+node scripts/dev-tests/http-coach.js  # a ostatné sady
+```
+
 ## Testovanie na mobile (lokálna sieť)
 
 - **Lokálny vývoj federačného režimu:** org kontext sa odvodzuje výhradne z hostname, takže sa musí testovať cez subdoménu namapovanú na dev server (v prehliadači napr. `chromium.launch({ args: ["--host-resolver-rules=MAP <slug>.plaw.win 127.0.0.1:3000"] })`). Preto je v `allowedDevOrigins` aj `*.plaw.win` — **bez toho Next zablokuje dev požiadavky z toho hostname a stránka sa nehydratuje**, takže všetko závislé od JS ticho nefunguje (klik na tlačidlo nespraví nič). Prejaví sa to len v dev, nie na produkcii.

@@ -16,6 +16,12 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    // scripts/ sú samostatné Node skripty (spúšťané cez `node`), nie súčasť
+    // buildu appky — bežia v CommonJS, takže `require()` je tam namieste.
+    files: ["scripts/**/*.js"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

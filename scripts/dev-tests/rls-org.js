@@ -1,0 +1,157 @@
+// RLS scenáre federačnej vrstvy — overujú sa priamo proti databáze cez
+// reálne prihlásené session, nie cez appku: appka je len UI, hranicou dát
+// je RLS (§5.7).
+const { serviceClient, signIn, ORG_SLUG, createChecks } = require("./helpers");
+
+const { check, section, report } = createChecks();
+const db = serviceClient();
+
+async function main() {
+  const { data: org } = await db
+    .from("organizations")
+    .select("id, seat_limit")
+    .eq("slug", ORG_SLUG)
+    .single();
+
+  const director = await signIn("director-today@test.local");
+  const coach = await signIn("coach-today@test.local");
+
+  section("1) Šéftréner vidí celú organizáciu");
+  const { data: players } = await director
+    .from("players")
+    .select("id, coach_id")
+    .eq("is_active", true);
+  check("vidí hráčov oboch trénerov", (players ?? []).length === 6, "počet: " + (players ?? []).length);
+  const { data: sessions } = await director.from("sessions").select("id");
+  check("vidí tréningy organizácie", (sessions ?? []).length >= 8, "počet: " + (sessions ?? []).length);
+
+  section("2) Mená členov (policy profiles_select_director_org_members)");
+  const { data: profiles } = await director.from("profiles").select("full_name");
+  const names = (profiles ?? []).map((profile) => profile.full_name);
+  check("vidí profily svojich trénerov", names.includes("Andrea Prva") && names.includes("Boris Druhy"), JSON.stringify(names));
+  const { data: coachProfiles } = await coach.from("profiles").select("id");
+  check("tréner vidí len seba", (coachProfiles ?? []).length === 1, "počet: " + (coachProfiles ?? []).length);
+
+  section("3) Šéftréner je read-only nad tréningovými dátami");
+  const insert = await director
+    .from("players")
+    .insert({ coach_id: players[0].coach_id, organization_id: org.id, name: "Podvrh", is_active: true });
+  check("nesmie zakladať hráča", insert.error !== null, insert.error?.code ?? "PRESLO!");
+  const update = await director.from("players").update({ name: "Prepisany" }).eq("id", players[0].id).select("id");
+  check("nesmie meniť hráča", (update.data ?? []).length === 0);
+  const remove = await director.from("sessions").delete().eq("id", sessions[0].id).select("id");
+  check("nesmie mazať tréning", (remove.data ?? []).length === 0);
+
+  section("4) Členstvo a pozvánky");
+  const dirInvite = await director
+    .from("organization_members")
+    .insert({ organization_id: org.id, role: "coach", status: "invited", invite_code: "RLS-TEST1" })
+    .select("id");
+  check("šéftréner vytvorí pozvánku", (dirInvite.data ?? []).length === 1, dirInvite.error?.message);
+  const coachInvite = await coach
+    .from("organization_members")
+    .insert({ organization_id: org.id, role: "coach", status: "invited", invite_code: "RLS-TEST2" })
+    .select("id");
+  check("tréner pozvánku nevytvorí", coachInvite.error !== null, coachInvite.error?.code ?? "PRESLO!");
+
+  const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
+  const outsider = users.users.find((user) => user.email === "coach-new@test.local");
+  const forced = await director
+    .from("organization_members")
+    .update({ user_id: outsider.id, status: "active" })
+    .eq("invite_code", "RLS-TEST1")
+    .select("id");
+  check(
+    "cudzí účet sa nedá priradiť priamym zápisom (členstvo je dobrovoľné)",
+    forced.error !== null || (forced.data ?? []).length === 0,
+  );
+
+  section("5) Claim overuje kód aj stav účtu");
+  const bad = await coach.rpc("claim_organization_invite", { p_code: "NEEXISTUJE" });
+  check("neplatný kód neprejde", bad.error !== null);
+  const already = await coach.rpc("claim_organization_invite", { p_code: "RLS-TEST1" });
+  check("kto už je členom, sa nepripojí znova", /already_member/.test(already.error?.message ?? ""));
+
+  const { data: demo } = await db
+    .from("players")
+    .select("id")
+    .is("organization_id", null)
+    .limit(1)
+    .maybeSingle();
+  if (demo) {
+    const standalone = await signIn("demo@plaw.win");
+    const withData = await standalone.rpc("claim_organization_invite", { p_code: "RLS-TEST1" });
+    check(
+      "účet s vlastnými hráčmi nevstúpi do org",
+      /has_personal_data/.test(withData.error?.message ?? ""),
+      withData.error?.message,
+    );
+  }
+
+  section("6) Sedadlá");
+  const { count: coaches } = await db
+    .from("organization_members")
+    .select("id", { count: "exact", head: true })
+    .eq("organization_id", org.id)
+    .eq("status", "active")
+    .eq("role", "coach");
+  check(`tréneri (${coaches}) sa počítajú proti limitu ${org.seat_limit}`, coaches <= org.seat_limit);
+  const { count: directors } = await db
+    .from("organization_members")
+    .select("id", { count: "exact", head: true })
+    .eq("organization_id", org.id)
+    .eq("status", "active")
+    .eq("role", "director");
+  check("šéftréner sedadlo neberie", directors === 1);
+
+  section("7) Kódy cvičení: štandard mení len šéftréner");
+  const dirCode = await director
+    .from("drill_codes")
+    .upsert(
+      { organization_id: org.id, coach_id: null, category: "Volley", slot: 1, code: "RLS-VOL" },
+      { onConflict: "organization_id,category,slot" },
+    )
+    .select("id");
+  check("šéftréner uloží federačný kód", (dirCode.data ?? []).length === 1, dirCode.error?.message);
+  const coachCode = await coach
+    .from("drill_codes")
+    .upsert(
+      { organization_id: org.id, coach_id: null, category: "Volley", slot: 1, code: "HACK" },
+      { onConflict: "organization_id,category,slot" },
+    )
+    .select("id");
+  check("tréner federačný kód nezmení", coachCode.error !== null || (coachCode.data ?? []).length === 0);
+  const { data: stored } = await db
+    .from("drill_codes")
+    .select("code")
+    .eq("organization_id", org.id)
+    .eq("category", "Volley")
+    .eq("slot", 1)
+    .maybeSingle();
+  check("v DB ostal kód od šéftrénera", stored?.code === "RLS-VOL", JSON.stringify(stored));
+
+  section("8) Tenant izolácia");
+  const { data: otherOrg } = await db
+    .from("organizations")
+    .select("id, slug")
+    .neq("slug", ORG_SLUG)
+    .limit(1)
+    .maybeSingle();
+  if (otherOrg) {
+    const { data: foreign } = await director.from("players").select("id").eq("organization_id", otherOrg.id);
+    check(`nevidí hráčov cudzej org (${otherOrg.slug})`, (foreign ?? []).length === 0);
+  }
+  const { data: orgs } = await director.from("organizations").select("id");
+  check("vidí len vlastnú organizáciu", (orgs ?? []).length === 1);
+
+  // upratanie
+  await db.from("organization_members").delete().eq("invite_code", "RLS-TEST1");
+  await db.from("drill_codes").delete().eq("code", "RLS-VOL");
+
+  report();
+}
+
+main().catch((error) => {
+  console.error("CHYBA:", error.message || error);
+  process.exit(1);
+});
