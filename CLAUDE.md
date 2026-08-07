@@ -138,7 +138,7 @@ Na org subdoméne je domovská stránka `/` **denný domov „Dnes"** ([`compone
 - **Pult je stavaný na laptop/tablet**, nie na telefón (na rozdiel od trénerovej appky, ktorá sa používa na kurte) — stránky majú `max-w-6xl`/`max-w-5xl` a viacstĺpcové rozloženie na `sm`/`lg`/`xl`, na mobile sa poskladajú pod seba. **Mobile-first pravidlo z tejto sekcie nevypadáva** — úzka šírka musí ostať použiteľná a bez horizontálneho scrollu.
 - **Porovnanie hráčov `/director/compare`:** tá istá trojica grafov, akú vidí tréner, vedľa seba pre celú skupinu. Dve osi zoskupenia — **podľa trénera** a **podľa ročníka** (`birth_year`), prepínajú sa v URL (`?by=coach|year&group=…`). Dáta ťahá `getPlayersCategoryAnalytics` ([`lib/actions/analytics.ts`](lib/actions/analytics.ts)) — **dvoma dotazmi pre celú skupinu, nie štyrmi na hráča**; pri desiatich hráčoch by inak stránka poslala 40 dotazov. Neprepisuj to na volanie `getPlayerCategoryAnalytics` v cykle.
 
-**Poradie grafov v analytike (platí všade):** generálny graf (`CategoryShareChart`, podiel zamerania na celkovom čase) ide **PRVÝ**, až za ním rozpad podľa kódov a charakteru (`CategoryCharts`). Platí pre trénerovu analytiku, pult aj porovnanie.
+**Poradie grafov v analytike (platí všade):** generálny graf (`CategoryShareChart`, podiel zamerania na celkovom čase) ide **PRVÝ**, až za ním rozpad podľa kódov a charakteru (`CategoryCharts`). Platí pre trénerovu analytiku, rodičovskú/hráčsku (`getParentCategoryMinuteShares` nad kópiami), pult aj porovnanie — **kto tréningy sleduje, vidí to isté rozloženie ako ten, kto ich zapísal.**
 
 ## Životný cyklus tréningu
 

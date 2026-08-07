@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import {
   ageStrokeFactor,
+  aggregateCategoryShares,
   aggregateDrillStats,
+  type CategoryShareStat,
   type CharacterStat,
   type CodeStat,
 } from "@/lib/actions/analytics";
@@ -15,19 +17,20 @@ type ActualData = { date?: string };
 // trvalou kópiou dát rodiča (parent_session_records/
 // parent_session_drill_records) namiesto živých sessions/session_drills —
 // pozri CLAUDE.md sekciu o zdieľaní pre vysvetlenie prečo.
-export async function getParentCategoryAnalytics(
+// Id skopírovaných tréningov v období — zdieľané oboma analytickými dotazmi
+// nižšie (podľa reálneho, inak plánovaného dátumu, ako u trénera).
+async function getParentRecordIdsInPeriod(
   supabase: SupabaseServerClient,
   parentId: string,
-  category: string,
   start: Date,
   end: Date,
-): Promise<{ byCode: CodeStat[]; byCharacter: CharacterStat[] }> {
+): Promise<string[]> {
   const { data: records } = await supabase
     .from("parent_session_records")
     .select("id, planned_data, actual_data")
     .eq("parent_id", parentId);
 
-  const recordIds = (records ?? [])
+  return (records ?? [])
     .filter((record) => {
       const planned = record.planned_data as PlannedData | null;
       const actual = record.actual_data as ActualData | null;
@@ -37,6 +40,21 @@ export async function getParentCategoryAnalytics(
       return date >= start && date < end;
     })
     .map((record) => record.id);
+}
+
+export async function getParentCategoryAnalytics(
+  supabase: SupabaseServerClient,
+  parentId: string,
+  category: string,
+  start: Date,
+  end: Date,
+): Promise<{ byCode: CodeStat[]; byCharacter: CharacterStat[] }> {
+  const recordIds = await getParentRecordIdsInPeriod(
+    supabase,
+    parentId,
+    start,
+    end,
+  );
 
   if (recordIds.length === 0) {
     return { byCode: [], byCharacter: [] };
@@ -55,6 +73,37 @@ export async function getParentCategoryAnalytics(
   const birthYear = await getConnectedPlayerBirthYear(supabase, parentId);
 
   return aggregateDrillStats(drills ?? [], category, ageStrokeFactor(birthYear));
+}
+
+/**
+ * Generálny graf pre rodiča/hráča/manažéra — podiel jednotlivých zameraní na
+ * celkovom odohranom čase. Rovnaký pohľad, aký má tréner: kto tréningy sleduje,
+ * má vidieť to isté rozloženie.
+ */
+export async function getParentCategoryMinuteShares(
+  supabase: SupabaseServerClient,
+  parentId: string,
+  start: Date,
+  end: Date,
+): Promise<CategoryShareStat[]> {
+  const recordIds = await getParentRecordIdsInPeriod(
+    supabase,
+    parentId,
+    start,
+    end,
+  );
+
+  if (recordIds.length === 0) {
+    return [];
+  }
+
+  const { data: drills } = await supabase
+    .from("parent_session_drill_records")
+    .select("category, duration_minutes")
+    .in("parent_record_id", recordIds)
+    .eq("status", "played");
+
+  return aggregateCategoryShares(drills ?? []);
 }
 
 // Ročník aktívne pripojeného hráča daného rodiča/hráča/manažéra. Číta sa

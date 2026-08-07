@@ -8,7 +8,10 @@ import {
   getPreviousYearValue,
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
-import { getParentCategoryAnalytics } from "@/lib/actions/parent-data";
+import {
+  getParentCategoryAnalytics,
+  getParentCategoryMinuteShares,
+} from "@/lib/actions/parent-data";
 import {
   ANALYTICS_FULL_BREAKDOWN_CATEGORIES,
   ANALYTICS_GROUPED_CATEGORIES,
@@ -16,6 +19,7 @@ import {
   CATEGORY_OPTIONS,
 } from "@/lib/drill-options";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
+import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
 const RANGE_VALUES: PeriodRangeType[] = ["week", "month", "quarter", "year"];
 
@@ -87,6 +91,9 @@ export default async function ParentAnalyticsPage({
   const { byCode, byCharacter } = connection
     ? await getParentCategoryAnalytics(supabase, user.id, category, start, end)
     : { byCode: [], byCharacter: [] };
+  const categoryShares = connection
+    ? await getParentCategoryMinuteShares(supabase, user.id, start, end)
+    : [];
   const previousYearValue = getPreviousYearValue(range, value);
 
   const periodQuery = (r: PeriodRangeType, v: string) =>
@@ -196,6 +203,14 @@ export default async function ParentAnalyticsPage({
               </Link>
             </div>
           </div>
+
+          {/* Generálny graf ide PRVÝ — rovnaké poradie ako u trénera. */}
+          {categoryShares.length > 0 && (
+            <CategoryShareChart
+              shares={categoryShares}
+              currentCategory={category}
+            />
+          )}
 
           {byCode.length === 0 ? (
             <p className="text-sm text-muted ">
