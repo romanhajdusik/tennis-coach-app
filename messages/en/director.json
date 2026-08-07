@@ -19,6 +19,19 @@
   "coachSummary": "{players, plural, one {# player} other {# players}}",
   "allActive": "all active",
   "attentionTag": "{count, plural, one {# needs attention} other {# need attention}}",
+  "compare": {
+    "link": "Compare players",
+    "title": "Comparison",
+    "subtitle": "The same three charts every coach sees, side by side.",
+    "byCoach": "By coach",
+    "byYear": "By year of birth",
+    "yearLabel": "Year {year}",
+    "yearUnknown": "Year not set",
+    "groupEmpty": "No players in this group.",
+    "playerNoData": "No drills in this period.",
+    "openPlayer": "Open player",
+    "back": "Back to the panel"
+  },
   "player": {
     "coach": "Coach: {name}",
     "birthYear": "Year of birth: {year}",

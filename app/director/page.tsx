@@ -21,6 +21,7 @@ import {
  */
 export default async function DirectorPage() {
   const t = await getTranslations("Director");
+  const tCompare = await getTranslations("Director.compare");
   const { supabase, org } = await requireDirector();
   const timeZone = await getTimeZone();
 
@@ -38,19 +39,30 @@ export default async function DirectorPage() {
   const attentionCount = dashboard.attention.length;
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
-      <div>
-        <h1 className="text-xl font-semibold text-foreground">{org.name}</h1>
-        <p className="text-sm text-muted">
-          {t("title")} ·{" "}
-          {t("subtitle", {
-            coaches: dashboard.coachCount,
-            players: dashboard.players.length,
-          })}
-        </p>
+    // Pult je nástroj pre laptop/tablet (na rozdiel od trénerovej appky, ktorá
+    // sa používa na kurte) — na širokej ploche stoja zoznamy vedľa seba, na
+    // mobile sa poskladajú pod seba.
+    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-6xl flex-col gap-6 px-4 py-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold text-foreground">{org.name}</h1>
+          <p className="text-sm text-muted">
+            {t("title")} ·{" "}
+            {t("subtitle", {
+              coaches: dashboard.coachCount,
+              players: dashboard.players.length,
+            })}
+          </p>
+        </div>
+        <Link
+          href="/director/compare"
+          className="flex-none rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+        >
+          {tCompare("link")}
+        </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
         <SummaryTile
           value={dashboard.players.length}
           label={t("summary.players")}
@@ -67,6 +79,7 @@ export default async function DirectorPage() {
         />
       </div>
 
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start">
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted">
           {t("attentionHeading")}
@@ -138,7 +151,7 @@ export default async function DirectorPage() {
               {coach.players.length === 0 ? (
                 <p className="mt-3 text-sm text-muted">{t("noPlayers")}</p>
               ) : (
-                <ul className="mt-3 flex flex-col gap-2">
+                <ul className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
                   {coach.players.map((entry) => (
                     <li key={entry.player.id}>
                       <PlayerCard
@@ -154,6 +167,7 @@ export default async function DirectorPage() {
           ))
         )}
       </section>
+      </div>
 
       <p className="text-xs text-muted">{t("readOnlyNote")}</p>
 

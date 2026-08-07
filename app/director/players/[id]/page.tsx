@@ -76,7 +76,7 @@ export default async function DirectorPlayerPage({
     .sort((a, b) => (b.date as string).localeCompare(a.date as string));
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-6xl flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between gap-3">
         <h1 className="min-w-0 truncate text-xl font-semibold text-foreground">
           {player.name}
@@ -89,25 +89,27 @@ export default async function DirectorPlayerPage({
         </Link>
       </div>
 
-      <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface p-4">
-        {player.birth_year && (
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface p-4 sm:flex-1">
+          {player.birth_year && (
+            <p className="text-sm text-muted">
+              {t("birthYear", { year: player.birth_year })}
+            </p>
+          )}
           <p className="text-sm text-muted">
-            {t("birthYear", { year: player.birth_year })}
+            {t("coach", {
+              name: coach?.full_name?.trim() || coach?.email || "—",
+            })}
           </p>
-        )}
-        <p className="text-sm text-muted">
-          {t("coach", {
-            name: coach?.full_name?.trim() || coach?.email || "—",
-          })}
-        </p>
-      </div>
+        </div>
 
-      <Link
-        href={`/director/players/${player.id}/analytics/${encodeURIComponent(DEFAULT_CATEGORY)}`}
-        className="rounded-lg bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground"
-      >
-        {t("openAnalytics")}
-      </Link>
+        <Link
+          href={`/director/players/${player.id}/analytics/${encodeURIComponent(DEFAULT_CATEGORY)}`}
+          className="flex-none rounded-lg bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground"
+        >
+          {t("openAnalytics")}
+        </Link>
+      </div>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted">
@@ -116,7 +118,7 @@ export default async function DirectorPlayerPage({
         {ordered.length === 0 ? (
           <p className="text-sm text-muted">{t("noSessions")}</p>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
             {ordered.map((session) => {
               const total = drillTotals.get(session.id);
               return (

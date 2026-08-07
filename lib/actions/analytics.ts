@@ -327,6 +327,89 @@ export async function getPlayerCategoryAnalytics(
   );
 }
 
+export type PlayerAnalytics = {
+  byCode: CodeStat[];
+  byCharacter: CharacterStat[];
+  shares: CategoryShareStat[];
+};
+
+/**
+ * Analytika viacerých hráčov naraz — porovnanie skupiny v riadiacom pulte
+ * (všetci hráči jedného trénera, celý ročník…).
+ *
+ * Zámerne **dva dotazy pre celú skupinu**, nie štyri na hráča: pri desiatich
+ * hráčoch by sa inak posielalo 40 dotazov a stránka by sa vliekla. Výpočet je
+ * ten istý zdieľaný agregát, takže čísla sedia s trénerovou analytikou.
+ */
+export async function getPlayersCategoryAnalytics(
+  supabase: SupabaseServerClient,
+  players: { id: string; birth_year: number | null }[],
+  category: string,
+  start: Date,
+  end: Date,
+): Promise<Map<string, PlayerAnalytics>> {
+  const empty: PlayerAnalytics = { byCode: [], byCharacter: [], shares: [] };
+  const result = new Map<string, PlayerAnalytics>(
+    players.map((player) => [player.id, empty]),
+  );
+
+  if (players.length === 0) {
+    return result;
+  }
+
+  const { data: sessions } = await supabase
+    .from("sessions")
+    .select("id, player_id, planned_data, actual_data")
+    .in(
+      "player_id",
+      players.map((player) => player.id),
+    );
+
+  const playerBySession = new Map<string, string>();
+  for (const session of sessions ?? []) {
+    const planned = session.planned_data as PlannedData | null;
+    const actual = session.actual_data as ActualData | null;
+    const dateStr = actual?.date ?? planned?.date;
+    if (!dateStr) continue;
+    const date = new Date(dateStr);
+    if (date < start || date >= end) continue;
+    playerBySession.set(session.id, session.player_id);
+  }
+
+  if (playerBySession.size === 0) {
+    return result;
+  }
+
+  const { data: drills } = await supabase
+    .from("session_drills")
+    .select("session_id, category, character, drill_code, duration_minutes")
+    .in("session_id", [...playerBySession.keys()])
+    .eq("status", "played");
+
+  const drillsByPlayer = new Map<string, typeof drills>();
+  for (const drill of drills ?? []) {
+    const playerId = playerBySession.get(drill.session_id);
+    if (!playerId) continue;
+    drillsByPlayer.set(playerId, [...(drillsByPlayer.get(playerId) ?? []), drill]);
+  }
+
+  for (const player of players) {
+    const own = drillsByPlayer.get(player.id) ?? [];
+    const { byCode, byCharacter } = aggregateDrillStats(
+      own.filter((drill) => drill.category === category),
+      category,
+      ageStrokeFactor(player.birth_year),
+    );
+    result.set(player.id, {
+      byCode,
+      byCharacter,
+      shares: aggregateCategoryShares(own),
+    });
+  }
+
+  return result;
+}
+
 /** Podiel zameraní na odohranom čase konkrétneho hráča (pult, drill-in). */
 export async function getPlayerCategoryMinuteShares(
   supabase: SupabaseServerClient,

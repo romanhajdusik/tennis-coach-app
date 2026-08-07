@@ -135,6 +135,10 @@ Na org subdoméne je domovská stránka `/` **denný domov „Dnes"** ([`compone
 - Stavy hráčov počíta ten istý `getRosterOverview` ako trénerova nástenka „Dnes" ([`lib/org/director.ts`](lib/org/director.ts) mu len podá všetkých hráčov organizácie).
 - **Mená trénerov:** `profiles` má policy `id = auth.uid()`, takže pribudla úzka SELECT policy pre šéftrénera nad profilmi **aktívnych členov jeho organizácie** (migrácia `20260806090000_director_reads_member_profiles.sql`, `security definer` `is_active_member_of_my_org()`). Tréner naďalej vidí len seba.
 - **Hráči po odchode trénera** (priradení niekomu, kto už nie je aktívnym členom) sa zoskupia pod „No longer in the organization" — z pultu nesmú zmiznúť, kým ich niekto neprevezme.
+- **Pult je stavaný na laptop/tablet**, nie na telefón (na rozdiel od trénerovej appky, ktorá sa používa na kurte) — stránky majú `max-w-6xl`/`max-w-5xl` a viacstĺpcové rozloženie na `sm`/`lg`/`xl`, na mobile sa poskladajú pod seba. **Mobile-first pravidlo z tejto sekcie nevypadáva** — úzka šírka musí ostať použiteľná a bez horizontálneho scrollu.
+- **Porovnanie hráčov `/director/compare`:** tá istá trojica grafov, akú vidí tréner, vedľa seba pre celú skupinu. Dve osi zoskupenia — **podľa trénera** a **podľa ročníka** (`birth_year`), prepínajú sa v URL (`?by=coach|year&group=…`). Dáta ťahá `getPlayersCategoryAnalytics` ([`lib/actions/analytics.ts`](lib/actions/analytics.ts)) — **dvoma dotazmi pre celú skupinu, nie štyrmi na hráča**; pri desiatich hráčoch by inak stránka poslala 40 dotazov. Neprepisuj to na volanie `getPlayerCategoryAnalytics` v cykle.
+
+**Poradie grafov v analytike (platí všade):** generálny graf (`CategoryShareChart`, podiel zamerania na celkovom čase) ide **PRVÝ**, až za ním rozpad podľa kódov a charakteru (`CategoryCharts`). Platí pre trénerovu analytiku, pult aj porovnanie.
 
 ## Životný cyklus tréningu
 

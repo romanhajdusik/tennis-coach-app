@@ -381,6 +381,17 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
   klikacími. Regresné sady 30/12 zelené. Pozn.: testy proti seedu musia posielať cookie
   `NEXT_TIMEZONE` — appka renderuje časy v pásme diváka a bez nej sa rozídu o offset.
 
+**Hotové (2026-08-07, šiesta dávka) — pult pre laptop/tablet + porovnanie hráčov:**
+- **Pult je odteraz nástroj pre laptop/tablet** (rozhodnuté používateľom): `max-w-6xl`, dlaždice
+  4 vedľa seba, zoznam pozornosti a tréneri v dvoch stĺpcoch, hráči v mriežke. Na mobile sa
+  všetko poskladá pod seba — overené na 1440/834/390 px bez horizontálneho scrollu.
+- **Porovnanie `/director/compare`:** pre celú skupinu naraz tá istá trojica grafov, akú vidí
+  tréner (podiel zameraní → rozpad kódov → charakter). Dve osi: **podľa trénera** aj **podľa
+  ročníka**. Dáta ťahá `getPlayersCategoryAnalytics` **dvoma dotazmi pre celú skupinu**
+  (nie štyrmi na hráča) — inak by pri desiatich hráčoch stránka poslala 40 dotazov.
+- **Generálny graf ide vo všetkých analytikách PRVÝ** (predtým posledný) — najprv „koľko
+  z celkového času padlo na toto zameranie", až potom rozpad.
+
 **Nehotové (ďalšie kroky, v tomto poradí):**
 1. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
    read-only pre trénera, editovateľné pre šéftrénera.

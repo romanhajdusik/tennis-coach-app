@@ -103,7 +103,7 @@ export default async function DirectorPlayerAnalyticsPage({
     `range=${r}&value=${encodeURIComponent(v)}`;
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-5xl flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h1 className="truncate text-xl font-semibold text-foreground">
@@ -209,23 +209,29 @@ export default async function DirectorPlayerAnalyticsPage({
         </div>
       </div>
 
-      {byCode.length === 0 ? (
-        <p className="text-sm text-muted">{t("noDrillsInPeriod")}</p>
-      ) : (
-        <CategoryCharts
-          byCode={byCode}
-          byCharacter={byCharacter}
-          fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(category)}
-          groups={ANALYTICS_GROUPED_CATEGORIES[category]}
-          showStrokes={!ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)}
-        />
-      )}
+      {/* Na laptope stoja grafy vedľa seba (pult je stavaný na širokú plochu),
+          na mobile pod sebou. Generálny graf ide PRVÝ — rovnaké poradie ako
+          v trénerovej analytike. */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+        {categoryShares.length > 0 && (
+          <CategoryShareChart
+            shares={categoryShares}
+            currentCategory={category}
+          />
+        )}
 
-      {/* Generálny graf: podiel tohto zamerania na celkovom odohranom čase
-          oproti ostatným — rovnaký posledný graf ako v trénerovej analytike. */}
-      {categoryShares.length > 0 && (
-        <CategoryShareChart shares={categoryShares} currentCategory={category} />
-      )}
+        {byCode.length === 0 ? (
+          <p className="text-sm text-muted">{t("noDrillsInPeriod")}</p>
+        ) : (
+          <CategoryCharts
+            byCode={byCode}
+            byCharacter={byCharacter}
+            fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(category)}
+            groups={ANALYTICS_GROUPED_CATEGORIES[category]}
+            showStrokes={!ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)}
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -199,6 +199,12 @@ export default async function AnalyticsPage({
         </div>
       </div>
 
+      {/* Generálny graf ide PRVÝ: najprv „koľko z celkového času padlo na toto
+          zameranie", až potom rozpad do kódov a charakteru. */}
+      {categoryShares.length > 0 && (
+        <CategoryShareChart shares={categoryShares} currentCategory={category} />
+      )}
+
       {byCode.length === 0 ? (
         <p className="text-sm text-muted ">
           {t("noDrillsInPeriod")}
@@ -211,12 +217,6 @@ export default async function AnalyticsPage({
           groups={ANALYTICS_GROUPED_CATEGORIES[category]}
           showStrokes={!ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)}
         />
-      )}
-
-      {/* Generálny graf: podiel tohto zamerania na celkovom odohranom čase
-          oproti ostatným — posledný graf v každom zameraní. */}
-      {categoryShares.length > 0 && (
-        <CategoryShareChart shares={categoryShares} currentCategory={category} />
       )}
     </div>
   );
