@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import { DEFAULT_CATEGORY } from "@/lib/drill-options";
 import { LandingPage, getLandingLocale } from "@/components/landing-page";
-import { loadLandingMessages } from "@/lib/landing-locale";
+import { PublicFaceHome } from "@/components/public-face-home";
+import { isPublicFaceHost } from "@/lib/public-face";
+import {
+  loadLandingMessages,
+  loadRozcestnikMessages,
+  rozcestnikLocale,
+} from "@/lib/landing-locale";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
 import { PlayerSwitcher } from "@/components/player-switcher";
@@ -35,6 +42,19 @@ export async function generateMetadata(): Promise<Metadata> {
   const org = await getOrgContext();
   if (org) {
     return { title: org.name, robots: { index: false, follow: false } };
+  }
+
+  // Verejná tvár (plaw.online) má na `/` rozcestník, nie consumer landing —
+  // metadata musia sedieť s tým, čo sa naozaj vykreslí.
+  if (isPublicFaceHost((await headers()).get("host"))) {
+    const t = await loadRozcestnikMessages(
+      rozcestnikLocale(await getLandingLocale()),
+    );
+    return {
+      title: t.metaTitle,
+      description: t.metaDescription,
+      robots: { index: false, follow: false },
+    };
   }
 
   const locale = await getLandingLocale();
@@ -74,6 +94,11 @@ export default async function Home() {
     // chodí pracovať, nie čítať o produkte (marketing žije na plaw.online).
     if (org) {
       redirect("/login");
+    }
+    // Verejná tvár ponúka oba produkty ako rovnocenné dvere; consumer landing
+    // (funkcie, screenshoty, cenník) ostáva na plaw.win, kam prvé dvere vedú.
+    if (isPublicFaceHost((await headers()).get("host"))) {
+      return <PublicFaceHome />;
     }
     return <LandingPage />;
   }

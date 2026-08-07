@@ -1,13 +1,19 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { orgSlugFromHost, resolveOrgBySlug } from "@/lib/org/resolve";
+import {
+  PUBLIC_ONLY_HOSTS,
+  PUBLIC_ORIGIN,
+  normalizeHost,
+} from "@/lib/public-face";
 
-// plaw.online je samostatná verejná tvár projektu — ukazuje LEN landing (/) a
-// návod (/navod). Appka (login, dashboard, rodičovská časť, API) žije na
-// plaw.win. Keďže je to jeden a ten istý Vercel projekt, rozdelenie robíme
-// podľa hostname: na plaw.online povolíme len verejné cesty a všetko ostatné
-// presmerujeme na rovnakú cestu na plaw.win.
-const PUBLIC_ONLY_HOSTS = new Set(["plaw.online", "www.plaw.online"]);
+// plaw.online je samostatná verejná tvár projektu — ukazuje LEN rozcestník (/),
+// návody a stránku pre federácie. Appka (login, dashboard, rodičovská časť,
+// API) žije na plaw.win. Keďže je to jeden a ten istý Vercel projekt,
+// rozdelenie robíme podľa hostname: na plaw.online povolíme len verejné cesty
+// a všetko ostatné presmerujeme na rovnakú cestu na plaw.win.
+// (Zoznam hostiteľov je v `lib/public-face.ts` — pozná ho aj `app/page.tsx`,
+// ktorý podľa neho vykreslí rozcestník namiesto consumer landingu.)
 const PUBLIC_PATHS = new Set(["/", "/navod", "/navod-hrac", "/federacie"]);
 const APP_ORIGIN = "https://plaw.win";
 
@@ -15,7 +21,6 @@ const APP_ORIGIN = "https://plaw.win";
 // tvár. Na plaw.win sa preto presmeruje sem, aby mala jedinú adresu (opak
 // pravidla nižšie, ktoré appkové cesty posiela z plaw.online na plaw.win).
 const PUBLIC_ONLY_PATHS = new Set(["/federacie"]);
-const PUBLIC_ORIGIN = "https://plaw.online";
 const LOGIN_PATH = "/login";
 
 // Prihlásený účet BEZ členstva je typicky čerstvo pozvaný tréner — potrebuje
@@ -51,7 +56,7 @@ function clearAuthCookies(request: NextRequest, response: NextResponse) {
 }
 
 export async function proxy(request: NextRequest) {
-  const host = request.headers.get("host")?.split(":")[0].toLowerCase() ?? "";
+  const host = normalizeHost(request.headers.get("host"));
 
   if (PUBLIC_ONLY_HOSTS.has(host)) {
     const { pathname, search } = request.nextUrl;

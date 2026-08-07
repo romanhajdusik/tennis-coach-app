@@ -116,3 +116,37 @@ export async function loadFederacieMessages(): Promise<FederacieMessages> {
   const messages = await import("../messages/sk/federacie.json");
   return messages.default as FederacieMessages;
 }
+
+// Rozcestník na plaw.online (verejná tvár): dvoje dvere — consumer produkt na
+// plaw.win a federačná stránka. Je len **SK/EN**, nie 9-jazyčný ako landing:
+// za jednými dverami je slovenská stránka pre federácie a rozcestník je len
+// pár viet. Kto má v cookie iný jazyk, dostane angličtinu.
+export type RozcestnikLocale = "sk" | "en";
+
+export function rozcestnikLocale(locale: LandingLocale): RozcestnikLocale {
+  return locale === "sk" ? "sk" : "en";
+}
+
+export type RozcestnikMessages = {
+  metaTitle: string;
+  metaDescription: string;
+  title: string;
+  subtitle: string;
+  consumerTitle: string;
+  consumerText: string;
+  consumerCta: string;
+  orgTitle: string;
+  orgText: string;
+  orgCta: string;
+  guidesTitle: string;
+  guideCoach: string;
+  guidePlayer: string;
+  footerTagline: string;
+};
+
+export async function loadRozcestnikMessages(
+  locale: RozcestnikLocale,
+): Promise<RozcestnikMessages> {
+  const messages = await import(`../messages/${locale}/rozcestnik.json`);
+  return messages.default as RozcestnikMessages;
+}
