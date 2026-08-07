@@ -8,8 +8,14 @@ import { orgSlugFromHost, resolveOrgBySlug } from "@/lib/org/resolve";
 // podľa hostname: na plaw.online povolíme len verejné cesty a všetko ostatné
 // presmerujeme na rovnakú cestu na plaw.win.
 const PUBLIC_ONLY_HOSTS = new Set(["plaw.online", "www.plaw.online"]);
-const PUBLIC_PATHS = new Set(["/", "/navod", "/navod-hrac"]);
+const PUBLIC_PATHS = new Set(["/", "/navod", "/navod-hrac", "/federacie"]);
 const APP_ORIGIN = "https://plaw.win";
+
+// Stránka pre federácie je marketing, nie produkt — patrí výhradne na verejnú
+// tvár. Na plaw.win sa preto presmeruje sem, aby mala jedinú adresu (opak
+// pravidla nižšie, ktoré appkové cesty posiela z plaw.online na plaw.win).
+const PUBLIC_ONLY_PATHS = new Set(["/federacie"]);
+const PUBLIC_ORIGIN = "https://plaw.online";
 const LOGIN_PATH = "/login";
 
 // Prihlásený účet BEZ členstva je typicky čerstvo pozvaný tréner — potrebuje
@@ -55,6 +61,14 @@ export async function proxy(request: NextRequest) {
     }
     // Appkové cesty presmeruj na plaw.win + rovnaká cesta.
     return NextResponse.redirect(new URL(pathname + search, APP_ORIGIN), 307);
+  }
+
+  // Marketingové cesty patria na plaw.online — na produktovej doméne (aj na
+  // org subdoménach) sa tam presmerujú, nech nevzniknú dve adresy tej istej
+  // stránky. Len GET: presmerovanie server action na iný host by poslalo telo.
+  const { pathname: path, search: query } = request.nextUrl;
+  if (PUBLIC_ONLY_PATHS.has(path) && request.method === "GET") {
+    return NextResponse.redirect(new URL(path + query, PUBLIC_ORIGIN), 307);
   }
 
   // <slug>.plaw.win = federačná (B2B) subdoména organizácie (§5.2).

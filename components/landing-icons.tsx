@@ -59,3 +59,14 @@ export function DeviceMobileIcon({ className = base }: IconProps) {
     </svg>
   );
 }
+
+// Vlastná adresa organizácie (<slug>.plaw.win) na stránke /federacie.
+export function GlobeIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={className}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3.5 9.5h17M3.5 14.5h17" strokeLinecap="round" />
+      <path d="M12 3c2.5 2.4 3.8 5.5 3.8 9s-1.3 6.6-3.8 9c-2.5-2.4-3.8-5.5-3.8-9S9.5 5.4 12 3Z" />
+    </svg>
+  );
+}

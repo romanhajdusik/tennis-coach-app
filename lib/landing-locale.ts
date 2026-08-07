@@ -87,3 +87,32 @@ export async function loadNavodHracMessages(
   const messages = await import(`../messages/${locale}/navod-hrac.json`);
   return messages.default as NavodMessages;
 }
+
+// Stránka pre federácie/kluby/akadémie (/federacie) je zámerne LEN po slovensky
+// — prvými B2B zákazníkmi sú slovenské zväzy a kluby a obchod sa vedie po
+// slovensky. Preto nemá `locale` parameter ani prepínač jazykov; keby raz
+// pribudol ďalší jazyk, stačí sem doplniť parameter ako pri návodoch.
+export type FederacieMessages = {
+  metaTitle: string;
+  metaDescription: string;
+  eyebrow: string;
+  backToHome: string;
+  title: string;
+  subtitle: string;
+  featuresTitle: string;
+  features: { title: string; description: string }[];
+  howTitle: string;
+  stepWord: string;
+  steps: { title: string; body: string }[];
+  notesTitle: string;
+  notes: string[];
+  pricingBadge: string;
+  pricingTitle: string;
+  pricingText: string;
+  footerTagline: string;
+};
+
+export async function loadFederacieMessages(): Promise<FederacieMessages> {
+  const messages = await import("../messages/sk/federacie.json");
+  return messages.default as FederacieMessages;
+}

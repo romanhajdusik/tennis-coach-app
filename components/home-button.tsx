@@ -12,6 +12,7 @@ const HIDDEN_PATHS = new Set([
   "/",
   "/navod",
   "/navod-hrac",
+  "/federacie",
   "/login",
   "/register",
   "/parent",

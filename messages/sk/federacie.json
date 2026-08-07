@@ -1,0 +1,61 @@
+{
+  "metaTitle": "P.L.A.W pre federácie, kluby a akadémie",
+  "metaDescription": "Tréningové dáta celej organizácie na jednom mieste: riadiaci pult šéftrénera, porovnanie hráčov, jednotná metodika. Dáta patria organizácii, nie trénerovi.",
+  "eyebrow": "Pre federácie, kluby a akadémie",
+  "backToHome": "Späť na úvod",
+  "title": "Prehľad o tréningu celej organizácie",
+  "subtitle": "Tréneri plánujú a zaznamenávajú tréningy na kurte. Šéftréner vidí v jednom pulte, ako spolupráca reálne beží — a dáta zostávajú organizácii aj po odchode trénera.",
+  "featuresTitle": "Čo organizácia dostane",
+  "features": [
+    {
+      "title": "Dáta patria organizácii",
+      "description": "Hráčov aj celú históriu tréningov vlastní federácia, nie tréner. Keď tréner odíde, hráči ani ich záznamy nikam nemiznú — šéftréner ich pridelí inému trénerovi a pokračuje sa tam, kde sa prestalo."
+    },
+    {
+      "title": "Riadiaci pult šéftrénera",
+      "description": "Na jednej obrazovke: koľko tréningov je dnes, ktorí hráči vypadli z rytmu a ktorý tréner ich má na starosti. Odtiaľ sa dá prekliknúť na hráča, na konkrétny tréning aj na jeho analytiku."
+    },
+    {
+      "title": "Porovnanie hráčov vedľa seba",
+      "description": "Tie isté grafy, aké vidí tréner, pre celú skupinu naraz — podľa trénera aj podľa ročníka. Vidno, kde sa zameranie tréningu rozchádza, bez ručného zbierania čísel."
+    },
+    {
+      "title": "Jednotná metodika",
+      "description": "Kódy cvičení nastavuje federácia raz pre všetkých trénerov. Bez toho meria každý tréner po svojom a čísla naprieč organizáciou sa nedajú porovnať — takto áno."
+    },
+    {
+      "title": "Vlastná adresa organizácie",
+      "description": "Organizácia dostane vlastnú adresu tvaru vasklub.plaw.win s prihlásením len pre svojich ľudí. Dáta jednej organizácie sú oddelené od ostatných."
+    },
+    {
+      "title": "Tréner s viacerými hráčmi",
+      "description": "Trénerská appka je stavaná na telefón, priamo na kurt: rozvrh dňa naprieč všetkými zverencami, prepínanie hráča jedným ťuknutím a upozornenie na toho, kto najdlhšie netrénoval."
+    }
+  ],
+  "howTitle": "Ako to funguje",
+  "stepWord": "Krok",
+  "steps": [
+    {
+      "title": "Organizácia dostane vlastnú adresu",
+      "body": "Nastavíme adresu, založíme organizáciu a určíme počet trénerských licencií. Šéftréner sa prihlási a má pult pripravený."
+    },
+    {
+      "title": "Šéftréner pozve trénerov",
+      "body": "Vygeneruje pozývací kód a pošle ho trénerovi. Tréner si ho raz zadá v aplikácii a tým je v organizácii — nikoho netreba pridávať za neho."
+    },
+    {
+      "title": "Tréneri pracujú, pult ukazuje výsledok",
+      "body": "Tréner plánuje a zaznamenáva tréningy ako inak. Šéftréner nič nezadáva — vidí živý prehľad a analytiku celej organizácie."
+    }
+  ],
+  "notesTitle": "Dobré vedieť",
+  "notes": [
+    "Šéftréner má prehľad len na čítanie — tréningy vytvárajú a upravujú tréneri, takže mu nikto neprepíše dáta a jemu sa nikto nestratí.",
+    "Počet trénerských licencií (sedadiel) si organizácia určuje sama a dá sa kedykoľvek zvýšiť.",
+    "Sledovanie tréningov rodičom či hráčom je funkcia samostatnej verzie pre trénerov — vo federačnom režime sú tréningové dáta interné."
+  ],
+  "pricingBadge": "Cenník",
+  "pricingTitle": "Čoskoro",
+  "pricingText": "Model je jednoduchý: platí sa za počet trénerských licencií. Konkrétne ceny pripravujeme.",
+  "footerTagline": "P.L.A.W — Plan. Log. Analyze. Win."
+}
