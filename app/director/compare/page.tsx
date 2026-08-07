@@ -28,22 +28,25 @@ function isPeriodRangeType(value: string): value is PeriodRangeType {
 
 /**
  * Koľko hráčov postaviť vedľa seba. Stĺpce sledujú počet hráčov (dvaja hráči
- * nemajú prečo stáť v troch stĺpcoch), ale vždy až od šírky, kde sa graf
- * s legendou ešte dá prečítať — preto sa 4. stĺpec otvára až na `2xl`
- * a 5./6. na naozaj širokej ploche. Triedy musia byť napísané doslova,
- * inak ich Tailwind pri builde nenájde.
+ * nemajú prečo stáť v šiestich stĺpcoch) a prahy sú nastavené tak, aby stĺpec
+ * nikdy neklesol pod ~300 px — pri tejto šírke sa koláč aj legenda („GAME
+ * DRILLS — 15 min · 16 %") ešte čítajú.
+ *
+ * **14" notebook (v CSS 1280–1512 px) tak dostane štyri stĺpce.** Prahy sú
+ * odvodené od tohto minima: 4 stĺpce od 1280, 5 od 1600, 6 od 1900.
+ *
+ * Triedy musia byť napísané doslova, inak ich Tailwind pri builde nenájde.
+ * Všetky prahy sú navyše rovnakého druhu (arbitrárny `min-[…]`) — pri miešaní
+ * s pomenovanými (`2xl:`) sa CSS pravidlá nezoradia podľa šírky a širší prah
+ * prebije užší (overené: 1920 px vracalo 4 stĺpce namiesto 5).
  */
-// Všetky prahy sú zapísané rovnakým druhom variantu (arbitrárny `min-[…]`).
-// Miešanie s pomenovanými (`2xl:`) nefunguje: v CSS sa poradie pravidiel
-// nezoradí podľa šírky a širší prah prebije užší — overené, 1920 px vracalo
-// štyri stĺpce namiesto piatich.
 const COLUMN_CLASSES: Record<number, string> = {
   1: "",
-  2: "min-[768px]:grid-cols-2",
-  3: "min-[768px]:grid-cols-2 min-[1280px]:grid-cols-3",
-  4: "min-[768px]:grid-cols-2 min-[1280px]:grid-cols-3 min-[1536px]:grid-cols-4",
-  5: "min-[768px]:grid-cols-2 min-[1280px]:grid-cols-3 min-[1536px]:grid-cols-4 min-[1900px]:grid-cols-5",
-  6: "min-[768px]:grid-cols-2 min-[1280px]:grid-cols-3 min-[1536px]:grid-cols-4 min-[1900px]:grid-cols-5 min-[2280px]:grid-cols-6",
+  2: "min-[640px]:grid-cols-2",
+  3: "min-[640px]:grid-cols-2 min-[1024px]:grid-cols-3",
+  4: "min-[640px]:grid-cols-2 min-[1024px]:grid-cols-3 min-[1280px]:grid-cols-4",
+  5: "min-[640px]:grid-cols-2 min-[1024px]:grid-cols-3 min-[1280px]:grid-cols-4 min-[1600px]:grid-cols-5",
+  6: "min-[640px]:grid-cols-2 min-[1024px]:grid-cols-3 min-[1280px]:grid-cols-4 min-[1600px]:grid-cols-5 min-[1900px]:grid-cols-6",
 };
 
 const MAX_COLUMNS = 6;
