@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getOrgContext } from "@/lib/org/context";
+import { getOrgRole } from "@/lib/org/membership";
 import { CATEGORY_OPTIONS, DRILLS } from "@/lib/drill-options";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
@@ -139,6 +140,65 @@ export async function saveDrillCodes(
     return { error: t("saveFailed") };
   }
 
+  revalidatePath("/drill-codes");
+  return undefined;
+}
+
+/**
+ * Uloženie federačného štandardu kódov — jediné miesto, kde má šéftréner
+ * zápis (§5.5). Riadky vlastní organizácia (`coach_id` je null), takže sa
+ * upsertuje cez `drill_codes_organization_slot`, nie cez trénerov unikát.
+ *
+ * Prečo to vôbec existuje: bez jednotných kódov by sa agregát v pulte nedal
+ * poskladať — každý tréner by mal vlastné a analytika naprieč federáciou by
+ * nebola porovnateľná.
+ */
+export async function saveOrgDrillCodes(
+  category: string,
+  _prevState: DrillCodesFormState,
+  formData: FormData,
+): Promise<DrillCodesFormState> {
+  const t = await getTranslations("DrillCodes.errors");
+
+  if (!isKnownCategory(category)) {
+    return { error: t("invalidCategory") };
+  }
+
+  const codes = formData.getAll("code").map((value) => (value as string).trim());
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const org = await getOrgContext();
+  if (!org || (await getOrgRole(supabase, user.id)) !== "director") {
+    return { error: t("orgReadOnly") };
+  }
+
+  const rows = Array.from({ length: SLOT_COUNT }, (_, index) => ({
+    organization_id: org.id,
+    coach_id: null,
+    category,
+    slot: index + 1,
+    code: codes[index] || null,
+  }));
+
+  const { error } = await supabase
+    .from("drill_codes")
+    .upsert(rows, { onConflict: "organization_id,category,slot" });
+
+  if (error) {
+    return { error: t("saveFailed") };
+  }
+
+  revalidatePath("/director/drill-codes");
+  // Tréneri vyberajú kódy pri zázname cvičenia — zmena štandardu sa musí
+  // prejaviť aj im.
   revalidatePath("/drill-codes");
   return undefined;
 }

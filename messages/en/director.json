@@ -19,6 +19,37 @@
   "coachSummary": "{players, plural, one {# player} other {# players}}",
   "allActive": "all active",
   "attentionTag": "{count, plural, one {# needs attention} other {# need attention}}",
+  "team": {
+    "link": "Coaches and seats",
+    "title": "Coaches",
+    "seats": "{used} of {limit} seats used",
+    "seatsFull": "All seats are taken. Remove a coach to free one up.",
+    "inviteHeading": "Invite a coach",
+    "inviteDescription": "Create a code and send it to the coach (SMS, e-mail...). They enter it once in the app and you'll see them here.",
+    "inviteButton": "Create an invite code",
+    "invitePending": "Creating...",
+    "pendingHeading": "Waiting to be used",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "revoke": "Cancel",
+    "membersHeading": "In the organization",
+    "noMembers": "No coach has joined yet.",
+    "roleDirector": "Head coach",
+    "roleCoach": "Coach",
+    "playersCount": "{count, plural, =0 {no players} one {# player} other {# players}}",
+    "remove": "Remove",
+    "removeConfirm": "Remove {name} from the organization?",
+    "removeNote": "Their players and practices stay with the organization — assign them to another coach afterwards.",
+    "back": "Back to the panel",
+    "errors": {
+      "inviteFailed": "Failed to create the invite code.",
+      "removeFailed": "Failed to make the change."
+    }
+  },
+  "drillCodes": {
+    "link": "Drill codes",
+    "description": "The federation standard for all coaches in {organization}. Coaches only use these codes — thanks to that, analytics is comparable across the whole organization."
+  },
   "compare": {
     "link": "Compare players",
     "title": "Comparison",

@@ -12,9 +12,27 @@ const PUBLIC_PATHS = new Set(["/", "/navod", "/navod-hrac"]);
 const APP_ORIGIN = "https://plaw.win";
 const LOGIN_PATH = "/login";
 
+// Prihlásený účet BEZ členstva je typicky čerstvo pozvaný tréner — potrebuje
+// zadať pozývací kód. Bez tejto výnimky ho stráž nižšie pošle na /login,
+// zahodí mu session a onboarding sa zacyklí: kód nemá kde zadať.
+const JOIN_PATH = "/join";
+
 // Supabase ukladá session do cookies `sb-<ref>-auth-token` (dlhé hodnoty sa
 // delia na `...auth-token.0`, `.1`).
 const AUTH_COOKIE_PATTERN = /^sb-.*auth-token/;
+
+/**
+ * Origin aktuálnej org subdomény. Skladá sa z hlavičky `Host`, nie
+ * z `request.nextUrl` — ten sa v dev serveri Hostom neriadi (ukazuje na
+ * localhost), čím by presmerovanie utieklo z org subdomény. Relatívna cesta
+ * by bola najodolnejšia, ale Next middleware ju v `Location` neprijme.
+ */
+function originOf(request: NextRequest) {
+  const protocol =
+    request.headers.get("x-forwarded-proto") ??
+    request.nextUrl.protocol.replace(":", "");
+  return `${protocol}://${request.headers.get("host")}`;
+}
 
 /** Zahodí session na TOMTO hostname (cookies sú host-only, inde ostáva platná). */
 function clearAuthCookies(request: NextRequest, response: NextResponse) {
@@ -82,6 +100,21 @@ async function handleOrgRequest(request: NextRequest, slug: string) {
     const { data: currentOrgId } = await supabase.rpc("current_org_id");
 
     if (currentOrgId !== org.id) {
+      // Účet BEZ akéhokoľvek členstva pustíme na /join, aby mohol zadať
+      // pozývací kód — session mu pritom nechávame, bez nej by claim nemal
+      // koho pripojiť. Toto sa NETÝKA člena inej organizácie (ten má
+      // currentOrgId vyplnené): toho aj naďalej vyhodíme, nech sa tenanty
+      // nemiešajú. Hranicou dát je aj tak RLS — claim si oprávnenie overuje
+      // sám (kód musí sedieť, účet nesmie mať osobné dáta, sedadlo musí byť
+      // voľné).
+      if (currentOrgId === null) {
+        if (pathname === JOIN_PATH || pathname === LOGIN_PATH) {
+          return response;
+        }
+        const joinUrl = new URL(JOIN_PATH, originOf(request));
+        return NextResponse.redirect(joinUrl, 307);
+      }
+
       // Cudziu session na tejto subdoméne zahodíme a necháme návštevníka na
       // prihlásení TEJTO organizácie. Skoršia verzia ho posielala na
       // plaw.win, čím vznikla slepá ulička: stráž presmerovala aj /login,
@@ -96,18 +129,7 @@ async function handleOrgRequest(request: NextRequest, slug: string) {
         return clearAuthCookies(request, response);
       }
 
-      // Cieľ skladáme z hlavičky Host, nie z `request.nextUrl` — ten sa
-      // v dev serveri neriadi Hostom (ukazuje na localhost), čím by
-      // presmerovanie utieklo z org subdomény. Relatívna cesta by bola
-      // najodolnejšia, ale Next middleware ju v Location neprijme
-      // (vyžaduje absolútnu URL).
-      const protocol =
-        request.headers.get("x-forwarded-proto") ??
-        request.nextUrl.protocol.replace(":", "");
-      const loginUrl = new URL(
-        LOGIN_PATH,
-        `${protocol}://${request.headers.get("host")}`,
-      );
+      const loginUrl = new URL(LOGIN_PATH, originOf(request));
 
       return clearAuthCookies(request, NextResponse.redirect(loginUrl, 307));
     }

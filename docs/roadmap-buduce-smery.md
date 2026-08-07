@@ -392,10 +392,26 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
 - **Generálny graf ide vo všetkých analytikách PRVÝ** (predtým posledný) — najprv „koľko
   z celkového času padlo na toto zameranie", až potom rozpad.
 
+**Hotové (2026-08-07, siedma dávka) — onboarding trénerov do organizácie:**
+- **`/director/team`:** šéftréner vytvorí pozývací kód, vidí obsadené sedadlá (počítajú sa len
+  tréneri, on sám sedadlo neberie) a môže trénera odobrať — **jeho hráči a tréningy ostávajú
+  organizácii** a v pulte sa presunú pod „No longer in the organization".
+- **`/join`:** stránka, kde pozvaný zadá kód. **Odhalený blokátor: bez nej sa do federácie
+  nedalo vôbec vstúpiť** — stráž členstva v `proxy.ts` vyhodila prihlásený účet bez členstva
+  na `/login` a zahodila mu session, takže kód nemal kde zadať. Stráž teraz rozlišuje účet bez
+  členstva (→ `/join`, session ostáva) od člena inej organizácie (→ von, session sa zahodí).
+- **`/director/drill-codes`:** šéftréner edituje federačný štandard, tréner ho na `/drill-codes`
+  naďalej iba číta. Vyžiadalo si to **migráciu `20260807090000_drill_codes_org_upsert.sql`** —
+  pôvodný unikát bol čiastočný index, ktorý Postgres pri `ON CONFLICT` neinferuje, takže upsert
+  padal. (Na produkcii spustiť ručne.)
+- Overené 13 klikacími scenármi end-to-end (kód → pripojenie → člen v pulte → federačný kód
+  u trénera) + 11 RLS (pozývať smie len šéftréner, priamy zápis cudzieho účtu zamietnutý, claim
+  kontroluje kód/osobné dáta/sedadlá, štandard kódov mení len šéftréner). Regresné sady zelené.
+- **Pozn. k lokálnemu vývoju:** do `allowedDevOrigins` pribudlo `*.plaw.win`. Bez toho sa org
+  subdoména v dev serveri **nehydratuje** a UI závislé od JS ticho nefunguje.
+
 **Nehotové (ďalšie kroky, v tomto poradí):**
-1. Onboarding: admin založí org, šéftréner pozýva trénerov kódom; `/drill-codes` v org režime
-   read-only pre trénera, editovateľné pre šéftrénera.
-2. Stripe „sedadlá" (`seat_limit` už v schéme).
+1. Stripe „sedadlá" (`seat_limit` už v schéme).
 
 **Pozor pri nasadení:** migrácie sa na produkciu púšťajú ručne cez Supabase SQL Editor
 (DB základ bol takto nasadený 2026-08-03). Organizácia na produkcii vzniká až vložením riadku

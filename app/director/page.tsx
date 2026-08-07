@@ -22,6 +22,8 @@ import {
 export default async function DirectorPage() {
   const t = await getTranslations("Director");
   const tCompare = await getTranslations("Director.compare");
+  const tTeam = await getTranslations("Director.team");
+  const tDrillCodes = await getTranslations("Director.drillCodes");
   const { supabase, org } = await requireDirector();
   const timeZone = await getTimeZone();
 
@@ -54,12 +56,28 @@ export default async function DirectorPage() {
             })}
           </p>
         </div>
-        <Link
-          href="/director/compare"
-          className="flex-none rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-        >
-          {tCompare("link")}
-        </Link>
+        {/* Bez `flex-none`: na mobile sa tri tlačidlá musia zalomiť, inak
+            hlavička pretečie cez viewport. */}
+        <nav className="flex min-w-0 flex-wrap gap-2">
+          <Link
+            href="/director/compare"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
+            {tCompare("link")}
+          </Link>
+          <Link
+            href="/director/team"
+            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground"
+          >
+            {tTeam("link")}
+          </Link>
+          <Link
+            href="/director/drill-codes"
+            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground"
+          >
+            {tDrillCodes("link")}
+          </Link>
+        </nav>
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">

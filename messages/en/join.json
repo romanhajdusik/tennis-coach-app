@@ -1,0 +1,16 @@
+{
+  "title": "Join {organization}",
+  "description": "Your head coach sends you an invite code. Enter it once and you'll see the players assigned to you.",
+  "codeLabel": "Invite code",
+  "codePlaceholder": "ABCD-2345",
+  "submit": "Join",
+  "submitPending": "Joining...",
+  "logout": "Sign in with a different account",
+  "errors": {
+    "missingCode": "Enter the invite code.",
+    "invalidCode": "This code is not valid or has already been used.",
+    "alreadyMember": "This account already belongs to an organization.",
+    "seatLimitReached": "The organization has no free seats left. Ask your head coach.",
+    "hasPersonalData": "This account already manages its own players, so it cannot join an organization. Create a separate account for the federation."
+  }
+}

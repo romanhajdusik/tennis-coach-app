@@ -126,6 +126,14 @@ Na org subdoméne je domovská stránka `/` **denný domov „Dnes"** ([`compone
 - **Dotaz na tréningy je ohraničený oknom 60 dní dozadu** (`PRACTICE_LOOKBACK_DAYS`), filtrované priamo v SQL cez `planned_data->>date`. Neruš to na „načítaj všetko": pri desiatich hráčoch a rokoch histórie to narazí na `max_rows` PostgRESTu.
 - **Ťuknutie na tréning v rozvrhu zároveň prepne vybraného hráča** (`selectPlayerAndOpen` v [`lib/actions/selected-player.ts`](lib/actions/selected-player.ts)) — inak by detail tréningu patril jednému hráčovi, ale zvyšok appky ukazoval iného.
 
+### Onboarding do organizácie (od 2026-08-07)
+
+Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu cudzí účet priradiť nemôže (členstvo je dobrovoľné, drží to trigger `enforce_membership_rules`).
+
+- **`/director/team`** — šéftréner vytvorí kód (`createInvite`), pošle ho mimo appky, vidí obsadené sedadlá a môže trénera odobrať. **Odobratie nemaže dáta:** hráči aj tréningy ostávajú organizácii a v pulte sa objavia pod „No longer in the organization", kým ich niekto neprevezme. Proti `seat_limit` sa počítajú **len tréneri** — šéftréner sedadlo neberie.
+- **`/join`** — jediná cesta dnu pre pozvaného. **Bez tejto stránky bol onboarding zacyklený:** stráž členstva v `proxy.ts` vyhodila prihlásený účet bez členstva na `/login` a zahodila mu session, takže kód nemal kde zadať. Stráž teraz rozlišuje: účet **bez akéhokoľvek členstva** → `/join` (session ostáva, aby mal claim koho pripojiť), účet **inej organizácie** → naďalej von + zahodenie session (tenanty sa nemiešajú).
+- **`/director/drill-codes`** — jediné miesto, kde má šéftréner zápis (§5.5); tréner tie isté kódy na `/drill-codes` iba číta. Ukladá `saveOrgDrillCodes` (org riadok = `coach_id` null). **Pozor:** upsert potreboval nečiastočný unikát — migrácia `20260807090000_drill_codes_org_upsert.sql` nahradila pôvodný čiastočný index (`where organization_id is not null`), lebo taký Postgres pri `ON CONFLICT` neinferuje.
+
 ### Riadiaci pult šéftrénera `/director` (federačný režim, od 2026-08-06)
 
 Šéftréner (rola `director`) má na org subdoméne **read-only pult** nad celou organizáciou — po prihlásení naň `/` rovno presmeruje (pridelených hráčov nemá, nástenka „Dnes" by bola prázdna). Vstup stráži [`app/director/guard.ts`](app/director/guard.ts) (`requireDirector`): mimo org subdomény a pre rolu `coach` presmeruje na `/`. **Je to smerovanie, nie bezpečnostná hranica — tou ostáva RLS** (§5.7: director SELECT-only).
@@ -282,6 +290,7 @@ Na org subdoméne je domovská stránka `/` **denný domov „Dnes"** ([`compone
 
 ## Testovanie na mobile (lokálna sieť)
 
+- **Lokálny vývoj federačného režimu:** org kontext sa odvodzuje výhradne z hostname, takže sa musí testovať cez subdoménu namapovanú na dev server (v prehliadači napr. `chromium.launch({ args: ["--host-resolver-rules=MAP <slug>.plaw.win 127.0.0.1:3000"] })`). Preto je v `allowedDevOrigins` aj `*.plaw.win` — **bez toho Next zablokuje dev požiadavky z toho hostname a stránka sa nehydratuje**, takže všetko závislé od JS ticho nefunguje (klik na tlačidlo nespraví nič). Prejaví sa to len v dev, nie na produkcii.
 - `next.config.ts` má `allowedDevOrigins` s LAN IP adresou trénerovho laptopu — Next.js dev server inak blokuje cross-origin požiadavky z iného zariadenia v sieti (napr. telefónu), čo potichu rozbije celú klientskú interaktivitu (hydratáciu), nielen HMR. Pri zmene siete/IP treba adresu v `allowedDevOrigins` aktualizovať.
 - `app/layout.tsx` má `<body className="flex flex-col">`. Každý stránkový root div preto **musí** mať popri `max-w-md` aj `w-full min-w-0`, inak ho širší vnútorný obsah (napr. netransformovateľný riadok záložiek) roztiahne cez celý viewport a spôsobí horizontálne posúvanie na úzkych obrazovkách — over toto ako prvé, ak niekedy nahlásia horizontálny scroll.
 
