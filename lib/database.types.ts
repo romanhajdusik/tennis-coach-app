@@ -560,6 +560,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_player_to_coach: {
+        Args: { p_coach_id: string; p_player_id: string }
+        Returns: undefined
+      }
       claim_organization_invite: {
         Args: { p_code: string }
         Returns: {

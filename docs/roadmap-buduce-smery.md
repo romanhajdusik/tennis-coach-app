@@ -410,6 +410,29 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
 - **Pozn. k lokálnemu vývoju:** do `allowedDevOrigins` pribudlo `*.plaw.win`. Bez toho sa org
   subdoména v dev serveri **nehydratuje** a UI závislé od JS ticho nefunguje.
 
+**Hotové (2026-08-07, ôsma dávka) — preradenie hráča inému trénerovi:**
+- **Zavretá diera v offboardingu.** §5.4 aj UI sľubovali, že hráči odídeného trénera
+  „ostávajú organizácii a dajú sa prideliť inému trénerovi" — mechanizmus na to však
+  neexistoval: tréner vidí aj upravuje len riadky s `coach_id = auth.uid()` (hráča kolegu
+  teda ani nevidel) a šéftréner je SELECT-only. Po odobratí trénera boli hráči aj história
+  trvalo nedostupné pre prácu, čo je presne to, čomu má org vlastníctvo dát brániť.
+- **Riešené `security definer` RPC `assign_player_to_coach`** (migrácia `20260807100000`),
+  nie uvoľnením RLS: policy na UPDATE nevie obmedziť, KTORÝ stĺpec sa mení (v jednej policy
+  sa nedá porovnať starý a nový riadok), takže „director smie UPDATE na players" by otvorilo
+  aj mená a archiváciu. Funkcia robí jednu vec — presunie priradenie — a read-only dohľad
+  podľa §5.7 ostáva inak nedotknutý.
+- **Presúva sa priradenie na všetkých riadkoch hráča** (players, sessions, session_drills,
+  metrics_and_tests). Bez toho by nový tréner videl hráča, ale nie jeho históriu (RLS trénera
+  je všade `coach_id = auth.uid()`). Dôsledok, ktorý treba mať na pamäti: **nikde neostáva
+  stopa, kto tréning reálne viedol** — ak to federácia bude potrebovať, patrí na to nový
+  stĺpec (napr. `conducted_by`), nie návrat k `coach_id` ako autorstvu.
+- UI: v pulte pri skupine „No longer in the organization" (odteraz **vždy rozbalenej**)
+  a na `/director/players/[id]` aj pre bežné rebalansovanie.
+- Overené 12 RLS scenármi (tréner nepreradí, nečlenovi ani šéftrénerovi sa hráč prideliť nedá,
+  hráč mimo org neprejde, história prejde celá, nový tréner vidí, starý už nie) a 9 klikacími
+  end-to-end (odobratie trénera → skupina bez trénera → prevzatie → hráč v rosteri nového
+  trénera). Regresné sady 26/24/10 zelené.
+
 **Nehotové (ďalšie kroky, v tomto poradí):**
 1. Stripe „sedadlá" (`seat_limit` už v schéme).
 

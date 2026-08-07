@@ -3,6 +3,7 @@ import { getTranslations, getTimeZone } from "next-intl/server";
 import { logout } from "@/lib/actions/auth";
 import { getDirectorDashboard, type DirectorPlayer } from "@/lib/org/director";
 import { requireDirector } from "./guard";
+import { AssignPlayer } from "./assign-player";
 import {
   AttentionDot,
   ATTENTION_TEXT_CLASSES,
@@ -39,6 +40,12 @@ export default async function DirectorPage() {
   }
 
   const attentionCount = dashboard.attention.length;
+
+  // Komu sa dá hráč prideliť — len aktívni tréneri (skupina po odídenom
+  // trénerovi `userId` nemá).
+  const assignable = dashboard.coaches
+    .filter((coach) => coach.userId)
+    .map((coach) => ({ userId: coach.userId as string, name: coach.name }));
 
   return (
     // Pult je nástroj pre laptop/tablet (na rozdiel od trénerovej appky, ktorá
@@ -135,7 +142,10 @@ export default async function DirectorPage() {
           dashboard.coaches.map((coach) => (
             <details
               key={coach.userId ?? "former"}
-              open={coach.attentionCount > 0}
+              // Skupina po odídenom trénerovi je vždy rozbalená: s tými hráčmi
+              // nikto nepracuje, kým ich niekto neprevezme — zbalená by sa
+              // stratila medzi trénermi (a s ňou aj výber nového trénera).
+              open={coach.attentionCount > 0 || !coach.userId}
               className="rounded-xl border border-border bg-surface p-4"
             >
               <summary className="cursor-pointer list-none">
@@ -171,12 +181,23 @@ export default async function DirectorPage() {
               ) : (
                 <ul className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
                   {coach.players.map((entry) => (
-                    <li key={entry.player.id}>
+                    <li key={entry.player.id} className="flex flex-col gap-2">
                       <PlayerCard
                         entry={entry}
                         last={labels.get(entry.player.id)?.last ?? ""}
                         next={labels.get(entry.player.id)?.next ?? ""}
                       />
+                      {/* Prideliť sa dá ktokoľvek (cez profil hráča), ale tu
+                          na to treba siahnuť hneď — bez trénera s hráčom
+                          nikto nepracuje. Formulár je mimo karty: karta je
+                          `<a>` a formulár sa doň vnoriť nesmie. */}
+                      {!coach.userId && (
+                        <AssignPlayer
+                          playerId={entry.player.id}
+                          coaches={assignable}
+                          currentCoachId={null}
+                        />
+                      )}
                     </li>
                   ))}
                 </ul>

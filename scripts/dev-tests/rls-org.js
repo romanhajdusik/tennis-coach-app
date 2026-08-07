@@ -144,6 +144,87 @@ async function main() {
   const { data: orgs } = await director.from("organizations").select("id");
   check("vidí len vlastnú organizáciu", (orgs ?? []).length === 1);
 
+  section("9) Preradenie hráča (assign_player_to_coach)");
+  const { data: coachUsers } = await db
+    .from("organization_members")
+    .select("user_id, role")
+    .eq("organization_id", org.id)
+    .eq("status", "active");
+  const coachIds = (coachUsers ?? []).filter((m) => m.role === "coach").map((m) => m.user_id);
+  const directorId = (coachUsers ?? []).find((m) => m.role === "director").user_id;
+  const [coachA, coachB] = coachIds;
+
+  const { data: moved } = await db
+    .from("players")
+    .select("id, name")
+    .eq("coach_id", coachA)
+    .eq("is_active", true)
+    .order("name")
+    .limit(1)
+    .single();
+
+  // Koľko riadkov histórie hráč má — po preradení sa musí presunúť všetko,
+  // inak nový tréner uvidí hráča, ale nie jeho tréningy.
+  const { data: hisSessions } = await db.from("sessions").select("id").eq("player_id", moved.id);
+  const sessionIds = (hisSessions ?? []).map((s) => s.id);
+  const { count: drillCount } = await db
+    .from("session_drills")
+    .select("id", { count: "exact", head: true })
+    .in("session_id", sessionIds.length ? sessionIds : ["00000000-0000-0000-0000-000000000000"]);
+
+  const byCoach = await coach.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: coachB });
+  check("tréner preradiť nemôže", /not_director/.test(byCoach.error?.message ?? ""), byCoach.error?.message ?? "PRESLO!");
+
+  const toOutsider = await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: outsider.id });
+  check("nečlenovi sa hráč prideliť nedá", /target_not_coach/.test(toOutsider.error?.message ?? ""), toOutsider.error?.message ?? "PRESLO!");
+
+  const toDirector = await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: directorId });
+  check("šéftrénerovi samému sa hráč prideliť nedá", /target_not_coach/.test(toDirector.error?.message ?? ""), toDirector.error?.message ?? "PRESLO!");
+
+  const { data: personal } = await db
+    .from("players")
+    .select("id")
+    .is("organization_id", null)
+    .limit(1)
+    .maybeSingle();
+  if (personal) {
+    const foreignPlayer = await director.rpc("assign_player_to_coach", { p_player_id: personal.id, p_coach_id: coachB });
+    check("hráča mimo organizácie nepreradí", /player_not_in_org/.test(foreignPlayer.error?.message ?? ""), foreignPlayer.error?.message ?? "PRESLO!");
+  }
+
+  const ok = await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: coachB });
+  check(`šéftréner preradí hráča (${moved.name})`, ok.error === null, ok.error?.message);
+
+  const { data: afterPlayer } = await db.from("players").select("coach_id").eq("id", moved.id).single();
+  check("hráč patrí novému trénerovi", afterPlayer.coach_id === coachB);
+  const { count: movedSessions } = await db
+    .from("sessions")
+    .select("id", { count: "exact", head: true })
+    .eq("player_id", moved.id)
+    .eq("coach_id", coachB);
+  check(`história prešla s ním (${movedSessions}/${sessionIds.length} tréningov)`, movedSessions === sessionIds.length);
+  const { count: movedDrills } = await db
+    .from("session_drills")
+    .select("id", { count: "exact", head: true })
+    .in("session_id", sessionIds.length ? sessionIds : ["00000000-0000-0000-0000-000000000000"])
+    .eq("coach_id", coachB);
+  check(`cvičenia prešli s ním (${movedDrills}/${drillCount})`, movedDrills === drillCount);
+
+  // Prístup sa riadi RLS, nie appkou — preto sa pozeráme cez session oboch trénerov.
+  const newCoach = await signIn("coach2-today@test.local");
+  const { data: seenByNew } = await newCoach.from("players").select("id").eq("id", moved.id);
+  check("nový tréner hráča vidí", (seenByNew ?? []).length === 1);
+  const { data: seenSessions } = await newCoach.from("sessions").select("id").eq("player_id", moved.id);
+  check("nový tréner vidí aj jeho históriu", (seenSessions ?? []).length === sessionIds.length, `${(seenSessions ?? []).length}/${sessionIds.length}`);
+  const oldCoach = await signIn("coach-today@test.local");
+  const { data: seenByOld } = await oldCoach.from("players").select("id").eq("id", moved.id);
+  check("pôvodný tréner ho už nevidí", (seenByOld ?? []).length === 0);
+
+  // vrátenie do pôvodného stavu, aby ostatné sady sedeli
+  await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: coachA });
+  const { data: restored } = await db.from("players").select("coach_id").eq("id", moved.id).single();
+  check("preradenie sa dá vrátiť späť", restored.coach_id === coachA);
+
   // upratanie
   await db.from("organization_members").delete().eq("invite_code", "RLS-TEST1");
   await db.from("drill_codes").delete().eq("code", "RLS-VOL");

@@ -19,6 +19,22 @@
   "coachSummary": "{players, plural, one {# player} other {# players}}",
   "allActive": "all active",
   "attentionTag": "{count, plural, one {# needs attention} other {# need attention}}",
+  "assign": {
+    "label": "Assign to a coach",
+    "placeholder": "Pick a coach...",
+    "submit": "Assign",
+    "pending": "Assigning...",
+    "heading": "Assigned coach",
+    "description": "The player, their practices and their history move to the chosen coach. Nothing is deleted — the data belongs to the organization.",
+    "current": "Currently: {name}",
+    "noCoaches": "No coach to assign to. Invite one first.",
+    "errors": {
+      "missingCoach": "Pick a coach first.",
+      "targetNotCoach": "That account is no longer an active coach of the organization.",
+      "playerNotInOrg": "This player does not belong to the organization.",
+      "failed": "Failed to reassign the player."
+    }
+  },
   "team": {
     "link": "Coaches and seats",
     "title": "Coaches",
@@ -39,7 +55,7 @@
     "playersCount": "{count, plural, =0 {no players} one {# player} other {# players}}",
     "remove": "Remove",
     "removeConfirm": "Remove {name} from the organization?",
-    "removeNote": "Their players and practices stay with the organization — assign them to another coach afterwards.",
+    "removeNote": "Their players and practices stay with the organization — assign them to another coach in the panel afterwards.",
     "back": "Back to the panel",
     "errors": {
       "inviteFailed": "Failed to create the invite code.",

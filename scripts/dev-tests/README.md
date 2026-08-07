@@ -27,9 +27,9 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 |---|---|
 | `http-coach.js` | Nástenka „Dnes", roster so stavmi, nedotknutý samostatný režim |
 | `http-director.js` | Smerovanie podľa roly, obsah pultu, drill-in, tenant izolácia |
-| `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy |
+| `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča |
 | `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike |
-| `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky |
+| `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov |
 
 ```bash
 node scripts/dev-tests/http-coach.js      # a ostatné rovnako
@@ -69,6 +69,10 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   Na cieľ choď priamo cez `goto()`; samotné presmerovanie overuje HTTP sada.
 - **Vybraný hráč je stav.** Scenár, ktorý prepne hráča (napr. cez upozornenie),
   ovplyvní všetko ďalšie — analytika sa viaže na vybraného hráča.
+- **Scenáre, ktoré menia členstvo alebo priradenie hráča, musia po sebe upratať
+  v `finally`.** `browser-director.js` trénera odoberá a zase vracia; keď taký
+  scenár spadne uprostred, ďalší beh sa rozsype už na počte sedadiel. Preto sa
+  členstvá seedovaných trénerov navyše obnovujú aj na štarte sady.
 
 ## Účty
 
