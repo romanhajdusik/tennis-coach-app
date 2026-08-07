@@ -6,6 +6,7 @@ import {
   getDefaultPeriodValue,
   getPeriodRange,
   getPlayerCategoryAnalytics,
+  getPlayerCategoryMinuteShares,
   getPreviousYearValue,
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
@@ -16,6 +17,7 @@ import {
   CATEGORY_OPTIONS,
 } from "@/lib/drill-options";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
+import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
 const RANGE_VALUES: PeriodRangeType[] = ["week", "month", "quarter", "year"];
 
@@ -85,6 +87,12 @@ export default async function DirectorPlayerAnalyticsPage({
     supabase,
     player,
     category,
+    start,
+    end,
+  );
+  const categoryShares = await getPlayerCategoryMinuteShares(
+    supabase,
+    player.id,
     start,
     end,
   );
@@ -211,6 +219,12 @@ export default async function DirectorPlayerAnalyticsPage({
           groups={ANALYTICS_GROUPED_CATEGORIES[category]}
           showStrokes={!ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)}
         />
+      )}
+
+      {/* Generálny graf: podiel tohto zamerania na celkovom odohranom čase
+          oproti ostatným — rovnaký posledný graf ako v trénerovej analytike. */}
+      {categoryShares.length > 0 && (
+        <CategoryShareChart shares={categoryShares} currentCategory={category} />
       )}
     </div>
   );
