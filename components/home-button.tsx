@@ -17,6 +17,8 @@ const HIDDEN_PATHS = new Set([
   "/parent",
   "/parent/login",
   "/director",
+  // Pozvaný tréner ešte nemá kam ísť „domov" — `/` ho aj tak vráti sem.
+  "/join",
 ]);
 
 // Globálne, vždy viditeľné plávajúce tlačidlo na rýchly návrat na rozcestník
