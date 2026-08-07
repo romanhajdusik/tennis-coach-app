@@ -26,6 +26,28 @@ function isPeriodRangeType(value: string): value is PeriodRangeType {
   return RANGE_VALUES.includes(value as PeriodRangeType);
 }
 
+/**
+ * Koľko hráčov postaviť vedľa seba. Stĺpce sledujú počet hráčov (dvaja hráči
+ * nemajú prečo stáť v troch stĺpcoch), ale vždy až od šírky, kde sa graf
+ * s legendou ešte dá prečítať — preto sa 4. stĺpec otvára až na `2xl`
+ * a 5./6. na naozaj širokej ploche. Triedy musia byť napísané doslova,
+ * inak ich Tailwind pri builde nenájde.
+ */
+// Všetky prahy sú zapísané rovnakým druhom variantu (arbitrárny `min-[…]`).
+// Miešanie s pomenovanými (`2xl:`) nefunguje: v CSS sa poradie pravidiel
+// nezoradí podľa šírky a širší prah prebije užší — overené, 1920 px vracalo
+// štyri stĺpce namiesto piatich.
+const COLUMN_CLASSES: Record<number, string> = {
+  1: "",
+  2: "min-[768px]:grid-cols-2",
+  3: "min-[768px]:grid-cols-2 min-[1280px]:grid-cols-3",
+  4: "min-[768px]:grid-cols-2 min-[1280px]:grid-cols-3 min-[1536px]:grid-cols-4",
+  5: "min-[768px]:grid-cols-2 min-[1280px]:grid-cols-3 min-[1536px]:grid-cols-4 min-[1900px]:grid-cols-5",
+  6: "min-[768px]:grid-cols-2 min-[1280px]:grid-cols-3 min-[1536px]:grid-cols-4 min-[1900px]:grid-cols-5 min-[2280px]:grid-cols-6",
+};
+
+const MAX_COLUMNS = 6;
+
 function tabClass(active: boolean) {
   return active
     ? "shrink-0 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
@@ -116,7 +138,9 @@ export default async function DirectorComparePage({
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-6xl flex-col gap-6 px-4 py-8">
+    // Porovnanie ide zámerne širšie než zvyšok pultu — pri piatich-šiestich
+    // hráčoch vedľa seba je každý pixel šírky stĺpec navyše.
+    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-[150rem] flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h1 className="truncate text-xl font-semibold text-foreground">
@@ -222,7 +246,11 @@ export default async function DirectorComparePage({
       {players.length === 0 ? (
         <p className="text-sm text-muted">{t("groupEmpty")}</p>
       ) : (
-        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <div
+          className={`grid grid-cols-1 items-start gap-4 ${
+            COLUMN_CLASSES[Math.min(players.length, MAX_COLUMNS)]
+          }`}
+        >
           {players.map((entry) => {
             const stats = analytics.get(entry.player.id);
             return (
