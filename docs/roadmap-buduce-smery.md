@@ -433,8 +433,21 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
   end-to-end (odobratie trénera → skupina bez trénera → prevzatie → hráč v rosteri nového
   trénera). Regresné sady 26/24/10 zelené.
 
-**Nehotové (ďalšie kroky, v tomto poradí):**
-1. Stripe „sedadlá" (`seat_limit` už v schéme).
+**Sedadlá — ROZHODNUTÉ 2026-08-07: fakturácia MIMO appky, žiadny Stripe pre B2B.**
+Federácia dostane faktúru; appka sedadlá len **vynucuje** (trigger
+`enforce_membership_rules` pri pripojení trénera) a **zobrazuje** (`/director/team`).
+Predaj ďalších sedadiel = jeden `UPDATE organizations set seat_limit`. Appkový kód si to
+nevyžiadalo — mechanizmus existoval už od DB základu; chýbal len **runbook na provisioning**,
+ktorý je odteraz v [`onboarding-organizacie.md`](onboarding-organizacie.md) (Vercel + DNS +
+SQL na organizáciu a šéftrénera, predaj sedadiel, overené pasce).
+**`organizations.subscription_status` appka nikde nečíta a nič podľa neho neblokuje** — je to
+zatiaľ len administratívna evidencia. Keby sa to malo vynucovať, je to vedomá zmena (a treba
+rozhodnúť read-only vs. úplné zamknutie; zamknúť federáciu uprostred sezóny je tvrdé).
+Stripe tak ostáva len téma **consumer** produktu na `plaw.win` (Fáza 3 v CLAUDE.md:
+Checkout + Customer Portal pre samostatných 1:1 trénerov), nie federačnej vrstvy.
+
+**Federačná vrstva (§5) je tým funkčne kompletná** — subdomény, trénerova appka 1:N,
+„Dnes" + roster, pult, porovnanie, onboarding, preradenie hráča, sedadlá.
 
 **Pozor pri nasadení:** migrácie sa na produkciu púšťajú ručne cez Supabase SQL Editor
 (DB základ bol takto nasadený 2026-08-03). Organizácia na produkcii vzniká až vložením riadku
