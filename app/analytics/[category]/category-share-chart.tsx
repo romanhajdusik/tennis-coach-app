@@ -69,10 +69,18 @@ export function CategoryShareChart({
 }) {
   const t = useTranslations("Analytics");
 
+  // Aktuálne zameranie je v grafe VŽDY, aj keď v období nemá ani minútu —
+  // vtedy sa vypíše s nulou. Bez toho by sa nedalo odlíšiť „toto zameranie
+  // sa netrénovalo" od „zameranie tu vôbec nefiguruje" (požiadavka z pultu:
+  // pri každom zameraní musí byť generálny graf úplný).
+  const data = shares.some((entry) => entry.category === currentCategory)
+    ? shares
+    : [...shares, { category: currentCategory, minutes: 0, percentage: 0 }];
+
   // Ak aktuálne zameranie v období nemá žiadne minúty, nezvýrazňujeme nič —
   // graf slúži ako neutrálny prehľad rozloženia (inak by boli stlmené všetky).
   const highlightCurrent = shares.some(
-    (entry) => entry.category === currentCategory,
+    (entry) => entry.category === currentCategory && entry.minutes > 0,
   );
   const opacityFor = (category: string) =>
     !highlightCurrent || category === currentCategory ? 1 : 0.4;
@@ -85,7 +93,7 @@ export function CategoryShareChart({
       <ResponsiveContainer width="100%" height={240}>
         <PieChart>
           <Pie
-            data={shares}
+            data={data}
             dataKey="minutes"
             nameKey="category"
             innerRadius="55%"
@@ -94,7 +102,7 @@ export function CategoryShareChart({
             stroke="var(--surface)"
             strokeWidth={2}
           >
-            {shares.map((entry) => (
+            {data.map((entry) => (
               <Cell
                 key={entry.category}
                 fill={categoryColor(entry.category)}
@@ -106,7 +114,7 @@ export function CategoryShareChart({
         </PieChart>
       </ResponsiveContainer>
       <ul className="flex flex-col gap-1.5 text-xs">
-        {shares.map((entry) => {
+        {data.map((entry) => {
           const isCurrent = entry.category === currentCategory;
           return (
             <li

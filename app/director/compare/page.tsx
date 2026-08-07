@@ -244,26 +244,31 @@ export default async function DirectorComparePage({
                   )}
                 </div>
 
+                {/* Generálny graf ide prvý a vykreslí sa vždy, keď hráč
+                    v období vôbec trénoval — aj keď práve toto zameranie nemá
+                    ani minútu (vypíše sa v ňom s nulou). Rozpad kódov sa
+                    prirodzene ukáže až vtedy, keď je čo rozpadať. */}
+                {stats && stats.shares.length > 0 && (
+                  <CategoryShareChart
+                    shares={stats.shares}
+                    currentCategory={category}
+                  />
+                )}
+
                 {!stats || stats.byCode.length === 0 ? (
                   <p className="text-sm text-muted">{t("playerNoData")}</p>
                 ) : (
-                  <>
-                    <CategoryShareChart
-                      shares={stats.shares}
-                      currentCategory={category}
-                    />
-                    <CategoryCharts
-                      byCode={stats.byCode}
-                      byCharacter={stats.byCharacter}
-                      fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(
-                        category,
-                      )}
-                      groups={ANALYTICS_GROUPED_CATEGORIES[category]}
-                      showStrokes={
-                        !ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)
-                      }
-                    />
-                  </>
+                  <CategoryCharts
+                    byCode={stats.byCode}
+                    byCharacter={stats.byCharacter}
+                    fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(
+                      category,
+                    )}
+                    groups={ANALYTICS_GROUPED_CATEGORIES[category]}
+                    showStrokes={
+                      !ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)
+                    }
+                  />
                 )}
               </section>
             );
