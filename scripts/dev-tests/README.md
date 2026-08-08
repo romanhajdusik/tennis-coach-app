@@ -28,6 +28,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `http-coach.js` | Nástenka „Dnes", roster so stavmi, nedotknutý samostatný režim |
 | `http-director.js` | Smerovanie podľa roly, obsah pultu, drill-in, tenant izolácia |
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča |
+| `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, rodičovi ostáva jeho prístup |
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
 | `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov |
@@ -70,6 +71,10 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   Na cieľ choď priamo cez `goto()`; samotné presmerovanie overuje HTTP sada.
 - **Vybraný hráč je stav.** Scenár, ktorý prepne hráča (napr. cez upozornenie),
   ovplyvní všetko ďalšie — analytika sa viaže na vybraného hráča.
+- **Na `/parent` je nad formulárom na zadanie kódu aj odhlasovací formulár**,
+  takže `form button[type="submit"]` trafí „Log out" — scenár sa ticho odhlási
+  a vyzerá to, akoby zlyhal claim. Formulár zacieľ cez jeho vlastné pole:
+  `form:has(input[name="code"]) button[type="submit"]`.
 - **Trénerov hľadaj podľa e-mailu, nie podľa poradia riadkov.** Dotaz na
   `organization_members` bez `order` vracia poradie podľa vzniku členstva, a to
   sa preklopí, len čo `browser-director.js` trénera odoberie a zase vráti.

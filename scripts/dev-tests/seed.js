@@ -261,41 +261,41 @@ async function main() {
 
   if (demoCoach) {
     const parent = await ensureUser(PARENT, "Rodic Testovaci");
-    const { data: connection } = await db
-      .from("player_connections")
+    const { data: demoPlayer } = await db
+      .from("players")
       .select("id")
-      .eq("parent_id", parent.id)
-      .eq("status", "active")
+      .eq("coach_id", demoCoach.id)
+      .eq("is_active", true)
       .maybeSingle();
 
-    if (connection) {
-      parentNote = "už pripojený";
-    } else {
-      const { data: demoPlayer } = await db
-        .from("players")
-        .select("id")
-        .eq("coach_id", demoCoach.id)
-        .eq("is_active", true)
-        .maybeSingle();
-
-      if (demoPlayer) {
-        const code = "PAR-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-        await db.from("player_connections").insert({
-          coach_id: demoCoach.id,
-          player_id: demoPlayer.id,
-          connect_code: code,
-          status: "pending",
-        });
-        const asParent = createClient(SUPABASE_URL, ANON_KEY, {
-          auth: { persistSession: false },
-        });
-        await asParent.auth.signInWithPassword({
-          email: PARENT,
-          password: PASSWORD,
-        });
-        await asParent.rpc("claim_player_connection", { p_code: code });
-        parentNote = "pripojený";
-      }
+    if (demoPlayer) {
+      // Prepojenie sa robí VŽDY nanovo, aj keď rodič už pripojený je.
+      // Claim je jediné miesto, kde sa dopĺňa spätná história do
+      // `parent_session_records` — keby sa seed pri existujúcom prepojení
+      // preskočil (tak to bolo pôvodne), rodič by po zmazaní kópií ostal
+      // natrvalo bez histórie a `rls-solo.js` by padala na stave dát, nie na
+      // chybe appky.
+      await db.from("player_connections").delete().eq("parent_id", parent.id);
+      const code = "PAR-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+      await db.from("player_connections").insert({
+        coach_id: demoCoach.id,
+        player_id: demoPlayer.id,
+        connect_code: code,
+        status: "pending",
+      });
+      const asParent = createClient(SUPABASE_URL, ANON_KEY, {
+        auth: { persistSession: false },
+      });
+      await asParent.auth.signInWithPassword({
+        email: PARENT,
+        password: PASSWORD,
+      });
+      await asParent.rpc("claim_player_connection", { p_code: code });
+      const { count } = await db
+        .from("parent_session_records")
+        .select("id", { count: "exact", head: true })
+        .eq("parent_id", parent.id);
+      parentNote = `pripojený (${count} tréningov v kópii)`;
     }
   }
 

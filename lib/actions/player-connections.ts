@@ -33,6 +33,23 @@ export async function generateConnectCode(playerId: string) {
     return;
   }
 
+  // Hráč musí byť vlastný a osobný. Hranicou je RLS (migrácia
+  // `20260807120000` — predtým sa dalo prepojenie vyrobiť na ĽUBOVOĽNÉ
+  // `player_id` a prečítať si tak cudzieho hráča aj jeho históriu), ale
+  // `playerId` sem chodí od klienta, takže ho odmietame rovno tu a nenecháme
+  // to skončiť ako pätica tichých zamietnutí v cykle nižšie.
+  const { data: owned } = await supabase
+    .from("players")
+    .select("id")
+    .eq("id", playerId)
+    .eq("coach_id", user.id)
+    .is("organization_id", null)
+    .maybeSingle();
+
+  if (!owned) {
+    return;
+  }
+
   const { data: existing } = await supabase
     .from("player_connections")
     .select("id")
@@ -50,6 +67,9 @@ export async function generateConnectCode(playerId: string) {
         status: "pending",
       });
       if (!error) break;
+      // Opakuje sa len zrážka vygenerovaného kódu (`connect_code` je unique).
+      // Pri inej chybe je ďalší pokus zbytočný — dopadne rovnako.
+      if (error.code !== "23505") break;
     }
   }
 
