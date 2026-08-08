@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireWriteAccess } from "@/lib/subscription";
 
 // Bez zameniteľných znakov (0/O, 1/I/L), aby sa kód dal ľahko prepísať zo SMS
 const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -25,6 +26,11 @@ export async function generateConnectCode(playerId: string) {
 
   if (!user) {
     redirect("/login");
+  }
+
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
   }
 
   const { data: existing } = await supabase
@@ -58,6 +64,11 @@ export async function revokeConnection(connectionId: string) {
 
   if (!user) {
     redirect("/login");
+  }
+
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
   }
 
   await supabase

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
 
 export type PlayerFormState = { error?: string } | undefined;
@@ -37,6 +38,10 @@ export async function createPlayer(
 
   if (!user) {
     redirect("/login");
+  }
+
+  if (await requireWriteAccess(supabase, user.id)) {
+    return { error: (await getTranslations("Common"))("subscriptionRequired") };
   }
 
   // Federačný tréner je zamestnanec s viacerými hráčmi naraz (1:N), takže nový
@@ -81,6 +86,11 @@ export async function deactivatePlayer(playerId: string) {
     redirect("/login");
   }
 
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
+  }
+
   await supabase
     .from("players")
     .update({ is_active: false })
@@ -98,6 +108,11 @@ export async function activatePlayer(playerId: string) {
 
   if (!user) {
     redirect("/login");
+  }
+
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
   }
 
   // V samostatnom režime treba najprv deaktivovať doterajšieho aktívneho

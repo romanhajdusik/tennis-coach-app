@@ -6,7 +6,9 @@ const fs = require("node:fs");
 const { chromium } = require("playwright");
 const {
   ORG_HOST,
+  APP_HOST,
   SCREENSHOT_DIR,
+  serviceClient,
   browserLogin,
   browserText,
   chromiumArgs,
@@ -91,6 +93,77 @@ async function main() {
     /Volley\s*—\s*0\s*min\s*·\s*0\s*%/.test(volley),
     (volley.match(/Volley\s*—[^A-Z]{0,30}/) || ["nenájdené"])[0],
   );
+
+  section("7) Paywall: po skúšobnej dobe server zápis odmietne");
+  // Samostatný (1:1) tréner na plaw.win — federačného sa paywall netýka.
+  const db = serviceClient();
+  const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
+  const solo = users.users.find((user) => user.email === "demo@plaw.win");
+  const { data: before } = await db
+    .from("profiles")
+    .select("subscription_status, trial_ends_at")
+    .eq("id", solo.id)
+    .single();
+
+  const soloContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const soloPage = await soloContext.newPage();
+
+  try {
+    await db
+      .from("profiles")
+      .update({
+        subscription_status: "trial",
+        trial_ends_at: new Date(Date.now() - 86_400_000).toISOString(),
+      })
+      .eq("id", solo.id);
+
+    const soloBase = `http://${APP_HOST}`;
+    await browserLogin(soloPage, "demo@plaw.win", soloBase);
+    await soloPage.goto(`${soloBase}/sessions`);
+    await soloPage.waitForTimeout(1500);
+    check(
+      "pruh o konci skúšobnej doby je vidieť",
+      /free trial has ended/i.test(await browserText(soloPage)),
+    );
+
+    const { count: sessionsBefore } = await db
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("coach_id", solo.id);
+
+    // Formulár sa odošle naozaj — zamietnuť to musí server, nie skryté tlačidlo.
+    // Plánovanie je dvojkrokové: vyplniť termín → potvrdiť.
+    await soloPage.fill('input[name="date"]', "2026-09-01T10:00");
+    await soloPage.locator('form button[type="button"]').first().click();
+    await soloPage.waitForTimeout(500);
+    await soloPage.locator('form button[type="submit"]').first().click();
+    await soloPage.waitForTimeout(2500);
+
+    const { count: sessionsAfter } = await db
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("coach_id", solo.id);
+    check(
+      "tréning sa NEZAPÍSAL",
+      sessionsBefore === sessionsAfter,
+      `${sessionsBefore} → ${sessionsAfter}`,
+    );
+    // „Renew your subscription" je len v chybe server action, nie v pruhu —
+    // inak by check prešiel aj vtedy, keby akcia mlčky zlyhala.
+    check(
+      "formulár vypíše dôvod zamietnutia",
+      /renew your subscription/i.test(await browserText(soloPage)),
+    );
+  } finally {
+    await db
+      .from("profiles")
+      .update({
+        subscription_status: before.subscription_status,
+        trial_ends_at: before.trial_ends_at,
+      })
+      .eq("id", solo.id);
+    await soloContext.close();
+  }
 
   report();
   await browser.close();

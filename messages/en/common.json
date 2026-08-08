@@ -8,5 +8,11 @@
     "planned": "Planned",
     "completed": "Completed",
     "cancelled": "Cancelled"
+  },
+  "subscriptionRequired": "Your free trial has ended. Renew your subscription to keep planning and logging practices — your history stays available.",
+  "trial": {
+    "daysLeft": "{days, plural, one {# day left} other {# days left}} of your free trial.",
+    "endedTitle": "Your free trial has ended.",
+    "endedText": "Everything you have recorded stays here and you can keep reading it — you just cannot plan or log new practices for now."
   }
 }

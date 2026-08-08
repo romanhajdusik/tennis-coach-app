@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireWriteAccess } from "@/lib/subscription";
 import { syncSessionToGoogleCalendar } from "@/lib/google/calendar";
 import { getSelectedPlayer } from "@/lib/players/selected";
 import { getOrgContext } from "@/lib/org/context";
@@ -33,6 +34,10 @@ export async function createSession(
 
   if (!user) {
     redirect("/login");
+  }
+
+  if (await requireWriteAccess(supabase, user.id)) {
+    return { error: (await getTranslations("Common"))("subscriptionRequired") };
   }
 
   const activePlayer = await getSelectedPlayer(supabase, user.id);
@@ -103,6 +108,10 @@ export async function updateSessionReview(
     redirect("/login");
   }
 
+  if (await requireWriteAccess(supabase, user.id)) {
+    return { error: (await getTranslations("Common"))("subscriptionRequired") };
+  }
+
   const { error, count } = await supabase
     .from("sessions")
     .update(
@@ -133,6 +142,11 @@ export async function completeSession(sessionId: string) {
     redirect("/login");
   }
 
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
+  }
+
   await supabase
     .from("sessions")
     .update({ status: "completed" })
@@ -156,6 +170,11 @@ export async function deleteSession(sessionId: string) {
 
   if (!user) {
     redirect("/login");
+  }
+
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
   }
 
   // V org režime tréner dáta nemaže — dáta vlastní federácia (§5.4/§5.7).

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
 
 export type DrillFormState =
@@ -43,6 +44,10 @@ export async function addDrill(
 
   if (!user) {
     redirect("/login");
+  }
+
+  if (await requireWriteAccess(supabase, user.id)) {
+    return { error: (await getTranslations("Common"))("subscriptionRequired") };
   }
 
   const { data: lastDrill } = await supabase
@@ -90,6 +95,11 @@ export async function removeDrill(sessionId: string, drillId: string) {
     redirect("/login");
   }
 
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
+  }
+
   await supabase
     .from("session_drills")
     .delete()
@@ -111,6 +121,11 @@ export async function moveDrill(
 
   if (!user) {
     redirect("/login");
+  }
+
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
   }
 
   const { data: drills } = await supabase
@@ -159,6 +174,11 @@ export async function setDrillPlayed(
     redirect("/login");
   }
 
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  if (await requireWriteAccess(supabase, user.id)) {
+    return;
+  }
+
   await supabase
     .from("session_drills")
     .update({ status: played ? "played" : "not_played" })
@@ -199,6 +219,10 @@ export async function replaceDrill(
 
   if (!user) {
     redirect("/login");
+  }
+
+  if (await requireWriteAccess(supabase, user.id)) {
+    return { error: (await getTranslations("Common"))("subscriptionRequired") };
   }
 
   const { data: originalDrill } = await supabase

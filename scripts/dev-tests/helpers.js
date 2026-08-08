@@ -126,9 +126,18 @@ function browserText(page) {
   });
 }
 
-/** Argumenty pre chromium, aby org subdoména ukazovala na dev server. */
+/**
+ * Argumenty pre chromium, aby ostré hostname ukazovali na dev server.
+ *
+ * **Mapuj SEM každý host, na ktorý test chodí.** Nenamapovaný host sa v
+ * prehliadači vyrieši cez DNS — teda na PRODUKCIU, kde by sa scenár prihlásil
+ * a zapisoval naostro.
+ */
 function chromiumArgs() {
-  return [`--host-resolver-rules=MAP ${ORG_HOST} 127.0.0.1:${DEV_PORT}`];
+  const rules = [ORG_HOST, APP_HOST]
+    .map((host) => `MAP ${host} 127.0.0.1:${DEV_PORT}`)
+    .join(",");
+  return [`--host-resolver-rules=${rules}`];
 }
 
 /**

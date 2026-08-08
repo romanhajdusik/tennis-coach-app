@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { HomeButton } from "@/components/home-button";
 import { TimezoneDetector } from "@/components/timezone-detector";
+import { TrialBanner } from "@/components/trial-banner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -39,6 +40,10 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
+          {/* Nad obsahom, aby si tréner koniec skúšobnej doby nevšimol až
+              vtedy, keď mu zlyhá uloženie. Sám sa skryje, kým je všetko
+              v poriadku. */}
+          <TrialBanner />
           {children}
           <HomeButton />
           <TimezoneDetector />

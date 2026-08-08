@@ -409,6 +409,7 @@ export type Database = {
           id: string
           role: string
           subscription_status: string
+          trial_ends_at: string
           updated_at: string
         }
         Insert: {
@@ -418,6 +419,7 @@ export type Database = {
           id: string
           role?: string
           subscription_status?: string
+          trial_ends_at?: string
           updated_at?: string
         }
         Update: {
@@ -427,6 +429,7 @@ export type Database = {
           id?: string
           role?: string
           subscription_status?: string
+          trial_ends_at?: string
           updated_at?: string
         }
         Relationships: []

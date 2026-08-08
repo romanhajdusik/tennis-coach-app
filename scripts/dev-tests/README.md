@@ -28,7 +28,8 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `http-coach.js` | Nástenka „Dnes", roster so stavmi, nedotknutý samostatný režim |
 | `http-director.js` | Smerovanie podľa roly, obsah pultu, drill-in, tenant izolácia |
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča |
-| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike |
+| `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
+| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov |
 
 ```bash
@@ -69,6 +70,16 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   Na cieľ choď priamo cez `goto()`; samotné presmerovanie overuje HTTP sada.
 - **Vybraný hráč je stav.** Scenár, ktorý prepne hráča (napr. cez upozornenie),
   ovplyvní všetko ďalšie — analytika sa viaže na vybraného hráča.
+- **Trénerov hľadaj podľa e-mailu, nie podľa poradia riadkov.** Dotaz na
+  `organization_members` bez `order` vracia poradie podľa vzniku členstva, a to
+  sa preklopí, len čo `browser-director.js` trénera odoberie a zase vráti.
+  Scenár na preradenie hráča sa prihlasuje konkrétnymi účtami, takže pri
+  opačnom poradí kontroloval nesprávneho trénera a padal na troch checkoch.
+- **Do `chromiumArgs()` patrí každý host, na ktorý scenár chodí.** Nenamapovaný
+  host sa v prehliadači vyrieši cez DNS — teda na **produkciu**, kde by sa test
+  prihlásil a zapisoval naostro. Preto sú mapované aj `plaw.win`, aj org
+  subdoména; `allowedDevOrigins` v `next.config.ts` musí obsahovať oboje
+  (`*.plaw.win` **nezahŕňa** holé `plaw.win`).
 - **Scenáre, ktoré menia členstvo alebo priradenie hráča, musia po sebe upratať
   v `finally`.** `browser-director.js` trénera odoberá a zase vracia; keď taký
   scenár spadne uprostred, ďalší beh sa rozsype už na počte sedadiel. Preto sa

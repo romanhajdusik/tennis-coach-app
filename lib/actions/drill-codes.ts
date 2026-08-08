@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
 import { CATEGORY_OPTIONS, DRILLS } from "@/lib/drill-options";
@@ -115,6 +116,10 @@ export async function saveDrillCodes(
 
   if (!user) {
     redirect("/login");
+  }
+
+  if (await requireWriteAccess(supabase, user.id)) {
+    return { error: (await getTranslations("Common"))("subscriptionRequired") };
   }
 
   // V org režime kódy štandardizuje federácia (§5.5) — tréner ich len používa.

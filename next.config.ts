@@ -12,7 +12,11 @@ const nextConfig: NextConfig = {
   // (namapovanú na dev server). Bez tejto výnimky Next zablokuje dev
   // požiadavky z toho hostname a stránka sa **nehydratuje** — tlačidlá
   // závislé od JS potom ticho nič nerobia. Nastavenie sa týka len `next dev`.
-  allowedDevOrigins: ["10.241.70.191", "*.plaw.win"],
+  //
+  // POZOR: `*.plaw.win` **nezahŕňa holé `plaw.win`** — musí byť uvedené zvlášť.
+  // Bez neho sa nehydratuje samostatný (1:1) režim, keď sa testuje cez ostré
+  // hostname; prejaví sa to presne tak isto: klik ticho nespraví nič.
+  allowedDevOrigins: ["10.241.70.191", "plaw.win", "*.plaw.win"],
   async headers() {
     return [
       {

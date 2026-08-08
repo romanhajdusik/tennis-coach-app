@@ -60,7 +60,7 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 ### Tabuľky
 
-1. **profiles** — údaje o trénerovi, stav SaaS predplatného (predplatné zatiaľ len ako stĺpec, Stripe logika príde neskôr)
+1. **profiles** — údaje o trénerovi a stav SaaS predplatného: `subscription_status` (`trial`/`active`/`complimentary`/`past_due`/`canceled`) + `trial_ends_at` (default `now() + 14 dní`). Podrobne v sekcii „Skúšobná doba a predplatné". **Do `profiles` sa z appky nezapisuje vôbec** — meno aj rolu plní pri registrácii trigger `handle_new_user` z metadát a `authenticated` nemá na tabuľku `UPDATE` (inak by si účet sám nastavil „zaplatené"). Zápis patrí `service_role`, odtiaľ ho bude robiť Stripe webhook
 2. **players** — všetci spravovaní hráči
    - `is_active` (boolean) — **v samostatnom (1:1) režime vždy len jeden aktívny hráč na trénera**
    - Vynútené na úrovni DB: `CREATE UNIQUE INDEX one_active_player ON players (coach_id) WHERE is_active = true AND organization_id IS NULL;` — od 2026-08-03 je index **čiastočný**, takže federačný tréner (org riadky) môže mať viac aktívnych hráčov naraz (1:N), samostatný tréner naďalej len jedného
@@ -96,6 +96,8 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 - **RLS zapnuté na každej tabuľke.** Základná policy: `coach_id = auth.uid()`
 - **Archív (neaktívny hráč) je read-only na úrovni DB:** RLS policy blokuje UPDATE/DELETE na sessions a metrics, ak hráč má `is_active = false`. UI kontrola nestačí.
 - **Dokončený tréning (`sessions.status = 'completed'`) je tiež read-only na úrovni DB:** RLS blokuje UPDATE/DELETE na `sessions` a `session_drills` (aj INSERT nových cvičení), rovnaký princíp ako archív.
+- **Predplatné NIE JE v RLS, ale v server actions** (`requireWriteAccess` z [`lib/subscription.ts`](lib/subscription.ts)) — vedomá výnimka z pravidla „hranicou je RLS". RLS stráži **vlastníctvo** (cudzí riadok nevydá nikomu); predplatné je obchodná podmienka, ktorá by inak musela pribudnúť do každej write policy na `players`/`sessions`/`session_drills` — a tie sú overené 33 RLS scenármi. Appka zapisuje výhradne cez server actions, takže stráž je serverová hranica, nie skrytie tlačidla. **Pri pridaní novej zapisovacej server action ju tam doplň** (pozri sekciu „Skúšobná doba a predplatné").
+- **`profiles` nemá pre `authenticated` UPDATE policy** (od migrácie `20260807110000`) — účet by si inak sám prepísal `subscription_status`. Keby appka niekedy mala dovoliť úpravu vlastného mena, **nevracaj policy nad celou tabuľkou** — daj grant len na konkrétne stĺpce (`grant update (full_name) on public.profiles to authenticated`), inak sa diera otvorí znova.
 - Všetky zmeny schémy výhradne cez migrácie (Supabase CLI), nikdy manuálne v dashboarde.
 - **Dvojrežimová RLS org/B2B vrstvy (DB časť hotová 2026-08-03, migrácie `20260803090000_organizations.sql` + `20260803091000_org_rls.sql`).** Na tých istých tabuľkách bežia dva režimy vedľa seba:
   - *Osobné riadky* (`organization_id IS NULL`) — pôvodný model `coach_id = auth.uid()`, správanie samostatného trénera nezmenené. Policy navyše platí len pre účty **bez** aktívneho členstva (`current_org_id() IS NULL`), čím sa drží pravidlo „buď nezávislý, alebo zamestnanec".
@@ -213,6 +215,18 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
 - Aplikácia sa prepne do režimu "len na čítanie" — kompletné štatistiky, poznámky a testy viditeľné, ale needitovateľné
 - Read-only vynútené v DB (RLS) aj v UI (skryté editačné prvky)
 
+## Skúšobná doba a predplatné (od 2026-08-07)
+
+Samostatný (1:1) tréner má **14 dní všetko zadarmo, potom platí**. Po uplynutí skúšobnej doby účet **ďalej číta** (história, analytika, hráči, kalendár), ale **nezapisuje** — o svoju prácu nepríde, len ju prestane dopĺňať. Je to zámerne rovnaký režim ako archív, len z iného dôvodu: paywall nesmie pôsobiť ako zabavenie dát.
+
+- **Jediný zdroj pravdy je [`lib/subscription.ts`](lib/subscription.ts)** (`getSubscription` / `requireWriteAccess`) — o predplatnom nerozhoduj nikde inde, ani „len na skrytie tlačidla" (rovnaký princíp ako `getSelectedPlayer()` pri vybranom hráčovi).
+- **Slovník `subscription_status`:** `trial` (rozhoduje `trial_ends_at`), `active` (platí cez Stripe), `complimentary` (prístup zadarmo od nás — skorí používatelia, demo účty), `past_due`/`canceled` (Stripe skončil → zápis sa zastaví). CHECK constraint zámerne **nie je**: presný slovník Stripe statusov sa dorieši až pri jeho napojení.
+- **Federačný tréner je z paywallu vyňatý** — členstvo v organizácii prebíja stav profilu, lebo za sedadlá platí federácia faktúrou mimo appky (§5.9). Rodič/hráč platí zatiaľ tiež nič.
+- **Každá zapisovacia server action začína `requireWriteAccess`** — dnes ich je 15 v `sessions.ts`, `session-drills.ts`, `players.ts`, `drill-codes.ts`, `player-connections.ts`. Akcie s `useActionState` vracajú `{ error: t("subscriptionRequired") }`, akcie bez formulárového stavu sa len ticho vrátia (UI ich aj tak nezobrazuje). **Pri novej zapisovacej akcii ju tam doplň** — org/director akcie (`organization-members.ts`, `player-assignment.ts`, `saveOrgDrillCodes`) stráž nepotrebujú, tie sú kryté organizáciou.
+- **Migrácia `20260807110000_trial_and_paywall.sql` nastavuje všetky existujúce účty na `complimentary`.** Bez toho by default `now() + 14 dní` naštartoval odpočítavanie aj trénerovi, ktorý appku reálne používa už mesiace, a po dvoch týždňoch by prestal môcť plánovať bez toho, aby si niekde niečo objednal. Komu prístup neskôr zmeniť na platený, je obchodné rozhodnutie (`UPDATE profiles set subscription_status = …`), nie vec migrácie.
+- **Pruh so stavom** ([`components/trial-banner.tsx`](components/trial-banner.tsx)) je v `app/layout.tsx` nad obsahom, aby tréner koniec skúšobnej doby nezistil až zlyhaným uložením. Zámerne **mlčí**, kým je predplatné v poriadku a kým do konca ostáva viac než týždeň. Tlačidlo „Predplatiť" tam zatiaľ nie je — Stripe nie je napojený a mŕtve tlačidlo je horšie než žiadne.
+- Overuje `scripts/dev-tests/paywall.js` (stavy + že si účet predplatné neprepíše) a sekcia „Paywall" v `browser-coach.js` (že server naozaj odmietne uloženie — server action sa cez holé HTTP zavolať nedá).
+
 ## Roadmapa (fázovanie)
 
 ### Fáza 1 — MVP (dokončená)
@@ -234,7 +248,8 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
 - [x] Deploy na Vercel (produkcia beží, coach appku reálne používa na telefóne)
 - [x] Landing page (Hero, Features, Cenník, CTA) — `app/page.tsx` (logika) + `components/landing-page.tsx` (markup), zobrazuje sa na `/` len odhláseným návštevníkom. Vlastná jazyková vrstva s 9 jazykmi EN/DE/ES/RU/FR/ZH/IT/JA/SK (default EN) nezávislá od appky (`lib/landing-locale.ts`, cookie `LANDING_LOCALE`) — appka samotná je len anglická (`i18n/request.ts`). Cenník je zatiaľ len "čoskoro" placeholder, keďže Stripe nie je implementovaný
 - [x] Názov appky: **P.L.A.W** (2026-07-20, predtým CourtLog, predtým bez mena) — doména `plaw.win` kúpená a od 2026-07-23 pripojená na Vercel (funguje popri `*.vercel.app`), zatiaľ zámerne mimo vyhľadávačov (`robots: noindex` na landing page, kým appka nie je pripravená na verejný launch)
-- [ ] Stripe Checkout + Customer Portal (mesačné/ročné predplatné)
+- [x] Skúšobná doba a paywall (14 dní zadarmo → potom už len čítanie) — `lib/subscription.ts`, migrácia `20260807110000`, viď sekciu „Skúšobná doba a predplatné". Postavené **pred** Stripe zámerne: obmedzenie zápisu je vec appky, platba je vec Stripe a dá sa doplniť bez zásahu do tejto logiky
+- [ ] Stripe Checkout + Customer Portal (mesačné/ročné predplatné) — napojenie znamená: Checkout, webhook zapisujúci `subscription_status` cez `service_role`, tlačidlo „Predplatiť" do `trial-banner.tsx` a reálne ceny namiesto „čoskoro" na landingu. **Týka sa len consumer produktu na `plaw.win`** — federácie sa fakturujú mimo appky (`docs/onboarding-organizacie.md`)
 
 **Dôležité:** Neimplementuj funkcie z neskorších fáz, pokiaľ to nie je výslovne požadované. Architektúru však navrhuj tak, aby ich neskoršie pridanie neprekážalo (napr. `google_event_id` v sessions už teraz).
 
@@ -295,7 +310,7 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
 
 ## Lokálne overovanie (scripts/dev-tests)
 
-Repo nemá test framework, ale má sadu ručne spúšťaných scenárov v [`scripts/dev-tests/`](scripts/dev-tests/) — HTTP, RLS a klikacie (Playwright) sady pre trénerovu appku aj federačný pult. **Pri zmenách v org vrstve, RLS alebo analytike ich prejdi**, ušetria hodinu hľadania. Postup, účty a pasce (časové pásmo, hydratácia org subdomény, čítanie vykresleného HTML) sú v [`scripts/dev-tests/README.md`](scripts/dev-tests/README.md).
+Repo nemá test framework, ale má sadu ručne spúšťaných scenárov v [`scripts/dev-tests/`](scripts/dev-tests/) — HTTP, RLS a klikacie (Playwright) sady pre trénerovu appku aj federačný pult. **Pri zmenách v org vrstve, RLS, analytike alebo predplatnom ich prejdi**, ušetria hodinu hľadania. Postup, účty a pasce (časové pásmo, hydratácia org subdomény, čítanie vykresleného HTML) sú v [`scripts/dev-tests/README.md`](scripts/dev-tests/README.md).
 
 ```bash
 node scripts/dev-tests/seed.js        # dáta (idempotentné)
