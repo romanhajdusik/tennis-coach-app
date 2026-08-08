@@ -81,9 +81,14 @@ async function main() {
   }
   const detailText = textOf(detail.body);
   check("detail hráča sa načíta", detail.status === 200, "status " + detail.status);
+  // Meno prideleného trénera sa od commitu `0560a31` nepíše zvlášť — ukazuje ho
+  // predvolená voľba vo výbere na preradenie (dvakrát by tam stálo zbytočne).
+  // Preto sa kontroluje vybraná `<option>` v surovom HTML, nie text stránky:
+  // v texte sú aj mená ostatných trénerov ako ďalšie voľby, takže obyčajné
+  // „meno je na stránke" by prešlo aj pri zle priradenom hráčovi.
   check(
     "ukazuje prideleného trénera",
-    /Coach: (Andrea Prva|Boris Druhy)/.test(detailText),
+    /<option[^>]*\sselected[^>]*>(Andrea Prva|Boris Druhy)</.test(detail.body),
     detailText.slice(0, 250),
   );
   check("zoznam tréningov", /Practices/.test(detailText));

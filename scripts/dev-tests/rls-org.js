@@ -150,9 +150,21 @@ async function main() {
     .select("user_id, role")
     .eq("organization_id", org.id)
     .eq("status", "active");
-  const coachIds = (coachUsers ?? []).filter((m) => m.role === "coach").map((m) => m.user_id);
+  const activeIds = new Set((coachUsers ?? []).map((m) => m.user_id));
   const directorId = (coachUsers ?? []).find((m) => m.role === "director").user_id;
-  const [coachA, coachB] = coachIds;
+
+  // **Trénerov ber podľa e-mailu, nie podľa poradia riadkov.** Dotaz vyššie je
+  // bez `order`, takže poradie závisí od toho, kedy ktoré členstvo vzniklo —
+  // a `browser-director.js` jedného trénera odoberá a zase vracia, čím sa
+  // poradie preklopí. Scenár nižšie sa prihlasuje konkrétnymi účtami, takže
+  // pri opačnom poradí kontroloval nesprávneho trénera a padal.
+  const emailToId = (email) => users.users.find((user) => user.email === email).id;
+  const coachA = emailToId("coach-today@test.local");
+  const coachB = emailToId("coach2-today@test.local");
+  check(
+    "obaja tréneri sú aktívni členovia",
+    activeIds.has(coachA) && activeIds.has(coachB),
+  );
 
   const { data: moved } = await db
     .from("players")
