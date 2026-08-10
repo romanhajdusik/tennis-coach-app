@@ -20,7 +20,16 @@ import {
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
-const RANGE_VALUES: PeriodRangeType[] = ["week", "month", "quarter", "year"];
+const RANGE_VALUES: PeriodRangeType[] = [
+  "last12",
+  "week",
+  "month",
+  "quarter",
+  "year",
+];
+
+/** Rovnaký predvolený rozsah ako všade inde v analytike. */
+const DEFAULT_RANGE: PeriodRangeType = "last12";
 
 function isPeriodRangeType(value: string): value is PeriodRangeType {
   return RANGE_VALUES.includes(value as PeriodRangeType);
@@ -93,7 +102,9 @@ export default async function DirectorComparePage({
   }
 
   const range: PeriodRangeType =
-    search.range && isPeriodRangeType(search.range) ? search.range : "month";
+    search.range && isPeriodRangeType(search.range)
+      ? search.range
+      : DEFAULT_RANGE;
   const value = search.value ?? getDefaultPeriodValue(range);
 
   const timeZone = await getTimeZone();
@@ -215,6 +226,7 @@ export default async function DirectorComparePage({
         <div className="flex flex-wrap gap-2">
           {(
             [
+              { value: "last12", label: tAnalytics("rangeLast12") },
               { value: "week", label: tAnalytics("rangeWeek") },
               { value: "month", label: tAnalytics("rangeMonth") },
               { value: "quarter", label: tAnalytics("rangeQuarter") },
@@ -239,7 +251,9 @@ export default async function DirectorComparePage({
             href={query({ value: getPreviousYearValue(range, value) })}
             className="underline"
           >
-            {tAnalytics("previousYear")}
+            {range === "last12"
+              ? tAnalytics("previousPeriod")
+              : tAnalytics("previousYear")}
           </Link>
         </div>
       </div>

@@ -4,7 +4,32 @@ import { getSelectedPlayer } from "@/lib/players/selected";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
-export type PeriodRangeType = "week" | "month" | "quarter" | "year";
+/**
+ * `last12` = **posledných 12 celých mesiacov**, predvolený rozsah analytiky.
+ *
+ * Kalendárny `year` ako predvolený nefunguje: v januári by tréner otvoril
+ * analytiku a videl takmer prázdne grafy. Kĺzavé okno ukáže vždy plnú sezónu.
+ *
+ * Okno je zarovnané na celé mesiace (nie „365 dní dozadu"), aby sa dalo
+ * čitateľne pomenovať a porovnávať. `value` je kotva `YYYY-MM` = **posledný**
+ * mesiac okna vrátane; aktuálny mesiac je teda rozpracovaný, čo je zámer.
+ */
+export type PeriodRangeType = "week" | "month" | "quarter" | "year" | "last12";
+
+/** Počet mesiacov v kĺzavom okne `last12`. */
+const ROLLING_MONTHS = 12;
+
+function monthAnchor(value: string): { year: number; month: number } {
+  const [yearStr, monthStr] = value.split("-");
+  return { year: Number(yearStr), month: Number(monthStr) };
+}
+
+/** Posunie kotvu `YYYY-MM` o zadaný počet mesiacov (Date si poradí s pretečením). */
+function shiftMonthValue(value: string, byMonths: number): string {
+  const { year, month } = monthAnchor(value);
+  const shifted = new Date(Date.UTC(year, month - 1 + byMonths, 1));
+  return `${shifted.getUTCFullYear()}-${String(shifted.getUTCMonth() + 1).padStart(2, "0")}`;
+}
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -95,6 +120,18 @@ export async function getPeriodRange(
     const end = new Date(Date.UTC(year, startMonth + 3, 1));
     return { start, end, label: `Q${quarter} ${year}` };
   }
+  if (range === "last12") {
+    // Kotva je posledný mesiac okna vrátane, takže koniec je prvý deň
+    // NASLEDUJÚCEHO mesiaca a začiatok o 11 mesiacov skôr (11, nie 12 —
+    // kotvový mesiac sa počíta tiež).
+    const { year, month } = monthAnchor(value);
+    const start = new Date(Date.UTC(year, month - ROLLING_MONTHS, 1));
+    const end = new Date(Date.UTC(year, month, 1));
+    const from = `${monthLabels[start.getUTCMonth()]} ${start.getUTCFullYear()}`;
+    const to = `${monthLabels[month - 1]} ${year}`;
+    return { start, end, label: `${from} – ${to}` };
+  }
+
   const year = Number(value);
   const start = new Date(Date.UTC(year, 0, 1));
   const end = new Date(Date.UTC(year + 1, 0, 1));
@@ -114,6 +151,9 @@ export function getDefaultPeriodValue(range: PeriodRangeType): string {
     const quarter = Math.floor(now.getMonth() / 3) + 1;
     return `${now.getFullYear()}-Q${quarter}`;
   }
+  if (range === "last12") {
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  }
   return String(now.getFullYear());
 }
 
@@ -132,6 +172,12 @@ export function getPreviousYearValue(
   if (range === "quarter") {
     const [yearStr, qStr] = value.split("-Q");
     return `${Number(yearStr) - 1}-Q${qStr}`;
+  }
+  if (range === "last12") {
+    // Predošlé okno = 12 mesiacov TESNE PRED aktuálnym, nie ten istý mesiac
+    // vlani. Inak by sa obe okná prekrývali v 11 mesiacoch a porovnanie by
+    // nemalo výpovednú hodnotu.
+    return shiftMonthValue(value, -ROLLING_MONTHS);
   }
   return String(Number(value) - 1);
 }

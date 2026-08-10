@@ -20,7 +20,19 @@ import { PlayerSwitcher } from "@/components/player-switcher";
 import { CategoryCharts } from "./category-charts";
 import { CategoryShareChart } from "./category-share-chart";
 
-const RANGE_VALUES: PeriodRangeType[] = ["week", "month", "quarter", "year"];
+const RANGE_VALUES: PeriodRangeType[] = [
+  "last12",
+  "week",
+  "month",
+  "quarter",
+  "year",
+];
+
+/**
+ * Predvolene sa analytika otvára na posledných 12 mesiacoch — kalendárny rok
+ * by v januári ukázal takmer prázdne grafy (viď `PeriodRangeType`).
+ */
+const DEFAULT_RANGE: PeriodRangeType = "last12";
 
 function isPeriodRangeType(value: string): value is PeriodRangeType {
   return RANGE_VALUES.includes(value as PeriodRangeType);
@@ -59,6 +71,7 @@ export default async function AnalyticsPage({
   const t = await getTranslations("Analytics");
   const tCommon = await getTranslations("Common");
   const RANGE_OPTIONS: { value: PeriodRangeType; label: string }[] = [
+    { value: "last12", label: t("rangeLast12") },
     { value: "week", label: t("rangeWeek") },
     { value: "month", label: t("rangeMonth") },
     { value: "quarter", label: t("rangeQuarter") },
@@ -67,7 +80,9 @@ export default async function AnalyticsPage({
 
   const search = await searchParams;
   const range: PeriodRangeType =
-    search.range && isPeriodRangeType(search.range) ? search.range : "month";
+    search.range && isPeriodRangeType(search.range)
+      ? search.range
+      : DEFAULT_RANGE;
   const value = search.value ?? getDefaultPeriodValue(range);
 
   const supabase = await createClient();
@@ -139,6 +154,10 @@ export default async function AnalyticsPage({
           ))}
         </div>
 
+        {/* Kĺzavé okno sa neviaže na konkrétny mesiac či rok, takže nemá čo
+            vyberať — je vždy „posledných 12 mesiacov odteraz". Ostatné rozsahy
+            si obdobie vyberajú ako doteraz. */}
+        {range !== "last12" && (
         <form method="get" className="flex items-center gap-2">
           <input type="hidden" name="range" value={range} />
           {range === "week" && (
@@ -185,6 +204,7 @@ export default async function AnalyticsPage({
             {t("show")}
           </button>
         </form>
+        )}
 
         <div className="flex items-center justify-between text-sm text-muted ">
           <span className="font-medium text-foreground ">
@@ -194,7 +214,7 @@ export default async function AnalyticsPage({
             href={`/analytics/${encodeURIComponent(category)}?${periodQuery(range, previousYearValue)}`}
             className="underline"
           >
-            {t("previousYear")}
+            {range === "last12" ? t("previousPeriod") : t("previousYear")}
           </Link>
         </div>
       </div>

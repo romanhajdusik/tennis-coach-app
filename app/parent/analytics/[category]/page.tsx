@@ -21,7 +21,16 @@ import {
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
-const RANGE_VALUES: PeriodRangeType[] = ["week", "month", "quarter", "year"];
+const RANGE_VALUES: PeriodRangeType[] = [
+  "last12",
+  "week",
+  "month",
+  "quarter",
+  "year",
+];
+
+/** Rovnaký predvolený rozsah ako u trénera — kto tréningy sleduje, vidí to isté. */
+const DEFAULT_RANGE: PeriodRangeType = "last12";
 
 function isPeriodRangeType(value: string): value is PeriodRangeType {
   return RANGE_VALUES.includes(value as PeriodRangeType);
@@ -60,6 +69,7 @@ export default async function ParentAnalyticsPage({
   const t = await getTranslations("Analytics");
   const tParent = await getTranslations("Parent.calendar");
   const RANGE_OPTIONS: { value: PeriodRangeType; label: string }[] = [
+    { value: "last12", label: t("rangeLast12") },
     { value: "week", label: t("rangeWeek") },
     { value: "month", label: t("rangeMonth") },
     { value: "quarter", label: t("rangeQuarter") },
@@ -68,7 +78,9 @@ export default async function ParentAnalyticsPage({
 
   const search = await searchParams;
   const range: PeriodRangeType =
-    search.range && isPeriodRangeType(search.range) ? search.range : "month";
+    search.range && isPeriodRangeType(search.range)
+      ? search.range
+      : DEFAULT_RANGE;
   const value = search.value ?? getDefaultPeriodValue(range);
 
   const supabase = await createClient();
@@ -144,6 +156,8 @@ export default async function ParentAnalyticsPage({
               ))}
             </div>
 
+            {/* Kĺzavé okno nemá čo vyberať — je vždy „posledných 12 mesiacov". */}
+            {range !== "last12" && (
             <form method="get" className="flex items-center gap-2">
               <input type="hidden" name="range" value={range} />
               {range === "week" && (
@@ -190,6 +204,7 @@ export default async function ParentAnalyticsPage({
                 {t("show")}
               </button>
             </form>
+            )}
 
             <div className="flex items-center justify-between text-sm text-muted ">
               <span className="font-medium text-foreground ">
@@ -199,7 +214,7 @@ export default async function ParentAnalyticsPage({
                 href={`/parent/analytics/${encodeURIComponent(category)}?${periodQuery(range, previousYearValue)}`}
                 className="underline"
               >
-                {t("previousYear")}
+                {range === "last12" ? t("previousPeriod") : t("previousYear")}
               </Link>
             </div>
           </div>

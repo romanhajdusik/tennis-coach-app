@@ -171,7 +171,8 @@ Kalendár ([`app/calendar/page.tsx`](app/calendar/page.tsx) pre trénera, [`app/
 
 ## Analytika
 
-- Filtrovanie podľa obdobia: **týždeň**, **mesiac**, **kvartál**, **rok** — s porovnaním voči minulému roku (`/analytics/[category]`)
+- Filtrovanie podľa obdobia: **posledných 12 mesiacov**, **týždeň**, **mesiac**, **kvartál**, **rok** — s porovnaním voči predchádzajúcemu obdobiu (`/analytics/[category]`)
+- **Predvolený rozsah je „posledných 12 mesiacov"** (`last12`, od 2026-08-09) — platí pre trénera, rodiča, pult aj porovnanie hráčov. Kalendárny rok ako predvolený nefunguje: v januári by sa analytika otvorila takmer prázdna. Okno je zarovnané na **celé mesiace** (nie 365 dní dozadu), aby sa dalo čitateľne pomenovať a porovnávať; `value` je kotva `YYYY-MM` = posledný mesiac okna vrátane, takže aktuálny mesiac je rozpracovaný. **Nemá výber obdobia** — je vždy relatívne k dnešku, takže formulár sa preň nevykresľuje. **Porovnanie vedie na 12 mesiacov TESNE PRED aktuálnym** (`getPreviousYearValue`), nie na ten istý mesiac vlani — inak by sa obe okná prekrývali v jedenástich mesiacoch. Kalendárny rok ostáva ako voľba pre výkazy.
 - Prehľad podľa kódu cvičenia (čas, odhadovaný počet úderov, % využitia) a podľa charakteru cvičenia (offensive/neutral/defensive)
 - Dáta sa vždy načítavajú len pre aktívneho hráča (`players.is_active = true`), priamo v server action (`lib/actions/analytics.ts`), nie cez DB views — pri zmene hráča sa dashboardy prirodzene vynulujú
 - Vizualizácia: Recharts (donut aj stĺpcový graf)
