@@ -8,7 +8,7 @@
 // podmienku z policy odstránil, spadnú.
 //
 // Ako ostatné sady sa spúšťa proti LOKÁLNEJ Supabase (viď README.md).
-const { serviceClient, signIn, createChecks } = require("./helpers");
+const { serviceClient, anonClient, signIn, createChecks } = require("./helpers");
 
 const { check, section, report } = createChecks();
 const db = serviceClient();
@@ -169,7 +169,42 @@ async function main() {
       `${(history ?? []).length} záznamov`,
     );
 
-    section("6) Cudzí účet nevidí nič z trénerovho sveta");
+    section("6) Kód uplatní len prihlásený");
+    // Neprihlásený volajúci má `auth.uid()` NULL. Kým to claim funkcia
+    // nekontrolovala, zapísala NULL ako vlastníka: kód sa minul, trénerovi
+    // svietilo „✓ Pripojené" pri nikom a rodičovi appka povedala „neplatný
+    // kód". Prečítať sa pritom nedalo nič — riadok nemá vlastníka.
+    const burnable = await asCoach
+      .from("player_connections")
+      .insert({
+        coach_id: coach.id,
+        player_id: player.id,
+        connect_code: "SOLOTST5",
+        status: "pending",
+      })
+      .select("id");
+    if ((burnable.data ?? []).length) madeConnections.push(burnable.data[0].id);
+
+    const burn = await anonClient().rpc("claim_player_connection", {
+      p_code: "SOLOTST5",
+    });
+    check(
+      "neprihlásený claim je odmietnutý",
+      /not_authenticated/.test(burn.error?.message ?? ""),
+      burn.error?.message ?? "PRESLO!",
+    );
+    const { data: stillPending } = await db
+      .from("player_connections")
+      .select("status, parent_id")
+      .eq("connect_code", "SOLOTST5")
+      .single();
+    check(
+      "kód ostal nepoužitý",
+      stillPending.status === "pending" && stillPending.parent_id === null,
+      JSON.stringify(stillPending),
+    );
+
+    section("7) Cudzí účet nevidí nič z trénerovho sveta");
     for (const [table, column, value] of [
       ["players", "id", player.id],
       ["sessions", "coach_id", coach.id],
@@ -187,7 +222,13 @@ async function main() {
     await db
       .from("player_connections")
       .delete()
-      .in("connect_code", ["SOLOTST1", "SOLOTST2", "SOLOTST3", "SOLOTST4"]);
+      .in("connect_code", [
+        "SOLOTST1",
+        "SOLOTST2",
+        "SOLOTST3",
+        "SOLOTST4",
+        "SOLOTST5",
+      ]);
   }
 
   report();

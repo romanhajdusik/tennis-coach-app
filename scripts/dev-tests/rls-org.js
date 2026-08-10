@@ -1,7 +1,13 @@
 // RLS scenáre federačnej vrstvy — overujú sa priamo proti databáze cez
 // reálne prihlásené session, nie cez appku: appka je len UI, hranicou dát
 // je RLS (§5.7).
-const { serviceClient, signIn, ORG_SLUG, createChecks } = require("./helpers");
+const {
+  serviceClient,
+  anonClient,
+  signIn,
+  ORG_SLUG,
+  createChecks,
+} = require("./helpers");
 
 const { check, section, report } = createChecks();
 const db = serviceClient();
@@ -87,6 +93,40 @@ async function main() {
       withData.error?.message,
     );
   }
+
+  // Neprihlásený volajúci má `auth.uid()` NULL. Kým to claim nekontroloval,
+  // zapísal NULL ako `user_id`: vzniklo aktívne členstvo bez účtu, `invite_code`
+  // sa vymazal (pozvánka sa už nedala ani dohľadať) a riadok ZOŽRAL SEDADLO —
+  // guard trigger svoje kontroly preskočí, lebo bežia len `if user_id is not null`.
+  const { data: seatEater } = await db
+    .from("organization_members")
+    .insert({
+      organization_id: org.id,
+      role: "coach",
+      status: "invited",
+      invite_code: "RLS-ANON1",
+    })
+    .select("id")
+    .single();
+  const anonClaim = await anonClient().rpc("claim_organization_invite", {
+    p_code: "RLS-ANON1",
+  });
+  check(
+    "neprihlásený pozvánku nezaklaimuje",
+    /not_authenticated/.test(anonClaim.error?.message ?? ""),
+    anonClaim.error?.message ?? "PRESLO!",
+  );
+  const { data: inviteAfter } = await db
+    .from("organization_members")
+    .select("status, user_id, invite_code")
+    .eq("id", seatEater.id)
+    .single();
+  check(
+    "pozvánka ostala nedotknutá aj s kódom",
+    inviteAfter.status === "invited" && inviteAfter.invite_code === "RLS-ANON1",
+    JSON.stringify(inviteAfter),
+  );
+  await db.from("organization_members").delete().eq("id", seatEater.id);
 
   section("6) Sedadlá");
   const { count: coaches } = await db

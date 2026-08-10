@@ -35,6 +35,17 @@ function serviceClient() {
   });
 }
 
+/**
+ * NEPRIHLÁSENÝ klient — presne to, čo má k dispozícii ktokoľvek na internete
+ * (anon kľúč je verejný, je v každom prehliadači). Slúži na overovanie, že
+ * bez prihlásenia sa nedá ani čítať, ani volať RPC.
+ */
+function anonClient() {
+  return createClient(SUPABASE_URL, ANON_KEY, {
+    auth: { persistSession: false },
+  });
+}
+
 /** Prihlásený klient konkrétneho účtu (podlieha RLS ako v appke). */
 async function signIn(email) {
   const client = createClient(SUPABASE_URL, ANON_KEY, {
@@ -193,6 +204,7 @@ module.exports = {
   PASSWORDS,
   SCREENSHOT_DIR,
   serviceClient,
+  anonClient,
   signIn,
   authCookies,
   request,
