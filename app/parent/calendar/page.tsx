@@ -1,55 +1,31 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getTranslations, getFormatter } from "next-intl/server";
+import { getTranslations, getFormatter, getTimeZone } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import {
+  LABEL_TIME_ZONE,
+  addPlainDays,
+  dayKeyIn,
+  daysInMonth,
+  parsePlainDate,
+  plainDateKey,
+  plainToUtcDate,
+  startOfWeek,
+  todayIn,
+  weekdayIndex,
+} from "@/lib/calendar-window";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
 
-function toDayKey(date: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-function parseMonthParam(month: string | undefined) {
-  if (month && /^\d{4}-\d{2}$/.test(month)) {
-    const [year, monthNumber] = month.split("-").map(Number);
-    return { year, monthIndex: monthNumber - 1 };
-  }
-  const now = new Date();
-  return { year: now.getFullYear(), monthIndex: now.getMonth() };
-}
-
-function monthParam(year: number, monthIndex: number) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${year}-${pad(monthIndex + 1)}`;
+function monthParam(year: number, month: number) {
+  return `${year}-${String(month).padStart(2, "0")}`;
 }
 
 type CalendarView = "week" | "month";
 
 /** Rovnaký predvolený pohľad ako u trénera — zoznam za celý mesiac je pridlhý. */
 const DEFAULT_VIEW: CalendarView = "week";
-
-function startOfWeek(date: Date) {
-  const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
-  return monday;
-}
-
-function parseWeekParam(week: string | undefined) {
-  if (week && /^\d{4}-\d{2}-\d{2}$/.test(week)) {
-    const [year, month, day] = week.split("-").map(Number);
-    const parsed = new Date(year, month - 1, day);
-    if (!Number.isNaN(parsed.getTime())) return startOfWeek(parsed);
-  }
-  return startOfWeek(new Date());
-}
-
-function addDays(date: Date, days: number) {
-  const next = new Date(date);
-  next.setDate(next.getDate() + days);
-  return next;
-}
 
 // Naplánované tréningy zelenou, dokončené červenou — ak má deň oboje,
 // naplánovaný (ešte nadchádzajúci) vyhráva, rovnaký princíp ako u trénera.
@@ -105,22 +81,43 @@ export default async function ParentCalendarPage({
     .eq("status", "active")
     .maybeSingle();
 
-  const { year, monthIndex } = parseMonthParam(month);
-  const monthStart = new Date(year, monthIndex, 1);
-  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-  const leadingBlanks = (monthStart.getDay() + 6) % 7; // pondelok = 0
-  const weekStart = parseWeekParam(week);
+  // Dátumová aritmetika v pásme diváka — rovnako ako v trénerovom kalendári
+  // (lib/calendar-window.ts vysvetľuje prečo).
+  const timeZone = await getTimeZone();
+  const today = todayIn(timeZone);
 
-  const windowStart = view === "week" ? weekStart : monthStart;
-  const windowEnd =
-    view === "week" ? addDays(weekStart, 7) : new Date(year, monthIndex + 1, 1);
+  const monthAnchor = /^\d{4}-\d{2}$/.test(month ?? "")
+    ? {
+        year: Number(month!.split("-")[0]),
+        month: Number(month!.split("-")[1]),
+        day: 1,
+      }
+    : { year: today.year, month: today.month, day: 1 };
+  const { year, month: monthNumber } = monthAnchor;
+  const monthDayCount = daysInMonth(year, monthNumber);
+  const leadingBlanks = weekdayIndex(monthAnchor);
+  const weekStart = startOfWeek(parsePlainDate(week) ?? today);
+
+  const windowDays =
+    view === "week"
+      ? Array.from({ length: 7 }, (_, index) => addPlainDays(weekStart, index))
+      : Array.from({ length: monthDayCount }, (_, index) => ({
+          year,
+          month: monthNumber,
+          day: index + 1,
+        }));
+  const windowKeys = new Set(windowDays.map(plainDateKey));
 
   // Ohraničené na okno, nie na celú históriu. Podmienka berie oba dátumy —
   // tréning sa zobrazuje podľa `actual_data.date`, a ak ho nemá, podľa
   // plánovaného; okraje sú širšie o dva dni kvôli pásmu, presné orezanie robí
-  // až porovnanie nižšie. (Rovnako ako v trénerovom kalendári.)
-  const queryFrom = addDays(windowStart, -2).toISOString();
-  const queryTo = addDays(windowEnd, 2).toISOString();
+  // až porovnanie kľúčov nižšie. (Rovnako ako v trénerovom kalendári.)
+  const queryFrom = plainToUtcDate(
+    addPlainDays(windowDays[0], -2),
+  ).toISOString();
+  const queryTo = plainToUtcDate(
+    addPlainDays(windowDays[windowDays.length - 1], 2),
+  ).toISOString();
 
   const { data: records } = connection
     ? await supabase
@@ -144,8 +141,8 @@ export default async function ParentCalendarPage({
     if (!dateValue) continue;
     const date = new Date(dateValue);
     if (Number.isNaN(date.getTime())) continue;
-    if (date < windowStart || date >= windowEnd) continue;
-    const key = toDayKey(date);
+    const key = dayKeyIn(timeZone, date);
+    if (!windowKeys.has(key)) continue;
     const list = sessionsByDay.get(key) ?? [];
     list.push({ id: record.id, status: record.status, date: dateValue });
     sessionsByDay.set(key, list);
@@ -155,34 +152,46 @@ export default async function ParentCalendarPage({
     .flatMap(([, list]) => list)
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  const prevMonth = monthIndex === 0 ? { year: year - 1, monthIndex: 11 } : { year, monthIndex: monthIndex - 1 };
-  const nextMonth = monthIndex === 11 ? { year: year + 1, monthIndex: 0 } : { year, monthIndex: monthIndex + 1 };
+  const prevMonthAnchor = addPlainDays(monthAnchor, -1);
+  const nextMonthAnchor = addPlainDays(
+    { year, month: monthNumber, day: monthDayCount },
+    1,
+  );
 
-  const monthLabel = format.dateTime(monthStart, {
-    month: "long",
-    year: "numeric",
-  });
-
-  const weekKey = (date: Date) => toDayKey(date);
   const prevHref =
     view === "week"
-      ? `/parent/calendar?view=week&week=${weekKey(addDays(weekStart, -7))}`
-      : `/parent/calendar?view=month&month=${monthParam(prevMonth.year, prevMonth.monthIndex)}`;
+      ? `/parent/calendar?view=week&week=${plainDateKey(addPlainDays(weekStart, -7))}`
+      : `/parent/calendar?view=month&month=${monthParam(prevMonthAnchor.year, prevMonthAnchor.month)}`;
   const nextHref =
     view === "week"
-      ? `/parent/calendar?view=week&week=${weekKey(addDays(weekStart, 7))}`
-      : `/parent/calendar?view=month&month=${monthParam(nextMonth.year, nextMonth.monthIndex)}`;
+      ? `/parent/calendar?view=week&week=${plainDateKey(addPlainDays(weekStart, 7))}`
+      : `/parent/calendar?view=month&month=${monthParam(nextMonthAnchor.year, nextMonthAnchor.month)}`;
 
-  const weekHref = `/parent/calendar?view=week&week=${weekKey(view === "week" ? weekStart : startOfWeek(monthStart))}`;
+  const weekHref = `/parent/calendar?view=week&week=${plainDateKey(
+    view === "week" ? weekStart : startOfWeek(monthAnchor),
+  )}`;
   const monthHref = `/parent/calendar?view=month&month=${monthParam(
-    view === "week" ? weekStart.getFullYear() : year,
-    view === "week" ? weekStart.getMonth() : monthIndex,
+    view === "week" ? weekStart.year : year,
+    view === "week" ? weekStart.month : monthNumber,
   )}`;
 
-  const weekLabel = `${format.dateTime(weekStart, { day: "numeric", month: "short" })} – ${format.dateTime(
-    addDays(weekStart, 6),
-    { day: "numeric", month: "short", year: "numeric" },
-  )}`;
+  // Nadpisy sú kalendárne dni, nie okamihy — formátujú sa v UTC, aby ich
+  // next-intl neposunul do pásma diváka.
+  const monthLabel = format.dateTime(plainToUtcDate(monthAnchor), {
+    month: "long",
+    year: "numeric",
+    timeZone: LABEL_TIME_ZONE,
+  });
+  const weekLabel = `${format.dateTime(plainToUtcDate(weekStart), {
+    day: "numeric",
+    month: "short",
+    timeZone: LABEL_TIME_ZONE,
+  })} – ${format.dateTime(plainToUtcDate(addPlainDays(weekStart, 6)), {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: LABEL_TIME_ZONE,
+  })}`;
 
   return (
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
@@ -255,13 +264,9 @@ export default async function ParentCalendarPage({
               Array.from({ length: leadingBlanks }).map((_, index) => (
                 <div key={`blank-${index}`} />
               ))}
-            {Array.from({ length: view === "week" ? 7 : daysInMonth }).map((_, index) => {
-              const dayDate =
-                view === "week"
-                  ? addDays(weekStart, index)
-                  : new Date(year, monthIndex, index + 1);
-              const dayNumber = dayDate.getDate();
-              const key = toDayKey(dayDate);
+            {windowDays.map((dayDate) => {
+              const dayNumber = dayDate.day;
+              const key = plainDateKey(dayDate);
               const daySessions = sessionsByDay.get(key) ?? [];
               const hasSessions = daySessions.length > 0;
               const status = dayStatus(daySessions);
@@ -294,7 +299,10 @@ export default async function ParentCalendarPage({
             ) : (
               <ul className="flex flex-col gap-2">
                 {windowSessions.map((session) => (
-                  <li key={session.id} id={`day-${toDayKey(new Date(session.date))}`}>
+                  <li
+                    key={session.id}
+                    id={`day-${dayKeyIn(timeZone, new Date(session.date))}`}
+                  >
                     <Link
                       href={`/parent/sessions/${session.id}`}
                       className={`flex items-center justify-between rounded-xl border ${
