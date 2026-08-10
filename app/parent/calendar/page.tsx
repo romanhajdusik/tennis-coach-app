@@ -7,6 +7,7 @@ import {
   addPlainDays,
   dayKeyIn,
   daysInMonth,
+  isoWeek,
   parsePlainDate,
   plainDateKey,
   plainToUtcDate,
@@ -182,14 +183,17 @@ export default async function ParentCalendarPage({
     year: "numeric",
     timeZone: LABEL_TIME_ZONE,
   });
-  const weekLabel = `${format.dateTime(plainToUtcDate(weekStart), {
+  // Číslo ISO týždňa ako hlavný údaj, rozsah dátumov drobným pod ním —
+  // rovnako ako v trénerovom kalendári.
+  const { year: isoYear, week: isoWeekNumber } = isoWeek(weekStart);
+  const weekLabel = t("weekLabel", { week: isoWeekNumber, year: isoYear });
+  const weekRangeLabel = `${format.dateTime(plainToUtcDate(weekStart), {
     day: "numeric",
     month: "short",
     timeZone: LABEL_TIME_ZONE,
   })} – ${format.dateTime(plainToUtcDate(addPlainDays(weekStart, 6)), {
     day: "numeric",
     month: "short",
-    year: "numeric",
     timeZone: LABEL_TIME_ZONE,
   })}`;
 
@@ -243,9 +247,14 @@ export default async function ParentCalendarPage({
             >
               {t("prev")}
             </Link>
-            <p className="text-sm font-medium capitalize text-foreground ">
-              {view === "week" ? weekLabel : monthLabel}
-            </p>
+            <div className="flex flex-col items-center">
+              <p className="text-sm font-medium capitalize text-foreground ">
+                {view === "week" ? weekLabel : monthLabel}
+              </p>
+              {view === "week" && (
+                <p className="text-xs text-muted">{weekRangeLabel}</p>
+              )}
+            </div>
             <Link
               href={nextHref}
               className="text-sm font-medium text-muted underline "

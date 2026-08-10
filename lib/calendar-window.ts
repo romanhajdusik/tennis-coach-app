@@ -83,6 +83,34 @@ export function daysInMonth(year: number, month: number): number {
 }
 
 /**
+ * ISO 8601 týždeň — ten istý spôsob číslovania, aký používa analytika
+ * (`Week {week}, {year}`), aby si tréner vedel týždeň v kalendári a v
+ * analytike spárovať.
+ *
+ * Rok týždňa NIE JE vždy rok dátumu: týždeň patrí roku, do ktorého padne jeho
+ * štvrtok. 1. januára 2021 (piatok) je preto 53. týždeň roku **2020**.
+ * Počíta sa cez `Date.UTC`, takže do toho nevstupuje žiadne pásmo.
+ */
+export function isoWeek(date: PlainDate): { year: number; week: number } {
+  const thursday = new Date(Date.UTC(date.year, date.month - 1, date.day));
+  thursday.setUTCDate(thursday.getUTCDate() - weekdayIndex(date) + 3);
+
+  const isoYear = thursday.getUTCFullYear();
+  // 4. január leží vždy v prvom ISO týždni — jeho štvrtok je teda kotva.
+  const firstThursday = new Date(Date.UTC(isoYear, 0, 4));
+  firstThursday.setUTCDate(
+    firstThursday.getUTCDate() - ((firstThursday.getUTCDay() + 6) % 7) + 3,
+  );
+
+  const week =
+    1 +
+    Math.round(
+      (thursday.getTime() - firstThursday.getTime()) / (7 * 24 * 3600 * 1000),
+    );
+  return { year: isoYear, week };
+}
+
+/**
  * `Date` na formátovanie NADPISOV. Formátovať sa musí s `timeZone: "UTC"`,
  * inak by ju next-intl preložil do pásma diváka a deň by opäť ušiel.
  */

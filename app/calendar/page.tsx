@@ -9,6 +9,7 @@ import {
   addPlainDays,
   dayKeyIn,
   daysInMonth,
+  isoWeek,
   parsePlainDate,
   plainDateKey,
   plainToUtcDate,
@@ -189,14 +190,19 @@ export default async function CalendarPage({
     year: "numeric",
     timeZone: LABEL_TIME_ZONE,
   });
-  const weekLabel = `${format.dateTime(plainToUtcDate(weekStart), {
+  // Hlavný údaj je číslo ISO týždňa — rovnaké číslovanie ako v analytike,
+  // takže si tréner vie týždeň spárovať. Rozsah dátumov ostáva pod ním
+  // drobným písmom: mriežka pod nadpisom ukazuje len čísla dní, takže pri
+  // týždni na prelome mesiacov by inak nebolo vidieť, o ktoré mesiace ide.
+  const { year: isoYear, week: isoWeekNumber } = isoWeek(weekStart);
+  const weekLabel = t("weekLabel", { week: isoWeekNumber, year: isoYear });
+  const weekRangeLabel = `${format.dateTime(plainToUtcDate(weekStart), {
     day: "numeric",
     month: "short",
     timeZone: LABEL_TIME_ZONE,
   })} – ${format.dateTime(plainToUtcDate(addPlainDays(weekStart, 6)), {
     day: "numeric",
     month: "short",
-    year: "numeric",
     timeZone: LABEL_TIME_ZONE,
   })}`;
 
@@ -258,9 +264,14 @@ export default async function CalendarPage({
             >
               {t("prev")}
             </Link>
-            <p className="text-sm font-medium capitalize text-foreground ">
-              {view === "week" ? weekLabel : monthLabel}
-            </p>
+            <div className="flex flex-col items-center">
+              <p className="text-sm font-medium capitalize text-foreground ">
+                {view === "week" ? weekLabel : monthLabel}
+              </p>
+              {view === "week" && (
+                <p className="text-xs text-muted">{weekRangeLabel}</p>
+              )}
+            </div>
             <Link
               href={nextHref}
               className="text-sm font-medium text-muted underline "

@@ -5,6 +5,7 @@
   "next": "Next →",
   "viewWeek": "Week",
   "viewMonth": "Month",
+  "weekLabel": "Week {week}, {year}",
   "weekdays": [
     "Mo",
     "Tu",
