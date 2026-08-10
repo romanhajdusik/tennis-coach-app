@@ -6,18 +6,13 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
+import { generateAccessCode } from "@/lib/access-code";
 
 export type InviteFormState = { error?: string } | undefined;
 
-// Kód sa číta nahlas a prepisuje z SMS — bez znakov, ktoré sa zamieňajú
-// (0/O, 1/I). Rovnaký princíp ako pri connect-code pre rodiča.
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
+/** Ten istý kryptografický generátor ako pri kóde pre rodiča, len s pomlčkou. */
 function generateInviteCode() {
-  let code = "";
-  for (let index = 0; index < 8; index++) {
-    code += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
-  }
+  const code = generateAccessCode(8);
   return `${code.slice(0, 4)}-${code.slice(4)}`;
 }
 

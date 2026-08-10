@@ -5,18 +5,9 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireWriteAccess } from "@/lib/subscription";
+import { generateAccessCode } from "@/lib/access-code";
 
-// Bez zameniteľných znakov (0/O, 1/I/L), aby sa kód dal ľahko prepísať zo SMS
-const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-const CODE_LENGTH = 8;
-
-function generateCode(): string {
-  let code = "";
-  for (let i = 0; i < CODE_LENGTH; i++) {
-    code += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
-  }
-  return code;
-}
+// Generovanie kódu (vrátane dôvodu, prečo kryptograficky) je v lib/access-code.ts.
 
 export async function generateConnectCode(playerId: string) {
   const supabase = await createClient();
@@ -63,7 +54,7 @@ export async function generateConnectCode(playerId: string) {
       const { error } = await supabase.from("player_connections").insert({
         coach_id: user.id,
         player_id: playerId,
-        connect_code: generateCode(),
+        connect_code: generateAccessCode(),
         status: "pending",
       });
       if (!error) break;
