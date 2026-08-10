@@ -25,6 +25,32 @@ function monthParam(year: number, monthIndex: number) {
   return `${year}-${pad(monthIndex + 1)}`;
 }
 
+type CalendarView = "week" | "month";
+
+/** Rovnaký predvolený pohľad ako u trénera — zoznam za celý mesiac je pridlhý. */
+const DEFAULT_VIEW: CalendarView = "week";
+
+function startOfWeek(date: Date) {
+  const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+  return monday;
+}
+
+function parseWeekParam(week: string | undefined) {
+  if (week && /^\d{4}-\d{2}-\d{2}$/.test(week)) {
+    const [year, month, day] = week.split("-").map(Number);
+    const parsed = new Date(year, month - 1, day);
+    if (!Number.isNaN(parsed.getTime())) return startOfWeek(parsed);
+  }
+  return startOfWeek(new Date());
+}
+
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
 // Naplánované tréningy zelenou, dokončené červenou — ak má deň oboje,
 // naplánovaný (ešte nadchádzajúci) vyhráva, rovnaký princíp ako u trénera.
 function dayStatus(daySessions: { status: string }[]) {
@@ -53,9 +79,11 @@ const CARD_BORDER_CLASSES: Record<string, string> = {
 export default async function ParentCalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string }>;
+  searchParams: Promise<{ month?: string; week?: string; view?: string }>;
 }) {
-  const { month } = await searchParams;
+  const { month, week, view: rawView } = await searchParams;
+  const view: CalendarView =
+    rawView === "month" || rawView === "week" ? rawView : DEFAULT_VIEW;
   const t = await getTranslations("Calendar");
   const tCommon = await getTranslations("Common");
   const tParent = await getTranslations("Parent.calendar");
@@ -77,17 +105,33 @@ export default async function ParentCalendarPage({
     .eq("status", "active")
     .maybeSingle();
 
+  const { year, monthIndex } = parseMonthParam(month);
+  const monthStart = new Date(year, monthIndex, 1);
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const leadingBlanks = (monthStart.getDay() + 6) % 7; // pondelok = 0
+  const weekStart = parseWeekParam(week);
+
+  const windowStart = view === "week" ? weekStart : monthStart;
+  const windowEnd =
+    view === "week" ? addDays(weekStart, 7) : new Date(year, monthIndex + 1, 1);
+
+  // Ohraničené na okno, nie na celú históriu. Podmienka berie oba dátumy —
+  // tréning sa zobrazuje podľa `actual_data.date`, a ak ho nemá, podľa
+  // plánovaného; okraje sú širšie o dva dni kvôli pásmu, presné orezanie robí
+  // až porovnanie nižšie. (Rovnako ako v trénerovom kalendári.)
+  const queryFrom = addDays(windowStart, -2).toISOString();
+  const queryTo = addDays(windowEnd, 2).toISOString();
+
   const { data: records } = connection
     ? await supabase
         .from("parent_session_records")
         .select("id, status, planned_data, actual_data")
         .eq("parent_id", user.id)
+        .or(
+          `and(planned_data->>date.gte.${queryFrom},planned_data->>date.lt.${queryTo}),` +
+            `and(actual_data->>date.gte.${queryFrom},actual_data->>date.lt.${queryTo})`,
+        )
     : { data: null };
-
-  const { year, monthIndex } = parseMonthParam(month);
-  const monthStart = new Date(year, monthIndex, 1);
-  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-  const leadingBlanks = (monthStart.getDay() + 6) % 7; // pondelok = 0
 
   const sessionsByDay = new Map<
     string,
@@ -100,14 +144,14 @@ export default async function ParentCalendarPage({
     if (!dateValue) continue;
     const date = new Date(dateValue);
     if (Number.isNaN(date.getTime())) continue;
-    if (date.getFullYear() !== year || date.getMonth() !== monthIndex) continue;
+    if (date < windowStart || date >= windowEnd) continue;
     const key = toDayKey(date);
     const list = sessionsByDay.get(key) ?? [];
     list.push({ id: record.id, status: record.status, date: dateValue });
     sessionsByDay.set(key, list);
   }
 
-  const monthSessions = [...sessionsByDay.entries()]
+  const windowSessions = [...sessionsByDay.entries()]
     .flatMap(([, list]) => list)
     .sort((a, b) => a.date.localeCompare(b.date));
 
@@ -118,6 +162,27 @@ export default async function ParentCalendarPage({
     month: "long",
     year: "numeric",
   });
+
+  const weekKey = (date: Date) => toDayKey(date);
+  const prevHref =
+    view === "week"
+      ? `/parent/calendar?view=week&week=${weekKey(addDays(weekStart, -7))}`
+      : `/parent/calendar?view=month&month=${monthParam(prevMonth.year, prevMonth.monthIndex)}`;
+  const nextHref =
+    view === "week"
+      ? `/parent/calendar?view=week&week=${weekKey(addDays(weekStart, 7))}`
+      : `/parent/calendar?view=month&month=${monthParam(nextMonth.year, nextMonth.monthIndex)}`;
+
+  const weekHref = `/parent/calendar?view=week&week=${weekKey(view === "week" ? weekStart : startOfWeek(monthStart))}`;
+  const monthHref = `/parent/calendar?view=month&month=${monthParam(
+    view === "week" ? weekStart.getFullYear() : year,
+    view === "week" ? weekStart.getMonth() : monthIndex,
+  )}`;
+
+  const weekLabel = `${format.dateTime(weekStart, { day: "numeric", month: "short" })} – ${format.dateTime(
+    addDays(weekStart, 6),
+    { day: "numeric", month: "short", year: "numeric" },
+  )}`;
 
   return (
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
@@ -139,18 +204,41 @@ export default async function ParentCalendarPage({
         </p>
       ) : (
         <>
+          <div className="flex gap-2">
+            <Link
+              href={weekHref}
+              className={
+                view === "week"
+                  ? "rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+                  : "rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground"
+              }
+            >
+              {t("viewWeek")}
+            </Link>
+            <Link
+              href={monthHref}
+              className={
+                view === "month"
+                  ? "rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+                  : "rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground"
+              }
+            >
+              {t("viewMonth")}
+            </Link>
+          </div>
+
           <div className="flex items-center justify-between">
             <Link
-              href={`/parent/calendar?month=${monthParam(prevMonth.year, prevMonth.monthIndex)}`}
+              href={prevHref}
               className="text-sm font-medium text-muted underline "
             >
               {t("prev")}
             </Link>
             <p className="text-sm font-medium capitalize text-foreground ">
-              {monthLabel}
+              {view === "week" ? weekLabel : monthLabel}
             </p>
             <Link
-              href={`/parent/calendar?month=${monthParam(nextMonth.year, nextMonth.monthIndex)}`}
+              href={nextHref}
               className="text-sm font-medium text-muted underline "
             >
               {t("next")}
@@ -163,12 +251,17 @@ export default async function ParentCalendarPage({
                 {label}
               </div>
             ))}
-            {Array.from({ length: leadingBlanks }).map((_, index) => (
-              <div key={`blank-${index}`} />
-            ))}
-            {Array.from({ length: daysInMonth }).map((_, index) => {
-              const dayNumber = index + 1;
-              const key = toDayKey(new Date(year, monthIndex, dayNumber));
+            {view === "month" &&
+              Array.from({ length: leadingBlanks }).map((_, index) => (
+                <div key={`blank-${index}`} />
+              ))}
+            {Array.from({ length: view === "week" ? 7 : daysInMonth }).map((_, index) => {
+              const dayDate =
+                view === "week"
+                  ? addDays(weekStart, index)
+                  : new Date(year, monthIndex, index + 1);
+              const dayNumber = dayDate.getDate();
+              const key = toDayKey(dayDate);
               const daySessions = sessionsByDay.get(key) ?? [];
               const hasSessions = daySessions.length > 0;
               const status = dayStatus(daySessions);
@@ -190,15 +283,17 @@ export default async function ParentCalendarPage({
 
           <section className="flex flex-col gap-2">
             <h2 className="text-sm font-medium text-muted ">
-              {t("monthSessionsHeading")}
+              {view === "week"
+                ? t("weekSessionsHeading")
+                : t("monthSessionsHeading")}
             </h2>
-            {monthSessions.length === 0 ? (
+            {windowSessions.length === 0 ? (
               <p className="text-sm text-muted ">
-                {t("noSessionsInMonth")}
+                {view === "week" ? t("noSessionsInWeek") : t("noSessionsInMonth")}
               </p>
             ) : (
               <ul className="flex flex-col gap-2">
-                {monthSessions.map((session) => (
+                {windowSessions.map((session) => (
                   <li key={session.id} id={`day-${toDayKey(new Date(session.date))}`}>
                     <Link
                       href={`/parent/sessions/${session.id}`}

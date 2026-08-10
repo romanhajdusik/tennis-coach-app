@@ -160,6 +160,15 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
 2. **Aktualizácia (review):** po tréningu tréner doplní reálny čas a poznámky; jednotlivé cvičenia môže označiť ako **neodohrané** alebo **nahradené** (náhrada sa zaradí v zozname hneď za pôvodným cvičením)
 3. **Archivácia (completed):** uzamknutie záznamu (vynútené aj cez RLS) — od tohto bodu už nejde tréning ani zrušiť, ani cvičenia preusporiadať
 
+## Kalendár
+
+Kalendár ([`app/calendar/page.tsx`](app/calendar/page.tsx) pre trénera, [`app/parent/calendar/page.tsx`](app/parent/calendar/page.tsx) pre rodiča/hráča) má dva pohľady, prepínajú sa v URL (`?view=week|month`).
+
+- **Predvolený je TÝŽDEŇ** (od 2026-08-09, na podnet trénera aj testerov). Mesačný zoznam pod mriežkou mal pri aktívnom hráčovi bežne 30+ položiek a strácalo sa v ňom to podstatné — čo je dnes a čo najbližšie. Mesiac ostáva na jeden klik, pri plánovaní dopredu je užitočný.
+- Týždeň sa adresuje `?week=YYYY-MM-DD` (ľubovoľný deň v ňom, normalizuje sa na pondelok), mesiac `?month=YYYY-MM` ako doteraz. **Prepnutie pohľadu drží obdobie**, na ktoré sa používateľ pozerá — z týždňa skočí na mesiac, v ktorom ten týždeň leží, a naopak.
+- **Dotaz je ohraničený na zobrazované okno**, nie na celú históriu hráča. Podmienka musí brať **oba** dátumy (`planned_data->>date` aj `actual_data->>date`), lebo tréning sa zobrazuje podľa reálneho dátumu, a ak ho nemá, podľa plánovaného — filtrovať len podľa jedného by tréningy prekladané na iný deň buď stratilo, alebo pridalo navyše. Okraje sú o dva dni širšie kvôli časovému pásmu; presné orezanie robí až porovnanie v JS.
+- Oba kalendáre (trénerský aj rodičovský) sú si zámerne podobné — pri zmene jedného pozri, či to isté nepotrebuje aj druhý.
+
 ## Analytika
 
 - Filtrovanie podľa obdobia: **týždeň**, **mesiac**, **kvartál**, **rok** — s porovnaním voči minulému roku (`/analytics/[category]`)

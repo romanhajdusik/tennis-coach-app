@@ -3,7 +3,19 @@
   "noActivePlayer": "First <link>set an active player</link>, then you'll see their practices in the calendar.",
   "prev": "← Prev",
   "next": "Next →",
-  "weekdays": ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+  "viewWeek": "Week",
+  "viewMonth": "Month",
+  "weekdays": [
+    "Mo",
+    "Tu",
+    "We",
+    "Th",
+    "Fr",
+    "Sa",
+    "Su"
+  ],
   "monthSessionsHeading": "Practices this month",
-  "noSessionsInMonth": "No practices this month."
+  "noSessionsInMonth": "No practices this month.",
+  "weekSessionsHeading": "Practices this week",
+  "noSessionsInWeek": "No practices this week."
 }
