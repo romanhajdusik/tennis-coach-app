@@ -198,6 +198,23 @@ async function patchCalendarEvent(
   return true;
 }
 
+// Zmaže udalosť. `404`/`410` = v kalendári už nie je (tréner ju tam zmazal
+// sám), čo je z pohľadu volajúceho ten istý výsledok ako úspešné zmazanie.
+async function deleteCalendarEvent(
+  accessToken: string,
+  calendarId: string,
+  eventId: string,
+): Promise<void> {
+  const response = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
+    { method: "DELETE", headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  if (response.ok || response.status === 404 || response.status === 410) {
+    return;
+  }
+  throw new Error("Zmazanie udalosti v Google Kalendári zlyhalo.");
+}
+
 export type SessionCalendarSyncResult = {
   googleEventId: string | null;
   collision: boolean;
@@ -297,5 +314,39 @@ export async function rescheduleSessionInGoogleCalendar(
   } catch (error) {
     console.error("Presun tréningu v Google Kalendári zlyhal:", error);
     return { googleEventId: null, collision: false };
+  }
+}
+
+/**
+ * Odstráni udalosť zrušeného tréningu z kalendára trénera.
+ *
+ * Vracia `true`, len keď je udalosť preukázateľne preč (zmazaná alebo tam už
+ * nebola) — vtedy má volajúci zahodiť `sessions.google_event_id`. Pri
+ * nepripojenom kalendári alebo zlyhaní Googlu vráti `false` a väzba ostáva:
+ * ukazuje na udalosť, ktorá v kalendári stále je.
+ *
+ * Ako všade inde v tomto module platí, že kalendár nesmie zablokovať prácu
+ * appky — zrušenie tréningu prebehne aj vtedy, keď sa udalosť zmazať nedá.
+ */
+export async function removeSessionFromGoogleCalendar(
+  supabase: SupabaseServerClient,
+  coachId: string,
+  googleEventId: string,
+): Promise<boolean> {
+  try {
+    const connection = await getValidConnection(supabase, coachId);
+    if (!connection) {
+      return false;
+    }
+
+    await deleteCalendarEvent(
+      connection.accessToken,
+      connection.calendarId,
+      googleEventId,
+    );
+    return true;
+  } catch (error) {
+    console.error("Zmazanie tréningu v Google Kalendári zlyhalo:", error);
+    return false;
   }
 }

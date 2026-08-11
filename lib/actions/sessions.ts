@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireWriteAccess } from "@/lib/subscription";
 import {
+  removeSessionFromGoogleCalendar,
   rescheduleSessionInGoogleCalendar,
   syncSessionToGoogleCalendar,
 } from "@/lib/google/calendar";
@@ -269,8 +270,7 @@ export async function completeSession(sessionId: string) {
 // Zrušenie plánovaného tréningu ho úplne vymaže (aj cvičenia cez cascade) —
 // nie je to len zmena statusu. RLS už blokuje mazanie dokončených tréningov
 // (rovnaká policy ako pri "sessions_delete_active_player"), takže tu netreba
-// žiadnu ďalšiu kontrolu. Zámerne nemažeme prípadnú udalosť v Google
-// Kalendári — kalendárová synchronizácia je zatiaľ len jednosmerná.
+// žiadnu ďalšiu kontrolu.
 export async function deleteSession(sessionId: string) {
   const supabase = await createClient();
   const {
@@ -286,6 +286,14 @@ export async function deleteSession(sessionId: string) {
     return;
   }
 
+  // Väzba na kalendár sa musí prečítať PRED zmenou — po zmazaní riadku by sa
+  // už nedalo zistiť, ktorú udalosť odstrániť.
+  const { data: session } = await supabase
+    .from("sessions")
+    .select("google_event_id")
+    .eq("id", sessionId)
+    .maybeSingle();
+
   // V org režime tréner dáta nemaže — dáta vlastní federácia (§5.4/§5.7).
   // Naplánovaný tréning sa preto len ZRUŠÍ (status = 'cancelled'), aby
   // organizácii ostal úplný záznam. RLS mazanie org riadkov aj tak zamietne,
@@ -293,18 +301,37 @@ export async function deleteSession(sessionId: string) {
   // že sa zrušil.
   const org = await getOrgContext();
 
-  if (org) {
-    await supabase
-      .from("sessions")
-      .update({ status: "cancelled" })
-      .eq("id", sessionId)
-      .eq("coach_id", user.id);
-  } else {
-    await supabase
-      .from("sessions")
-      .delete()
-      .eq("id", sessionId)
-      .eq("coach_id", user.id);
+  const { count } = org
+    ? await supabase
+        .from("sessions")
+        .update({ status: "cancelled" }, { count: "exact" })
+        .eq("id", sessionId)
+        .eq("coach_id", user.id)
+    : await supabase
+        .from("sessions")
+        .delete({ count: "exact" })
+        .eq("id", sessionId)
+        .eq("coach_id", user.id);
+
+  // Kalendár sa upratuje až po úspešnej zmene v DB: keby ju RLS zamietla,
+  // tréning by v appke ostal, ale z kalendára by zmizol.
+  if (count && session?.google_event_id) {
+    const removed = await removeSessionFromGoogleCalendar(
+      supabase,
+      user.id,
+      session.google_event_id,
+    );
+    // Väzbu zahadzujeme len keď je udalosť preukázateľne preč. Pri
+    // nepripojenom kalendári alebo výpadku Googlu ostáva — udalosť tam
+    // stále je a je na čo ukazovať. V samostatnom režime už riadok
+    // neexistuje, takže sa to týka len organizácie.
+    if (removed && org) {
+      await supabase
+        .from("sessions")
+        .update({ google_event_id: null })
+        .eq("id", sessionId)
+        .eq("coach_id", user.id);
+    }
   }
 
   revalidatePath("/sessions");

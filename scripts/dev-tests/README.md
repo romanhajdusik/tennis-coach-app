@@ -30,7 +30,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča, životný cyklus členstva |
 | `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, kód uplatní len prihlásený, rodičovi ostáva jeho prístup |
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
-| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun naplánovaného tréningu v oboch režimoch |
+| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun a zrušenie naplánovaného tréningu v oboch režimoch |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
 
 ```bash
@@ -107,6 +107,13 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   zmazanie člena sa v `browser-director.js` §8 robí na `coach-new@test.local`
   z onboardingu (ten sa aj tak na konci maže); na seedovaných trénerov nesiahaj,
   ostatné sady s nimi počítajú.
+- **Sypú sa naraz nesúvisiace sekcie? Pozri najprv na dev server, nie na kód.**
+  Osirotený `next dev` (napr. keď sa zabije rodičovský `npm`, ale nie samotný
+  proces) vie skončiť v stave, keď kompilačné workery padajú — v logu
+  `.next/dev/logs/next-development.log` je „Jest worker encountered … child
+  process exceptions". Navonok to vyzerá ako rozbitá appka: stránky sa
+  nevykreslia, `waitForSelector` vyprší. Lieči to zabitie procesu, `rm -rf
+  .next/dev` a čerstvý `npm run dev`.
 - **So zmazaným tréningom zmaž aj kópiu u rodiča.** DELETE sa k rodičovi
   zámerne nepropaguje (kópia musí prežiť aj zmazanie trénerovho účtu), takže
   scenár, ktorý si tréning založí a zase zmaže, nechá pri zdieľanom hráčovi

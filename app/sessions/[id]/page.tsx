@@ -7,6 +7,7 @@ import { RescheduleForm } from "./reschedule-form";
 import { SessionReviewForm } from "./session-review-form";
 import { DrillRow, type Drill } from "./drill-row";
 import { getDrillOptionsByCategory } from "@/lib/actions/drill-codes";
+import { getOrgContext } from "@/lib/org/context";
 
 type PlannedData = { date?: string; duration_minutes?: number };
 type ActualData = { date?: string };
@@ -60,6 +61,9 @@ export default async function SessionDetailPage({
   const orderedDrills: Drill[] = drills ?? [];
   const canEdit = session.status !== "completed";
   const drillsByCategory = await getDrillOptionsByCategory(supabase, user.id);
+  // Vo federácii sa tréning nemaže, len ruší — potvrdzovacia otázka musí
+  // sľubovať to, čo sa naozaj stane (§5.4).
+  const org = await getOrgContext();
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
@@ -86,6 +90,7 @@ export default async function SessionDetailPage({
         status={session.status}
         initialDate={actual?.date ?? planned?.date}
         initialNotes={session.notes}
+        isOrg={Boolean(org)}
       />
 
       {canEdit && (

@@ -14,11 +14,14 @@ export function SessionReviewForm({
   status,
   initialDate,
   initialNotes,
+  isOrg = false,
 }: {
   sessionId: string;
   status: string;
   initialDate?: string;
   initialNotes?: string | null;
+  /** Vo federácii sa tréning nemaže, len ruší (§5.4) — a otázka to musí povedať. */
+  isOrg?: boolean;
 }) {
   const t = useTranslations("Sessions.review");
   const format = useFormatter();
@@ -157,7 +160,7 @@ export function SessionReviewForm({
       {confirmingDelete && (
         <div className="flex flex-col gap-2 rounded-lg border p-3 border-red-800">
           <p className="text-sm text-red-400">
-            {t("confirmDeleteMessage")}
+            {t(isOrg ? "confirmCancelMessage" : "confirmDeleteMessage")}
           </p>
           <div className="flex gap-2">
             <button
@@ -166,7 +169,9 @@ export function SessionReviewForm({
               disabled={isDeleting}
               className="rounded-lg px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50 bg-red-700"
             >
-              {isDeleting ? t("confirmDeleteSubmitPending") : t("confirmDeleteSubmit")}
+              {isDeleting
+                ? t("confirmDeleteSubmitPending")
+                : t(isOrg ? "confirmCancelSubmit" : "confirmDeleteSubmit")}
             </button>
             <button
               type="button"
