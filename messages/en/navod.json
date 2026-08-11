@@ -12,8 +12,8 @@
       "body": "Sign up as a coach and log in. Registration is free for now."
     },
     {
-      "title": "Add your player",
-      "body": "P.L.A.W always works with one active player. Add them in the Players section — you can switch to another one anytime."
+      "title": "Add your players",
+      "body": "Add everyone you coach in the Players section. How many can be active at the same time depends on your plan — with more than one, you switch between them in the app and get a daily overview of all of them."
     },
     {
       "title": "Set up your drill codes",
@@ -44,7 +44,7 @@
   "tips": [
     "Add the app to your phone's home screen and use it like a native app right on the court.",
     "Inactive players live in the archive — their full history stays available, read-only.",
-    "The app works in Slovak and English and always shows time in your own time zone."
+    "The app is in English and always shows time in your own time zone."
   ],
   "ctaTitle": "Ready to start?",
   "ctaText": "Create an account in a few minutes and plan your first practice today.",

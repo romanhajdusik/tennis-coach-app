@@ -12,8 +12,8 @@
       "body": "Inscris-toi en tant qu'entraîneur et connecte-toi. L'inscription est gratuite pour le moment."
     },
     {
-      "title": "Ajoute ton joueur",
-      "body": "P.L.A.W travaille toujours avec un seul joueur actif. Ajoute-le dans la section Joueurs — tu peux passer à un autre à tout moment."
+      "title": "Ajoute tes joueurs",
+      "body": "Ajoute dans la section Joueurs tous ceux que tu entraînes. Le nombre de joueurs actifs en même temps dépend de ta formule — avec plusieurs, tu passes de l'un à l'autre dans l'app et tu obtiens un aperçu quotidien de tous."
     },
     {
       "title": "Configure tes codes d'exercice",
@@ -44,7 +44,7 @@
   "tips": [
     "Ajoute l'application à l'écran d'accueil de ton téléphone et utilise-la comme une app native directement sur le court.",
     "Les joueurs inactifs sont dans les archives — tout leur historique reste disponible, en lecture seule.",
-    "L'application fonctionne en slovaque et en anglais et affiche toujours l'heure dans ton fuseau horaire."
+    "L'application est en anglais et affiche toujours l'heure dans ton fuseau horaire."
   ],
   "ctaTitle": "Prêt à commencer ?",
   "ctaText": "Crée un compte en quelques minutes et planifie ta première séance dès aujourd'hui.",

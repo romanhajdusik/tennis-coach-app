@@ -12,8 +12,8 @@
       "body": "Zaregistruj sa ako tréner a prihlás sa. Registrácia je zatiaľ zadarmo."
     },
     {
-      "title": "Pridaj svojho hráča",
-      "body": "P.L.A.W pracuje vždy s jedným aktívnym hráčom. Pridaj ho v sekcii Hráči — kedykoľvek môžeš prepnúť na iného."
+      "title": "Pridaj svojich hráčov",
+      "body": "V sekcii Hráči pridaj všetkých, ktorých trénuješ. Koľko ich môže byť naraz aktívnych, závisí od tvojho predplatného — pri viacerých medzi nimi v appke prepínaš a máš denný prehľad o všetkých."
     },
     {
       "title": "Nastav si kódy cvičení",
@@ -44,7 +44,7 @@
   "tips": [
     "Appku si pridaj na plochu telefónu a používaj ju ako natívnu appku priamo na kurte.",
     "Neaktívnych hráčov nájdeš v archíve — ich kompletná história ostáva prístupná, len na čítanie.",
-    "Appka funguje v slovenčine aj angličtine a čas zobrazuje vždy v tvojom časovom pásme."
+    "Appka je v angličtine a čas zobrazuje vždy v tvojom časovom pásme."
   ],
   "ctaTitle": "Pripravený začať?",
   "ctaText": "Založ si účet za pár minút a naplánuj prvý tréning ešte dnes.",
