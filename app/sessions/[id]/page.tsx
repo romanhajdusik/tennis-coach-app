@@ -8,6 +8,8 @@ import { SessionReviewForm } from "./session-review-form";
 import { DrillRow, type Drill } from "./drill-row";
 import { getDrillOptionsByCategory } from "@/lib/actions/drill-codes";
 import { getOrgContext } from "@/lib/org/context";
+import { getActivePlayers } from "@/lib/players/selected";
+import { CopyToPlayerForm } from "./copy-to-player-form";
 
 type PlannedData = { date?: string; duration_minutes?: number };
 type ActualData = { date?: string };
@@ -36,7 +38,7 @@ export default async function SessionDetailPage({
 
   const { data: session } = await supabase
     .from("sessions")
-    .select("id, status, planned_data, actual_data, notes")
+    .select("id, status, planned_data, actual_data, notes, player_id")
     .eq("id", id)
     .maybeSingle();
 
@@ -64,6 +66,12 @@ export default async function SessionDetailPage({
   // Vo federácii sa tréning nemaže, len ruší — potvrdzovacia otázka musí
   // sľubovať to, čo sa naozaj stane (§5.4).
   const org = await getOrgContext();
+
+  // Skupinový tréning: ten istý záznam sa dá zapísať aj ďalším hráčom
+  // trénera. Ponuka má zmysel, len keď je koho ponúknuť.
+  const otherPlayers = (await getActivePlayers(supabase, user.id)).filter(
+    (player) => player.id !== session.player_id,
+  );
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
@@ -165,6 +173,10 @@ export default async function SessionDetailPage({
           </ul>
         )}
       </section>
+
+      {otherPlayers.length > 0 && (
+        <CopyToPlayerForm sessionId={session.id} players={otherPlayers} />
+      )}
     </div>
   );
 }

@@ -24,6 +24,13 @@
     "confirmSubmitPending": "Saving...",
     "confirmEdit": "Edit"
   },
+  "copy": {
+    "heading": "Also record for another player",
+    "hint": "Was someone else on court? They get the same practice with the same drills, and you can adjust it for them afterwards.",
+    "playerLabel": "Player",
+    "submit": "Copy practice",
+    "submitPending": "Copying..."
+  },
   "reschedule": {
     "button": "Reschedule",
     "heading": "Reschedule practice",
@@ -91,6 +98,9 @@
     "reviewLocked": "The practice is locked, notes could not be saved.",
     "rescheduleLocked": "Only a planned practice can be rescheduled.",
     "rescheduleFailed": "Failed to move the practice.",
+    "copyInvalidPlayer": "Pick one of your other active players.",
+    "copyDuplicate": "{name} already has a practice at that time.",
+    "copyFailed": "Failed to copy the practice.",
     "missingFields": "Fill in all fields.",
     "invalidCharacter": "Invalid shot character.",
     "invalidDuration": "Invalid duration.",

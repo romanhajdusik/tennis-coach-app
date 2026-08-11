@@ -276,6 +276,172 @@ async function cancelScenario(page, base, db, coach, player, isOrg) {
   }
 }
 
+/**
+ * Skupinový tréning: ten istý záznam sa zapíše aj ďalšiemu hráčovi trénera.
+ *
+ * Overuje sa kópia z DOKONČENÉHO tréningu — to je hlavný prípad (tréner
+ * zisťuje až po tréningu, že detí bolo na kurte viac) a zároveň ten, kde sa
+ * najľahšie pokazí: do uzamknutého tréningu sa cvičenia vložiť nedajú, takže
+ * kópia musí vzniknúť odomknutá.
+ */
+async function copyScenario(page, base, db, coach, player, otherPlayer) {
+  const plannedAt = new Date();
+  plannedAt.setDate(plannedAt.getDate() + 62);
+  plannedAt.setHours(7, 30, 0, 0);
+  const NOTES = "Group practice note";
+  let sourceId = null;
+  let copyId = null;
+
+  try {
+    const { data: created } = await db
+      .from("sessions")
+      .insert({
+        coach_id: coach.id,
+        organization_id: player.organization_id,
+        player_id: player.id,
+        status: "completed",
+        planned_data: { date: plannedAt.toISOString(), duration_minutes: 90 },
+        actual_data: { date: plannedAt.toISOString() },
+        notes: NOTES,
+      })
+      .select("id")
+      .single();
+    sourceId = created.id;
+
+    await db.from("session_drills").insert(
+      [
+        ["Forehand", "offensive", "FRH-CRS", 15],
+        ["Backhand", "neutral", "BKH-DTL", 20],
+        ["Serve", "offensive", "SR1-DCE", 10],
+      ].map(([category, character, drill_code, duration_minutes], index) => ({
+        session_id: sourceId,
+        coach_id: coach.id,
+        organization_id: player.organization_id,
+        category,
+        character,
+        drill_code,
+        duration_minutes,
+        status: "played",
+        sort_order: index + 1,
+      })),
+    );
+
+    await page.goto(`${base}/sessions/${sourceId}`);
+    await page.waitForSelector("text=Also record for another player", {
+      timeout: 30000,
+    });
+    check("dokončený tréning ponúka zápis ďalšiemu hráčovi", true);
+
+    await page.selectOption("#copy_player", otherPlayer.id);
+    await page.getByRole("button", { name: "Copy practice" }).click();
+    // Čaká sa na presmerovanie NA INÝ tréning, nie na `/sessions/<čokoľvek>`
+    // — tá adresa platí už pre zdrojovú stránku, takže by čakanie prešlo
+    // okamžite a kontrola v DB by bežala skôr, než kópia vznikne.
+    await page.waitForURL(
+      (url) =>
+        /\/sessions\/[0-9a-f-]+$/.test(url.pathname) &&
+        !url.pathname.endsWith(sourceId),
+      { timeout: 30000 },
+    );
+
+    const { data: copies } = await db
+      .from("sessions")
+      .select("id, status, notes, planned_data, actual_data, google_event_id")
+      .eq("player_id", otherPlayer.id)
+      .eq("coach_id", coach.id)
+      .filter("planned_data->>date", "eq", plannedAt.toISOString());
+    copyId = copies?.[0]?.id ?? null;
+
+    check("druhý hráč dostal vlastný tréning", copies?.length === 1, `${copies?.length}`);
+
+    if (copyId) {
+      const copy = copies[0];
+      check(
+        "kópia je ODOMKNUTÁ, aby sa dala upraviť",
+        copy.status !== "completed",
+        copy.status,
+      );
+      check("reálny čas sa preniesol", Boolean(copy.actual_data?.date));
+      check("poznámka sa preniesla", copy.notes === NOTES, String(copy.notes));
+      check(
+        "kópia nemá vlastnú udalosť v kalendári",
+        copy.google_event_id === null,
+        String(copy.google_event_id),
+      );
+
+      const { data: copiedDrills } = await db
+        .from("session_drills")
+        .select("drill_code, duration_minutes, sort_order")
+        .eq("session_id", copyId)
+        .order("sort_order", { ascending: true });
+      check(
+        "cvičenia sa preniesli aj s poradím",
+        copiedDrills?.length === 3 &&
+          copiedDrills[0].drill_code === "FRH-CRS" &&
+          copiedDrills[2].drill_code === "SR1-DCE",
+        (copiedDrills ?? []).map((d) => d.drill_code).join(","),
+      );
+      check(
+        "kópia patrí tam, kam originál",
+        (await db
+          .from("sessions")
+          .select("organization_id")
+          .eq("id", copyId)
+          .single()
+        ).data.organization_id === player.organization_id,
+      );
+    }
+
+    // Zdroj sa nesmie zmeniť — kópia je nový tréning, nie presun.
+    const { data: sourceAfter } = await db
+      .from("sessions")
+      .select("status, player_id")
+      .eq("id", sourceId)
+      .single();
+    check(
+      "pôvodný tréning ostal nedotknutý",
+      sourceAfter.status === "completed" && sourceAfter.player_id === player.id,
+    );
+
+    // Druhý pokus musí naraziť — inak by hráčovi pribudol duplikát a
+    // analytika by mu zdvojnásobila odohraný čas.
+    await page.goto(`${base}/sessions/${sourceId}`);
+    await page.waitForTimeout(1000);
+    await page.selectOption("#copy_player", otherPlayer.id);
+    await page.getByRole("button", { name: "Copy practice" }).click();
+    await page.waitForTimeout(2500);
+    check(
+      "druhé skopírovanie sa odmietlo",
+      /already has a practice at that time/i.test(await browserText(page)),
+    );
+
+    const { count: total } = await db
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("player_id", otherPlayer.id)
+      .filter("planned_data->>date", "eq", plannedAt.toISOString());
+    check("duplikát naozaj nevznikol", total === 1, `${total}`);
+  } finally {
+    // Upratuje sa podľa TERMÍNU, nie podľa zapamätaných `id`: keď scenár
+    // spadne skôr, než sa mu podarí prečítať id kópie, ostala by v databáze
+    // a ďalší beh by na nej stroskotal na kontrole duplikátu.
+    const { data: leftovers } = await db
+      .from("sessions")
+      .select("id")
+      .eq("coach_id", coach.id)
+      .in("player_id", [player.id, otherPlayer.id])
+      .filter("planned_data->>date", "eq", plannedAt.toISOString());
+
+    for (const { id } of leftovers ?? []) {
+      await db.from("sessions").delete().eq("id", id);
+      await db
+        .from("parent_session_records")
+        .delete()
+        .eq("source_session_id", id);
+    }
+  }
+}
+
 async function main() {
   fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
   const browser = await chromium.launch({ args: chromiumArgs() });
@@ -627,6 +793,17 @@ async function main() {
   section("9b) Zrušenie tréningu s väzbou na kalendár — federačný režim");
   await cancelScenario(page, BASE, db, orgCoach, orgPlayer, true);
 
+  section("9c) Skupinový tréning: zápis aj ďalšiemu hráčovi");
+  const { data: orgPlayers } = await db
+    .from("players")
+    .select("id, name, organization_id")
+    .eq("coach_id", orgCoach.id)
+    .eq("is_active", true)
+    .not("organization_id", "is", null)
+    .order("name", { ascending: true })
+    .limit(2);
+  await copyScenario(page, BASE, db, orgCoach, orgPlayers[0], orgPlayers[1]);
+
   section("10) Presun naplánovaného tréningu — samostatný tréner");
   // Tá istá akcia, iný režim: samostatnému trénerovi platí osobná RLS policy
   // (`sessions_personal_update`) a `organization_id` je null.
@@ -655,6 +832,39 @@ async function main() {
 
     section("10b) Zrušenie tréningu s väzbou na kalendár — samostatný tréner");
     await cancelScenario(soloReschedulePage, soloBase, db, solo, soloPlayer, false);
+
+    section("10c) S jediným hráčom sa zápis ďalšiemu hráčovi neponúka");
+    // Tréner na hladine 1 nemá koho ponúknuť — prázdny výber by bol mätúci.
+    const { data: onlySession } = await db
+      .from("sessions")
+      .insert({
+        coach_id: solo.id,
+        organization_id: null,
+        player_id: soloPlayer.id,
+        status: "planned",
+        planned_data: {
+          date: new Date(Date.now() + 63 * 86_400_000).toISOString(),
+          duration_minutes: 60,
+        },
+      })
+      .select("id")
+      .single();
+    try {
+      await soloReschedulePage.goto(`${soloBase}/sessions/${onlySession.id}`);
+      await soloReschedulePage.waitForTimeout(1500);
+      check(
+        "ponuka sa nevykreslila",
+        !/Also record for another player/.test(
+          await browserText(soloReschedulePage),
+        ),
+      );
+    } finally {
+      await db.from("sessions").delete().eq("id", onlySession.id);
+      await db
+        .from("parent_session_records")
+        .delete()
+        .eq("source_session_id", onlySession.id);
+    }
   } finally {
     await soloRescheduleContext.close();
   }

@@ -107,6 +107,12 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   zmazanie člena sa v `browser-director.js` §8 robí na `coach-new@test.local`
   z onboardingu (ten sa aj tak na konci maže); na seedovaných trénerov nesiahaj,
   ostatné sady s nimi počítajú.
+- **`waitForURL` musí čakať na ZMENU, nie na tvar adresy.** Scenár kopírovania
+  tréningu čakal na `/sessions/<id>` po kliku na stránke, ktorá už takú adresu
+  mala — čakanie prešlo okamžite, kontrola v databáze zbehla skôr, než akcia
+  stihla kópiu založiť, a vyzeralo to, že sa nezaložila vôbec (pritom o pár
+  riadkov nižšie ju našla kontrola duplikátu). Porovnávaj voči konkrétnemu
+  pôvodnému `id`.
 - **Sypú sa naraz nesúvisiace sekcie? Pozri najprv na dev server, nie na kód.**
   Osirotený `next dev` (napr. keď sa zabije rodičovský `npm`, ale nie samotný
   proces) vie skončiť v stave, keď kompilačné workery padajú — v logu

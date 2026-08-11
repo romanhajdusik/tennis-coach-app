@@ -10,7 +10,7 @@ import {
   rescheduleSessionInGoogleCalendar,
   syncSessionToGoogleCalendar,
 } from "@/lib/google/calendar";
-import { getSelectedPlayer } from "@/lib/players/selected";
+import { getActivePlayers, getSelectedPlayer } from "@/lib/players/selected";
 import { getOrgContext } from "@/lib/org/context";
 
 export type SessionFormState = { error?: string } | undefined;
@@ -197,6 +197,142 @@ export async function updateSessionPlan(
       ? `/sessions/${sessionId}?calendarWarning=collision`
       : `/sessions/${sessionId}`,
   );
+}
+
+/**
+ * Zapíše ten istý tréning aj ďalšiemu hráčovi trénera (skupinový tréning).
+ *
+ * Robí sa to **kópiou, nie spoločným tréningom s viacerými hráčmi**: celá
+ * appka (dotazy, analytika, roster, rodičovské kópie aj všetky RLS policy)
+ * stojí na pravidle „jeden tréning = jeden hráč" a spoločný tréning by ho
+ * zrušil. Kópie sú od vzniku samostatné — druhý hráč často odohrá o cvičenie
+ * menej a tréner mu to musí vedieť upraviť.
+ *
+ * **Kópia vzniká vždy odomknutá**, aj keď je zdroj už dokončený: zámok je
+ * v DB nezvratný, takže auto-uzamknutá kópia by trénerovi nedovolila
+ * odobrať cvičenie, ktoré druhý hráč neodohral. Reálny čas sa prenáša, takže
+ * mu ostáva jediné ťuknutie na „Complete practice".
+ */
+export async function copySessionToPlayer(
+  sessionId: string,
+  _prevState: SessionFormState,
+  formData: FormData,
+): Promise<SessionFormState> {
+  const targetPlayerId = formData.get("player_id") as string;
+  const t = await getTranslations("Sessions.errors");
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const blocked = await requireWriteAccess(supabase, user.id);
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
+  }
+
+  const { data: source } = await supabase
+    .from("sessions")
+    .select("id, player_id, organization_id, planned_data, actual_data, notes")
+    .eq("id", sessionId)
+    .maybeSingle();
+
+  if (!source) {
+    return { error: t("copyFailed") };
+  }
+
+  // Cieľom smie byť len vlastný aktívny hráč — vo federácii teda hráč
+  // pridelený tomuto trénerovi. RLS by cudzí zápis aj tak zamietla, toto je
+  // preto zrozumiteľná hláška namiesto tichého zlyhania.
+  const players = await getActivePlayers(supabase, user.id);
+  const target = players.find((player) => player.id === targetPlayerId);
+
+  if (!target || target.id === source.player_id) {
+    return { error: t("copyInvalidPlayer") };
+  }
+
+  // Vlastník kópie sa berie zo ZDROJA, nie z hostname: kópia patrí tam, kam
+  // patrí originál (organizácii, alebo trénerovi).
+  const planned = (source.planned_data ?? {}) as PlannedData;
+
+  // Poistka proti dvojkliku aj proti druhému skopírovaniu toho istého
+  // tréningu — bez nej by hráčovi pribudli dva rovnaké tréningy a analytika
+  // by mu zdvojnásobila odohraný čas.
+  if (planned.date) {
+    const { data: existing } = await supabase
+      .from("sessions")
+      .select("id")
+      .eq("player_id", target.id)
+      .eq("coach_id", user.id)
+      .neq("status", "cancelled")
+      .filter("planned_data->>date", "eq", planned.date)
+      .maybeSingle();
+
+    if (existing) {
+      return { error: t("copyDuplicate", { name: target.name }) };
+    }
+  }
+
+  const { data: copy, error: copyError } = await supabase
+    .from("sessions")
+    .insert({
+      coach_id: user.id,
+      organization_id: source.organization_id,
+      player_id: target.id,
+      // Nikdy nie 'completed' — do uzamknutého tréningu sa cvičenia vložiť
+      // nedajú (RLS) a odomknúť sa už nedá.
+      status: "planned",
+      planned_data: source.planned_data,
+      actual_data: source.actual_data,
+      notes: source.notes,
+      // Zámerne bez google_event_id: tréner je na jednom tréningu, druhá
+      // udalosť v tom istom čase by mu kalendár len zaplnila.
+    })
+    .select("id")
+    .single();
+
+  if (copyError || !copy) {
+    return { error: t("copyFailed") };
+  }
+
+  const { data: drills } = await supabase
+    .from("session_drills")
+    .select("category, character, drill_code, duration_minutes, status, sort_order")
+    .eq("session_id", sessionId)
+    .order("sort_order", { ascending: true });
+
+  if (drills?.length) {
+    // `replaces_drill_id` sa zámerne neprenáša — ukazovalo by na cvičenia
+    // cudzieho tréningu.
+    const { error: drillsError } = await supabase.from("session_drills").insert(
+      drills.map((drill) => ({
+        session_id: copy.id,
+        coach_id: user.id,
+        organization_id: source.organization_id,
+        category: drill.category,
+        character: drill.character,
+        drill_code: drill.drill_code,
+        duration_minutes: drill.duration_minutes,
+        status: drill.status,
+        sort_order: drill.sort_order,
+      })),
+    );
+
+    // Tréning bez cvičení je horší než žiadny — tréner by si myslel, že má
+    // kópiu hotovú. Radšej ho zmažeme a povieme, že sa to nepodarilo.
+    if (drillsError) {
+      await supabase.from("sessions").delete().eq("id", copy.id);
+      return { error: t("copyFailed") };
+    }
+  }
+
+  revalidatePath("/sessions");
+  revalidatePath("/calendar");
+  redirect(`/sessions/${copy.id}`);
 }
 
 export async function updateSessionReview(
