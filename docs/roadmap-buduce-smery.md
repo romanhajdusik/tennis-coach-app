@@ -120,16 +120,126 @@ ak domény držíš oddelené od začiatku.
 
 ---
 
-## 3. Import z Garmin/Polar (už v roadmape od 2026-07-20)
+## 3. Záťaž z hodiniek: SÚBOR OD HRÁČA (prepracované 2026-08-11)
 
-Pripojený hráč (rola `player`) si pripojí/stiahne dáta z **Garmin Connect / Polar**;
-zobrazia sa pri konkrétnom tréningu (detail session) + v analytike. Rovnaký tvar problému
-ako kondička: „cudzie dáta o tréningu → do session/kalendára", preto navrhovať konzistentne.
+> **Zmena oproti pôvodnému zneniu (2026-07-20).** Pôvodne sa počítalo s **OAuth
+> pripojením na Garmin Connect / Polar Flow** na strane hráča. Používateľ 2026-08-11
+> určil inú cestu: **appka prijme zdieľaný súbor od hráča.** Pôvodný odsek je nižšie
+> v „Prečo nie OAuth". Používateľ zároveň **odložil na neurčito modul kondičných
+> a technických testov** a označil túto funkciu za podstatne dôležitejšiu.
 
-Otvorené otázky: ktoré metriky (tep, vzdialenosť, kalórie…), párovanie aktivity so `sessions`
-(podľa dátumu/času, ako kolízna kontrola pri Google Calendar) alebo ručný výber, OAuth per
-hráč (analogicky ku `google_calendar_connections`, ale na strane hráča), nová tabuľka na
-surové/spárované dáta.
+**Zámer:** hráč nosí na tréningu hodinky (Garmin, Polar, Suunto, Coros, Apple Watch).
+Appka má vedieť prijať vyexportovaný súbor s aktivitou a ukázať trénerovi, **aká bola
+záťaž** — pri konkrétnom tréningu, neskôr aj v čase.
+
+### 3.1 Rozhodnutia používateľa (2026-08-11)
+
+1. **Súbor nahráva TRÉNER, nie hráč.** Hráč mu ho pošle mimo appky (mail, WhatsApp).
+   Dôvod: nemení to prístupový model a **funguje to v oboch svetoch naraz** — vo
+   federácii hráč ani rodič účet nemajú (§5.6), takže cesta „hráč si nahrá sám" by tam
+   neexistovala. Rodičovská vrstva je dnes navyše striktne read-only; upload by bol jej
+   úplne prvý zápis. Nahrávanie hráčom je tým odložené, nie zamietnuté — keď príde,
+   bude to funkcia samostatného (consumer) produktu, presne ako zdieľanie s rodičom.
+2. **Pôvodný súbor sa NEUCHOVÁVA.** Appka ho rozparsuje, uloží vyčítané hodnoty
+   a súbor zahodí. Dôvod: appka dnes nepoužíva Supabase Storage vôbec — žiadny bucket,
+   žiadne policy nad `storage.objects` — a produkcia beží na Free pláne. Ušetrí to
+   novú bezpečnostnú plochu aj platený priestor. **Cena:** pri zmene parsovania sa
+   staré súbory už neprepočítajú, tréner by ich musel nahrať znova.
+3. **Zatiaľ sa nekóduje**, toto je návrh.
+
+### 3.2 Prečo súbor a nie OAuth
+
+- **Netreba partnerský program.** Garmin Connect Developer Program aj Polar AccessLink
+  vyžadujú registráciu aplikácie a schválenie; súbor nepotrebuje nič.
+- **Jedno riešenie pre všetky značky.** OAuth by znamenal samostatnú integráciu pre
+  Garmin, samostatnú pre Polar, ďalšiu pre Coros… Export do súboru vie každý.
+- **Žiadna údržba tokenov.** Odpadá to, čo appku už raz stálo prácu pri Google
+  Kalendári: obnova tokenov, odpojenie, a hlavne **uložené cudzie prihlasovacie údaje**
+  (dnes vedome prijaté riziko, viď CLAUDE.md, sekcia Google Calendar). Súbor žiadne
+  poverenia nezavádza.
+- **Nevýhoda, s ktorou treba rátať:** je to ručný krok. Hráč musí súbor vyexportovať
+  a poslať, tréner nahrať. Pri dennom používaní to bude otrava — preto to má byť
+  postavené tak, aby sa neskôr dalo doplniť automatické pripojenie **bez zmeny
+  dátového modelu** (tabuľka nižšie nevie, odkiaľ hodnoty prišli, iba že prišli).
+
+### 3.3 Formáty
+
+| Formát | Kto ho dá | Parsovanie |
+|---|---|---|
+| `.FIT` | Garmin aj Polar natívne | binárny, **potrebuje knižnicu** (projekt má dnes 6 závislostí a žiadny parser) |
+| `.TCX` | Garmin, Polar Flow | XML, obsahuje tep aj po sekundách — zvládne sa bez závislosti |
+| `.GPX` | takmer všetko | XML, ale **tep je nepovinné rozšírenie** — na kurte často chýba |
+
+**Odporúčanie: začať `.TCX`** (pokrýva Garmin aj Polar, dá sa spracovať bez novej
+závislosti) a `.FIT` doplniť, keď sa ukáže, že hráči posielajú práve ten. `.GPX` je
+pre tenis najslabší — je stavaný na trasu, nie na záťaž.
+
+**Zamietnuté: odkaz na zdieľanú aktivitu** (Garmin Connect share URL). Vyzerá pohodlne,
+ale znamená sťahovať a rozoberať cudziu stránku — krehké voči každej ich zmene a na
+hrane ich podmienok. Súbor je stabilný.
+
+### 3.4 Kam sa to naviaže
+
+**Súbor sa nahráva NA konkrétny tréning** (detail session), takže **párovanie podľa času
+odpadá** — to bola pôvodne otvorená otázka a týmto rozhodnutím sa ruší. Tréner vidí, ku
+ktorému tréningu súbor pridáva.
+
+**Ale čas sa aj tak musí skontrolovať:** ak sa začiatok aktivity rozchádza s tréningom
+o viac než pár hodín, appka to má **oznámiť, nie zablokovať** — presne ako kolízna
+kontrola pri Google Kalendári. Tréner môže mať dôvod nahrať aktivitu z iného dňa,
+ale mýliaci sa súbor je pravdepodobnejší.
+
+### 3.5 Čo vyčítať a uložiť
+
+Nová tabuľka, jeden riadok na jednu nahranú aktivitu:
+
+```
+session_loads
+  id, session_id (fk), player_id, coach_id, organization_id   -- dvojrežimové vlastníctvo ako všade
+  started_at, duration_seconds
+  avg_hr, max_hr, calories, distance_meters
+  source            -- 'tcx' | 'fit' | neskôr 'garmin_api'
+  raw_summary jsonb -- čo sa vyčítalo navyše, bez schémy
+  created_at
+```
+
+- **Dvojrežimové vlastníctvo je povinné** (`coach_id` + `organization_id`) — inak sa to
+  do federačnej RLS nezmestí. Vzor: `session_drills`.
+- **`raw_summary` jsonb** je zámerný ventil: každé hodinky hlásia niečo navyše
+  (tréningová záťaž, EPOC, HRV, čas v zónach) a nedá sa to dopredu vymenovať.
+- **Zóny tepu potrebujú maximálny tep hráča.** Appka ho nemá, ale **má `players.birth_year`**
+  (pridaný 2026-08-01), takže sa dá odhadnúť. Odhad sa nesmie tváriť ako meranie —
+  buď to označiť ako odhad, alebo pridať `players.max_hr` a nechať trénera zapísať
+  namerané maximum.
+
+### 3.6 Kde sa to zobrazí
+
+1. **Detail tréningu** — panel so záťažou pod cvičeniami. To je v1 celé.
+2. **Neskôr analytika záťaže v čase** — priemerný/maximálny tep a trvanie po týždňoch.
+   **Nesmie ísť do `CategoryShareChart`** (podiel zamerania na celkovom čase): tá počíta
+   percentá z minút cvičení a záťaž by ich ticho prepísala. Rovnaká pasca je zapísaná
+   pri kondičnej appke (§2) — je to tá istá trieda chyby.
+3. **Federačný pult** — pre zväz je „koľko toho dieťa reálne odmakalo" silnejší údaj než
+   počet hodín na kurte. Až po v1.
+4. **Rodič/hráč záťaž v1 nevidí** — rodičovská vrstva číta kópie (`parent_session_records`),
+   takže by si vyžiadala ďalšiu kópiu. Rovnaký dôvod, pre ktorý ju v1 nedostane ani
+   modul testov.
+
+### 3.7 Čo do v1 NEDÁVAŤ
+
+- OAuth pripojenie na Garmin/Polar (celý zmysel tohto prepracovania).
+- Nahrávanie hráčom/rodičom (§3.1).
+- Uchovávanie súborov v Storage (§3.1).
+- Krivku tepu po sekundách. Dá sa vyčítať, ale je to tisíce hodnôt na tréning
+  a v1 z nej tréner nič nemá — stačí priemer, maximum a trvanie.
+
+### 3.8 Prierezovo
+
+Záťaž je **disciplinárne neutrálna** — tep je tep v tenise aj v kondičnej príprave.
+Patrí teda do **enginu, nie do SportConfig** (§1). A je to ten istý tvar problému ako
+kondička (§2): „cudzie dáta o tréningu → do session". Rozdiel je v tom, kto ich vlastní:
+kondičné tréningy patria kondičnému trénerovi (živý read-only pohľad cez RLS), kým
+nahraný súbor sa stáva **údajom o tréningu**, ktorý vlastní ten istý, kto vlastní tréning.
 
 ---
 
