@@ -10,9 +10,14 @@
     "cancelled": "Cancelled"
   },
   "subscriptionRequired": "Your free trial has ended. Renew your subscription to keep planning and logging practices — your history stays available.",
+  "playerLimitExceeded": "You have more active players than your plan allows. Archive players until you are back within your plan, and you can log practices again.",
   "trial": {
     "daysLeft": "{days, plural, one {# day left} other {# days left}} of your free trial.",
     "endedTitle": "Your free trial has ended.",
     "endedText": "Everything you have recorded stays here and you can keep reading it — you just cannot plan or log new practices for now."
+  },
+  "playerLimit": {
+    "exceededTitle": "You have {count} active players, your plan allows {limit}.",
+    "exceededText": "Archive {excess, plural, one {# player} other {# players}} to start planning and logging practices again. Nothing is lost — everything stays readable."
   }
 }

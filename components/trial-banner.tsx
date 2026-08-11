@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { getSubscription } from "@/lib/subscription";
+import { getPlayerLimitState, getSubscription } from "@/lib/subscription";
 
 /**
  * Pruh so stavom skúšobnej doby. Vykreslí sa **len trénerovi, ktorého sa
@@ -43,6 +43,31 @@ export async function TrialBanner() {
       <div className="w-full bg-red-950 px-4 py-2.5 text-center text-sm text-red-200">
         <span className="font-medium">{t("endedTitle")}</span>{" "}
         <span className="text-red-300">{t("endedText")}</span>
+      </div>
+    );
+  }
+
+  // Účet nad zaplatenou hladinou nezapisuje, kým sa pod ňu sám nevráti. Pruh
+  // musí povedať PRESNE koľko hráčov ubrať — inak tréner len narazí na tichú
+  // stenu a nevie, čo s tým. Rovnaký červený pruh ako po skúšobnej dobe:
+  // z pohľadu trénera je následok ten istý (appka neprijme zápis).
+  const limitState = await getPlayerLimitState(supabase, user.id);
+
+  if (limitState?.exceeded) {
+    const tLimit = await getTranslations("Common.playerLimit");
+    return (
+      <div className="w-full bg-red-950 px-4 py-2.5 text-center text-sm text-red-200">
+        <span className="font-medium">
+          {tLimit("exceededTitle", {
+            count: limitState.active,
+            limit: limitState.limit,
+          })}
+        </span>{" "}
+        <span className="text-red-300">
+          {tLimit("exceededText", {
+            excess: limitState.active - limitState.limit,
+          })}
+        </span>
       </div>
     );
   }

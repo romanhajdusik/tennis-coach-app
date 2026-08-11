@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -407,6 +407,7 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          player_limit: number
           role: string
           subscription_status: string
           trial_ends_at: string
@@ -417,6 +418,7 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
+          player_limit?: number
           role?: string
           subscription_status?: string
           trial_ends_at?: string
@@ -427,6 +429,7 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          player_limit?: number
           role?: string
           subscription_status?: string
           trial_ends_at?: string
@@ -597,6 +600,7 @@ export type Database = {
           sport: string
         }[]
       }
+      owns_personal_player: { Args: { p_player_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

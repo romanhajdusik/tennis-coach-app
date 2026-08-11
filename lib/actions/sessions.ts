@@ -36,8 +36,9 @@ export async function createSession(
     redirect("/login");
   }
 
-  if (await requireWriteAccess(supabase, user.id)) {
-    return { error: (await getTranslations("Common"))("subscriptionRequired") };
+  const blocked = await requireWriteAccess(supabase, user.id);
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
   }
 
   const activePlayer = await getSelectedPlayer(supabase, user.id);
@@ -108,8 +109,9 @@ export async function updateSessionReview(
     redirect("/login");
   }
 
-  if (await requireWriteAccess(supabase, user.id)) {
-    return { error: (await getTranslations("Common"))("subscriptionRequired") };
+  const blocked = await requireWriteAccess(supabase, user.id);
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
   }
 
   const { error, count } = await supabase

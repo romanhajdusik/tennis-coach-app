@@ -109,9 +109,25 @@ export default async function Home() {
     redirect("/director");
   }
 
-  // Federačný tréner (1:N) má denný domov „Dnes" — rozvrh naprieč hráčmi.
-  // Samostatný (1:1) tréner ho nepotrebuje, jeho rozcestník ostáva ako bol.
-  if (org) {
+  // Denný domov „Dnes" (rozvrh naprieč hráčmi) sa vykreslí vždy, keď má tréner
+  // viac než jedného aktívneho hráča — federačnému (1:N zo svojej podstaty) aj
+  // samostatnému, ktorému to dovolí cenová hladina. S jediným hráčom niet čo
+  // zoraďovať, tam ostáva pôvodný rozcestník nižšie.
+  //
+  // POZOR: mimo org subdomény sa počítajú len OSOBNÍ hráči. RLS sa pýta na
+  // ČLENSTVO, nie na hostname (`current_org_id()` číta `organization_members`),
+  // takže federačnému trénerovi vydá jeho org hráčov aj na `plaw.win` — bez
+  // tohto filtra by sa mu tam nástenka organizácie vykreslila mimo nej.
+  const { count: personalActivePlayers } = org
+    ? { count: 0 }
+    : await supabase
+        .from("players")
+        .select("id", { count: "exact", head: true })
+        .eq("coach_id", user.id)
+        .eq("is_active", true)
+        .is("organization_id", null);
+
+  if (org || (personalActivePlayers ?? 0) > 1) {
     return (
       <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
         <TodayBoard org={org} />

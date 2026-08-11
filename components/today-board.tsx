@@ -25,15 +25,21 @@ const STATUS_BADGE_CLASSES: Record<string, string> = {
 };
 
 /**
- * „Dnes" — denný domov federačného trénera (1:N): rozvrh dňa **naprieč
- * všetkými pridelenými hráčmi** v poradí podľa času, plus upozornenie na
- * hráča, ktorý najdlhšie netrénoval. Samostatný (1:1) tréner ju nevidí —
- * s jediným hráčom nemá čo zoraďovať (§5.9, mockup docs/mockups/trener-b2b.html).
+ * „Dnes" — denný domov trénera s viacerými hráčmi: rozvrh dňa **naprieč
+ * všetkými hráčmi** v poradí podľa času, plus upozornenie na toho, kto
+ * najdlhšie netrénoval.
+ *
+ * Vykresľuje sa vždy, keď má tréner **2+ aktívnych hráčov** — federačnému
+ * (1:N) aj samostatnému, ktorý si zaplatil vyššiu cenovú hladinu. S jediným
+ * hráčom nemá čo zoraďovať, tam ostáva pôvodný rozcestník.
+ *
+ * `org` je nepovinná: v jej názve sa líši len podnadpis. Samostatný tréner
+ * žiadnu organizáciu nemá, takže sa doplnok bez nej vynechá.
  *
  * Ťuknutie na tréning zároveň **prepne vybraného hráča**, inak by appka na
  * ďalšej obrazovke ukazovala dáta niekoho iného.
  */
-export async function TodayBoard({ org }: { org: OrgContext }) {
+export async function TodayBoard({ org }: { org?: OrgContext | null }) {
   const t = await getTranslations("Today");
   const format = await getFormatter();
   const timeZone = await getTimeZone();
@@ -83,8 +89,7 @@ export async function TodayBoard({ org }: { org: OrgContext }) {
             day: "numeric",
             month: "long",
           })}
-          {" · "}
-          {org.name}
+          {org && ` · ${org.name}`}
         </p>
       </div>
 

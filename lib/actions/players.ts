@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireWriteAccess } from "@/lib/subscription";
+import { requirePlayerSlot, requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
 
 export type PlayerFormState = { error?: string } | undefined;
@@ -40,33 +40,29 @@ export async function createPlayer(
     redirect("/login");
   }
 
-  if (await requireWriteAccess(supabase, user.id)) {
-    return { error: (await getTranslations("Common"))("subscriptionRequired") };
+  const blocked = await requireWriteAccess(supabase, user.id);
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
   }
 
-  // Federačný tréner je zamestnanec s viacerými hráčmi naraz (1:N), takže nový
-  // hráč je vždy aktívny a vlastní ho organizácia (§5.4). Samostatný tréner má
-  // model 1:1 — nový hráč sa aktivuje, len ak zatiaľ žiadneho aktívneho nemá.
+  // Koľko hráčov smie mať účet naraz aktívnych, je cenová hladina — rozhoduje
+  // o nej výhradne `requirePlayerSlot` (lib/subscription.ts). Federačného
+  // trénera sa netýka, tam počet určuje priradenie od šéftrénera.
+  if (await requirePlayerSlot(supabase, user.id)) {
+    return { error: t("playerLimitReached") };
+  }
+
+  // Nový hráč je vždy aktívny — v samostatnom aj federačnom režime. Kým platilo
+  // 1:1, sa tu druhý hráč zakladal rovno do archívu (index `one_active_player`
+  // by inak zápis zamietol); od 20260810090000 to drží cenová hladina vyššie.
   const org = await getOrgContext();
-
-  let isActive = true;
-  if (!org) {
-    const { data: existingActive } = await supabase
-      .from("players")
-      .select("id")
-      .eq("coach_id", user.id)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    isActive = !existingActive;
-  }
 
   const { error } = await supabase.from("players").insert({
     coach_id: user.id,
     organization_id: org?.id ?? null,
     name,
     birth_year: birthYear,
-    is_active: isActive,
+    is_active: true,
   });
 
   if (error) {
@@ -87,7 +83,11 @@ export async function deactivatePlayer(playerId: string) {
   }
 
   // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
-  if (await requireWriteAccess(supabase, user.id)) {
+  //
+  // **Jediná výnimka z blokovania nad cenovou hladinou** — archivácia je cesta
+  // SPÄŤ pod ňu. Keby sa blokovala tiež, tréner, ktorému hladinu znížime, by
+  // uviazol natrvalo: zapisovať nesmie, kým neuberie hráčov, a ubrať by nemohol.
+  if (await requireWriteAccess(supabase, user.id, { allowOverPlayerLimit: true })) {
     return;
   }
 
@@ -115,18 +115,15 @@ export async function activatePlayer(playerId: string) {
     return;
   }
 
-  // V samostatnom režime treba najprv deaktivovať doterajšieho aktívneho
-  // hráča — inak by zápis narazil na unikátny index one_active_player (vždy
-  // len jeden aktívny na trénera). V org režime je index uvoľnený (1:N),
-  // takže vrátenie hráča z archívu nesmie ostatných zhodiť.
-  const org = await getOrgContext();
-
-  if (!org) {
-    await supabase
-      .from("players")
-      .update({ is_active: false })
-      .eq("coach_id", user.id)
-      .eq("is_active", true);
+  // Vrátenie z archívu pridáva ďalšieho aktívneho hráča, takže musí cez tú istú
+  // stráž ako zakladanie. Kým platilo 1:1, sa tu doterajší aktívny hráč najprv
+  // ticho archivoval (index `one_active_player` by inak zápis zamietol) —
+  // dnes by to trénerovi s viacerými hráčmi jedného z nich nečakane zhodilo.
+  //
+  // Tlačidlo sa pri vyčerpanej hladine na `/players` ani nevykreslí; toto je
+  // serverová poistka, nie hlavná cesta, preto sa len ticho vráti.
+  if (await requirePlayerSlot(supabase, user.id)) {
+    return;
   }
 
   await supabase

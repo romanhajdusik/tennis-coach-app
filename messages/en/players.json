@@ -25,6 +25,11 @@
   "archive": "Archive",
   "activate": "Activate",
   "archiveHeading": "Archive",
+  "limit": {
+    "counter": "{count} of {limit} active players",
+    "reached": "You've reached the number of active players your plan allows. Archive one to make room for another.",
+    "exceeded": "That is more than your plan allows, so practices cannot be logged. Archive {excess, plural, one {# player} other {# players}} to start again."
+  },
   "addForm": {
     "heading": "Add player",
     "nameLabel": "Name or nickname",
@@ -49,6 +54,7 @@
   "errors": {
     "missingName": "Enter the player's name.",
     "invalidBirthYear": "Enter a valid year of birth.",
-    "createFailed": "Failed to create the player."
+    "createFailed": "Failed to create the player.",
+    "playerLimitReached": "You've reached the number of active players your plan allows. Archive a player first, or move up to a higher plan."
   }
 }

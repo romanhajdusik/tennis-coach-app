@@ -30,7 +30,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča |
 | `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, kód uplatní len prihlásený, rodičovi ostáva jeho prístup |
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
-| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis |
+| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov |
 
 ```bash
@@ -71,6 +71,20 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   Na cieľ choď priamo cez `goto()`; samotné presmerovanie overuje HTTP sada.
 - **Vybraný hráč je stav.** Scenár, ktorý prepne hráča (napr. cez upozornenie),
   ovplyvní všetko ďalšie — analytika sa viaže na vybraného hráča.
+- **RLS sa pýta na členstvo, nie na hostname.** `current_org_id()` číta
+  `organization_members`, takže federačnému trénerovi vydá jeho org hráčov aj
+  na `plaw.win`. Čokoľvek, čo sa mimo org subdomény rozhoduje podľa počtu
+  hráčov, musí preto filtrovať `organization_id is null` — inak sa federačnému
+  trénerovi zapne nástenka organizácie mimo nej (odhalila to `http-coach.js` §3).
+- **Limit hráčov ani paywall sa nedajú overiť cez holé HTTP** — sú v server
+  actions, nie v RLS. Formulár sa musí naozaj odoslať v prehliadači
+  (`browser-coach.js` §7 a §8), inak scenár testuje len skryté tlačidlo.
+- **Formulár zacieľuj cez jeho vlastné pole, nie cez `form button`.** Pri 2+
+  aktívnych hráčoch je nad formulárom tréningu **prepínač hráčov**, ktorý má
+  tiež formuláre s tlačidlami — `form button[type="button"]`.first() potom
+  klikne naň a scenár „prejde" bez odoslania (tréning sa nezapíše, ale ani
+  nevznikne chyba, takže to vyzerá ako úspech). Použi
+  `form:has(input[name="date"])`. Rovnaká pasca ako pri `/parent`.
 - **Na `/parent` je nad formulárom na zadanie kódu aj odhlasovací formulár**,
   takže `form button[type="submit"]` trafí „Log out" — scenár sa ticho odhlási
   a vyzerá to, akoby zlyhal claim. Formulár zacieľ cez jeho vlastné pole:

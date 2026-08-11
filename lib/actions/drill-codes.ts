@@ -118,8 +118,9 @@ export async function saveDrillCodes(
     redirect("/login");
   }
 
-  if (await requireWriteAccess(supabase, user.id)) {
-    return { error: (await getTranslations("Common"))("subscriptionRequired") };
+  const blocked = await requireWriteAccess(supabase, user.id);
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
   }
 
   // V org režime kódy štandardizuje federácia (§5.5) — tréner ich len používa.

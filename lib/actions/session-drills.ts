@@ -46,8 +46,9 @@ export async function addDrill(
     redirect("/login");
   }
 
-  if (await requireWriteAccess(supabase, user.id)) {
-    return { error: (await getTranslations("Common"))("subscriptionRequired") };
+  const blocked = await requireWriteAccess(supabase, user.id);
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
   }
 
   const { data: lastDrill } = await supabase
@@ -221,8 +222,9 @@ export async function replaceDrill(
     redirect("/login");
   }
 
-  if (await requireWriteAccess(supabase, user.id)) {
-    return { error: (await getTranslations("Common"))("subscriptionRequired") };
+  const blocked = await requireWriteAccess(supabase, user.id);
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
   }
 
   const { data: originalDrill } = await supabase

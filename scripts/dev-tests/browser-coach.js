@@ -165,6 +165,188 @@ async function main() {
     await soloContext.close();
   }
 
+  section("8) Cenová hladina: koľko hráčov smie mať samostatný tréner");
+  // Limit hráčov nie je v RLS, ale v server action (`requirePlayerSlot`), takže
+  // sa nedá overiť dotazom do DB ani cez holé HTTP — formulár sa musí naozaj
+  // odoslať. Scenár po sebe upratuje v `finally`: inak by ďalšiemu behu ostal
+  // navyše založený hráč aj zdvihnutá hladina.
+  const limitContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
+  const limitPage = await limitContext.newPage();
+  const appBase = `http://${APP_HOST}`;
+  const EXTRA_PLAYER = "Limit Test";
+  const startedAt = new Date().toISOString();
+
+  const activeCount = async () => {
+    const { count } = await db
+      .from("players")
+      .select("id", { count: "exact", head: true })
+      .eq("coach_id", solo.id)
+      .eq("is_active", true)
+      .is("organization_id", null);
+    return count ?? 0;
+  };
+
+  try {
+    await db.from("profiles").update({ player_limit: 1 }).eq("id", solo.id);
+
+    await browserLogin(limitPage, "demo@plaw.win", appBase);
+    await limitPage.goto(`${appBase}/players`);
+    await limitPage.waitForTimeout(1500);
+    check(
+      "hladina je vidieť na stránke",
+      /1 of 1 active players/.test(await browserText(limitPage)),
+    );
+
+    const playersBefore = await activeCount();
+
+    // Formulár sa odosiela naozaj — zamietnuť to musí server.
+    await limitPage.fill('input[name="name"]', EXTRA_PLAYER);
+    await limitPage
+      .locator('form:has(input[name="name"]) button[type="submit"]')
+      .click();
+    await limitPage.waitForTimeout(2500);
+
+    const playersBlocked = await activeCount();
+    check(
+      "druhý hráč sa pri hladine 1 NEZALOŽIL",
+      playersBlocked === playersBefore,
+      `${playersBefore} → ${playersBlocked}`,
+    );
+    check(
+      "formulár vypíše dôvod zamietnutia",
+      /number of active players your plan allows/i.test(
+        await browserText(limitPage),
+      ),
+    );
+
+    // Predaj vyššej hladiny = jeden UPDATE, presne ako sedadlá organizácie.
+    await db.from("profiles").update({ player_limit: 3 }).eq("id", solo.id);
+    await limitPage.goto(`${appBase}/players`);
+    await limitPage.waitForTimeout(1000);
+    await limitPage.fill('input[name="name"]', EXTRA_PLAYER);
+    await limitPage
+      .locator('form:has(input[name="name"]) button[type="submit"]')
+      .click();
+    await limitPage.waitForTimeout(2500);
+
+    const playersRaised = await activeCount();
+    check(
+      "po zdvihnutí hladiny hráč pribudol a je AKTÍVNY",
+      playersRaised === playersBefore + 1,
+      `${playersBefore} → ${playersRaised}`,
+    );
+
+    // Druhý hráč zapína dennú nástenku aj mimo federácie — rozcestník s jedným
+    // hráčom nemá čo zoraďovať, s dvoma už áno.
+    await limitPage.goto(`${appBase}/`);
+    await limitPage.waitForTimeout(2000);
+    check(
+      "nástenka „Dnes\" sa zapla aj samostatnému trénerovi",
+      /Today's schedule/.test(await browserText(limitPage)),
+    );
+
+    // --- zníženie hladiny pod počet hráčov ---------------------------------
+    // Nikoho nearchivuje (appka nesmie vyberať, ktoré deti tréner prestane
+    // trénovať), ale zastaví zápis, kým sa tréner sám nevráti pod hladinu.
+    await db.from("profiles").update({ player_limit: 1 }).eq("id", solo.id);
+    await limitPage.goto(`${appBase}/players`);
+    await limitPage.waitForTimeout(1500);
+    check(
+      "zníženie hladiny nikoho nearchivovalo",
+      (await activeCount()) === playersBefore + 1,
+    );
+    check(
+      "pruh povie, koľko hráčov ubrať",
+      /Archive 1 player to start planning/i.test(await browserText(limitPage)),
+    );
+
+    const { count: sessionsBefore } = await db
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("coach_id", solo.id);
+
+    // Formulár sa zacieľuje cez vlastné pole, nie cez `form button` — pri 2+
+    // hráčoch je nad ním prepínač hráčov, ktorý má tiež formulár s tlačidlami,
+    // takže `.first()` by klikol naň a scenár by „prešiel" bez odoslania.
+    await limitPage.goto(`${appBase}/sessions`);
+    await limitPage.waitForTimeout(1500);
+    await limitPage.fill('input[name="date"]', "2026-09-02T10:00");
+    const blockedForm = limitPage.locator('form:has(input[name="date"])');
+    await blockedForm.locator('button[type="button"]').first().click();
+    await limitPage.waitForTimeout(500);
+    await blockedForm.locator('button[type="submit"]').first().click();
+    await limitPage.waitForTimeout(2500);
+
+    const { count: sessionsBlocked } = await db
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("coach_id", solo.id);
+    check(
+      "nad hladinou sa tréning NEZAPÍSAL",
+      sessionsBefore === sessionsBlocked,
+      `${sessionsBefore} → ${sessionsBlocked}`,
+    );
+    check(
+      "formulár vypíše, že hráčov je priveľa",
+      /more active players than your plan allows/i.test(
+        await browserText(limitPage),
+      ),
+    );
+
+    // --- cesta späť --------------------------------------------------------
+    // Archivácia je jediná výnimka z blokovania — bez nej by tréner uviazol
+    // natrvalo (zapisovať nesmie, kým neuberie, a ubrať by nemohol).
+    await limitPage.goto(`${appBase}/players`);
+    await limitPage.waitForTimeout(1500);
+    await limitPage
+      .locator("li", { hasText: EXTRA_PLAYER })
+      .getByRole("button", { name: "Archive" })
+      .first()
+      .click();
+    await limitPage.waitForTimeout(2500);
+    check(
+      "archivácia funguje aj nad hladinou",
+      (await activeCount()) === playersBefore,
+      `aktívnych: ${await activeCount()}`,
+    );
+
+    await limitPage.goto(`${appBase}/sessions`);
+    await limitPage.waitForTimeout(1500);
+    await limitPage.fill('input[name="date"]', "2026-09-02T10:00");
+    const freedForm = limitPage.locator('form:has(input[name="date"])');
+    await freedForm.locator('button[type="button"]').first().click();
+    await limitPage.waitForTimeout(500);
+    await freedForm.locator('button[type="submit"]').first().click();
+    await limitPage.waitForTimeout(2500);
+
+    const { count: sessionsAfter } = await db
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("coach_id", solo.id);
+    check(
+      "po návrate pod hladinu sa zápis zase podaril",
+      sessionsAfter === sessionsBefore + 1,
+      `${sessionsBefore} → ${sessionsAfter}`,
+    );
+  } finally {
+    // Tréning založený posledným krokom aj testovací hráč musia zmiznúť —
+    // inak by ďalší beh sedel na cudzích dátach.
+    await db
+      .from("sessions")
+      .delete()
+      .eq("coach_id", solo.id)
+      .gte("created_at", startedAt);
+    await db
+      .from("players")
+      .delete()
+      .eq("coach_id", solo.id)
+      .eq("name", EXTRA_PLAYER);
+    await db.from("profiles").update({ player_limit: 1 }).eq("id", solo.id);
+    await limitContext.close();
+  }
+
   report();
   await browser.close();
 }
