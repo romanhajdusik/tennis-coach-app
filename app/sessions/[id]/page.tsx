@@ -67,11 +67,28 @@ export default async function SessionDetailPage({
   // sľubovať to, čo sa naozaj stane (§5.4).
   const org = await getOrgContext();
 
-  // Skupinový tréning: ten istý záznam sa dá zapísať aj ďalším hráčom
-  // trénera. Ponuka má zmysel, len keď je koho ponúknuť.
-  const otherPlayers = (await getActivePlayers(supabase, user.id)).filter(
-    (player) => player.id !== session.player_id,
-  );
+  // Skupinový tréning: ten istý záznam sa dá zapísať aj ďalšiemu hráčovi.
+  // Vo federácii sa ponúka CELÁ organizácia vrátane hráčov iných trénerov
+  // (spoločný tréning je tam bežný) — zoznam vydá `security definer` funkcia,
+  // lebo cudzích hráčov RLS trénerovi nevydá a rozšíriť ju by znamenalo
+  // pustiť ich aj do rosteru a prepínača hráčov.
+  const { data: orgRoster } = org
+    ? await supabase.rpc("org_players_for_copy")
+    : { data: null };
+
+  const otherPlayers = (
+    orgRoster
+      ? orgRoster.map((player) => ({
+          id: player.id,
+          name: player.name,
+          coachName: player.coach_id === user.id ? null : player.coach_name,
+        }))
+      : (await getActivePlayers(supabase, user.id)).map((player) => ({
+          id: player.id,
+          name: player.name,
+          coachName: null,
+        }))
+  ).filter((player) => player.id !== session.player_id);
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">

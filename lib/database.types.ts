@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -585,6 +585,10 @@ export type Database = {
           player_id: string
         }[]
       }
+      copy_session_to_org_player: {
+        Args: { p_session_id: string; p_target_player_id: string }
+        Returns: string
+      }
       current_org_id: { Args: never; Returns: string }
       current_org_role: { Args: never; Returns: string }
       delete_organization_member: {
@@ -592,6 +596,15 @@ export type Database = {
         Returns: undefined
       }
       is_member_of_my_org: { Args: { p_user_id: string }; Returns: boolean }
+      org_players_for_copy: {
+        Args: never
+        Returns: {
+          coach_id: string
+          coach_name: string
+          id: string
+          name: string
+        }[]
+      }
       organization_by_slug: {
         Args: { p_slug: string }
         Returns: {

@@ -199,6 +199,68 @@ export async function updateSessionPlan(
   );
 }
 
+/** Kópia má aj úspešný stav — pri cudzom hráčovi sa nedá presmerovať na ňu. */
+export type CopyFormState =
+  | { error?: string; copiedTo?: string }
+  | undefined;
+
+/**
+ * Zápis tréningu hráčovi organizácie cez `security definer` RPC.
+ *
+ * Cieľom môže byť aj hráč iného trénera (skupinový tréning naprieč trénermi
+ * je vo federácii bežný) — takého hráča volajúci nevidí ani mu nesmie
+ * zapisovať, takže všetky kontroly aj samotný zápis robí funkcia v databáze.
+ */
+async function copyWithinOrganization(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  sessionId: string,
+  targetPlayerId: string,
+): Promise<CopyFormState> {
+  const t = await getTranslations("Sessions.errors");
+
+  if (!targetPlayerId) {
+    return { error: t("copyInvalidPlayer") };
+  }
+
+  const { data: newSessionId, error } = await supabase.rpc(
+    "copy_session_to_org_player",
+    { p_session_id: sessionId, p_target_player_id: targetPlayerId },
+  );
+
+  if (error) {
+    // Hlášky funkcie sú kódy, nie text pre používateľa.
+    if (error.message.includes("duplicate_practice")) {
+      return { error: t("copyDuplicateOrg") };
+    }
+    if (
+      error.message.includes("target_not_found") ||
+      error.message.includes("same_player") ||
+      error.message.includes("target_coach_inactive")
+    ) {
+      return { error: t("copyInvalidPlayer") };
+    }
+    return { error: t("copyFailed") };
+  }
+
+  // Na kópiu sa dá presmerovať, len keď patrí hráčovi tohto trénera — cudziu
+  // by mu RLS nevydala a skončil by na „nenájdené". Preto sa najprv skúsi
+  // prečítať; keď nie je jeho, ostáva na mieste a dostane potvrdenie.
+  const { data: readable } = await supabase
+    .from("sessions")
+    .select("id")
+    .eq("id", newSessionId)
+    .maybeSingle();
+
+  revalidatePath("/sessions");
+  revalidatePath("/calendar");
+
+  if (readable) {
+    redirect(`/sessions/${readable.id}`);
+  }
+
+  return { copiedTo: targetPlayerId };
+}
+
 /**
  * Zapíše ten istý tréning aj ďalšiemu hráčovi trénera (skupinový tréning).
  *
@@ -215,9 +277,9 @@ export async function updateSessionPlan(
  */
 export async function copySessionToPlayer(
   sessionId: string,
-  _prevState: SessionFormState,
+  _prevState: CopyFormState,
   formData: FormData,
-): Promise<SessionFormState> {
+): Promise<CopyFormState> {
   const targetPlayerId = formData.get("player_id") as string;
   const t = await getTranslations("Sessions.errors");
 
@@ -235,6 +297,16 @@ export async function copySessionToPlayer(
     return { error: (await getTranslations("Common"))(blocked) };
   }
 
+  // Vo federácii je skupinový tréning naprieč trénermi bežný, takže cieľom
+  // môže byť aj hráč kolegu — toho tréner nevidí ani mu nesmie zapisovať
+  // (RLS), celý zápis preto robí `security definer` RPC. Kópia tam vzniká pod
+  // hráčovým vlastným trénerom, nie pod tým, kto ju zapísal.
+  const org = await getOrgContext();
+
+  if (org) {
+    return copyWithinOrganization(supabase, sessionId, targetPlayerId);
+  }
+
   const { data: source } = await supabase
     .from("sessions")
     .select("id, player_id, organization_id, planned_data, actual_data, notes")
@@ -245,9 +317,9 @@ export async function copySessionToPlayer(
     return { error: t("copyFailed") };
   }
 
-  // Cieľom smie byť len vlastný aktívny hráč — vo federácii teda hráč
-  // pridelený tomuto trénerovi. RLS by cudzí zápis aj tak zamietla, toto je
-  // preto zrozumiteľná hláška namiesto tichého zlyhania.
+  // Samostatný tréner kopíruje len medzi vlastnými hráčmi — inde ich ani
+  // nemá. RLS by cudzí zápis aj tak zamietla, toto je preto zrozumiteľná
+  // hláška namiesto tichého zlyhania.
   const players = await getActivePlayers(supabase, user.id);
   const target = players.find((player) => player.id === targetPlayerId);
 
@@ -255,8 +327,6 @@ export async function copySessionToPlayer(
     return { error: t("copyInvalidPlayer") };
   }
 
-  // Vlastník kópie sa berie zo ZDROJA, nie z hostname: kópia patrí tam, kam
-  // patrí originál (organizácii, alebo trénerovi).
   const planned = (source.planned_data ?? {}) as PlannedData;
 
   // Poistka proti dvojkliku aj proti druhému skopírovaniu toho istého

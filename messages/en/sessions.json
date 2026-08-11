@@ -27,7 +27,11 @@
   "copy": {
     "heading": "Also record for another player",
     "hint": "Was someone else on court? They get the same practice with the same drills, and you can adjust it for them afterwards.",
+    "hintOrg": "Was someone else on court? They get the same practice with the same drills. For another coach's player it lands in their coach's app, so only that coach can edit it.",
     "playerLabel": "Player",
+    "groupMine": "My players",
+    "groupOthers": "Other coaches' players",
+    "copiedToOtherCoach": "Recorded for {name} — it is now in {coach}'s app.",
     "submit": "Copy practice",
     "submitPending": "Copying..."
   },
@@ -100,6 +104,7 @@
     "rescheduleFailed": "Failed to move the practice.",
     "copyInvalidPlayer": "Pick one of your other active players.",
     "copyDuplicate": "{name} already has a practice at that time.",
+    "copyDuplicateOrg": "That player already has a practice at that time.",
     "copyFailed": "Failed to copy the practice.",
     "missingFields": "Fill in all fields.",
     "invalidCharacter": "Invalid shot character.",

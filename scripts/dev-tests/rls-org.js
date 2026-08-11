@@ -365,6 +365,184 @@ async function main() {
     }
   }
 
+  section("11) Skupinový tréning naprieč trénermi (copy_session_to_org_player)");
+  // Obe funkcie sú `security definer`, takže RLS ich nechráni — všetky
+  // kontroly sú vnútri a práve tie sa tu overujú.
+  const coach2 = await signIn("coach2-today@test.local");
+
+  const { data: rosterForCoach } = await coach.rpc("org_players_for_copy");
+  const { data: myPlayers } = await coach
+    .from("players")
+    .select("id")
+    .eq("is_active", true);
+  check(
+    "tréner dostane na výber celú organizáciu, nielen svojich",
+    (rosterForCoach ?? []).length > (myPlayers ?? []).length,
+    `${(rosterForCoach ?? []).length} vs vlastných ${(myPlayers ?? []).length}`,
+  );
+  check(
+    "pri cudzích hráčoch je meno ich trénera",
+    (rosterForCoach ?? []).some((row) => row.coach_name === "Boris Druhy"),
+  );
+  check(
+    "ponuka NEROZŠIRUJE prístup — hráči kolegu ostávajú neviditeľní",
+    (myPlayers ?? []).length === 5,
+    `vidí ${(myPlayers ?? []).length}`,
+  );
+
+  const { data: directorRoster } = await director.rpc("org_players_for_copy");
+  check("šéftrénerovi funkcia nevydá nič", (directorRoster ?? []).length === 0);
+
+  const anon = anonClient();
+  const anonCopy = await anon.rpc("copy_session_to_org_player", {
+    p_session_id: sessions[0].id,
+    p_target_player_id: players[0].id,
+  });
+  check(
+    "neprihlásený zápis neprejde",
+    anonCopy.error !== null,
+    anonCopy.error?.message ?? "PRESLO!",
+  );
+
+  // Zdroj musí byť VLASTNÝ tréning — inak by funkcia bola cestou, ako si
+  // skopírovaním prečítať tréning kolegu.
+  const { data: foreignSession } = await db
+    .from("sessions")
+    .select("id, player_id")
+    .neq("coach_id", coachA)
+    .eq("organization_id", org.id)
+    .limit(1)
+    .maybeSingle();
+  if (foreignSession) {
+    const stolen = await coach.rpc("copy_session_to_org_player", {
+      p_session_id: foreignSession.id,
+      p_target_player_id: players[0].id,
+    });
+    check(
+      "z cudzieho tréningu kopírovať nejde",
+      stolen.error?.message?.includes("source_not_found") === true,
+      stolen.error?.message ?? "PRESLO!",
+    );
+  }
+
+  const { data: ownSession } = await db
+    .from("sessions")
+    .select("id, planned_data")
+    .eq("coach_id", coachA)
+    .eq("organization_id", org.id)
+    .limit(1)
+    .maybeSingle();
+  const { data: coach2Player } = await db
+    .from("players")
+    .select("id, coach_id")
+    .eq("coach_id", coachB)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+
+  let rlsCopyId = null;
+  try {
+    const copied = await coach.rpc("copy_session_to_org_player", {
+      p_session_id: ownSession.id,
+      p_target_player_id: coach2Player.id,
+    });
+    rlsCopyId = copied.data;
+    check(
+      "tréner zapíše tréning hráčovi kolegu",
+      copied.error === null && Boolean(rlsCopyId),
+      copied.error?.message,
+    );
+
+    if (rlsCopyId) {
+      const { data: copyRow } = await db
+        .from("sessions")
+        .select("coach_id, player_id, organization_id, status")
+        .eq("id", rlsCopyId)
+        .single();
+      check(
+        "kópia vznikla pod HRÁČOVÝM trénerom, nie pod zapisujúcim",
+        copyRow.coach_id === coachB,
+        copyRow.coach_id === coachA ? "pod zapisujúcim" : "iný",
+      );
+      check("patrí tej istej organizácii", copyRow.organization_id === org.id);
+
+      // Zapisujúci sa k nej po odoslaní nedostane — preto appka nesmie
+      // presmerovať na cudziu kópiu.
+      const { data: seenByAuthor } = await coach
+        .from("sessions")
+        .select("id")
+        .eq("id", rlsCopyId)
+        .maybeSingle();
+      check("zapisujúci tréner kópiu nevidí", seenByAuthor === null);
+
+      const { data: seenByOwner } = await coach2
+        .from("sessions")
+        .select("id")
+        .eq("id", rlsCopyId)
+        .maybeSingle();
+      check("hráčov tréner ju vidí vo svojej appke", seenByOwner !== null);
+
+      const { count: copiedDrills } = await db
+        .from("session_drills")
+        .select("id", { count: "exact", head: true })
+        .eq("session_id", rlsCopyId);
+      const { count: sourceDrills } = await db
+        .from("session_drills")
+        .select("id", { count: "exact", head: true })
+        .eq("session_id", ownSession.id);
+      check(
+        "cvičenia sa preniesli",
+        copiedDrills === sourceDrills,
+        `${copiedDrills} z ${sourceDrills}`,
+      );
+
+      const again = await coach.rpc("copy_session_to_org_player", {
+        p_session_id: ownSession.id,
+        p_target_player_id: coach2Player.id,
+      });
+      check(
+        "druhý raz to neprejde (duplikát)",
+        again.error?.message?.includes("duplicate_practice") === true,
+        again.error?.message ?? "PRESLO!",
+      );
+    }
+
+    // Tenant izolácia — hráč cudzej organizácie nie je cieľ.
+    if (otherOrg) {
+      const { data: foreignPlayer } = await db
+        .from("players")
+        .select("id")
+        .eq("organization_id", otherOrg.id)
+        .limit(1)
+        .maybeSingle();
+      if (foreignPlayer) {
+        const crossOrg = await coach.rpc("copy_session_to_org_player", {
+          p_session_id: ownSession.id,
+          p_target_player_id: foreignPlayer.id,
+        });
+        check(
+          "hráč cudzej organizácie nie je cieľ",
+          crossOrg.error?.message?.includes("target_not_found") === true,
+          crossOrg.error?.message ?? "PRESLO!",
+        );
+      }
+    }
+
+    const byDirector = await director.rpc("copy_session_to_org_player", {
+      p_session_id: ownSession.id,
+      p_target_player_id: coach2Player.id,
+    });
+    check(
+      "šéftréner cez funkciu nezapíše (§5.7)",
+      byDirector.error?.message?.includes("not_org_coach") === true,
+      byDirector.error?.message ?? "PRESLO!",
+    );
+  } finally {
+    if (rlsCopyId) {
+      await db.from("sessions").delete().eq("id", rlsCopyId);
+    }
+  }
+
   // upratanie
   await db.from("organization_members").delete().eq("invite_code", "RLS-TEST1");
   await db.from("drill_codes").delete().eq("code", "RLS-VOL");

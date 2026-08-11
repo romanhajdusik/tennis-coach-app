@@ -442,6 +442,107 @@ async function copyScenario(page, base, db, coach, player, otherPlayer) {
   }
 }
 
+/**
+ * To isté, ale cieľom je hráč INÉHO trénera organizácie (vo federácii je
+ * spoločný tréning bežný). Iné je na tom všetko podstatné: zápis robí
+ * `security definer` RPC, kópia vzniká pod hráčovým vlastným trénerom a
+ * zapisujúci sa na ňu **nemôže presmerovať** — RLS mu ju nevydá, takže
+ * potvrdenie musí prísť priamo do formulára.
+ */
+async function copyAcrossCoachesScenario(page, base, db, coach, player, foreignPlayer) {
+  const plannedAt = new Date();
+  plannedAt.setDate(plannedAt.getDate() + 64);
+  plannedAt.setHours(6, 45, 0, 0);
+  let sourceId = null;
+
+  try {
+    const { data: created } = await db
+      .from("sessions")
+      .insert({
+        coach_id: coach.id,
+        organization_id: player.organization_id,
+        player_id: player.id,
+        status: "completed",
+        planned_data: { date: plannedAt.toISOString(), duration_minutes: 90 },
+        actual_data: { date: plannedAt.toISOString() },
+      })
+      .select("id")
+      .single();
+    sourceId = created.id;
+
+    await db.from("session_drills").insert({
+      session_id: sourceId,
+      coach_id: coach.id,
+      organization_id: player.organization_id,
+      category: "Volley",
+      character: "neutral",
+      drill_code: "VOL-FRH",
+      duration_minutes: 15,
+      status: "played",
+      sort_order: 1,
+    });
+
+    await page.goto(`${base}/sessions/${sourceId}`);
+    await page.waitForSelector("text=Also record for another player", {
+      timeout: 30000,
+    });
+
+    const options = await page
+      .locator("#copy_player optgroup")
+      .evaluateAll((groups) => groups.map((group) => group.label));
+    check(
+      "ponuka je rozdelená na mojich a cudzích hráčov",
+      options.includes("My players") && options.includes("Other coaches' players"),
+      options.join(" | "),
+    );
+
+    await page.selectOption("#copy_player", foreignPlayer.id);
+    await page.getByRole("button", { name: "Copy practice" }).click();
+    await page.waitForTimeout(3000);
+
+    check(
+      "zapisujúci ostal na svojom tréningu (na cudziu kópiu sa presmerovať nedá)",
+      page.url().endsWith(sourceId),
+      page.url(),
+    );
+    check(
+      "formulár potvrdí, u koho tréning pristál",
+      /it is now in .+'s app/i.test(await browserText(page)),
+    );
+
+    const { data: copies } = await db
+      .from("sessions")
+      .select("id, coach_id, player_id")
+      .eq("player_id", foreignPlayer.id)
+      .filter("planned_data->>date", "eq", plannedAt.toISOString());
+    check("hráč kolegu dostal tréning", copies?.length === 1, `${copies?.length}`);
+    check(
+      "tréning patrí SVOJMU trénerovi, nie zapisujúcemu",
+      copies?.[0]?.coach_id === foreignPlayer.coach_id,
+      copies?.[0]?.coach_id === coach.id ? "zapisujúcemu" : "inému",
+    );
+
+    const { count: drills } = await db
+      .from("session_drills")
+      .select("id", { count: "exact", head: true })
+      .eq("session_id", copies?.[0]?.id ?? sourceId);
+    check("cvičenie sa prenieslo", drills === 1, `${drills}`);
+  } finally {
+    const { data: leftovers } = await db
+      .from("sessions")
+      .select("id")
+      .in("player_id", [player.id, foreignPlayer.id])
+      .filter("planned_data->>date", "eq", plannedAt.toISOString());
+    for (const { id } of leftovers ?? []) {
+      await db.from("sessions").delete().eq("id", id);
+      await db
+        .from("parent_session_records")
+        .delete()
+        .eq("source_session_id", id);
+    }
+  }
+}
+
 async function main() {
   fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
   const browser = await chromium.launch({ args: chromiumArgs() });
@@ -803,6 +904,26 @@ async function main() {
     .order("name", { ascending: true })
     .limit(2);
   await copyScenario(page, BASE, db, orgCoach, orgPlayers[0], orgPlayers[1]);
+
+  section("9d) Skupinový tréning naprieč trénermi organizácie");
+  const otherCoach = users.users.find(
+    (user) => user.email === "coach2-today@test.local",
+  );
+  const { data: foreignPlayer } = await db
+    .from("players")
+    .select("id, name, coach_id, organization_id")
+    .eq("coach_id", otherCoach.id)
+    .eq("is_active", true)
+    .limit(1)
+    .single();
+  await copyAcrossCoachesScenario(
+    page,
+    BASE,
+    db,
+    orgCoach,
+    orgPlayers[0],
+    foreignPlayer,
+  );
 
   section("10) Presun naplánovaného tréningu — samostatný tréner");
   // Tá istá akcia, iný režim: samostatnému trénerovi platí osobná RLS policy
