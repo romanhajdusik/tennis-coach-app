@@ -111,12 +111,16 @@ async function hasCollision(
   calendarId: string,
   startISO: string,
   endISO: string,
+  ignoreEventId?: string,
 ): Promise<boolean> {
   const params = new URLSearchParams({
     timeMin: startISO,
     timeMax: endISO,
     singleEvents: "true",
-    maxResults: "1",
+    // Pri presune tréningu treba z výsledku vyhodiť jeho VLASTNÚ udalosť
+    // (v kalendári je stále na pôvodnom čase, takže posun o pár minút by
+    // sa nahlásil ako kolízia sám so sebou) — vtedy jeden výsledok nestačí.
+    maxResults: ignoreEventId ? "10" : "1",
   });
   const response = await fetch(
     `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?${params.toString()}`,
@@ -126,7 +130,8 @@ async function hasCollision(
     throw new Error("Kontrola kolízií v Google Kalendári zlyhala.");
   }
   const data = await response.json();
-  return (data.items?.length ?? 0) > 0;
+  const items: { id?: string }[] = data.items ?? [];
+  return items.some((item) => item.id !== ignoreEventId);
 }
 
 async function createCalendarEvent(
@@ -156,6 +161,41 @@ async function createCalendarEvent(
   }
   const event = await response.json();
   return event.id as string;
+}
+
+// Presunie existujúcu udalosť na nový čas. Vracia `false`, ak udalosť
+// v kalendári už nie je (tréner ju zmazal priamo v Google) — volajúci ju
+// vtedy založí nanovo, aby tréning o väzbu na kalendár neprišiel natrvalo.
+async function patchCalendarEvent(
+  accessToken: string,
+  calendarId: string,
+  eventId: string,
+  summary: string,
+  startISO: string,
+  endISO: string,
+): Promise<boolean> {
+  const response = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        summary,
+        start: { dateTime: startISO, timeZone: "Europe/Bratislava" },
+        end: { dateTime: endISO, timeZone: "Europe/Bratislava" },
+      }),
+    },
+  );
+  if (response.status === 404 || response.status === 410) {
+    return false;
+  }
+  if (!response.ok) {
+    throw new Error("Presun udalosti v Google Kalendári zlyhal.");
+  }
+  return true;
 }
 
 export type SessionCalendarSyncResult = {
@@ -198,6 +238,64 @@ export async function syncSessionToGoogleCalendar(
     return { googleEventId, collision };
   } catch (error) {
     console.error("Synchronizácia s Google Kalendárom zlyhala:", error);
+    return { googleEventId: null, collision: false };
+  }
+}
+
+// Premietne PRESUN naplánovaného tréningu do Google Kalendára. Rovnaké
+// pravidlo ako pri zakladaní: keď tréner kalendár pripojený nemá alebo Google
+// zlyhá, presun v appke sa aj tak uloží — kalendár je len doplnková vrstva.
+//
+// `googleEventId` na vstupe je väzba uložená pri plánovaní; keď chýba (tréner
+// si kalendár pripojil až potom) alebo už v Google neexistuje, udalosť sa
+// založí. Vrátené id sa preto musí uložiť späť do `sessions.google_event_id`.
+export async function rescheduleSessionInGoogleCalendar(
+  supabase: SupabaseServerClient,
+  coachId: string,
+  googleEventId: string | null,
+  summary: string,
+  startISO: string,
+  endISO: string,
+): Promise<SessionCalendarSyncResult> {
+  try {
+    const connection = await getValidConnection(supabase, coachId);
+    if (!connection) {
+      return { googleEventId: null, collision: false };
+    }
+
+    const collision = await hasCollision(
+      connection.accessToken,
+      connection.calendarId,
+      startISO,
+      endISO,
+      googleEventId ?? undefined,
+    );
+
+    if (googleEventId) {
+      const moved = await patchCalendarEvent(
+        connection.accessToken,
+        connection.calendarId,
+        googleEventId,
+        summary,
+        startISO,
+        endISO,
+      );
+      if (moved) {
+        return { googleEventId, collision };
+      }
+    }
+
+    const createdEventId = await createCalendarEvent(
+      connection.accessToken,
+      connection.calendarId,
+      summary,
+      startISO,
+      endISO,
+    );
+
+    return { googleEventId: createdEventId, collision };
+  } catch (error) {
+    console.error("Presun tréningu v Google Kalendári zlyhal:", error);
     return { googleEventId: null, collision: false };
   }
 }

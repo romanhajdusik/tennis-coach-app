@@ -5,7 +5,10 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireWriteAccess } from "@/lib/subscription";
-import { syncSessionToGoogleCalendar } from "@/lib/google/calendar";
+import {
+  rescheduleSessionInGoogleCalendar,
+  syncSessionToGoogleCalendar,
+} from "@/lib/google/calendar";
 import { getSelectedPlayer } from "@/lib/players/selected";
 import { getOrgContext } from "@/lib/org/context";
 
@@ -88,6 +91,110 @@ export async function createSession(
     collision
       ? `/sessions/${session.id}?calendarWarning=collision`
       : `/sessions/${session.id}`,
+  );
+}
+
+type PlannedData = { date?: string; duration_minutes?: number };
+
+// Presun naplánovaného tréningu na iný čas (prípadne inú dĺžku). Cvičenia sa
+// nedotýka — v tom je celý zmysel: bez tejto akcie musel tréner tréning zrušiť
+// a založiť nanovo, čím prišiel o rozpísané cvičenia (`on delete cascade`),
+// vo federačnom režime po ňom ostal riadok `cancelled` a v Google Kalendári
+// osirotená udalosť.
+export async function updateSessionPlan(
+  sessionId: string,
+  _prevState: SessionFormState,
+  formData: FormData,
+): Promise<SessionFormState> {
+  const date = formData.get("date") as string;
+  const durationMinutes =
+    Number(formData.get("duration_minutes")) || DEFAULT_SESSION_DURATION_MINUTES;
+  const t = await getTranslations("Sessions.errors");
+  const tSessions = await getTranslations("Sessions");
+
+  if (!date) {
+    return { error: t("missingDate") };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const blocked = await requireWriteAccess(supabase, user.id);
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
+  }
+
+  const { data: session } = await supabase
+    .from("sessions")
+    .select("id, status, planned_data, google_event_id, players(name)")
+    .eq("id", sessionId)
+    .maybeSingle();
+
+  // Presunúť sa dá LEN naplánovaný tréning. RLS blokuje úpravu dokončeného,
+  // ale zrušený (`cancelled`) by prešiel — a vrátiť zrušený tréning späť do
+  // hry je samostatné rozhodnutie, nie vedľajší účinok presunu.
+  if (!session || session.status !== "planned") {
+    return { error: t("rescheduleLocked") };
+  }
+
+  // Zvyšok `planned_data` sa zachová — appka tam dnes drží len dátum a dĺžku,
+  // ale prepísať celý objekt by ticho zahodilo čokoľvek, čo tam pribudne.
+  const planned = (session.planned_data ?? {}) as PlannedData;
+
+  const { error, count } = await supabase
+    .from("sessions")
+    .update(
+      {
+        planned_data: { ...planned, date, duration_minutes: durationMinutes },
+      },
+      { count: "exact" },
+    )
+    .eq("id", sessionId)
+    .eq("coach_id", user.id);
+
+  if (error || count === 0) {
+    return { error: t("rescheduleFailed") };
+  }
+
+  // Kalendár až po zápise do DB (rovnaké poradie ako pri zakladaní): appka je
+  // zdroj pravdy a zlyhanie Googlu nesmie presun zhodiť.
+  const playerName =
+    (session.players as { name: string } | null)?.name ?? "";
+  const start = new Date(date);
+  const end = new Date(start.getTime() + durationMinutes * 60_000);
+  const { googleEventId, collision } = await rescheduleSessionInGoogleCalendar(
+    supabase,
+    user.id,
+    session.google_event_id,
+    tSessions("calendarEventTitle", { name: playerName }),
+    start.toISOString(),
+    end.toISOString(),
+  );
+
+  // Väzba sa prepisuje len keď sa naozaj zmenila (pôvodná udalosť zmizla
+  // z kalendára, alebo pribudla až teraz). `null` znamená „kalendár nie je
+  // pripojený alebo zlyhal" — vtedy sa doterajšia väzba nesmie zahodiť.
+  if (googleEventId && googleEventId !== session.google_event_id) {
+    await supabase
+      .from("sessions")
+      .update({ google_event_id: googleEventId })
+      .eq("id", sessionId);
+  }
+
+  revalidatePath(`/sessions/${sessionId}`);
+  revalidatePath("/sessions");
+  revalidatePath("/calendar");
+
+  redirect(
+    collision
+      ? `/sessions/${sessionId}?calendarWarning=collision`
+      : `/sessions/${sessionId}`,
   );
 }
 

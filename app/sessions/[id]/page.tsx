@@ -3,11 +3,12 @@ import Link from "next/link";
 import { getTranslations, getFormatter } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { AddDrillForm } from "./add-drill-form";
+import { RescheduleForm } from "./reschedule-form";
 import { SessionReviewForm } from "./session-review-form";
 import { DrillRow, type Drill } from "./drill-row";
 import { getDrillOptionsByCategory } from "@/lib/actions/drill-codes";
 
-type PlannedData = { date?: string };
+type PlannedData = { date?: string; duration_minutes?: number };
 type ActualData = { date?: string };
 
 export default async function SessionDetailPage({
@@ -95,25 +96,37 @@ export default async function SessionDetailPage({
         />
       )}
 
-      <div className="rounded-xl border border-yellow-500 bg-yellow-950/40 p-4">
-        <p className="font-medium text-foreground ">
-          {planned?.date
-            ? format.dateTime(new Date(planned.date), {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })
-            : tSessions("noDate")}
-        </p>
-        <p className="mt-1 text-sm text-yellow-200">
-          {t.rich("totalDuration", {
-            minutes: totalMinutes,
-            b: (chunks) => (
-              <span className="text-2xl font-bold text-yellow-300">
-                {chunks}
-              </span>
-            ),
-          })}
-        </p>
+      <div className="flex flex-col gap-3">
+        <div className="rounded-xl border border-yellow-500 bg-yellow-950/40 p-4">
+          <p className="font-medium text-foreground ">
+            {planned?.date
+              ? format.dateTime(new Date(planned.date), {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })
+              : tSessions("noDate")}
+          </p>
+          <p className="mt-1 text-sm text-yellow-200">
+            {t.rich("totalDuration", {
+              minutes: totalMinutes,
+              b: (chunks) => (
+                <span className="text-2xl font-bold text-yellow-300">
+                  {chunks}
+                </span>
+              ),
+            })}
+          </p>
+        </div>
+
+        {/* Presúvať sa dá len naplánovaný tréning — dokončený je uzamknutý
+            (aj cez RLS) a zrušený sa späť do hry nevracia presunom. */}
+        {session.status === "planned" && (
+          <RescheduleForm
+            sessionId={session.id}
+            plannedDate={planned?.date}
+            plannedDuration={planned?.duration_minutes}
+          />
+        )}
       </div>
 
       <section className="flex flex-col gap-2">

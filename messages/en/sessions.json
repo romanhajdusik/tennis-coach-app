@@ -24,6 +24,19 @@
     "confirmSubmitPending": "Saving...",
     "confirmEdit": "Edit"
   },
+  "reschedule": {
+    "button": "Reschedule",
+    "heading": "Reschedule practice",
+    "dateLabel": "New date and time",
+    "durationLabel": "Planned duration",
+    "hint": "Drills stay as they are, only the time changes.",
+    "submit": "Save new time",
+    "cancel": "Cancel",
+    "confirmMessage": "Move the practice to {date}, duration {duration} min?",
+    "confirmSubmit": "Yes, move it",
+    "confirmSubmitPending": "Saving...",
+    "confirmEdit": "Edit"
+  },
   "review": {
     "heading": "Review",
     "completedBadge": "Completed",
@@ -74,6 +87,8 @@
     "noActivePlayer": "First set an active player.",
     "createFailed": "Failed to schedule the practice.",
     "reviewLocked": "The practice is locked, notes could not be saved.",
+    "rescheduleLocked": "Only a planned practice can be rescheduled.",
+    "rescheduleFailed": "Failed to move the practice.",
     "missingFields": "Fill in all fields.",
     "invalidCharacter": "Invalid shot character.",
     "invalidDuration": "Invalid duration.",

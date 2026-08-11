@@ -30,7 +30,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča, životný cyklus členstva |
 | `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, kód uplatní len prihlásený, rodičovi ostáva jeho prístup |
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
-| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov |
+| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun naplánovaného tréningu v oboch režimoch |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
 
 ```bash
@@ -107,6 +107,12 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   zmazanie člena sa v `browser-director.js` §8 robí na `coach-new@test.local`
   z onboardingu (ten sa aj tak na konci maže); na seedovaných trénerov nesiahaj,
   ostatné sady s nimi počítajú.
+- **So zmazaným tréningom zmaž aj kópiu u rodiča.** DELETE sa k rodičovi
+  zámerne nepropaguje (kópia musí prežiť aj zmazanie trénerovho účtu), takže
+  scenár, ktorý si tréning založí a zase zmaže, nechá pri zdieľanom hráčovi
+  navyše jeden riadok v `parent_session_records` — a ten sa každým behom
+  kopí. V `finally` ho zmaž podľa `source_session_id` (cvičenia idú s ním cez
+  `on delete cascade`).
 - **Scenáre, ktoré menia členstvo alebo priradenie hráča, musia po sebe upratať
   v `finally`.** `browser-director.js` trénera odoberá a zase vracia; keď taký
   scenár spadne uprostred, ďalší beh sa rozsype už na počte sedadiel. Preto sa

@@ -23,6 +23,167 @@ const SECTIONS = [
   "By shot character",
 ];
 
+function toLocalInput(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate(),
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+/**
+ * Presun naplánovaného tréningu na iný čas. Podstatné je, že cvičenia presun
+ * PREŽIJÚ — bez tejto akcie musel tréner tréning zrušiť a založiť nanovo, čím
+ * o ne prišiel (`on delete cascade`). Beží v oboch režimoch: vo federačnom sa
+ * navyše nemaže, takže keby presun spadol na RLS, ostal by po ňom `cancelled`.
+ *
+ * Tréning si scenár zakladá sám cez `service_role` a v `finally` ho maže —
+ * seedované tréningy musia ostať nedotknuté ostatným sadám.
+ */
+async function rescheduleScenario(page, base, db, coach, player) {
+  const plannedAt = new Date();
+  plannedAt.setDate(plannedAt.getDate() + 60);
+  plannedAt.setHours(9, 0, 0, 0);
+  const movedTo = new Date(plannedAt);
+  movedTo.setDate(movedTo.getDate() + 1);
+  movedTo.setHours(18, 30, 0, 0);
+
+  const cancelledCount = async () => {
+    const { count } = await db
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("player_id", player.id)
+      .eq("status", "cancelled");
+    return count ?? 0;
+  };
+  const cancelledBefore = await cancelledCount();
+  let sessionId = null;
+
+  try {
+    const { data: created } = await db
+      .from("sessions")
+      .insert({
+        coach_id: coach.id,
+        organization_id: player.organization_id,
+        player_id: player.id,
+        status: "planned",
+        planned_data: { date: plannedAt.toISOString(), duration_minutes: 90 },
+      })
+      .select("id")
+      .single();
+    sessionId = created.id;
+
+    await db.from("session_drills").insert(
+      [
+        ["Forehand", "offensive", "FRH-CRS", 15],
+        ["Backhand", "neutral", "BKH-DTL", 20],
+      ].map(([category, character, drill_code, duration_minutes], index) => ({
+        session_id: sessionId,
+        coach_id: coach.id,
+        organization_id: player.organization_id,
+        category,
+        character,
+        drill_code,
+        duration_minutes,
+        status: "played",
+        sort_order: index + 1,
+      })),
+    );
+
+    await page.goto(`${base}/sessions/${sessionId}`);
+    await page.waitForSelector("text=Reschedule", { timeout: 30000 });
+    check("naplánovaný tréning ponúka presun", true);
+
+    await page.getByRole("button", { name: "Reschedule", exact: true }).click();
+    await page.fill("#reschedule_date", toLocalInput(movedTo));
+    await page.selectOption("#reschedule_duration", "120");
+    await page.getByRole("button", { name: "Save new time" }).click();
+    await page.waitForTimeout(500);
+    await page.getByRole("button", { name: "Yes, move it" }).click();
+    await page.waitForTimeout(3000);
+
+    const { data: after } = await db
+      .from("sessions")
+      .select("status, planned_data")
+      .eq("id", sessionId)
+      .single();
+
+    check(
+      "tréning má nový čas",
+      after.planned_data.date === movedTo.toISOString(),
+      `${after.planned_data.date} (očakávané ${movedTo.toISOString()})`,
+    );
+    check(
+      "zmenila sa aj plánovaná dĺžka",
+      after.planned_data.duration_minutes === 120,
+      String(after.planned_data.duration_minutes),
+    );
+    check(
+      "ostal naplánovaný (nevznikol zrušený duplikát)",
+      after.status === "planned",
+      after.status,
+    );
+    check(
+      "nový čas je vidieť na stránke",
+      (await browserText(page)).includes(
+        movedTo.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        }),
+      ),
+    );
+
+    const { count: drillsAfter } = await db
+      .from("session_drills")
+      .select("id", { count: "exact", head: true })
+      .eq("session_id", sessionId);
+    check("cvičenia presun prežili", drillsAfter === 2, `${drillsAfter} z 2`);
+
+    // Rodič vidí kópiu, nie živé dáta — presun sa k nemu musí dostať cez
+    // trigger `sync_session_to_parent`. Org hráči zdieľanie nemajú (§5.6),
+    // takže tam kópia neexistuje a kontrola sa preskočí.
+    const { data: parentCopy } = await db
+      .from("parent_session_records")
+      .select("planned_data")
+      .eq("source_session_id", sessionId)
+      .maybeSingle();
+    if (parentCopy) {
+      check(
+        "rodičovská kópia dostala nový čas",
+        parentCopy.planned_data.date === movedTo.toISOString(),
+        parentCopy.planned_data.date,
+      );
+    }
+
+    const cancelledAfter = await cancelledCount();
+    check(
+      "po presune nepribudol zrušený tréning",
+      cancelledAfter === cancelledBefore,
+      `${cancelledBefore} → ${cancelledAfter}`,
+    );
+
+    // Dokončený tréning je uzamknutý — presun sa preň nesmie ani ponúknuť.
+    await db.from("sessions").update({ status: "completed" }).eq("id", sessionId);
+    await page.goto(`${base}/sessions/${sessionId}`);
+    await page.waitForTimeout(1500);
+    check(
+      "dokončený tréning presun neponúka",
+      !/Reschedule/.test(await browserText(page)),
+    );
+  } finally {
+    if (sessionId) {
+      await db.from("sessions").delete().eq("id", sessionId);
+      // Kópia u rodiča zmazanie tréningu zámerne NEPREŽÍVA len v appke (§
+      // „Zdieľanie s rodičom") — v teste ju treba odpratať ručne, inak by pri
+      // hráčovi so zdieľaním pribúdal pri každom behu jeden tréning navyše.
+      // Cvičenia idú s ňou cez `on delete cascade`.
+      await db
+        .from("parent_session_records")
+        .delete()
+        .eq("source_session_id", sessionId);
+    }
+  }
+}
+
 async function main() {
   fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
   const browser = await chromium.launch({ args: chromiumArgs() });
@@ -332,12 +493,22 @@ async function main() {
     );
   } finally {
     // Tréning založený posledným krokom aj testovací hráč musia zmiznúť —
-    // inak by ďalší beh sedel na cudzích dátach.
-    await db
+    // inak by ďalší beh sedel na cudzích dátach. Spolu s tréningom treba
+    // zmazať aj kópiu u rodiča: DELETE sa k nemu zámerne nepropaguje (§
+    // „Zdieľanie s rodičom"), takže by mu po každom behu pribudol tréning.
+    const { data: leftovers } = await db
       .from("sessions")
-      .delete()
+      .select("id")
       .eq("coach_id", solo.id)
       .gte("created_at", startedAt);
+    const leftoverIds = (leftovers ?? []).map((session) => session.id);
+    if (leftoverIds.length) {
+      await db.from("sessions").delete().in("id", leftoverIds);
+      await db
+        .from("parent_session_records")
+        .delete()
+        .in("source_session_id", leftoverIds);
+    }
     await db
       .from("players")
       .delete()
@@ -345,6 +516,49 @@ async function main() {
       .eq("name", EXTRA_PLAYER);
     await db.from("profiles").update({ player_limit: 1 }).eq("id", solo.id);
     await limitContext.close();
+  }
+
+  section("9) Presun naplánovaného tréningu — federačný režim");
+  const orgCoach = users.users.find(
+    (user) => user.email === "coach-today@test.local",
+  );
+  const { data: orgPlayer } = await db
+    .from("players")
+    .select("id, name, organization_id")
+    .eq("coach_id", orgCoach.id)
+    .eq("is_active", true)
+    .not("organization_id", "is", null)
+    .limit(1)
+    .single();
+  await rescheduleScenario(page, BASE, db, orgCoach, orgPlayer);
+
+  section("10) Presun naplánovaného tréningu — samostatný tréner");
+  // Tá istá akcia, iný režim: samostatnému trénerovi platí osobná RLS policy
+  // (`sessions_personal_update`) a `organization_id` je null.
+  const soloRescheduleContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
+  const soloReschedulePage = await soloRescheduleContext.newPage();
+  try {
+    const { data: soloPlayer } = await db
+      .from("players")
+      .select("id, name, organization_id")
+      .eq("coach_id", solo.id)
+      .eq("is_active", true)
+      .is("organization_id", null)
+      .limit(1)
+      .single();
+    const soloBase = `http://${APP_HOST}`;
+    await browserLogin(soloReschedulePage, "demo@plaw.win", soloBase);
+    await rescheduleScenario(
+      soloReschedulePage,
+      soloBase,
+      db,
+      solo,
+      soloPlayer,
+    );
+  } finally {
+    await soloRescheduleContext.close();
   }
 
   report();
