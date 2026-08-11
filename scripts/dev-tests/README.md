@@ -27,11 +27,11 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 |---|---|
 | `http-coach.js` | Nástenka „Dnes", roster so stavmi, nedotknutý samostatný režim |
 | `http-director.js` | Smerovanie podľa roly, obsah pultu, drill-in, tenant izolácia |
-| `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča |
+| `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča, životný cyklus členstva |
 | `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, kód uplatní len prihlásený, rodičovi ostáva jeho prístup |
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
 | `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov |
-| `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov |
+| `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
 
 ```bash
 node scripts/dev-tests/http-coach.js      # a ostatné rovnako
@@ -99,6 +99,14 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   prihlásil a zapisoval naostro. Preto sú mapované aj `plaw.win`, aj org
   subdoména; `allowedDevOrigins` v `next.config.ts` musí obsahovať oboje
   (`*.plaw.win` **nezahŕňa** holé `plaw.win`).
+- **Natívne `confirm()` Playwright automaticky ZAMIETNE.** Akcie na
+  `/director/team` (odobrať, vrátiť späť, vymazať) sa pýtajú kontrolnou otázkou,
+  takže pred každým klikom treba `page.once("dialog", d => d.accept())` — inak
+  scenár klikne, nič sa nestane a vyzerá to ako chyba appky.
+- **Nezvratné akcie skúšaj na účte, ktorý si scenár sám vytvoril.** Trvalé
+  zmazanie člena sa v `browser-director.js` §8 robí na `coach-new@test.local`
+  z onboardingu (ten sa aj tak na konci maže); na seedovaných trénerov nesiahaj,
+  ostatné sady s nimi počítajú.
 - **Scenáre, ktoré menia členstvo alebo priradenie hráča, musia po sebe upratať
   v `finally`.** `browser-director.js` trénera odoberá a zase vracia; keď taký
   scenár spadne uprostred, ďalší beh sa rozsype už na počte sedadiel. Preto sa

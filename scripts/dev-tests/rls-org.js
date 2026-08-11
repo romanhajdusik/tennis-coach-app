@@ -277,6 +277,94 @@ async function main() {
   const { data: restored } = await db.from("players").select("coach_id").eq("id", moved.id).single();
   check("preradenie sa dá vrátiť späť", restored.coach_id === coachA);
 
+  section("10) Životný cyklus členstva: neaktívny, návrat, trvalé zmazanie");
+  const { data: coach2Member } = await db
+    .from("organization_members")
+    .select("id")
+    .eq("organization_id", org.id)
+    .eq("user_id", coachB)
+    .maybeSingle();
+
+  // Scenár mení členstvo, takže musí upratať aj keď spadne — inak by ďalší beh
+  // našiel trénera odobratého a rozsypal sa na počtoch (viď README).
+  let throwawayId = null;
+  try {
+    await director
+      .from("organization_members")
+      .update({ status: "removed" })
+      .eq("id", coach2Member.id);
+
+    // Bez rozšírenej policy by bol zoznam neaktívnych zoznamom pomlčiek.
+    const { data: removedProfile } = await director
+      .from("profiles")
+      .select("full_name")
+      .eq("id", coachB)
+      .maybeSingle();
+    check(
+      "šéftréner vidí meno trénera aj po odobratí",
+      removedProfile?.full_name === "Boris Druhy",
+      JSON.stringify(removedProfile),
+    );
+
+    // DELETE ostáva odobratý grantom (bezpečnostný audit) — mazať smie len RPC.
+    const directDelete = await director
+      .from("organization_members")
+      .delete()
+      .eq("id", coach2Member.id);
+    const { data: stillThere } = await db
+      .from("organization_members")
+      .select("id")
+      .eq("id", coach2Member.id);
+    check(
+      "priamy DELETE neprejde (grant je odobratý)",
+      (stillThere ?? []).length === 1,
+      directDelete.error?.message ?? "riadok zmizol!",
+    );
+
+    const back = await director
+      .from("organization_members")
+      .update({ status: "active" })
+      .eq("id", coach2Member.id)
+      .select("id");
+    check("šéftréner vráti odobratého trénera späť", (back.data ?? []).length === 1, back.error?.message);
+
+    // Aktívneho člena nemožno zmazať jedným krokom — najprv sa musí odobrať.
+    const deleteActive = await director.rpc("delete_organization_member", { p_member_id: coach2Member.id });
+    check(
+      "aktívny člen sa vymazať nedá",
+      /member_not_deletable/.test(deleteActive.error?.message ?? ""),
+      deleteActive.error?.message ?? "PRESLO!",
+    );
+
+    const { data: throwaway } = await db
+      .from("organization_members")
+      .insert({ organization_id: org.id, role: "coach", status: "removed" })
+      .select("id")
+      .single();
+    throwawayId = throwaway.id;
+
+    const byCoach = await coach.rpc("delete_organization_member", { p_member_id: throwawayId });
+    check(
+      "tréner člena nezmaže",
+      /not_director/.test(byCoach.error?.message ?? ""),
+      byCoach.error?.message ?? "PRESLO!",
+    );
+
+    const deleted = await director.rpc("delete_organization_member", { p_member_id: throwawayId });
+    check("šéftréner zmaže odobratého natrvalo", deleted.error === null, deleted.error?.message);
+    const { data: gone } = await db.from("organization_members").select("id").eq("id", throwawayId);
+    check("riadok je preč", (gone ?? []).length === 0);
+    if ((gone ?? []).length === 0) throwawayId = null;
+  } finally {
+    await db
+      .from("organization_members")
+      .update({ status: "active" })
+      .eq("id", coach2Member.id);
+    if (throwawayId) {
+      await db.from("organization_members").delete().eq("id", throwawayId);
+    }
+  }
+
   // upratanie
   await db.from("organization_members").delete().eq("invite_code", "RLS-TEST1");
   await db.from("drill_codes").delete().eq("code", "RLS-VOL");

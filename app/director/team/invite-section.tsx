@@ -4,6 +4,8 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   createInvite,
+  deleteMember,
+  reactivateMember,
   removeMember,
   revokeInvite,
   type InviteFormState,
@@ -30,11 +32,13 @@ export type ActiveMember = {
 export function InviteSection({
   pending,
   members,
+  inactive,
   seatsUsed,
   seatLimit,
 }: {
   pending: PendingInvite[];
   members: ActiveMember[];
+  inactive: ActiveMember[];
   seatsUsed: number;
   seatLimit: number;
 }) {
@@ -155,15 +159,64 @@ export function InviteSection({
         )}
         <p className="text-xs text-muted">{t("removeNote")}</p>
       </section>
+
+      {inactive.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-sm font-medium text-muted">
+            {t("inactiveHeading")}
+          </h2>
+          <ul className="flex flex-col gap-2">
+            {inactive.map((member) => (
+              <li
+                key={member.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate font-medium text-muted">
+                    {member.name}
+                  </span>
+                  <span className="block text-xs text-muted">
+                    {t("inactiveLabel")}
+                    {member.playerCount > 0 &&
+                      ` · ${t("playersCount", { count: member.playerCount })}`}
+                  </span>
+                </span>
+
+                <span className="flex flex-none flex-wrap gap-2">
+                  <RowForm
+                    action={reactivateMember.bind(null, member.id)}
+                    label={t("reactivate")}
+                    confirmMessage={t("reactivateConfirm", {
+                      name: member.name,
+                    })}
+                  />
+                  <RowForm
+                    action={deleteMember.bind(null, member.id)}
+                    label={t("delete")}
+                    confirmMessage={t("deleteConfirm", { name: member.name })}
+                    destructive
+                  />
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-muted">{t("inactiveNote")}</p>
+        </section>
+      )}
     </div>
   );
 }
 
-/** Jednoriadkový formulár (zrušiť pozvánku / odobrať trénera). */
+/**
+ * Jednoriadkový formulár (zrušiť pozvánku, odobrať/vrátiť/vymazať trénera).
+ * `destructive` odlíši nezvratné mazanie od ostatných akcií — vrátiť späť sa
+ * dá všetko okrem neho.
+ */
 function RowForm({
   action,
   label,
   confirmMessage,
+  destructive,
 }: {
   action: (
     prevState: InviteFormState,
@@ -171,6 +224,7 @@ function RowForm({
   ) => Promise<InviteFormState>;
   label: string;
   confirmMessage?: string;
+  destructive?: boolean;
 }) {
   const [state, formAction, pending] = useActionState<InviteFormState, FormData>(
     action,
@@ -187,7 +241,11 @@ function RowForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-muted disabled:opacity-60"
+        className={`rounded-lg border px-3 py-1.5 text-sm font-medium disabled:opacity-60 ${
+          destructive
+            ? "border-red-800 text-red-400"
+            : "border-border text-muted"
+        }`}
       >
         {label}
       </button>

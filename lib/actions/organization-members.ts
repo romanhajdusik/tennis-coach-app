@@ -144,6 +144,9 @@ export async function revokeInvite(
  * Odobratie trénera z organizácie. Jeho hráči ani tréningy sa NEMAŽÚ — dáta
  * vlastní federácia (§5.4), takže ostávajú a v pulte sa objavia v skupine
  * „už nie je v organizácii", kým ich šéftréner nepridelí niekomu inému.
+ *
+ * Riadok ostáva v `removed` a na `/director/team` sa zobrazí ako neaktívny:
+ * dá sa vrátiť späť alebo vymazať natrvalo. Uvoľní sa aj sedadlo.
  */
 export async function removeMember(
   memberId: string,
@@ -169,3 +172,79 @@ export async function removeMember(
   revalidatePath("/director");
   return undefined;
 }
+
+/**
+ * Vrátenie odobratého trénera späť. Kontroly nerobíme tu — postráži ich trigger
+ * `enforce_membership_rules`: musí byť voľné sedadlo a tréner si medzitým nesmel
+ * založiť osobných hráčov (medzi odobratím a návratom je z pohľadu appky
+ * samostatný tréner, takže si ich založiť MOHOL).
+ */
+export async function reactivateMember(
+  memberId: string,
+  _prevState: InviteFormState,
+  _formData: FormData,
+): Promise<InviteFormState> {
+  const { supabase, org } = await requireDirectorOrg();
+  const t = await getTranslations("Director.team.errors");
+
+  const { error } = await supabase
+    .from("organization_members")
+    .update({ status: "active" })
+    .eq("id", memberId)
+    .eq("organization_id", org.id)
+    .eq("role", "coach")
+    .eq("status", "removed");
+
+  if (error) {
+    const reason = error.message ?? "";
+    if (reason.includes("seat_limit_reached")) {
+      return { error: t("seatLimitReached") };
+    }
+    if (reason.includes("has_personal_data")) {
+      return { error: t("reactivateHasPersonalData") };
+    }
+    // Unikátny index `one_active_membership_per_user` — medzitým vstúpil inam.
+    if (error.code === "23505") {
+      return { error: t("reactivateMemberElsewhere") };
+    }
+    return { error: t("reactivateFailed") };
+  }
+
+  revalidatePath("/director/team");
+  revalidatePath("/director");
+  return undefined;
+}
+
+/**
+ * Trvalé zmazanie už odobratého trénera. Ide cez `security definer` RPC —
+ * `authenticated` nemá na `organization_members` DELETE a bezpečnostný audit
+ * mu ho odobral zámerne, takže sa nevracia kvôli jednej obrazovke.
+ *
+ * Hráči sa tým nemažú: ostávajú organizácii a čakajú v pulte na prevzatie.
+ */
+export async function deleteMember(
+  memberId: string,
+  _prevState: InviteFormState,
+  _formData: FormData,
+): Promise<InviteFormState> {
+  const { supabase } = await requireDirectorOrg();
+
+  const { error } = await supabase.rpc("delete_organization_member", {
+    p_member_id: memberId,
+  });
+
+  if (error) {
+    const t = await getTranslations("Director.team.errors");
+    return { error: t("deleteFailed") };
+  }
+
+  revalidatePath("/director/team");
+  revalidatePath("/director");
+  return undefined;
+}
+
+// Pozn.: šéftréner, ktorý aj sám trénuje, si na to zakladá DRUHÝ účet a vstupuje
+// doň ako bežný tréner (rozhodnuté 2026-08-11). Vstavané „trénerské kreslo"
+// v jednom účte sme zvážili a zamietli — vyžiadalo by si prepis zapisovacích org
+// policy a zmenu §5.7, kým dva účty fungujú bez zásahu do kódu. Podrobnosti
+// v CLAUDE.md, sekcia „Onboarding do organizácie".

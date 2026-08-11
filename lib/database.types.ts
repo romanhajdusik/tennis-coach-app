@@ -587,10 +587,11 @@ export type Database = {
       }
       current_org_id: { Args: never; Returns: string }
       current_org_role: { Args: never; Returns: string }
-      is_active_member_of_my_org: {
-        Args: { p_user_id: string }
-        Returns: boolean
+      delete_organization_member: {
+        Args: { p_member_id: string }
+        Returns: undefined
       }
+      is_member_of_my_org: { Args: { p_user_id: string }; Returns: boolean }
       organization_by_slug: {
         Args: { p_slug: string }
         Returns: {

@@ -281,6 +281,91 @@ async function main() {
     }
   }
 
+  section("8) Odobratý tréner: neaktívny, návrat, trvalé zmazanie");
+  // Cieľom je účet z onboardingového scenára — ten sa aj tak na konci maže,
+  // takže sa ním dá bez následkov prejsť až po nezvratné zmazanie. Seedovaných
+  // trénerov by scenár mazať nesmel, tí musia ďalším sadám ostať.
+  if (fresh) {
+    const { data: freshProfile } = await db
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", fresh.id)
+      .maybeSingle();
+    const freshName =
+      freshProfile?.full_name?.trim() || freshProfile?.email || NEW_COACH;
+
+    await director.goto(`${BASE}/director/team`);
+    await director.waitForTimeout(1500);
+
+    director.once("dialog", (dialog) => dialog.accept());
+    await director
+      .locator("li", { hasText: freshName })
+      .getByRole("button", { name: "Remove" })
+      .first()
+      .click();
+    await director.waitForTimeout(2500);
+
+    const afterRemove = await browserText(director);
+    check(
+      "odobratý tréner ostal v zozname ako neaktívny",
+      /No longer active/.test(afterRemove) && afterRemove.includes(freshName),
+    );
+
+    director.once("dialog", (dialog) => dialog.accept());
+    await director
+      .locator("li", { hasText: freshName })
+      .getByRole("button", { name: "Bring back" })
+      .first()
+      .click();
+    await director.waitForTimeout(2500);
+
+    const { data: backRow } = await db
+      .from("organization_members")
+      .select("status")
+      .eq("user_id", fresh.id)
+      .maybeSingle();
+    check(
+      "vrátenie späť ho spravilo znova aktívnym",
+      backRow?.status === "active",
+      JSON.stringify(backRow),
+    );
+    check(
+      "zo sekcie neaktívnych zmizol",
+      !/No longer active/.test(await browserText(director)),
+    );
+
+    // A ešte raz odobrať — tentoraz až po nezvratné zmazanie.
+    director.once("dialog", (dialog) => dialog.accept());
+    await director
+      .locator("li", { hasText: freshName })
+      .getByRole("button", { name: "Remove" })
+      .first()
+      .click();
+    await director.waitForTimeout(2500);
+
+    director.once("dialog", (dialog) => dialog.accept());
+    await director
+      .locator("li", { hasText: freshName })
+      .getByRole("button", { name: "Delete" })
+      .first()
+      .click();
+    await director.waitForTimeout(2500);
+
+    const { data: goneRow } = await db
+      .from("organization_members")
+      .select("id")
+      .eq("user_id", fresh.id);
+    check(
+      "trvalé zmazanie odstránilo riadok",
+      (goneRow ?? []).length === 0,
+      JSON.stringify(goneRow),
+    );
+    await director.screenshot({
+      path: `${SCREENSHOT_DIR}/team-lifecycle.png`,
+      fullPage: true,
+    });
+  }
+
   // upratanie, nech seed ostane v pôvodnom stave
   await db.from("drill_codes").delete().eq("code", "FED-TEST");
   if (fresh) await db.from("organization_members").delete().eq("user_id", fresh.id);

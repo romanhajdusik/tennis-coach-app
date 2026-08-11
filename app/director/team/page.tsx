@@ -22,7 +22,7 @@ export default async function DirectorTeamPage() {
     .from("organization_members")
     .select("id, user_id, role, status, invite_code")
     .eq("organization_id", org.id)
-    .in("status", ["invited", "active"])
+    .in("status", ["invited", "active", "removed"])
     .order("created_at", { ascending: true });
 
   const active = (members ?? []).filter((member) => member.status === "active");
@@ -30,7 +30,14 @@ export default async function DirectorTeamPage() {
     .filter((member) => member.status === "invited" && member.invite_code)
     .map((member) => ({ id: member.id, code: member.invite_code as string }));
 
-  const userIds = active
+  // Odobratý tréner zo zoznamu nezmizne — šéftréner ho môže vrátiť späť alebo
+  // vymazať natrvalo. Zrušené pozvánky (nikdy neprijaté, teda bez `user_id`)
+  // sem nepatria: nebol za nimi človek a boli by to len prázdne riadky.
+  const removed = (members ?? []).filter(
+    (member) => member.status === "removed" && member.user_id,
+  );
+
+  const userIds = [...active, ...removed]
     .map((member) => member.user_id)
     .filter((id): id is string => Boolean(id));
 
@@ -55,6 +62,21 @@ export default async function DirectorTeamPage() {
   );
 
   const list: ActiveMember[] = active.map((member) => {
+    const profile = member.user_id ? profileById.get(member.user_id) : undefined;
+    return {
+      id: member.id,
+      name: profile?.full_name?.trim() || profile?.email || "—",
+      role: member.role,
+      playerCount: member.user_id
+        ? (playerCounts.get(member.user_id) ?? 0)
+        : 0,
+    };
+  });
+
+  // Neaktívny tréner sedadlo nedrží, takže sa počíta len z aktívnych. Preto sa
+  // pri ňom zobrazuje aj počet hráčov — šéftréner vidí, koho ešte má na krku,
+  // kým ho vráti späť alebo hráčov niekomu pridelí.
+  const inactive: ActiveMember[] = removed.map((member) => {
     const profile = member.user_id ? profileById.get(member.user_id) : undefined;
     return {
       id: member.id,
@@ -95,6 +117,7 @@ export default async function DirectorTeamPage() {
       <InviteSection
         pending={pending}
         members={list}
+        inactive={inactive}
         seatsUsed={seatsUsed}
         seatLimit={organization?.seat_limit ?? 0}
       />

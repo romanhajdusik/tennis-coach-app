@@ -56,10 +56,22 @@
     "remove": "Remove",
     "removeConfirm": "Remove {name} from the organization?",
     "removeNote": "Their players and practices stay with the organization — assign them to another coach in the panel afterwards.",
+    "inactiveHeading": "No longer active",
+    "inactiveLabel": "Removed",
+    "inactiveNote": "A removed coach frees up their seat but keeps their history. Bring them back and they pick up where they left off; delete them and only this entry disappears — their players and practices stay with the organization.",
+    "reactivate": "Bring back",
+    "reactivateConfirm": "Bring {name} back into the organization? They will take up a seat again.",
+    "delete": "Delete",
+    "deleteConfirm": "Permanently delete {name} from the list? This cannot be undone. Their players and practices stay with the organization.",
     "back": "Back to the panel",
     "errors": {
       "inviteFailed": "Failed to create the invite code.",
-      "removeFailed": "Failed to make the change."
+      "removeFailed": "Failed to make the change.",
+      "reactivateFailed": "Failed to bring the coach back.",
+      "reactivateHasPersonalData": "This coach now manages their own players outside the organization, so they cannot be brought back. They need to archive those players first.",
+      "reactivateMemberElsewhere": "This coach has meanwhile joined another organization.",
+      "seatLimitReached": "All seats are taken. Free one up first.",
+      "deleteFailed": "Failed to delete the coach."
     }
   },
   "drillCodes": {
