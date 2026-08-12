@@ -11,10 +11,16 @@
 1. **Primárna doména Google Workspace bude `plawsports.com`** — neutrálna, nie
    tenisová, s koncovkou `.com`. Jedna platená licencia (`roman@plawsports.com`),
    všetky ostatné adresy sú **bezplatné aliasy** do tej istej schránky.
-2. **Aktivujú sa len tri ďalšie domény ako „alias domény"** (`plawtennis.com`,
-   `plaw.win`, `plaw.online`) — pošta na ne padá do tej istej schránky.
-   Zvyšné (padel, pickleball, badminton, pomlčkové, `plaw.click`) sa **nechajú
-   zaparkované a zabezpečené**, aktivujú sa až keď ten šport reálne pôjde von.
+2. **Alias doména je len jedna: `plawtennis.com`** (upresnené 2026-08-12; pôvodne
+   mali byť tri). Pošta na ňu padá do tej istej schránky. **`plaw.win` a
+   `plaw.online` poštu vedome NEMAJÚ** a parkujú sa rovnako ako športové domény —
+   user ju tam nechce a nechať ich v pôvodnom stave nebolo možné (websupportové
+   MX tvrdili svetu, že poštu prijímajú, hoci tam schránka nie je, a bez DMARC sa
+   dali zneužiť). Zvyšné (padel, pickleball, badminton, pomlčkové, `plaw.click`)
+   sú **zaparkované a zabezpečené**, aktivujú sa až keď ten šport reálne pôjde von.
+   *Čo sa tým stráca:* kto napíše na `support@plaw.win` — a je to doména, ktorú má
+   tréner denne v adresnom riadku — dostane okamžitú chybu; ty sa o tom pokuse
+   nedozvieš. Vrátiť sa to dá kedykoľvek (alias doména je zadarmo, Krok 9).
 3. **Appkové (transakčné) maily cez Workspace NIKDY nepôjdu** — to je iná trieda
    pošty a iný nástroj (§9).
 
@@ -223,22 +229,28 @@ v=DMARC1; p=none; rua=mailto:roman@plawsports.com
 
 Konzola → **Adresár → Používatelia → tvoj účet → Alternatívne e-mailové adresy**.
 
-Odporúčaný set na začiatok:
+Set zvolený používateľom 2026-08-12 (anglický, ako produkt — pôvodne tu boli
+slovenské názvy `obchod@`/`podpora@`/`fakturacia@`):
 - `info@plawsports.com` — všeobecný kontakt (pôjde na verejný web)
-- `obchod@plawsports.com` — dopyty od zväzov a klubov
-- `podpora@plawsports.com` — pomoc trénerom
-- `fakturacia@plawsports.com` — účtovníctvo
+- `office@plawsports.com` — dopyty od zväzov a klubov
+- `support@plawsports.com` — pomoc trénerom
+- `billing@plawsports.com` — účtovníctvo
 
 **Prečo aliasy a nie ďalšie účty:** alias nič nestojí a chodí do tej istej
 schránky. Keď raz pribudne človek na podporu, alias sa zruší a `podpora@` sa
 zmení na **skupinu** alebo jeho vlastný účet — bez zmeny adresy navonok.
 
 V Gmaile si k nim nastav **štítky a filtre** (Nastavenia → Filtre → „Komu:
-obchod@…" → priraď štítok), inak sa ti to celé zleje do jednej hromady.
+office@…" → priraď štítok), inak sa ti to celé zleje do jednej hromady. Zároveň
+v **Účty a import → Odosielať e-maily ako** pridaj všetky štyri a zapni
+**„Odpovedať z tej istej adresy, na ktorú bola správa odoslaná"** — inak
+odpovieš z `roman@` na adresu, na ktorú ti nikto nepísal.
 
-### Krok 9 — alias domény (`plawtennis.com`, `plaw.win`, `plaw.online`)
+### Krok 9 — alias doména (`plawtennis.com`)
 
-Pre **každú** z týchto troch:
+> **Upresnené 2026-08-12:** alias doména je len `plawtennis.com`. `plaw.win` a
+> `plaw.online` idú namiesto toho do Kroku 10 (parkovanie pošty) — viď §1.
+> Postup nižšie platí aj pre ne, keby sa to raz otočilo.
 
 1. Konzola → **Účet → Domény → Spravovať domény → Pridať doménu**.
 2. Vyber **„Doména typu alias (domain alias)"**, nie sekundárna doména.
@@ -247,6 +259,22 @@ Pre **každú** z týchto troch:
    a **zmaž** pôvodné Websupport MX.
 5. Pridaj jej **SPF** (krok 4) a vygeneruj jej **vlastný DKIM kľúč** (krok 5 —
    DKIM je vždy per doména).
+6. Pridaj jej **DMARC**: TXT s názvom `_dmarc`, hodnota
+   `v=DMARC1; p=quarantine; rua=mailto:roman@<tá istá doména>`.
+7. Uprac po Websupporte: `mail`/`webmail`/`smtp`/`pop3`/`imap` (**A aj AAAA** —
+   Websupport ich zakladá v oboch a mazanie len `A` nestačí),
+   `autodiscover`/`autoconfig` (CNAME), `_autodiscover._tcp` (SRV), `admin` (A)
+   a **wildcard `*` A aj AAAA**. Inak si poštový klient pri nastavovaní schránky
+   vypýta údaje od Websupportu a ľubovoľná vymyslená subdoména vedie na parkovanie.
+
+> **Pasca s `rua` (chytila nás na `plawtennis.com`):** adresa pre DMARC reporty
+> musí byť **v tej istej doméne** ako DMARC záznam. Report na cudziu doménu
+> vyžaduje, aby tá doména vydala povoľovací záznam
+> `<zdrojová-doména>._report._dmarc.<cieľová-doména>` — Google to kontroluje a
+> bez neho reporty ticho zahodí. Pri alias doméne to netreba riešiť: `roman@`
+> na nej padá do tej istej schránky, tak tam píš `rua=mailto:roman@` **jej
+> vlastnej** domény. A `rua` nevynechávaj — bez reportov je dvojtýždňová fáza
+> `p=quarantine` na nič a na `p=reject` by sa prechádzalo naslepo.
 
 **Čo tým získaš:** `info@plaw.win` aj `info@plawtennis.com` padnú do tej istej
 schránky a dá sa z nich aj odpovedať (Gmail → Nastavenia → Účty → „Odosielať
@@ -256,10 +284,52 @@ e-maily ako").
 > a `CNAME` (`216.198.79.1`, `…vercel-dns-017.com`) sú web a **musia ostať** —
 > keby si ich zmazal, spadne appka aj verejný web.
 
+### Krok 9b — tenisové domény vedú na appku (rozhodnuté 2026-08-12)
+
+`plawtennis.com` **aj** `plaw-tennis.com` (vrátane `www` oboch) presmerúvajú na
+`plaw.win`. Dovtedy ukazovali na websupportové parkovanie (`37.9.175.133`, resp.
+`37.9.175.131`).
+
+**Robí to Vercel, nie kód.** Projekt `tennis-coach-app` → Settings → Domains →
+Add Domain → pri každom zo štyroch hostnames zvoliť **Redirect to `plaw.win`**,
+typ **307 Temporary Redirect**. V zóne potom zmazať parkovacie `A`/`AAAA` na `@`
+aj `www` a zapísať to, čo Vercel ukáže vo „View DNS configuration".
+
+> **Nepridávaj tie domény do Vercelu bez voľby redirect.** Bez nej sa na nich
+> začne servírovať appka, pričom `proxy.ts` tie hostnames nepozná
+> (`lib/public-face.ts#isPublicFaceHost`) — takže by na nich vyskočila consumer
+> landing namiesto presmerovania.
+
+**Prečo 307 a nie 308:** 308 je trvalé a prehliadače si ho držia dlho aj po
+zmene. Pri smerovaní na multi-šport je pravdepodobné, že `plawtennis.com` sa raz
+stane domovom tenisového produktu (keď `plaw.win` prestane sedieť pre padel a
+bedminton) — cachovaný 308 by vtedy posielal ľudí preč z domény, ktorú si práve
+zapol. Na SEO to nemá vplyv, `plaw.win` je `noindex`.
+
+**Web a pošta sú nezávislé:** `A`/`CNAME` rieši web, `MX`/`TXT` poštu. Preto
+`plaw-tennis.com` môže viesť na appku a **zároveň ostať poštovo zaparkovaná**
+podľa Kroku 10, a v `plawtennis.com` sa pri tejto zmene nesmú stratiť jej
+poštové záznamy (je to alias doména, Krok 9).
+
 ### Krok 10 — zabezpečenie zaparkovaných domén
 
 Týka sa: `plawpadel.com`, `plawpickleball.com`, `plawbadminton.com`, všetkých
-pomlčkových a `plaw.click`.
+pomlčkových a `plaw.click`. **`plaw-tennis.com` je medzi nimi**, hoci jej web
+vedie na appku (Krok 9b) — parkovanie sa tu týka výhradne pošty. **Od 2026-08-12
+sem patria aj `plaw.win` a `plaw.online`** (§1): pošta na nich nebude, web na
+nich žije ďalej.
+
+> **Pri `plaw.win` a `plaw.online` sa dotýkaš VÝHRADNE `MX` a `TXT`.** Záznamy
+> `A` (`216.198.79.1`) a `CNAME` (`…vercel-dns-017.com`) sú Vercel — appka,
+> verejný web aj org subdomény federácií. Pomôcka pri upratovaní zvyškov: **maž
+> len to, čo ukazuje na Websupport** (`37.9.x`, `45.13.x`, `2a00:4b40:…`,
+> `*.websupport.sk`), čokoľvek s Vercelom nechaj.
+>
+> **Do budúcna:** transakčné maily appky (Stripe fáza) pôjdu z **odosielacej
+> subdomény** typu `mail.plaw.win` cez Resend/Postmark. Tá má vlastný SPF a DKIM,
+> takže jej `v=spf1 -all` na koreni neprekáža a DMARC `p=reject` prejde, keď je
+> nastavená správne. Meniť by sa muselo len pri odosielaní priamo z
+> `noreply@plaw.win`.
 
 V zóne každej z nich:
 1. **Zmaž** Websupport MX záznamy a pridaj **null MX**: typ MX, hodnota `.`
@@ -272,9 +342,13 @@ V zóne každej z nich:
 podvodné maily v tvojom mene — a keď sa raz spáli reputácia mena „plaw",
 odnesie si to aj hlavná doména.
 
-> Ak by panel Websupportu odmietol samotnú bodku ako hodnotu MX, nechaj doménu
-> **úplne bez MX** a nechaj tam prísne SPF a DMARC. Je to o kúsok slabšie, ale
-> funkčne postačujúce.
+> **Overené 2026-08-12: Websupport null MX NEPODPORUJE.** Pole „Mailový server"
+> validuje hodnotu proti `^[a-z0-9-]+(\.[a-z0-9-]+)*$`, takže samotnú bodku
+> odmietne. Riešenie: **nechaj doménu úplne bez MX záznamu** (zmaž oboje
+> websupportové). Odosielateľ potom podľa RFC skúsi doručiť na `A` záznam
+> domény, tam nikto na porte 25 nepočúva, mail mu chvíľu visí vo fronte a
+> odskočí — rovnaký výsledok ako null MX, len pomalší. Ochranu robí `v=spf1
+> -all` a DMARC `p=reject`, nie MX, takže sa tým nič neoslabuje.
 
 ### Krok 11 — zabezpečenie účtu
 
@@ -340,7 +414,7 @@ pripravená.
 Dnes na verejnom webe nie je ani jedna adresa — vrátane `/federacie`, ktorá je
 pritom stránka pre zväzy a kluby. Po zriadení pošty:
 
-- `messages/sk/federacie.json` → doplniť kontakt `obchod@plawsports.com`
+- `messages/sk/federacie.json` → doplniť kontakt `office@plawsports.com`
 - landing a oba návody → `info@plawsports.com`
 
 Je to malá zmena v prekladoch, ale bez nej nemá B2B záujemca ako odpovedať na
@@ -355,11 +429,14 @@ stránku, ktorá ho má osloviť.
 - [ ] SPF `v=spf1 include:_spf.google.com ~all`
 - [ ] DKIM vygenerovaný **a zapnutý** (`Spustiť overovanie`)
 - [ ] DMARC `p=none` + adresa na reporty
-- [ ] Skúšobný mail tam aj späť, v hlavičkách `dkim=pass` a `spf=pass`
-- [ ] Aliasy `info@`, `obchod@`, `podpora@`, `fakturacia@` + filtre v Gmaile
-- [ ] Alias domény `plawtennis.com`, `plaw.win`, `plaw.online` (každá s MX, SPF, DKIM)
+- [x] Skúšobný mail tam aj späť, v hlavičkách `dkim=pass` a `spf=pass`
+- [x] Skúška aliasu naostro: mail na `info@` dostal štítok, odpoveď odišla z `info@` (2026-08-12)
+- [x] Aliasy `info@`, `office@`, `support@`, `billing@` (hotové 2026-08-12) + „Odosielať e-maily ako" + filtre v Gmaile
+- [x] Alias doména `plawtennis.com` (MX, SPF, DKIM, DMARC — hotové 2026-08-12)
+- [ ] `plaw.win` a `plaw.online`: parkovanie pošty (null MX + `v=spf1 -all` + DMARC `p=reject`)
 - [ ] `A`/`CNAME` na `plaw.win` a `plaw.online` **nedotknuté**
+- [x] `plawtennis.com` + `plaw-tennis.com` (aj `www`) → 307 redirect vo Verceli (2026-08-12; cieľ je **`www.plaw.win`**, nie apex — ušetrí to jeden skok navyše, lebo `plaw.win` sám presmerúva na `www`). Overené zvonku: všetky štyri hostnames vracajú `307 → https://www.plaw.win/`
 - [ ] Zaparkované domény: null MX + `v=spf1 -all` + DMARC `p=reject`
-- [ ] Dvojfaktorové overenie a záložné kódy
+- [x] Dvojfaktorové overenie a záložné kódy (2026-08-12; záchranný mail + telefón sa dali nastaviť až cez Admin konzolu → Users → Security → Recovery information, cez `myaccount.google.com` to nový účet odmietal s „We couldn't verify it's you")
 - [ ] O ~2 týždne: DMARC na `p=quarantine`, potom `p=reject`
 - [ ] Kontaktná adresa doplnená na `/federacie` a na landing
