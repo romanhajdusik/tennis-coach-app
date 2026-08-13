@@ -23,6 +23,14 @@
    nedozvieš. Vrátiť sa to dá kedykoľvek (alias doména je zadarmo, Krok 9).
 3. **Appkové (transakčné) maily cez Workspace NIKDY nepôjdu** — to je iná trieda
    pošty a iný nástroj (§9).
+4. **`fitness.plawsports.com` je rezervovaná pre kondičnú appku** (rozhodnuté
+   2026-08-12, appka sa zatiaľ nekóduje). Je to jediný web, ktorý na
+   `plawsports.com` vznikne — kondička je spoločná vrstva nad raketovými športmi,
+   takže patrí pod zastrešujúcu značku, nie pod `plaw.win`. DNS záznam sa zakladá
+   až keď bude čo nasadiť. **Pošty apexu sa to nedotkne** (`A`/`CNAME` vs
+   `MX`/`TXT`), len pozor, že DMARC `plawsports.com` platí aj pre subdoménu —
+   keby kondička raz posielala vlastné maily, potrebuje poriadny SPF a DKIM.
+   Odôvodnenie a dôsledky sú v [`docs/roadmap-buduce-smery.md`](roadmap-buduce-smery.md) §2.1.
 
 ---
 

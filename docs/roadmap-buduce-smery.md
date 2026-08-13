@@ -118,6 +118,37 @@ rôzne firmy, alebo budú potrebovať nezávislé škálovanie/compliance. Dovte
 backend pragmatickejší; prechod na dve DB neskôr je **deployment rozhodnutie, nie prepis**,
 ak domény držíš oddelené od začiatku.
 
+### 2.1 Upresnenia (2026-08-10 a 2026-08-12) — toto prebíja text vyššie
+
+**Prvý argument vyššie už NEPLATÍ.** Text hovorí „kondička = 1:N na rozdiel od tenisu 1:1"
+a odvodzuje z toho vlastnú schému. Index `one_active_player` medzitým padol (migrácia
+`20260810090000`) — tenisový tréner má tiež 1:N a počet hráčov je len cenová hladina.
+Kondička je tak bližšie k **inštancii #2 toho istého enginu** než k samostatnej schéme.
+Odporúčaný model je preto **spoločné tabuľky + štítok `discipline`**, a ten štítok musí
+sedieť **na tréningu**, nie sa odvodzovať od trénera (`assign_player_to_coach` prepisuje
+`coach_id` aj spätne, takže by preradenie hráča premenilo staré tenisové tréningy na
+kondičné) ani od hráča (viď nižšie).
+
+**Rozsah upresnený userom 2026-08-12:** `plawsports` = **raketové športy** (tenis, padel,
+pickleball, bedminton) a pravdepodobne to tak ostane. **Kondiční tréneri v nich pracujú
+naprieč športmi naraz a zamerania aj cvičenia sú v kondičke identické.** Dôsledky:
+
+1. **Kondička nemá SportConfig varianty — jeden katalóg, jedna inštancia** pre všetky
+   raketové športy. Tenis/padel/bedminton majú každý vlastné nasadenie, kondička nie.
+2. **Disciplína sa nesmie odvodzovať zo športu hráča** — kondičný tréner má v jednom
+   rosteri tenistu aj bedmintonistu.
+3. Vo federácii narazí cezšportový kondičný tréner na `one_active_membership_per_user`
+   → pre druhý zväz **druhý účet** (rovnaký vzor ako šéftréner, ktorý aj sám trénuje).
+
+**Doména ROZHODNUTÁ 2026-08-12: `fitness.plawsports.com`.** Kondička je spoločná vrstva
+nad raketovými športmi, takže patrí pod zastrešujúcu značku, nie pod `plaw.win` (tenis).
+Meno prežije aj rozšírenie mimo raketových športov. **Vybrať doménu bolo treba TERAZ, kým
+kondička nemá ani jedného používateľa** — auth cookies sú host-only a org kontext ide
+z hostname, takže neskorší presun by odhlásil všetkých a rozbil PWA ikony, presne ako pri
+zamietnutom presune tenisovej appky na `app.plawsports.com`. DNS záznam sa zakladá až keď
+bude čo nasadiť; pošty `plawsports.com` sa to nedotkne (`A`/`CNAME` vs `MX`/`TXT`), len
+platí, že DMARC apexu sa vzťahuje aj na subdomény.
+
 ---
 
 ## 3. Záťaž z hodiniek: SÚBOR OD HRÁČA (prepracované 2026-08-11)
