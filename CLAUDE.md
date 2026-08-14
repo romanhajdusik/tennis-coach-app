@@ -71,9 +71,12 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
    - `organization_id` (nullable) — **vlastník riadku**: `null` = osobný hráč samostatného trénera, inak hráč patrí organizácii a `coach_id` je len *priradenie* (pozri org vrstvu nižšie)
 3. **sessions** — tréningy naviazané na hráča
    - `planned_data` (plánovaný čas a zameranie), `actual_data` (reálny čas), `notes`, `status` (`planned` / `completed` / `cancelled` — `cancelled` je v DB kvôli budúcemu použitiu, appka dnes namiesto neho naplánovaný tréning rovno **zmaže**, pozri "Životný cyklus tréningu")
+   - `discipline` (`tennis` / `fitness`, default `tennis`) — **štítok disciplíny patrí na TRÉNING**, nie na trénera ani na hráča (pozri sekciu „Disciplína"). Zapisuje ho appka z konfigurácie nasadenia
    - `google_event_id` (text, nullable) — **pridať už od začiatku**, príprava na kalendárovú synchronizáciu
 4. **metrics_and_tests** — kondičné a technické testy hráča (implementácia vo fáze 2, tabuľku možno vytvoriť vopred)
 5. **session_drills** — cvičenia v rámci tréningu (kategória/zameranie, charakter úderu, kód cvičenia, trvanie)
+   - `character` je **nullable od migrácie `20260813090000`** — charakter úderu (offensive/neutral/defensive) je tenisový slovník a disciplína, ktorá ho nezaznamenáva, tam píše NULL. **Pozor: rovnaké uvoľnenie muselo dostať aj `parent_session_drill_records`**, inak by trigger `sync_drill_to_parent` pri prvom takom cvičení spadol a zablokoval zápis celého tréningu
+   - `duration_minutes` CHECK je **zjednotenie disciplín** (`5,10,15,20,30,60`); užšiu ponuku (tenis 5–30) drží konfigurácia disciplíny, nie databáza
    - `status` (`played` / `not_played` / `replaced`) — review označenie, defaultne `played`
    - `replaces_drill_id` — väzba náhradného cvičenia na to, ktoré nahrádza (len informatívna, na poradie sa už nepoužíva)
    - `sort_order` (integer, not null) — **jediný zdroj poradia v zozname**, tréner ho vie meniť šípkami hore/dole (`lib/actions/session-drills.ts#moveDrill`), len kým je tréning `planned` (RLS zablokuje update pri `completed`). `addDrill` pridáva na koniec, `replaceDrill` vloží nové cvičenie hneď za nahradzované (posunie zvyšok o jedno miesto)
@@ -110,6 +113,21 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
   - **Kódy cvičení** v org vlastní federácia: tréner ich len číta, zapisuje ich šéftréner (jediné miesto, kde má director write). **Zdieľanie s rodičom/hráčom je vypnuté** pre org trénerov aj na úrovni DB — je to funkcia samostatného produktu (§5.6).
   - Ešte **nehotové** (pri stavbe UI vrstvy záväzné): **tenant izolácia** v `proxy.ts` (hostname→org autoritatívne) + **Auth cookies per-subdoménu**, nie zdieľané `.plaw.win`.
   - Detaily a odôvodnenie v [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md) §5.7 a §5.9.
+
+## Disciplína (tenis vs kondička)
+
+Appka je od 2026-08-13 **engine pre viac disciplín**. Disciplína je to, ČO sa na tréningu zapisuje — tenis má zamerania úderov a ich charakter, kondička má kondičné zamerania bez charakteru. Nie je to šport: kondička je **jedna spoločná disciplína naprieč všetkými raketovými športmi** (kondičný tréner má v jednom rosteri tenistu aj bedmintonistu), kým tenis/padel/bedminton budú tri nasadenia tej istej tenisovej logiky.
+
+**Zlaté pravidlo: disciplínovo špecifické = konfigurácia, engine = zdieľaný kód.** Do `lib/disciplines/*` patria len dáta a pravidlá, nikdy nie vetvenie „ak je to kondička" rozsypané po komponentoch.
+
+- **Jediný zdroj pravdy je `getDisciplineConfig()`** ([`lib/discipline.ts`](lib/discipline.ts)) — rovnaký princíp ako `getSelectedPlayer()` pri vybranom hráčovi. Zamerania, kódy cvičení, trvania, charakter aj sadzby odhadu úderov čítaj **výhradne** cez ňu; `lib/drill-options.ts` už žiadne konštanty nemá, ostala v ňom len disciplínovo neutrálna práca so slotmi.
+- **Disciplína je vec NASADENIA** — `NEXT_PUBLIC_PLAW_DISCIPLINE` (`tennis` predvolene, `fitness`). Jedno nasadenie = jedna disciplína (tenis `plaw.win`, kondička `fitness.plawsports.com`). **Chýbajúca hodnota je zámerne tenis**, aby sa produkcia nezmenila tým, že premennú niekto zabudne nastaviť. Je `NEXT_PUBLIC_`, lebo ponuky potrebuje aj prehliadač — mení sa teda **pri builde**, po jej zmene treba redeploy.
+- **Disciplínu NIKDY neodvodzuj inak:** nie z trénera (`assign_player_to_coach` prepisuje `coach_id` aj na starých tréningoch, takže by preradenie hráča spätne premenilo tenisové tréningy na kondičné), nie z hráča (kondičný tréner má hráčov z rôznych športov) a nie z hostname (vo federácii chodia obaja tréneri na tú istú org subdoménu). Preto je na tréningu stĺpec `sessions.discipline`.
+- **`character: null` a `strokes: null` sú prvotriedne stavy konfigurácie**, nie chýbajúce hodnoty. Kde sa charakter zobrazuje (formulár cvičenia, riadok cvičenia, detail tréningu u trénera/pultu/rodiča, panel „podľa charakteru" v analytike), sa pri `null` **nevykreslí vôbec** — inak by ostal nadpis nad prázdnym grafom. Rovnako pri `strokes: null` analytika o úderoch mlčí (kondička = len čas a %).
+- **Kondička nemá SportConfig varianty** — jeden katalóg pre všetky raketové športy: 10 zameraní (`ENDURANCE`, `STRENGTH`, `SPEED`, `FOOTWORK`, `COORDINATION`, `MOBILITY`, `CORE MUSCLES`, `STRETCHING`, `YOUR 1`, `YOUR 2`), 20 slotov na kódy ako v tenise, trvania 5–60. Posledné dve zamerania majú **pevný názov** — tréner si do nich dá vlastné cvičenia, ale premenovateľné zameranie by muselo byť dáta, nie konfigurácia.
+- **Kondička nemá vlastný marketing**, takže na jej doméne vedie `/` odhláseného rovno na prihlásenie (rovnako ako org subdoména) — landing je marketing tenisového produktu a na kondičnej doméne by bola nepravdivá.
+- **Overovanie:** kondičný režim má vlastnú sadu [`scripts/dev-tests/fitness.js`](scripts/dev-tests/fitness.js) a potrebuje dev server s tou premennou (Next 16 nespustí druhý dev server v tom istom priečinku — tenisový treba zastaviť). Postup nasadenia je v [`docs/nasadenie-kondicky.md`](docs/nasadenie-kondicky.md).
+- **Čo do v1 kondičky NEJDE:** federačný režim (org subdomény sú tenisové a `copy_session_to_org_player` disciplínu neprenáša — kópia by dostala default `tennis`), prepojenie s tenisovým kalendárom a Google Calendar (chýba redirect URI pre novú doménu).
 
 ## Vybraný hráč (1:1 vs 1:N)
 
@@ -168,6 +186,8 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
   - `sessions.google_event_id` ostáva ukazovať do kalendára pôvodného trénera (pripojenie je per účet) — nový tréner udalosti nezdedí.
 - **Pult je stavaný na laptop/tablet**, nie na telefón (na rozdiel od trénerovej appky, ktorá sa používa na kurte) — stránky majú `max-w-6xl`/`max-w-5xl` a viacstĺpcové rozloženie na `sm`/`lg`/`xl`, na mobile sa poskladajú pod seba. **Mobile-first pravidlo z tejto sekcie nevypadáva** — úzka šírka musí ostať použiteľná a bez horizontálneho scrollu.
 - **Porovnanie hráčov `/director/compare`:** tá istá trojica grafov, akú vidí tréner, vedľa seba pre celú skupinu. **Počet stĺpcov sleduje počet hráčov (až 6)**, ale každý ďalší sa otvorí až od šírky, kde stĺpec neklesne pod ~300 px — pri nej sa koláč aj legenda ešte čítajú (`COLUMN_CLASSES` v tom súbore). **14" notebook (v CSS 1280–1512 px) dostane štyri stĺpce**, 5 od 1600, 6 od 1900; dvaja hráči nikdy nestoja v šiestich stĺpcoch. **Prahy musia byť zapísané rovnakým druhom variantu (`min-[…]`)**: pri miešaní s pomenovanými (`2xl:`) sa CSS pravidlá nezoradia podľa šírky a širší prah prebije užší (1920 px vracalo 4 stĺpce namiesto 5). Dve osi zoskupenia — **podľa trénera** a **podľa ročníka** (`birth_year`), prepínajú sa v URL (`?by=coach|year&group=…`). Dáta ťahá `getPlayersCategoryAnalytics` ([`lib/actions/analytics.ts`](lib/actions/analytics.ts)) — **dvoma dotazmi pre celú skupinu, nie štyrmi na hráča**; pri desiatich hráčoch by inak stránka poslala 40 dotazov. Neprepisuj to na volanie `getPlayerCategoryAnalytics` v cykle.
+
+**Podoba generálneho grafu je vlastnosťou disciplíny** (`analytics.shareChart` v konfigurácii), nie počtu položiek: tenis `donut` (7 zameraní = 7 odlíšiteľných farieb, identitu nesie farba), kondička `bars` — vodorovné stĺpce, kde identitu nesie **popis vedľa stĺpca**. **Paleta sa kvôli tomu zámerne NEROZŠIROVALA:** validátor na tmavom podklade `#27262b` ukázal, že šesť sérií prejde všetky kontroly, ale deväť už nie — dve dvojice sú nerozlíšiteľné aj pri plnom farebnom videní (ΔE 7.9 oproti hranici 15) a ďalšie sa zlejú pri protanopii (ΔE 1.9). **Ak niekedy pribudne disciplína s veľa zameraniami, nevymýšľaj nové farby — daj jej `bars`.**
 
 **Poradie grafov v analytike (platí všade):** generálny graf (`CategoryShareChart`, podiel zamerania na celkovom čase) ide **PRVÝ**, až za ním rozpad podľa kódov a charakteru (`CategoryCharts`). Platí pre trénerovu analytiku, rodičovskú/hráčsku (`getParentCategoryMinuteShares` nad kópiami), pult aj porovnanie — **kto tréningy sleduje, vidí to isté rozloženie ako ten, kto ich zapísal.**
 
@@ -320,14 +340,19 @@ Samostatný tréner má **14 dní všetko zadarmo, potom platí**. **Druhou osou
   konfig vrstvy (vzorec/slovo „strokes", serve/return prefix zoskupenie, sadzby charakteru).
   Budúci mechanizmus: **A) jeden repo, šport podľa nasadenia (`SPORT=padel`) — odporúčané**,
   nie kopírovať repo na každý šport. Detaily + audit-plán v docs dokumente.
-- **Kondičná appka (samostatná doména, 1:N)** (2026-08-01): samostatná appka pre kondičný
-  tréning; v tenisovom kalendári hráča sa majú zobraziť aj kondičné tréningy. Obmedzenia:
-  viac aktívnych hráčov (1:N), dáta vlastní príslušný tréner, funguje aj bez tenisu (opt-in),
-  predáva sa samostatne. Odporúčaný model: **jeden Supabase projekt + spoločné Auth, dve
-  oddelené domény, prepojenie voliteľným connect-code linkom, read-only cross-read.**
-  „Samostatný predaj ≠ samostatná databáza" (predplatné je per-app). Jediné rozhodnutie,
-  čo mení „jeden backend vs dva": či obe appky prevádzkuje používateľ, alebo neskôr iná firma.
-  Detaily v docs dokumente.
+- **Kondičná appka (`fitness.plawsports.com`)** — **UŽ SA STAVIA, nie je to nápad na neskôr.**
+  Kroky 1 a 2 (konfiguračná vrstva disciplíny + schéma) sú **hotové a na produkcii**
+  (commity `a9617d8`, `eab1cee`, `90a6e8d`; migrácia `20260813090000` spustená na prode).
+  Pravidlá pre ďalšiu prácu sú v sekcii **„Disciplína (tenis vs kondička)"** vyššie,
+  postup nasadenia v [`docs/nasadenie-kondicky.md`](docs/nasadenie-kondicky.md).
+  **Zostáva:** (3) založiť Vercel projekt + CNAME + prvý účet, (4) prepojenie **kariet
+  hráčov** connect-codom (kód vydáva kondičný tréner = vlastník dát) a živý read-only
+  cross-read kondičných tréningov v tenisovom kalendári — **nie kópie ako pri rodičovi**,
+  po zrušení prepojenia majú zmiznúť; (5) samostatný kondičný graf **dole** v tenisovej
+  analytike, s vlastnou stovkou — **kondičné minúty sa nesmú miešať do `CategoryShareChart`**
+  (prepísali by percentá zamerania) ani do „dní bez tréningu" v `getRosterOverview`
+  (hráč by vyzeral ošetrený, hoci na kurte nebol). Detaily v
+  [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md) §2.1.
 - **Organizačný riadiaci pult pre federácie/kluby/akadémie (B2B)** (2026-08-02): federácia
   si objedná multiprístup (napr. 10 trénerov), **športový riaditeľ** má read-only „riadiaci
   pult" s prehľadom spolupráce každého trénera a jeho zverenca (v budúcnosti aj kondičného

@@ -118,6 +118,31 @@ rôzne firmy, alebo budú potrebovať nezávislé škálovanie/compliance. Dovte
 backend pragmatickejší; prechod na dve DB neskôr je **deployment rozhodnutie, nie prepis**,
 ak domény držíš oddelené od začiatku.
 
+### 2.0 STAV IMPLEMENTÁCIE (2026-08-13) — čítaj ako prvé
+
+Kondička sa **už stavia**. Poradie piatich krokov a kde sme:
+
+| Krok | Stav |
+|---|---|
+| 1. Konfiguračná vrstva disciplíny (`lib/discipline.ts`, `lib/disciplines/*`) | **hotové** (`a9617d8`) |
+| 2. Migrácia `20260813090000` + zápis disciplíny + stĺpcový generálny graf | **hotové, aj na prode** (`eab1cee`) |
+| 3. Nasadenie: Vercel projekt, CNAME, prvý účet | **runbook hotový** (`docs/nasadenie-kondicky.md`), klikanie na používateľovi |
+| 4. Prepojenie kariet hráčov + read-only cross-read v tenisovom kalendári | nezačaté |
+| 5. Samostatný kondičný graf dole v tenisovej analytike | nezačaté |
+
+Pravidlá, ktoré z toho vzišli a platia pre každú ďalšiu prácu, sú v `CLAUDE.md`
+v sekcii „Disciplína (tenis vs kondička)". Tri veci, ktoré stoja za zapamätanie:
+
+1. **`character` prestal byť `not null` aj na `parent_session_drill_records`** —
+   nielen na `session_drills`. Bez toho by trigger `sync_drill_to_parent` pri prvom
+   kondičnom cvičení spadol a zablokoval zápis celého tréningu.
+2. **Paleta sa nerozšírila na 10 farieb, lebo sa to nedá** (validátor: 6 sérií
+   prejde, 9 padá — ΔE 7.9 pri plnom farebnom videní oproti hranici 15). Kondička
+   preto kreslí generálny graf ako vodorovné stĺpce; podobu určuje konfigurácia.
+3. **`copy_session_to_org_player` disciplínu neprenáša** — kópia by dostala default
+   `tennis`. Vedome odložené (kondička vo federácii do v1 nejde); pri oprave vychádzaj
+   z `pg_get_functiondef`, nie z migrácie.
+
 ### 2.1 Upresnenia (2026-08-10 a 2026-08-12) — toto prebíja text vyššie
 
 **Prvý argument vyššie už NEPLATÍ.** Text hovorí „kondička = 1:N na rozdiel od tenisu 1:1"
