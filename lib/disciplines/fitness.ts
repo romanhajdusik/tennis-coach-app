@@ -63,5 +63,10 @@ export const FITNESS_DISCIPLINE: DisciplineConfig = {
 
     // Odhad úderov kondička nepočíta vôbec: v analytike je len čas a %.
     strokes: null,
+
+    // Desať zameraní by v koláči potrebovalo desať odlíšiteľných farieb —
+    // toľko ich paleta nemá a mať nemôže. Identitu preto nesie popis vedľa
+    // stĺpca, nie farba.
+    shareChart: "bars",
   },
 };

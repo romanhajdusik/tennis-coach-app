@@ -12,6 +12,7 @@ import {
 } from "@/lib/google/calendar";
 import { getActivePlayers, getSelectedPlayer } from "@/lib/players/selected";
 import { getOrgContext } from "@/lib/org/context";
+import { getDiscipline } from "@/lib/discipline";
 
 export type SessionFormState = { error?: string } | undefined;
 
@@ -63,6 +64,9 @@ export async function createSession(
       player_id: activePlayer.id,
       status: "planned",
       planned_data: { date, duration_minutes: durationMinutes },
+      // Štítok disciplíny z nasadenia — na tréningu, nie odvodený od trénera
+      // (`assign_player_to_coach` mu prepisuje `coach_id` aj spätne).
+      discipline: getDiscipline(),
     })
     .select("id")
     .single();
@@ -309,7 +313,9 @@ export async function copySessionToPlayer(
 
   const { data: source } = await supabase
     .from("sessions")
-    .select("id, player_id, organization_id, planned_data, actual_data, notes")
+    .select(
+      "id, player_id, organization_id, discipline, planned_data, actual_data, notes",
+    )
     .eq("id", sessionId)
     .maybeSingle();
 
@@ -353,6 +359,9 @@ export async function copySessionToPlayer(
       coach_id: user.id,
       organization_id: source.organization_id,
       player_id: target.id,
+      // Disciplína sa berie zo ZDROJA (ako `organization_id`), nie z nasadenia —
+      // kópia je ten istý tréning pre druhého hráča.
+      discipline: source.discipline,
       // Nikdy nie 'completed' — do uzamknutého tréningu sa cvičenia vložiť
       // nedajú (RLS) a odomknúť sa už nedá.
       status: "planned",

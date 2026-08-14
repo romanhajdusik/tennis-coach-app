@@ -17,12 +17,6 @@ type DrillInputError = "missingFields" | "invalidCharacter" | "invalidDuration";
 /**
  * Overenie vstupov cvičenia proti aktívnej disciplíne — ponuka trvaní aj
  * existencia charakteru sú jej vlastnosťou, nie konštantou appky.
- *
- * POZOR: disciplína bez charakteru (kondička) sem pošle prázdny reťazec a
- * do DB by patrilo `null`, čo dnes neprejde — `session_drills.character` je
- * `not null` a rovnako aj rodičovská kópia. Uvoľní to až migrácia z Kroku 2
- * (spolu s `duration_minutes` CHECK na 60 a novým `lib/database.types.ts`);
- * dovtedy je kondičný zápis nedostupný, tenisový je nezmenený.
  */
 function checkDrillInput(
   category: string,
@@ -50,6 +44,15 @@ function checkDrillInput(
   }
 
   return null;
+}
+
+/**
+ * Charakter cvičenia sa v disciplíne, ktorá ho nezaznamenáva, ukladá ako NULL
+ * — nie ako prázdny reťazec, ktorý by neprešiel cez CHECK a v analytike by
+ * vyrobil výsek bez mena.
+ */
+function drillCharacterValue(character: string): string | null {
+  return getDisciplineConfig().character ? character : null;
 }
 
 export async function addDrill(
@@ -106,7 +109,7 @@ export async function addDrill(
       coach_id: user.id,
       organization_id: org?.id ?? null,
       category,
-      character,
+      character: drillCharacterValue(character),
       drill_code: drillCode,
       duration_minutes: durationMinutes,
       sort_order: (lastDrill?.sort_order ?? 0) + 1,
@@ -295,7 +298,7 @@ export async function replaceDrill(
       coach_id: user.id,
       organization_id: org?.id ?? null,
       category,
-      character,
+      character: drillCharacterValue(character),
       drill_code: drillCode,
       duration_minutes: durationMinutes,
       replaces_drill_id: replacedDrillId,

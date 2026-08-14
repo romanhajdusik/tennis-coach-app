@@ -12,7 +12,8 @@ const DEFAULT_CHARACTER = DISCIPLINE.character?.defaultValue ?? "";
 export type Drill = {
   id: string;
   category: string;
-  character: string;
+  // `null` v disciplíne, ktorá charakter cvičenia nezaznamenáva (kondička).
+  character: string | null;
   drill_code: string | null;
   duration_minutes: number;
   status: string;
@@ -215,7 +216,7 @@ export function DrillRow({
             <p className="font-medium text-foreground ">
               {drill.category} · {drill.drill_code}
             </p>
-            {DISCIPLINE.character && (
+            {DISCIPLINE.character && drill.character && (
               <p className="text-sm text-muted ">
                 {DISCIPLINE.character.labels[drill.character] ?? drill.character}
               </p>

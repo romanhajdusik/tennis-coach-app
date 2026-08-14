@@ -128,5 +128,8 @@ export const TENNIS_DISCIPLINE: DisciplineConfig = {
       // POINTS = zápasové body, odhad úderov je tam nevýpovedný.
       hiddenCategories: ["POINTS"],
     },
+
+    // Sedem zameraní = sedem odlíšiteľných farieb, koláč teda unesie identitu.
+    shareChart: "donut",
   },
 };

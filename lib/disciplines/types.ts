@@ -54,5 +54,19 @@ export type DisciplineConfig = {
     /** Zamerania s dvojúrovňovým zobrazením podľa prefixu kódu. */
     groupedCategories: Record<string, AnalyticsCodeGroup[]>;
     strokes: StrokesConfig | null;
+    /**
+     * Podoba generálneho grafu (podiel zamerania na celkovom čase).
+     *
+     * `donut` = výsek na zameranie, identitu nesie FARBA. Použiteľné len
+     * dovtedy, kým je zameraní najviac toľko, koľko má paleta odlíšiteľných
+     * farieb (tenis 7). `bars` = vodorovné stĺpce, identitu nesie POPIS vedľa
+     * stĺpca, takže počet zameraní nie je obmedzený paletou (kondička 10).
+     *
+     * Overené validátorom palety na tmavom podklade `#27262b`: šiestich sérií
+     * prejde všetky kontroly, deväť už nie — dve dvojice sú nerozlíšiteľné aj
+     * pri plnom farebnom videní (ΔE 7.9 pri hranici 15) a ďalšie sa zlejú pri
+     * protanopii (ΔE 1.9). Preto sa paleta nerozširovala.
+     */
+    shareChart: "donut" | "bars";
   };
 };

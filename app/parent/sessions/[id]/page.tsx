@@ -139,7 +139,7 @@ export default async function ParentSessionDetailPage({
                   <p className="font-medium text-foreground ">
                     {drill.category} · {drill.drill_code}
                   </p>
-                  {characterLabels && (
+                  {characterLabels && drill.character && (
                     <p className="text-sm text-muted ">
                       {characterLabels[drill.character] ?? drill.character}
                     </p>

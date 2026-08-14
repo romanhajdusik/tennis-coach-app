@@ -88,6 +88,54 @@ export function CategoryShareChart({
   const opacityFor = (category: string) =>
     !highlightCurrent || category === currentCategory ? 1 : 0.4;
 
+  // Disciplína s viacerými zameraniami, než unesie paleta (kondička má 10),
+  // ich vykreslí ako vodorovné stĺpce — identitu tam nesie popis, nie farba.
+  if (getDisciplineConfig().analytics.shareChart === "bars") {
+    return (
+      <div className="viz-root flex flex-col gap-3 rounded-xl border border-border bg-surface p-4">
+        <h2 className="text-sm font-medium text-muted">
+          {t("generalShareHeading")}
+        </h2>
+        <ul className="flex flex-col gap-2.5">
+          {data.map((entry) => {
+            const isCurrent = entry.category === currentCategory;
+            return (
+              <li key={entry.category} className="flex min-w-0 flex-col gap-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span
+                    className={`min-w-0 truncate text-xs text-foreground ${
+                      isCurrent ? "font-semibold" : "font-medium"
+                    }`}
+                  >
+                    {entry.category}
+                  </span>
+                  <span className="flex-none text-xs text-muted">
+                    {t("characterStatsLine", {
+                      minutes: entry.minutes,
+                      percentage: Math.round(entry.percentage),
+                    })}
+                  </span>
+                </div>
+                {/* Dráha ukazuje celok, výplň podiel — stĺpce tak držia
+                    spoločnú stovku aj pri zameraní s nulou. */}
+                <div className="h-2 w-full overflow-hidden rounded-full bg-input">
+                  <div
+                    className="h-2 rounded-r-full"
+                    style={{
+                      width: `${entry.percentage}%`,
+                      backgroundColor: "var(--series-1)",
+                      opacity: opacityFor(entry.category),
+                    }}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  }
+
   return (
     <div className="viz-root flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 ">
       <h2 className="text-sm font-medium text-muted ">

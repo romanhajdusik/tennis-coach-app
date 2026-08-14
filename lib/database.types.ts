@@ -239,7 +239,7 @@ export type Database = {
       parent_session_drill_records: {
         Row: {
           category: string
-          character: string
+          character: string | null
           drill_code: string | null
           duration_minutes: number
           id: string
@@ -249,7 +249,7 @@ export type Database = {
         }
         Insert: {
           category: string
-          character: string
+          character?: string | null
           drill_code?: string | null
           duration_minutes: number
           id?: string
@@ -259,7 +259,7 @@ export type Database = {
         }
         Update: {
           category?: string
-          character?: string
+          character?: string | null
           drill_code?: string | null
           duration_minutes?: number
           id?: string
@@ -440,7 +440,7 @@ export type Database = {
       session_drills: {
         Row: {
           category: string
-          character: string
+          character: string | null
           coach_id: string
           created_at: string
           drill_code: string | null
@@ -454,7 +454,7 @@ export type Database = {
         }
         Insert: {
           category: string
-          character: string
+          character?: string | null
           coach_id: string
           created_at?: string
           drill_code?: string | null
@@ -468,7 +468,7 @@ export type Database = {
         }
         Update: {
           category?: string
-          character?: string
+          character?: string | null
           coach_id?: string
           created_at?: string
           drill_code?: string | null
@@ -509,6 +509,7 @@ export type Database = {
           actual_data: Json | null
           coach_id: string
           created_at: string
+          discipline: string
           google_event_id: string | null
           id: string
           notes: string | null
@@ -522,6 +523,7 @@ export type Database = {
           actual_data?: Json | null
           coach_id: string
           created_at?: string
+          discipline?: string
           google_event_id?: string | null
           id?: string
           notes?: string | null
@@ -535,6 +537,7 @@ export type Database = {
           actual_data?: Json | null
           coach_id?: string
           created_at?: string
+          discipline?: string
           google_event_id?: string | null
           id?: string
           notes?: string | null
