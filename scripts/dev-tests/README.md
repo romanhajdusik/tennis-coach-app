@@ -32,9 +32,19 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
 | `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun a zrušenie naplánovaného tréningu v oboch režimoch |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
+| `fitness.js` | **Kondičné nasadenie** — 10 zameraní, prázdne sloty kódov, chýbajúce pole charakteru, trvanie 60, analytika bez odhadu úderov, žiadna tenisová landing |
 
 ```bash
 node scripts/dev-tests/http-coach.js      # a ostatné rovnako
+```
+
+`fitness.js` je výnimka — potrebuje dev server v **kondičnom** režime, a Next 16
+nespustí druhý dev server v tom istom priečinku, takže tenisový treba najprv
+zastaviť:
+
+```bash
+NEXT_PUBLIC_PLAW_DISCIPLINE=fitness PORT=3001 npm run dev
+DEV_PORT=3001 node scripts/dev-tests/fitness.js
 ```
 
 Klikacie sady potrebujú Playwright, ktorý **nie je závislosťou projektu** —

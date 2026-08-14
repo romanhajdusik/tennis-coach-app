@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
-import { getDisciplineConfig } from "@/lib/discipline";
+import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { LandingPage, getLandingLocale } from "@/components/landing-page";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { isPublicFaceHost } from "@/lib/public-face";
@@ -106,6 +106,13 @@ export default async function Home() {
     // (funkcie, screenshoty, cenník) ostáva na plaw.win, kam prvé dvere vedú.
     if (isPublicFaceHost((await headers()).get("host"))) {
       return <PublicFaceHome />;
+    }
+    // Landing je marketing TENISOVÉHO produktu (jeho názov, screenshoty
+    // z kurtu, cenník). Iná disciplína ju nesmie vykresliť ani omylom —
+    // kondičný tréner na `fitness.plawsports.com` sem chodí pracovať,
+    // nie čítať o tenise. Vlastný marketing kondička zatiaľ nemá.
+    if (getDiscipline() !== "tennis") {
+      redirect("/login");
     }
     return <LandingPage />;
   }
