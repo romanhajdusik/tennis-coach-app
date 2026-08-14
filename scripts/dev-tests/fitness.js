@@ -85,6 +85,15 @@ async function main() {
     loggedInText.slice(0, 120),
   );
 
+  section("1c) Kondička je farebne odlíšená");
+  // Farba tlačidiel je jediné, čo na prvý pohľad odlíši tri appky nad tým
+  // istým kódom. Atribút nesie `<html>`, odtiene sú v globals.css.
+  check(
+    'na <html> je data-app="fitness"',
+    /<html[^>]*data-app="fitness"/.test(loggedInHome.body),
+    (loggedInHome.body.match(/<html[^>]*>/) ?? [""])[0],
+  );
+
   section("2) Kódy cvičení = 10 kondičných zameraní");
   const codes = await request("/drill-codes", { host: APP_HOST, cookies });
   const codesText = textOf(codes.body);

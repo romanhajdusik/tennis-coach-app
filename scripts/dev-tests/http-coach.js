@@ -84,6 +84,20 @@ async function main() {
   check("žiadny rozvrh mimo org", !/Today's schedule/.test(standaloneText));
   check("žiadne dlaždice zhrnutia mimo org", !/need attention/.test(standaloneText));
 
+  section("4) Farebné odlíšenie appiek");
+  // Federačná appka má svetlomodré tlačidlá, tenisová ostáva antuková —
+  // rozlišuje ich `data-app` na <html>, odtiene sú v globals.css.
+  check(
+    'org subdoména má data-app="org"',
+    /<html[^>]*data-app="org"/.test(home.body),
+    (home.body.match(/<html[^>]*>/) ?? [""])[0],
+  );
+  check(
+    "tenisová appka nemá data-app (ostáva antuková)",
+    !/<html[^>]*data-app=/.test(standalone.body),
+    (standalone.body.match(/<html[^>]*>/) ?? [""])[0],
+  );
+
   report();
 }
 

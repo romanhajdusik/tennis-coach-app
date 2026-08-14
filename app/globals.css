@@ -26,6 +26,36 @@
   color-scheme: dark;
 }
 
+/* ---------------------------------------------------------------------------
+   Farba tlačidiel rozlišuje TRI appky postavené nad tým istým kódom, aby
+   používateľ s dvoma z nich na telefóne hneď videl, v ktorej práve je:
+   tenis = antuková (predvolená vyššie), kondička = tyrkysová,
+   federačná subdoména = svetlomodrá.
+
+   Mení sa vždy CELÁ trojica tokenov: antuka je tmavá a nesie svetlý text,
+   kým tyrkysová a svetlomodrá sú svetlé a potrebujú tmavý — samotná zmena
+   `--color-primary` by spravila text na tlačidle nečitateľným.
+
+   Odtiene sú overené na kontrast (WCAG): text na ploche ≥ 4.5:1 a plocha
+   voči pozadiu stránky ≥ 3:1. Pri zmene odtieňa to prepočítaj, needi od oka.
+
+   Atribút `data-app` nastavuje `app/layout.tsx`. Pozor na dva mechanizmy:
+   kondička je vlastné NASADENIE (vie sa pri builde), kým federácia sa pozná
+   až z hostname pri každej požiadavke — preto to nemôže byť len konfigurácia
+   disciplíny.
+--------------------------------------------------------------------------- */
+html[data-app="fitness"] {
+  --color-primary: #20a99b;
+  --color-primary-hover: #2bb3a3;
+  --color-primary-foreground: #04221f;
+}
+
+html[data-app="org"] {
+  --color-primary: #6aa9dd;
+  --color-primary-hover: #7ab8e8;
+  --color-primary-foreground: #0a1b28;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);

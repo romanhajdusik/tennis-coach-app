@@ -5,6 +5,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { HomeButton } from "@/components/home-button";
 import { TimezoneDetector } from "@/components/timezone-detector";
 import { TrialBanner } from "@/components/trial-banner";
+import { getOrgContext } from "@/lib/org/context";
+import { getDiscipline } from "@/lib/discipline";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,6 +28,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+/**
+ * Ktorá z troch appiek nad tým istým kódom to je — riadi farbu tlačidiel
+ * (odtiene a dôvod sú v `globals.css`). Federáciu treba pýtať z org kontextu,
+ * nie z disciplíny: je to tá istá tenisová appka, len na org subdoméne.
+ */
+async function appVariant(): Promise<"org" | "fitness" | undefined> {
+  if (await getOrgContext()) return "org";
+  return getDiscipline() === "fitness" ? "fitness" : undefined;
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -36,6 +48,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
+      data-app={await appVariant()}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
