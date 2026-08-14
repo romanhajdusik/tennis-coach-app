@@ -64,6 +64,19 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
+  // Landing texty sú marketing TENISOVÉHO produktu, takže by inej disciplíne
+  // dali do karty prehliadača cudziu vetu („Practices under control. Right
+  // there on the court."). Tá dostane neutrálny názov appky — ten istý, aký
+  // nesie ikona na ploche.
+  if (getDiscipline() !== "tennis") {
+    const tCommon = await getTranslations("Common");
+    return {
+      title: tCommon("appTitle"),
+      description: tCommon("appDescription"),
+      robots: { index: false, follow: false },
+    };
+  }
+
   const locale = await getLandingLocale();
   const t = await loadLandingMessages(locale);
   return {
@@ -181,7 +194,7 @@ export default async function Home() {
         <p className="text-xs text-muted ">
           plan.log.analyze.win
         </p>
-        <p className="text-xs text-muted ">plaw.win</p>
+        <p className="text-xs text-muted ">{getDisciplineConfig().domain}</p>
       </div>
       <div className="flex flex-col items-center gap-3">
         <p className="text-muted ">

@@ -13,6 +13,8 @@ import type { DisciplineConfig } from "@/lib/disciplines/types";
 export const FITNESS_DISCIPLINE: DisciplineConfig = {
   id: "fitness",
 
+  domain: "fitness.plawsports.com",
+
   // Posledné dve sú rezervné zamerania s PEVNÝM názvom — tréner si do nich
   // dá vlastné cvičenia, ale zameranie sa nepremenúva (premenovateľné
   // zamerania by museli byť dáta, nie konfigurácia).

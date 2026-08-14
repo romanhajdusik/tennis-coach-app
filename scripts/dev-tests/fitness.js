@@ -61,6 +61,30 @@ async function main() {
 
   const cookies = await authCookies("demo@plaw.win");
 
+  section("1b) Pod názvom appky je adresa TOHTO nasadenia");
+  // Adresa bola natvrdo „plaw.win" — kondičný tréner tak čítal adresu
+  // tenisového produktu. Odteraz je vlastnosťou disciplíny.
+  const loggedInHome = await request("/", { host: APP_HOST, cookies });
+  const loggedInText = textOf(loggedInHome.body);
+  check(
+    "vypisuje sa fitness.plawsports.com",
+    loggedInText.includes("fitness.plawsports.com"),
+    loggedInText.slice(0, 200),
+  );
+  // Lookbehind kvôli tomu, že e-mail prihláseného (demo@plaw.win) tú istú
+  // doménu obsahuje legitímne — kontrolujeme vypísanú adresu, nie účet.
+  check(
+    "nikde sa nevypisuje tenisová adresa",
+    !/(?<![@\w.])plaw\.win/.test(loggedInText),
+    loggedInText.slice(0, 200),
+  );
+  // Titulok stránky ide z metadát, a tie brali text z tenisového landingu.
+  check(
+    "titulok nie je tenisový marketingový slogan",
+    !/Right there on the court/.test(loggedInText),
+    loggedInText.slice(0, 120),
+  );
+
   section("2) Kódy cvičení = 10 kondičných zameraní");
   const codes = await request("/drill-codes", { host: APP_HOST, cookies });
   const codesText = textOf(codes.body);

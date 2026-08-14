@@ -40,6 +40,12 @@ export type StrokesConfig = {
 
 export type DisciplineConfig = {
   id: DisciplineId;
+  /**
+   * Verejná adresa nasadenia — vypisuje sa pod názvom appky. Musí byť
+   * konfigurácia, nie natvrdo napísaný reťazec: kondičný tréner na
+   * `fitness.plawsports.com` by inak čítal adresu tenisového produktu.
+   */
+  domain: string;
   /** Zamerania cvičení — poradie určuje aj poradie záložiek a farbu v grafe. */
   categories: string[];
   defaultCategory: string;
