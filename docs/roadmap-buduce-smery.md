@@ -174,6 +174,58 @@ zamietnutom presune tenisovej appky na `app.plawsports.com`. DNS záznam sa zakl
 bude čo nasadiť; pošty `plawsports.com` sa to nedotkne (`A`/`CNAME` vs `MX`/`TXT`), len
 platí, že DMARC apexu sa vzťahuje aj na subdomény.
 
+### 2.2 KONDIČKA VO FEDERÁCII — model rozhodnutý 2026-08-14
+
+Do v1 kondičky to nešlo (§2.0), teraz sa to stavia. **Problém, ktorý to celé
+definuje:** vo federácii chodia tenisový aj kondičný tréner na **tú istú
+subdoménu** `<slug>.plaw.win`, takže disciplína sa nedá odvodiť ani z adresy
+(ako na `fitness.plawsports.com`), ani z nasadenia.
+
+**Zvolená cesta A: disciplína je vlastnosťou ČLENSTVA.** Zamietnutá cesta B
+bola druhá subdoména na organizáciu (`fitness.<slug>.plaw.win`) — v kóde by
+nezmenila skoro nič, ale zdvojnásobila by onboarding každej organizácie
+a šéftréner by mal pult len na jednej z nich. Disciplína je vlastnosť role
+toho človeka, nie adresy.
+
+**1. `organization_members.discipline`** (`tennis`/`fitness`, default `tennis`).
+Pozvánku vytvára šéftréner pre konkrétnu disciplínu; pozvaný ňou dostane aj
+podobu appky. Šéftrénera sa netýka — ten vidí obe.
+
+**2. Priradenie hráča na disciplínu — nová tabuľka.** Dnešná jediná kolónka
+`players.coach_id` neunesie, že Adam má naraz Petra na kurt a Janu na kondíciu.
+Vzniká tabuľka priradení (hráč × tréner × disciplína, unikát na hráč+disciplína).
+Migrácia doplní existujúcim org hráčom riadok s disciplínou `tennis`, takže sa
+navonok nič nezmení. **`players.coach_id` prestáva byť v org režime kľúčom
+prístupu** (ostáva ako autor riadku) — prístup určuje priradenie, cez
+`security definer` funkciu (priamy poddotaz na `players` v policy nad
+priradeniami by skončil na rekurzii, rovnako ako pri `owns_personal_player`).
+
+**3. `assign_player_to_coach` sa zúži na disciplínu.** Dnes prepisuje `coach_id`
+na hráčovi aj na všetkých jeho tréningoch. Po zmene prepíše **len riadky danej
+disciplíny** — a presne kvôli tomu je štítok na tréningu: výmena tenisového
+trénera sa nesmie dotknúť kondičnej histórie.
+
+**4. `copy_session_to_org_player` MUSÍ prenášať disciplínu zo zdroja.** V §2.0
+to bolo vedome odložené (kondička vo federácii neexistovala) — teraz by kópia
+dostala default `tennis` a kondičný skupinový tréning by sa zapísal ako tenisový.
+
+**5. Cena, ktorú to má:** `getDiscipline()` prestane byť vec buildu. Dnes ju
+appka pozná z premennej nasadenia, a preto k nej môžu siahať aj klientske
+komponenty. Vo federácii bude závisieť od prihláseného člena, takže formulár
+cvičenia a grafy ju musia dostať **zhora z rozloženia** (provider), nie
+importom. Dotkne sa to aj tenisovej appky — pobeží rovnako, len cez kontext.
+
+**6. FARBA SA NEMENÍ (rozhodol user 2026-08-14):** vo federácii majú svetlomodrú
+**obaja** tréneri aj šéftréner. Farba hovorí „som vo federácii", nie „ktorú
+disciplínu robím"; kondičného trénera od tenisového vnútri org farba neodlíši
+a je to prijaté. Zvažovaná alternatíva bola farba podľa disciplíny (antuka /
+tyrkys) s organizáciou rozoznateľnou podľa názvu v hlavičke.
+
+**Nemení sa:** sedadlá (kondičný tréner berie sedadlo ako každý), pravidlo
+„jedna org = jeden šport" (kondička nie je druhý šport, je to podporná
+disciplína), zákaz rodičovskej vrstvy v B2B (§5.6), ani `one_active_membership_per_user`
+— cezšportový kondičný tréner potrebuje pre druhý zväz druhý účet.
+
 ---
 
 ## 3. Záťaž z hodiniek: SÚBOR OD HRÁČA (prepracované 2026-08-11)

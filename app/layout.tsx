@@ -6,7 +6,8 @@ import { HomeButton } from "@/components/home-button";
 import { TimezoneDetector } from "@/components/timezone-detector";
 import { TrialBanner } from "@/components/trial-banner";
 import { getOrgContext } from "@/lib/org/context";
-import { getDiscipline } from "@/lib/discipline";
+import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
+import { DisciplineProvider } from "@/lib/discipline-context";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,13 +54,18 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
+          {/* Disciplína sa podáva zhora, klientske komponenty si ju nečítajú
+              samy — vo federácii bude závisieť od členstva prihláseného
+              trénera, nie od nasadenia (docs §2.2). */}
+          <DisciplineProvider config={getDisciplineConfig()}>
           {/* Nad obsahom, aby si tréner koniec skúšobnej doby nevšimol až
               vtedy, keď mu zlyhá uloženie. Sám sa skryje, kým je všetko
               v poriadku. */}
           <TrialBanner />
-          {children}
-          <HomeButton />
-          <TimezoneDetector />
+            {children}
+            <HomeButton />
+            <TimezoneDetector />
+          </DisciplineProvider>
         </NextIntlClientProvider>
       </body>
     </html>

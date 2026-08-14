@@ -8,7 +8,7 @@ import {
   Tooltip,
 } from "recharts";
 import { useTranslations } from "next-intl";
-import { getDisciplineConfig } from "@/lib/discipline";
+import { useDiscipline } from "@/lib/discipline-context";
 import type { CategoryShareStat } from "@/lib/actions/analytics";
 
 // Stabilná farba na zameranie (podľa jeho poradia v konfigurácii disciplíny),
@@ -27,8 +27,8 @@ const CATEGORY_COLOR_VARS = [
   "var(--series-other)",
 ];
 
-function categoryColor(category: string): string {
-  const index = getDisciplineConfig().categories.indexOf(category);
+function categoryColor(category: string, categories: string[]): string {
+  const index = categories.indexOf(category);
   return CATEGORY_COLOR_VARS[(index >= 0 ? index : 0) % CATEGORY_COLOR_VARS.length];
 }
 
@@ -71,6 +71,7 @@ export function CategoryShareChart({
   currentCategory: string;
 }) {
   const t = useTranslations("Analytics");
+  const discipline = useDiscipline();
 
   // Aktuálne zameranie je v grafe VŽDY, aj keď v období nemá ani minútu —
   // vtedy sa vypíše s nulou. Bez toho by sa nedalo odlíšiť „toto zameranie
@@ -90,7 +91,7 @@ export function CategoryShareChart({
 
   // Disciplína s viacerými zameraniami, než unesie paleta (kondička má 10),
   // ich vykreslí ako vodorovné stĺpce — identitu tam nesie popis, nie farba.
-  if (getDisciplineConfig().analytics.shareChart === "bars") {
+  if (discipline.analytics.shareChart === "bars") {
     return (
       <div className="viz-root flex flex-col gap-3 rounded-xl border border-border bg-surface p-4">
         <h2 className="text-sm font-medium text-muted">
@@ -156,7 +157,7 @@ export function CategoryShareChart({
             {data.map((entry) => (
               <Cell
                 key={entry.category}
-                fill={categoryColor(entry.category)}
+                fill={categoryColor(entry.category, discipline.categories)}
                 opacity={opacityFor(entry.category)}
               />
             ))}
@@ -175,7 +176,7 @@ export function CategoryShareChart({
               <span
                 className="inline-block h-2 w-3 shrink-0 rounded-full"
                 style={{
-                  backgroundColor: categoryColor(entry.category),
+                  backgroundColor: categoryColor(entry.category, discipline.categories),
                   opacity: opacityFor(entry.category),
                 }}
               />

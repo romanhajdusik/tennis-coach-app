@@ -3,11 +3,7 @@
 import { useActionState, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { moveDrill, replaceDrill, setDrillPlayed } from "@/lib/actions/session-drills";
-import { getDisciplineConfig } from "@/lib/discipline";
-
-const DISCIPLINE = getDisciplineConfig();
-// Prázdny reťazec v disciplíne bez charakteru — pole sa vtedy nevykreslí.
-const DEFAULT_CHARACTER = DISCIPLINE.character?.defaultValue ?? "";
+import { useDiscipline } from "@/lib/discipline-context";
 
 export type Drill = {
   id: string;
@@ -39,6 +35,9 @@ function ReplaceDrillForm({
   drillsByCategory: Record<string, string[]>;
   onCancel: () => void;
 }) {
+  const DISCIPLINE = useDiscipline();
+  // Prázdny reťazec v disciplíne bez charakteru — pole sa vtedy nevykreslí.
+  const DEFAULT_CHARACTER = DISCIPLINE.character?.defaultValue ?? "";
   const t = useTranslations("Sessions.drillRow");
   const replaceThisDrill = replaceDrill.bind(null, sessionId, drillId);
   const [state, formAction, pending] = useActionState(
@@ -168,6 +167,7 @@ export function DrillRow({
   isFirst: boolean;
   isLast: boolean;
 }) {
+  const DISCIPLINE = useDiscipline();
   const t = useTranslations("Sessions.drillRow");
   const [isPending, startTransition] = useTransition();
   const [isMoving, startMoveTransition] = useTransition();

@@ -14,14 +14,8 @@ import {
   YAxis,
 } from "recharts";
 import { useTranslations } from "next-intl";
-import { getDisciplineConfig } from "@/lib/discipline";
+import { useDiscipline } from "@/lib/discipline-context";
 import type { AnalyticsCodeGroup } from "@/lib/drill-options";
-
-// Charakter cvičenia je vlastnosťou disciplíny — kondička ho nezaznamenáva,
-// takže je konfigurácia `null`, popisky prázdne a celý panel „podľa charakteru"
-// sa nevykreslí (inak by ostal nadpis nad prázdnym grafom).
-const CHARACTER_CONFIG = getDisciplineConfig().character;
-const CHARACTER_LABELS: Record<string, string> = CHARACTER_CONFIG?.labels ?? {};
 import type { CharacterStat, CodeStat } from "@/lib/actions/analytics";
 
 type ChartType = "pie" | "bar";
@@ -133,6 +127,7 @@ function CharacterTooltip({
   payload?: { payload: CharacterStat; fill?: string; color?: string }[];
 }) {
   const t = useTranslations("Analytics");
+  const characterLabels = useDiscipline().character?.labels ?? {};
   if (!active || !payload?.length) return null;
   const { payload: item, fill, color } = payload[0];
   return (
@@ -142,7 +137,7 @@ function CharacterTooltip({
           className="inline-block h-2 w-4 rounded-full"
           style={{ backgroundColor: fill ?? color }}
         />
-        {CHARACTER_LABELS[item.character] ?? item.character}
+        {characterLabels[item.character] ?? item.character}
       </div>
       <p className="mt-1 text-muted ">
         {t("characterStatsLine", {
@@ -202,6 +197,11 @@ export function CategoryCharts({
   showStrokes?: boolean;
 }) {
   const t = useTranslations("Analytics");
+  // Charakter cvičenia je vlastnosťou disciplíny — kondička ho nezaznamenáva,
+  // takže je konfigurácia `null`, popisky prázdne a celý panel „podľa
+  // charakteru" sa nevykreslí (inak by ostal nadpis nad prázdnym grafom).
+  const CHARACTER_CONFIG = useDiscipline().character;
+  const CHARACTER_LABELS: Record<string, string> = CHARACTER_CONFIG?.labels ?? {};
   const otherLabel = t("otherGroupLabel");
   const [codeChartType, setCodeChartType] = useState<ChartType>("pie");
   const [characterChartType, setCharacterChartType] = useState<ChartType>("pie");

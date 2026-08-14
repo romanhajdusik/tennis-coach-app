@@ -9,12 +9,7 @@ import {
 } from "react";
 import { useTranslations } from "next-intl";
 import { addDrill, removeDrill } from "@/lib/actions/session-drills";
-import { getDisciplineConfig } from "@/lib/discipline";
-
-const DISCIPLINE = getDisciplineConfig();
-// Prázdny reťazec v disciplíne bez charakteru — pole sa vtedy nevykreslí
-// a server ho nevalidne (`checkDrillInput`).
-const DEFAULT_CHARACTER = DISCIPLINE.character?.defaultValue ?? "";
+import { useDiscipline } from "@/lib/discipline-context";
 
 type LastAdded = {
   id: string;
@@ -32,6 +27,10 @@ export function AddDrillForm({
   drillsByCategory: Record<string, string[]>;
   initialCategory?: string;
 }) {
+  const DISCIPLINE = useDiscipline();
+  // Prázdny reťazec v disciplíne bez charakteru — pole sa vtedy nevykreslí
+  // a server ho nevalidne (`checkDrillInput`).
+  const DEFAULT_CHARACTER = DISCIPLINE.character?.defaultValue ?? "";
   const t = useTranslations("Sessions.addDrillForm");
   const addDrillWithSession = addDrill.bind(null, sessionId);
   const [state, formAction] = useActionState(addDrillWithSession, undefined);
