@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelectedPlayer } from "@/lib/players/selected";
+import { getDisciplineConfig } from "@/lib/discipline";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -34,21 +35,9 @@ function shiftMonthValue(value: string, byMonths: number): string {
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
 
-const STROKES_PER_MIN: Record<string, number> = {
-  offensive: 25,
-  neutral: 23,
-  defensive: 20,
-};
-const BREAK_FACTOR = 0.8; // 20 % z celkového času ide na prestávku
-
-// Return, Serve a GAME DRILLS majú vlastnú frekvenciu úderov odlišnú
-// od výmen z dna kurtu — počet úderov sa preto počíta z fixnej sadzby,
-// nie podľa charakteru cvičenia.
-const FIXED_STROKES_PER_MIN_CATEGORIES: Record<string, number> = {
-  Return: 6,
-  Serve: 6,
-  "GAME DRILLS": 22,
-};
+// Sadzby úderov aj prestávkový faktor sú vlastnosťou disciplíny
+// (`lib/disciplines/*`) — kondička odhad úderov nepočíta vôbec a má
+// `strokes: null`, takže sa v analytike zobrazí len čas a %.
 
 // Odhad úderov sa u mladších hráčov znižuje — deti a juniori majú kratšie
 // a pomalšie výmeny, takže odhad odvodený z dospelej sadzby by ich preceňoval.
@@ -202,7 +191,8 @@ export type CategoryShareStat = {
 };
 
 type DrillForStats = {
-  character: string;
+  // `null` v disciplíne, ktorá charakter nezaznamenáva (kondička).
+  character: string | null;
   drill_code: string | null;
   duration_minutes: number;
 };
@@ -219,23 +209,40 @@ export function aggregateDrillStats(
   const characterTotals = new Map<string, number>();
   let totalMinutes = 0;
 
-  const fixedStrokesPerMin = FIXED_STROKES_PER_MIN_CATEGORIES[category];
+  const { character: characterConfig, analytics } = getDisciplineConfig();
+  const strokesConfig = analytics.strokes;
+  const fixedStrokesPerMin = strokesConfig?.fixedPerMinByCategory[category];
 
   for (const drill of drills) {
     const code = drill.drill_code ?? "—";
-    const strokesPerMin = fixedStrokesPerMin ?? STROKES_PER_MIN[drill.character] ?? 0;
-    const strokes =
-      drill.duration_minutes * BREAK_FACTOR * strokesPerMin * strokeFactor;
+
+    let strokes = 0;
+    if (strokesConfig) {
+      const strokesPerMin =
+        fixedStrokesPerMin ??
+        (drill.character
+          ? (strokesConfig.perMinByCharacter[drill.character] ?? 0)
+          : 0);
+      strokes =
+        drill.duration_minutes *
+        strokesConfig.breakFactor *
+        strokesPerMin *
+        strokeFactor;
+    }
 
     const codeEntry = codeTotals.get(code) ?? { minutes: 0, strokes: 0 };
     codeEntry.minutes += drill.duration_minutes;
     codeEntry.strokes += strokes;
     codeTotals.set(code, codeEntry);
 
-    characterTotals.set(
-      drill.character,
-      (characterTotals.get(drill.character) ?? 0) + drill.duration_minutes,
-    );
+    // Rozpad podľa charakteru dáva zmysel len tam, kde sa charakter zapisuje —
+    // inak by vznikol jediný výsek s prázdnym kľúčom.
+    if (characterConfig && drill.character) {
+      characterTotals.set(
+        drill.character,
+        (characterTotals.get(drill.character) ?? 0) + drill.duration_minutes,
+      );
+    }
 
     totalMinutes += drill.duration_minutes;
   }

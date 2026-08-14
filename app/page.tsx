@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
-import { DEFAULT_CATEGORY } from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
 import { LandingPage, getLandingLocale } from "@/components/landing-page";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { isPublicFaceHost } from "@/lib/public-face";
@@ -19,6 +19,13 @@ import { getOrgRole } from "@/lib/org/membership";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import { TodayBoard } from "@/components/today-board";
 
+// Zameranie, na ktorom sa otvára analytika — kondičné („ENDURANCE") aj
+// tenisové („Forehand") sú bez medzery, ale kódovanie tu drž: konfigurácia
+// disciplíny povoľuje aj názvy typu „CORE MUSCLES".
+const ANALYTICS_HREF = `/analytics/${encodeURIComponent(
+  getDisciplineConfig().defaultCategory,
+)}`;
+
 // Rozcestník federačného trénera — tie isté obrazovky ako v samostatnom
 // režime, len pod dennou nástenkou „Dnes".
 const NAV_LINKS = [
@@ -26,7 +33,7 @@ const NAV_LINKS = [
   { href: "/sessions", labelKey: "sessions" },
   { href: "/calendar", labelKey: "calendar" },
   { href: "/drill-codes", labelKey: "drillCodes" },
-  { href: `/analytics/${DEFAULT_CATEGORY}`, labelKey: "analytics" },
+  { href: ANALYTICS_HREF, labelKey: "analytics" },
   { href: "/settings", labelKey: "settings" },
 ] as const;
 
@@ -202,7 +209,7 @@ export default async function Home() {
             {t("drillCodes")}
           </Link>
           <Link
-            href={`/analytics/${DEFAULT_CATEGORY}`}
+            href={ANALYTICS_HREF}
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("analytics")}

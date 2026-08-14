@@ -6,13 +6,51 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
+import { getDisciplineConfig } from "@/lib/discipline";
 
 export type DrillFormState =
   | { error?: string; addedDrillId?: string }
   | undefined;
 
-const VALID_CHARACTERS = ["offensive", "neutral", "defensive"];
-const VALID_DURATIONS = [5, 10, 15, 20, 30];
+type DrillInputError = "missingFields" | "invalidCharacter" | "invalidDuration";
+
+/**
+ * Overenie vstupov cvičenia proti aktívnej disciplíne — ponuka trvaní aj
+ * existencia charakteru sú jej vlastnosťou, nie konštantou appky.
+ *
+ * POZOR: disciplína bez charakteru (kondička) sem pošle prázdny reťazec a
+ * do DB by patrilo `null`, čo dnes neprejde — `session_drills.character` je
+ * `not null` a rovnako aj rodičovská kópia. Uvoľní to až migrácia z Kroku 2
+ * (spolu s `duration_minutes` CHECK na 60 a novým `lib/database.types.ts`);
+ * dovtedy je kondičný zápis nedostupný, tenisový je nezmenený.
+ */
+function checkDrillInput(
+  category: string,
+  character: string,
+  drillCode: string,
+  durationMinutes: number,
+): DrillInputError | null {
+  const discipline = getDisciplineConfig();
+
+  if (!category || !drillCode) {
+    return "missingFields";
+  }
+
+  if (discipline.character) {
+    if (!character) {
+      return "missingFields";
+    }
+    if (!discipline.character.options.some((option) => option.value === character)) {
+      return "invalidCharacter";
+    }
+  }
+
+  if (!discipline.durations.includes(durationMinutes)) {
+    return "invalidDuration";
+  }
+
+  return null;
+}
 
 export async function addDrill(
   sessionId: string,
@@ -25,16 +63,14 @@ export async function addDrill(
   const durationMinutes = Number(formData.get("duration_minutes"));
   const t = await getTranslations("Sessions.errors");
 
-  if (!category || !character || !drillCode) {
-    return { error: t("missingFields") };
-  }
-
-  if (!VALID_CHARACTERS.includes(character)) {
-    return { error: t("invalidCharacter") };
-  }
-
-  if (!VALID_DURATIONS.includes(durationMinutes)) {
-    return { error: t("invalidDuration") };
+  const invalidInput = checkDrillInput(
+    category,
+    character,
+    drillCode,
+    durationMinutes,
+  );
+  if (invalidInput) {
+    return { error: t(invalidInput) };
   }
 
   const supabase = await createClient();
@@ -201,16 +237,14 @@ export async function replaceDrill(
   const durationMinutes = Number(formData.get("duration_minutes"));
   const t = await getTranslations("Sessions.errors");
 
-  if (!category || !character || !drillCode) {
-    return { error: t("missingFields") };
-  }
-
-  if (!VALID_CHARACTERS.includes(character)) {
-    return { error: t("invalidCharacter") };
-  }
-
-  if (!VALID_DURATIONS.includes(durationMinutes)) {
-    return { error: t("invalidDuration") };
+  const invalidInput = checkDrillInput(
+    category,
+    character,
+    drillCode,
+    durationMinutes,
+  );
+  if (invalidInput) {
+    return { error: t(invalidInput) };
   }
 
   const supabase = await createClient();

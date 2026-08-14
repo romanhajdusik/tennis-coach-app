@@ -14,7 +14,14 @@ import {
   YAxis,
 } from "recharts";
 import { useTranslations } from "next-intl";
-import { CHARACTER_LABELS, type AnalyticsCodeGroup } from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
+import type { AnalyticsCodeGroup } from "@/lib/drill-options";
+
+// Charakter cvičenia je vlastnosťou disciplíny — kondička ho nezaznamenáva,
+// takže je konfigurácia `null`, popisky prázdne a celý panel „podľa charakteru"
+// sa nevykreslí (inak by ostal nadpis nad prázdnym grafom).
+const CHARACTER_CONFIG = getDisciplineConfig().character;
+const CHARACTER_LABELS: Record<string, string> = CHARACTER_CONFIG?.labels ?? {};
 import type { CharacterStat, CodeStat } from "@/lib/actions/analytics";
 
 type ChartType = "pie" | "bar";
@@ -350,6 +357,7 @@ export function CategoryCharts({
         )}
       </div>
 
+      {CHARACTER_CONFIG && (
       <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 ">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-medium text-muted ">
@@ -424,6 +432,7 @@ export function CategoryCharts({
           ))}
         </ul>
       </div>
+      )}
     </div>
   );
 }

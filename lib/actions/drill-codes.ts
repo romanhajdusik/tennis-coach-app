@@ -7,14 +7,15 @@ import { createClient } from "@/lib/supabase/server";
 import { requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
-import { CATEGORY_OPTIONS, DRILLS } from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
+// Počet slotov je rovnaký v každej disciplíne (tenis aj kondička 20).
 const SLOT_COUNT = 20;
 
 function isKnownCategory(category: string): boolean {
-  return CATEGORY_OPTIONS.includes(category);
+  return getDisciplineConfig().categories.includes(category);
 }
 
 /**
@@ -46,7 +47,7 @@ export async function getDrillCodeSlots(
   const slots = Array.from({ length: SLOT_COUNT }, () => "");
 
   if (!data || data.length === 0) {
-    const defaults = DRILLS[category] ?? [];
+    const defaults = getDisciplineConfig().drills[category] ?? [];
     defaults.forEach((code, index) => {
       if (index < SLOT_COUNT) slots[index] = code;
     });
@@ -80,11 +81,12 @@ export async function getDrillOptionsByCategory(
     rowsByCategory.set(row.category, rows);
   }
 
+  const discipline = getDisciplineConfig();
   const result: Record<string, string[]> = {};
-  for (const category of CATEGORY_OPTIONS) {
+  for (const category of discipline.categories) {
     const rows = rowsByCategory.get(category);
     if (!rows) {
-      result[category] = DRILLS[category] ?? [];
+      result[category] = discipline.drills[category] ?? [];
       continue;
     }
     result[category] = rows

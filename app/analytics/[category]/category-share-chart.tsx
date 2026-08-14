@@ -8,12 +8,15 @@ import {
   Tooltip,
 } from "recharts";
 import { useTranslations } from "next-intl";
-import { CATEGORY_OPTIONS } from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
 import type { CategoryShareStat } from "@/lib/actions/analytics";
 
-// Stabilná farba na zameranie (podľa poradia v CATEGORY_OPTIONS), aby malo
-// každé zameranie rovnakú farbu naprieč obdobiami. 7 kategórií = 7 odlíšených
-// farieb (6 sérií + neutrálna pre poslednú).
+// Stabilná farba na zameranie (podľa jeho poradia v konfigurácii disciplíny),
+// aby malo každé zameranie rovnakú farbu naprieč obdobiami. Tenis má 7 zameraní
+// = 7 odlíšených farieb (6 sérií + neutrálna pre posledné).
+//
+// POZOR: kondička má 10 zameraní, takže sa jej farby cez modulo opakujú —
+// paleta sa dopĺňa v `globals.css` v Kroku 2.
 const CATEGORY_COLOR_VARS = [
   "var(--series-1)",
   "var(--series-2)",
@@ -25,7 +28,7 @@ const CATEGORY_COLOR_VARS = [
 ];
 
 function categoryColor(category: string): string {
-  const index = CATEGORY_OPTIONS.indexOf(category);
+  const index = getDisciplineConfig().categories.indexOf(category);
   return CATEGORY_COLOR_VARS[(index >= 0 ? index : 0) % CATEGORY_COLOR_VARS.length];
 }
 

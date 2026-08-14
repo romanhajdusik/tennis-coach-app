@@ -1,115 +1,20 @@
-export const CATEGORY_OPTIONS = [
-  "Forehand",
-  "Backhand",
-  "Volley",
-  "Return",
-  "Serve",
-  "GAME DRILLS",
-  "POINTS",
-];
+import type { AnalyticsCodeGroup } from "@/lib/disciplines/types";
 
-export const CHARACTER_OPTIONS = [
-  { value: "offensive", label: "Offensive" },
-  { value: "neutral", label: "Neutral" },
-  { value: "defensive", label: "Defensive" },
-];
+export type { AnalyticsCodeGroup };
 
-export const CHARACTER_LABELS: Record<string, string> = {
-  offensive: "Offensive",
-  neutral: "Neutral",
-  defensive: "Defensive",
-};
+/**
+ * Zamerania, kódy cvičení, trvania a charakter sa presunuli do konfigurácie
+ * disciplíny — čítaj ich cez `getDisciplineConfig()` z `@/lib/discipline`.
+ * Tu zostáva len logika nad slotmi, ktorá je disciplínovo neutrálna.
+ */
 
-export const DURATION_OPTIONS = [5, 10, 15, 20, 30];
-
-// Kódy cvičení podľa kategórie — kategória bez zoznamu (žiadna zatiaľ)
-// by použila voľné textové pole
-export const DRILLS: Record<string, string[]> = {
-  Forehand: ["FRH-CRS", "FRH-DTL", "FRH-IOU", "FRH-IIN", "FRH-SLC", "FRH-DRP"],
-  Backhand: ["BKH-CRS", "BKH-DTL", "BKH-IOU", "BKH-IIN", "BKH-SLC", "BKH-DRP"],
-  Volley: [
-    "VOL-FRH",
-    "VOL-BKH",
-    "VOL-FRH-LOW",
-    "VOL-FRH-HGH",
-    "VOL-FRH-DRP",
-    "VOL-FRH-DRV",
-    "VOL-BKH-LOW",
-    "VOL-BKH-HGH",
-    "VOL-BKH-DRP",
-    "VOL-BKH-DRV",
-  ],
-  Return: [
-    "RET-FRH-CRS",
-    "RET-FRH-DTL",
-    "RET-FRH-MID",
-    "RET-FRH-BLC",
-    "RET-BKH-CRS",
-    "RET-BKH-DTL",
-    "RET-BKH-MID",
-    "RET-BKH-BLC",
-  ],
-  Serve: ["SR1-DCE", "SR1-ADV", "SR2-DCE", "SR2-ADV"],
-  "GAME DRILLS": [
-    "RZH-TRE",
-    "RZH-ZAP",
-    "SR1+1",
-    "SR2+1",
-    "RET+1",
-    "TRI-C+L",
-    "TRI-CC+L",
-    "TRI-C+LL",
-    "TRI-CC+LL",
-    "DR8-C+L",
-    "DR8-CCL+CC",
-    "FRH-ATK+VOL",
-    "BKH-ATK+VOL",
-    "VOL-PRP+VOL",
-    "ATK+VOL+SSH",
-  ],
-  POINTS: ["TRN-PRC", "HOM-PRC", "MATCH"],
-};
-
-export const DEFAULT_CATEGORY = CATEGORY_OPTIONS[0];
-export const DEFAULT_CHARACTER = "neutral";
-
-// Tieto zamerania zobrazujú v analytike vždy úplný rozpad (bez zbaľovania
-// do "Ostatné") a umožňujú prepnutie grafu na stĺpce.
-export const ANALYTICS_FULL_BREAKDOWN_CATEGORIES = [
-  "Forehand",
-  "Backhand",
-  "Volley",
-  "GAME DRILLS",
-  "POINTS",
-];
-
-// Zamerania, kde je odhad úderov nevýpovedný (napr. POINTS = zápasové body),
-// takže analytika zobrazuje len čas a % — počet úderov sa skryje.
-export const ANALYTICS_HIDE_STROKES_CATEGORIES = ["POINTS"];
-
-export type AnalyticsCodeGroup = { label: string; prefix: string };
-
-// Tieto zamerania majú v analytike dvojúrovňové zobrazenie podľa kódu
-// cvičenia: hlavný stĺpcový graf rozdelí kódy do dvoch skupín podľa
-// prefixu (priradenie je podľa textu kódu, nie podľa slotu — ak si tréner
-// kód premenuje mimo tento prefix, spadne do skupiny "Ostatné"), klik na
-// stĺpec zobrazí detail jednotlivých kódov v rámci vybranej skupiny.
-export const ANALYTICS_GROUPED_CATEGORIES: Record<string, AnalyticsCodeGroup[]> = {
-  Return: [
-    { label: "Forehand return", prefix: "RET-FRH" },
-    { label: "Backhand return", prefix: "RET-BKH" },
-  ],
-  Serve: [
-    { label: "1st serve", prefix: "SR1" },
-    { label: "2nd serve", prefix: "SR2" },
-  ],
-};
-
-// Rozdelí sloty kódov do stĺpcov podľa skutočného prefixu kódu (nie podľa
-// pozície slotu) — kód RET-BKH-... patrí do stĺpca "Backhand return" bez
-// ohľadu na to, v ktorom slote je uložený. Prázdne a nezhodné (napr. po
-// premenovaní mimo konvenciu) sloty sa doplnia do menšieho stĺpca, aby
-// súčet ostal rovnaký ako počet vstupných slotov.
+/**
+ * Rozdelí sloty kódov do stĺpcov podľa skutočného prefixu kódu (nie podľa
+ * pozície slotu) — kód RET-BKH-... patrí do stĺpca "Backhand return" bez
+ * ohľadu na to, v ktorom slote je uložený. Prázdne a nezhodné (napr. po
+ * premenovaní mimo konvenciu) sloty sa doplnia do menšieho stĺpca, aby
+ * súčet ostal rovnaký ako počet vstupných slotov.
+ */
 export function splitSlotsIntoGroups(
   slots: string[],
   groups: AnalyticsCodeGroup[],

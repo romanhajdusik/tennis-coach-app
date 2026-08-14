@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, getFormatter } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
 import { AssignPlayer } from "@/app/director/assign-player";
-import { DEFAULT_CATEGORY } from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -154,7 +154,7 @@ export default async function DirectorPlayerPage({
         </div>
 
         <Link
-          href={`/director/players/${player.id}/analytics/${encodeURIComponent(DEFAULT_CATEGORY)}`}
+          href={`/director/players/${player.id}/analytics/${encodeURIComponent(getDisciplineConfig().defaultCategory)}`}
           className="flex-none rounded-lg bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground"
         >
           {t("openAnalytics")}

@@ -10,13 +10,7 @@ import {
   getPreviousYearValue,
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
-import {
-  ANALYTICS_FULL_BREAKDOWN_CATEGORIES,
-  ANALYTICS_GROUPED_CATEGORIES,
-  ANALYTICS_HIDE_STROKES_CATEGORIES,
-  CATEGORY_OPTIONS,
-  DEFAULT_CATEGORY,
-} from "@/lib/drill-options";
+import { getDisciplineConfig, showsStrokes } from "@/lib/discipline";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -89,6 +83,7 @@ export default async function DirectorComparePage({
     value?: string;
   }>;
 }) {
+  const discipline = getDisciplineConfig();
   const t = await getTranslations("Director.compare");
   const tAnalytics = await getTranslations("Analytics");
   const { supabase, org } = await requireDirector();
@@ -96,8 +91,8 @@ export default async function DirectorComparePage({
 
   const category = search.category
     ? decodeURIComponent(search.category)
-    : DEFAULT_CATEGORY;
-  if (!CATEGORY_OPTIONS.includes(category)) {
+    : discipline.defaultCategory;
+  if (!discipline.categories.includes(category)) {
     notFound();
   }
 
@@ -211,7 +206,7 @@ export default async function DirectorComparePage({
       </div>
 
       <div className="flex min-w-0 flex-wrap gap-2">
-        {CATEGORY_OPTIONS.map((option) => (
+        {discipline.categories.map((option) => (
           <Link
             key={option}
             href={query({ category: option })}
@@ -306,13 +301,11 @@ export default async function DirectorComparePage({
                   <CategoryCharts
                     byCode={stats.byCode}
                     byCharacter={stats.byCharacter}
-                    fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(
+                    fullBreakdown={discipline.analytics.fullBreakdownCategories.includes(
                       category,
                     )}
-                    groups={ANALYTICS_GROUPED_CATEGORIES[category]}
-                    showStrokes={
-                      !ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)
-                    }
+                    groups={discipline.analytics.groupedCategories[category]}
+                    showStrokes={showsStrokes(category)}
                   />
                 )}
               </section>

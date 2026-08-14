@@ -2,10 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
 import { getDrillCodeSlots } from "@/lib/actions/drill-codes";
-import {
-  ANALYTICS_GROUPED_CATEGORIES,
-  CATEGORY_OPTIONS,
-} from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
 import { DrillCodeForm } from "@/app/drill-codes/drill-code-form";
 
 /**
@@ -16,13 +13,14 @@ import { DrillCodeForm } from "@/app/drill-codes/drill-code-form";
  * nedal poskladať a analytika naprieč federáciou by nebola porovnateľná.
  */
 export default async function DirectorDrillCodesPage() {
+  const discipline = getDisciplineConfig();
   const t = await getTranslations("Director.drillCodes");
   const tDrillCodes = await getTranslations("DrillCodes");
   const tTeam = await getTranslations("Director.team");
   const { supabase, org, userId } = await requireDirector();
 
   const slotsByCategory = await Promise.all(
-    CATEGORY_OPTIONS.map((category) =>
+    discipline.categories.map((category) =>
       getDrillCodeSlots(supabase, userId, category),
     ),
   );
@@ -48,12 +46,12 @@ export default async function DirectorDrillCodesPage() {
         {t("description", { organization: org.name })}
       </p>
 
-      {CATEGORY_OPTIONS.map((category, index) => (
+      {discipline.categories.map((category, index) => (
         <DrillCodeForm
           key={category}
           category={category}
           initialSlots={slotsByCategory[index]}
-          groups={ANALYTICS_GROUPED_CATEGORIES[category]}
+          groups={discipline.analytics.groupedCategories[category]}
           owner="organization"
         />
       ))}

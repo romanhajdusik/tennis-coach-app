@@ -12,12 +12,7 @@ import {
   getParentCategoryAnalytics,
   getParentCategoryMinuteShares,
 } from "@/lib/actions/parent-data";
-import {
-  ANALYTICS_FULL_BREAKDOWN_CATEGORIES,
-  ANALYTICS_GROUPED_CATEGORIES,
-  ANALYTICS_HIDE_STROKES_CATEGORIES,
-  CATEGORY_OPTIONS,
-} from "@/lib/drill-options";
+import { getDisciplineConfig, showsStrokes } from "@/lib/discipline";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -60,9 +55,10 @@ export default async function ParentAnalyticsPage({
   params: Promise<{ category: string }>;
   searchParams: Promise<{ range?: string; value?: string }>;
 }) {
+  const discipline = getDisciplineConfig();
   const { category: rawCategory } = await params;
   const category = decodeURIComponent(rawCategory);
-  if (!CATEGORY_OPTIONS.includes(category)) {
+  if (!discipline.categories.includes(category)) {
     notFound();
   }
 
@@ -132,7 +128,7 @@ export default async function ParentAnalyticsPage({
       ) : (
         <>
           <div className="flex min-w-0 flex-wrap gap-2">
-            {CATEGORY_OPTIONS.map((option) => (
+            {discipline.categories.map((option) => (
               <Link
                 key={option}
                 href={`/parent/analytics/${encodeURIComponent(option)}?${periodQuery(range, value)}`}
@@ -235,9 +231,11 @@ export default async function ParentAnalyticsPage({
             <CategoryCharts
               byCode={byCode}
               byCharacter={byCharacter}
-              fullBreakdown={ANALYTICS_FULL_BREAKDOWN_CATEGORIES.includes(category)}
-              groups={ANALYTICS_GROUPED_CATEGORIES[category]}
-              showStrokes={!ANALYTICS_HIDE_STROKES_CATEGORIES.includes(category)}
+              fullBreakdown={discipline.analytics.fullBreakdownCategories.includes(
+                category,
+              )}
+              groups={discipline.analytics.groupedCategories[category]}
+              showStrokes={showsStrokes(category)}
             />
           )}
         </>

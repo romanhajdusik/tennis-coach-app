@@ -9,13 +9,12 @@ import {
 } from "react";
 import { useTranslations } from "next-intl";
 import { addDrill, removeDrill } from "@/lib/actions/session-drills";
-import {
-  CATEGORY_OPTIONS,
-  CHARACTER_OPTIONS,
-  DEFAULT_CATEGORY,
-  DEFAULT_CHARACTER,
-  DURATION_OPTIONS,
-} from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
+
+const DISCIPLINE = getDisciplineConfig();
+// Prázdny reťazec v disciplíne bez charakteru — pole sa vtedy nevykreslí
+// a server ho nevalidne (`checkDrillInput`).
+const DEFAULT_CHARACTER = DISCIPLINE.character?.defaultValue ?? "";
 
 type LastAdded = {
   id: string;
@@ -44,7 +43,9 @@ export function AddDrillForm({
   // Zameranie sa predvypĺňa podľa naposledy uloženého cvičenia v tomto
   // tréningu (nie natvrdo defaultom), nech si tréner nemusí kategóriu
   // vyberať znova ani po reloade stránky (napr. po zamknutí telefónu)
-  const [category, setCategory] = useState(initialCategory ?? DEFAULT_CATEGORY);
+  const [category, setCategory] = useState(
+    initialCategory ?? DISCIPLINE.defaultCategory,
+  );
   const [character, setCharacter] = useState(DEFAULT_CHARACTER);
   const drillOptions = drillsByCategory[category];
   const [drillCode, setDrillCode] = useState(drillOptions?.[0] ?? "");
@@ -151,7 +152,7 @@ export function AddDrillForm({
             onChange={(event) => handleCategoryChange(event.target.value)}
             className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
           >
-            {CATEGORY_OPTIONS.map((option) => (
+            {DISCIPLINE.categories.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -159,27 +160,29 @@ export function AddDrillForm({
           </select>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="character"
-            className="text-sm font-medium text-foreground "
-          >
-            {t("characterLabel")}
-          </label>
-          <select
-            id="character"
-            name="character"
-            value={character}
-            onChange={(event) => setCharacter(event.target.value)}
-            className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
-          >
-            {CHARACTER_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        {DISCIPLINE.character && (
+          <div className="flex flex-col gap-1">
+            <label
+              htmlFor="character"
+              className="text-sm font-medium text-foreground "
+            >
+              {t("characterLabel")}
+            </label>
+            <select
+              id="character"
+              name="character"
+              value={character}
+              onChange={(event) => setCharacter(event.target.value)}
+              className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
+            >
+              {DISCIPLINE.character.options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="flex flex-col gap-1">
           <label
@@ -233,7 +236,7 @@ export function AddDrillForm({
             <option value="" disabled>
               {t("selectDuration")}
             </option>
-            {DURATION_OPTIONS.map((minutes) => (
+            {DISCIPLINE.durations.map((minutes) => (
               <option key={minutes} value={minutes}>
                 {minutes} min
               </option>

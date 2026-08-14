@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getTranslations, getFormatter } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { CHARACTER_LABELS } from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -30,6 +30,8 @@ export default async function ParentSessionDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  // `null` v disciplíne, ktorá charakter cvičenia nezaznamenáva (kondička).
+  const characterLabels = getDisciplineConfig().character?.labels;
   const t = await getTranslations("Sessions.detail");
   const tSessions = await getTranslations("Sessions");
   const tReview = await getTranslations("Sessions.review");
@@ -137,9 +139,11 @@ export default async function ParentSessionDetailPage({
                   <p className="font-medium text-foreground ">
                     {drill.category} · {drill.drill_code}
                   </p>
-                  <p className="text-sm text-muted ">
-                    {CHARACTER_LABELS[drill.character] ?? drill.character}
-                  </p>
+                  {characterLabels && (
+                    <p className="text-sm text-muted ">
+                      {characterLabels[drill.character] ?? drill.character}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   {drill.status !== "played" && (

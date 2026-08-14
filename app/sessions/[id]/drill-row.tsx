@@ -3,14 +3,11 @@
 import { useActionState, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { moveDrill, replaceDrill, setDrillPlayed } from "@/lib/actions/session-drills";
-import {
-  CATEGORY_OPTIONS,
-  CHARACTER_LABELS,
-  CHARACTER_OPTIONS,
-  DEFAULT_CATEGORY,
-  DEFAULT_CHARACTER,
-  DURATION_OPTIONS,
-} from "@/lib/drill-options";
+import { getDisciplineConfig } from "@/lib/discipline";
+
+const DISCIPLINE = getDisciplineConfig();
+// Prázdny reťazec v disciplíne bez charakteru — pole sa vtedy nevykreslí.
+const DEFAULT_CHARACTER = DISCIPLINE.character?.defaultValue ?? "";
 
 export type Drill = {
   id: string;
@@ -47,7 +44,7 @@ function ReplaceDrillForm({
     replaceThisDrill,
     undefined,
   );
-  const [category, setCategory] = useState(DEFAULT_CATEGORY);
+  const [category, setCategory] = useState(DISCIPLINE.defaultCategory);
   const [character, setCharacter] = useState(DEFAULT_CHARACTER);
   const drillOptions = drillsByCategory[category];
   const [drillCode, setDrillCode] = useState(drillOptions?.[0] ?? "");
@@ -68,25 +65,27 @@ function ReplaceDrillForm({
         onChange={(event) => handleCategoryChange(event.target.value)}
         className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
       >
-        {CATEGORY_OPTIONS.map((option) => (
+        {DISCIPLINE.categories.map((option) => (
           <option key={option} value={option}>
             {option}
           </option>
         ))}
       </select>
 
-      <select
-        name="character"
-        value={character}
-        onChange={(event) => setCharacter(event.target.value)}
-        className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
-      >
-        {CHARACTER_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      {DISCIPLINE.character && (
+        <select
+          name="character"
+          value={character}
+          onChange={(event) => setCharacter(event.target.value)}
+          className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
+        >
+          {DISCIPLINE.character.options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      )}
 
       {drillOptions && drillOptions.length > 0 ? (
         <select
@@ -122,7 +121,7 @@ function ReplaceDrillForm({
         <option value="" disabled>
           {t("selectDuration")}
         </option>
-        {DURATION_OPTIONS.map((minutes) => (
+        {DISCIPLINE.durations.map((minutes) => (
           <option key={minutes} value={minutes}>
             {minutes} min
           </option>
@@ -216,9 +215,11 @@ export function DrillRow({
             <p className="font-medium text-foreground ">
               {drill.category} · {drill.drill_code}
             </p>
-            <p className="text-sm text-muted ">
-              {CHARACTER_LABELS[drill.character] ?? drill.character}
-            </p>
+            {DISCIPLINE.character && (
+              <p className="text-sm text-muted ">
+                {DISCIPLINE.character.labels[drill.character] ?? drill.character}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
