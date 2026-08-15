@@ -130,6 +130,9 @@ Kondička sa **už stavia**. Poradie piatich krokov a kde sme:
 | 4. Prepojenie kariet hráčov + read-only cross-read v tenisovom kalendári | nezačaté |
 | 5. Samostatný kondičný graf dole v tenisovej analytike | nezačaté |
 
+Popri tom je **hotová aj kondička vo FEDERÁCII** (F1–F4, viď §2.2) — tá v tomto
+poradí nefiguruje, lebo do v1 kondičky zámerne nešla a rozhodla sa až neskôr.
+
 **Kondička je od 2026-08-15 živá na `fitness.plawsports.com`** — prvý účet
 (`player_limit = 20`, `complimentary`) má hráča a zapísaný tréning. Tým je
 overené aj to jediné, čo sa nedalo potvrdiť inak než naostro: **cvičenie bez
@@ -232,6 +235,38 @@ tyrkys) s organizáciou rozoznateľnou podľa názvu v hlavičke.
 „jedna org = jeden šport" (kondička nie je druhý šport, je to podporná
 disciplína), zákaz rodičovskej vrstvy v B2B (§5.6), ani `one_active_membership_per_user`
 — cezšportový kondičný tréner potrebuje pre druhý zväz druhý účet.
+
+#### STAV: F1–F4 HOTOVÉ (2026-08-15)
+
+| Krok | Stav |
+|---|---|
+| F1 — disciplína sa podáva zhora (`DisciplineProvider`) | hotové (`5d1ee49`) |
+| F2 — migrácia `20260815090000` (členstvo, priradenia, RLS, RPC) | hotové |
+| F3 — appka číta disciplínu aj hráčov z členstva | hotové |
+| F4 — pult rozozná kurt od kondície | hotové |
+
+**Rozsah v1 (rozhodol user 2026-08-15): tréner vidí LEN svoju disciplínu.**
+Tenisový tréner teda kondičné tréningy svojho hráča nevidí; prehľad „kurt vs
+kondícia" dáva pult. Read-only cross-read príde až s krokom 4 (prepojenie
+kariet hráčov), kde sa naraz doplní filtrovanie disciplíny do analytiky aj do
+„dní bez tréningu" pre OBA režimy — bez toho by sa kondičné minúty ticho
+primiešali do percent zamerania.
+
+**Tri veci, ktoré z realizácie vzišli a platia ďalej:**
+
+1. **Org režim sa NESMIE odvodzovať z hostname.** `getOrgContext()` je správny
+   na smerovanie, branding a tenant izoláciu, ale hlavičky od proxy v každom
+   rendri nie sú — pri rendri po `redirect()` zo server action vypadli a appka
+   ticho spadla do osobnej vetvy, takže trénerovi zmizli všetci hráči. RLS sa
+   pýta na ČLENSTVO (`current_org_id()`), takže sa appka pýta rovnako:
+   `getOrgMembership()` v `lib/org/membership.ts`. Odhalila to `browser-coach.js` §3.
+2. **Dvoch trénerov naraz neunesie jedine `players`.** `sessions.coach_id` je
+   priradený tréner tej disciplíny a štítok `sessions.discipline` ich rozlišuje,
+   takže policy nad tréningami sa meniť nemuseli — len tie poddotazy, ktoré sa
+   pýtali na `players.coach_id`.
+3. **Testy, ktoré menia priradenie, musia v `finally` vrátiť aj `player_assignments`.**
+   `browser-director.js` dovtedy vracal len `coach_id`, čím ďalší beh ticho
+   rozsypal (hráč sa javil pri jednom trénerovi a priradený bol inému).
 
 ---
 
