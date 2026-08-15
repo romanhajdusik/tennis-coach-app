@@ -127,8 +127,25 @@ Kondička sa **už stavia**. Poradie piatich krokov a kde sme:
 | 1. Konfiguračná vrstva disciplíny (`lib/discipline.ts`, `lib/disciplines/*`) | **hotové** (`a9617d8`) |
 | 2. Migrácia `20260813090000` + zápis disciplíny + stĺpcový generálny graf | **hotové, aj na prode** (`eab1cee`) |
 | 3. Nasadenie: Vercel projekt, CNAME, prvý účet | **HOTOVÉ, BEŽÍ NAOSTRO** (2026-08-15) |
-| 4. Prepojenie kariet hráčov + read-only cross-read v tenisovom kalendári | nezačaté |
+| 4. Prepojenie kariet hráčov + read-only cross-read v tenisovom kalendári | **hotové** (`20260815100000`) |
 | 5. Samostatný kondičný graf dole v tenisovej analytike | nezačaté |
+
+**Krok 4 (2026-08-15) — čo z neho vzišlo.** Prepojenie vzniká v každom režime
+inak: mimo federácie **kódom na kartu** (`player_links`, vydáva vlastník dát),
+vo federácii **automaticky zo spoločného priradenia** hráča. Rozhodnutia
+používateľa: tenisový tréner vidí **celý detail** kondičného tréningu vrátane
+cvičení, **aj naplánované** (vedieť o zajtrajších ťažkých nohách mení plán na
+kurt) a **oba režimy naraz**. Tri veci, ktoré platia ďalej:
+
+1. **`players` sa neuvoľnila ani v jednom režime** — cudzia karta by sa inak
+   dostala do rosteru, prepínača a `getSelectedPlayer()`.
+2. **Disciplína je povinný parameter** v `getPlayerSessionIdsInPeriod`
+   aj `getRosterOverview`. Predvolená hodnota „bez filtra" tam zámerne nie je:
+   práve na ňu by sa dalo zabudnúť a kondičné minúty by ticho prepísali
+   percentá zameraní.
+3. **Cross-read zrušil obmedzenie v1 z §2.2** („tréner vidí len svoju
+   disciplínu") — dva scenáre v `rls-org.js`, ktoré ho strážili, sú prepísané
+   na „vidí, ale zmeniť nesmie".
 
 Popri tom je **hotová aj kondička vo FEDERÁCII** (F1–F4, viď §2.2) — tá v tomto
 poradí nefiguruje, lebo do v1 kondičky zámerne nešla a rozhodla sa až neskôr.
