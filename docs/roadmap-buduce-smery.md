@@ -126,9 +126,16 @@ Kondička sa **už stavia**. Poradie piatich krokov a kde sme:
 |---|---|
 | 1. Konfiguračná vrstva disciplíny (`lib/discipline.ts`, `lib/disciplines/*`) | **hotové** (`a9617d8`) |
 | 2. Migrácia `20260813090000` + zápis disciplíny + stĺpcový generálny graf | **hotové, aj na prode** (`eab1cee`) |
-| 3. Nasadenie: Vercel projekt, CNAME, prvý účet | **runbook hotový** (`docs/nasadenie-kondicky.md`), klikanie na používateľovi |
+| 3. Nasadenie: Vercel projekt, CNAME, prvý účet | **HOTOVÉ, BEŽÍ NAOSTRO** (2026-08-15) |
 | 4. Prepojenie kariet hráčov + read-only cross-read v tenisovom kalendári | nezačaté |
 | 5. Samostatný kondičný graf dole v tenisovej analytike | nezačaté |
+
+**Kondička je od 2026-08-15 živá na `fitness.plawsports.com`** — prvý účet
+(`player_limit = 20`, `complimentary`) má hráča a zapísaný tréning. Tým je
+overené aj to jediné, čo sa nedalo potvrdiť inak než naostro: **cvičenie bez
+charakteru sa na produkcii naozaj zapíše**, čiže migrácia `20260813090000`
+prešla celá (Vercel/Supabase hlásia Success aj pri čiastočne prebehnutom
+skripte, preto sa to overovalo zápisom, nie hláškou).
 
 Pravidlá, ktoré z toho vzišli a platia pre každú ďalšiu prácu, sú v `CLAUDE.md`
 v sekcii „Disciplína (tenis vs kondička)". Tri veci, ktoré stoja za zapamätanie:
