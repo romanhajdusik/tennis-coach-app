@@ -128,7 +128,21 @@ Kondička sa **už stavia**. Poradie piatich krokov a kde sme:
 | 2. Migrácia `20260813090000` + zápis disciplíny + stĺpcový generálny graf | **hotové, aj na prode** (`eab1cee`) |
 | 3. Nasadenie: Vercel projekt, CNAME, prvý účet | **HOTOVÉ, BEŽÍ NAOSTRO** (2026-08-15) |
 | 4. Prepojenie kariet hráčov + read-only cross-read v tenisovom kalendári | **hotové** (`20260815100000`) |
-| 5. Samostatný kondičný graf dole v tenisovej analytike | nezačaté |
+| 5. Samostatný kondičný graf dole v tenisovej analytike | **hotové** (bez migrácie) |
+
+**Krok 5 (2026-08-15) — kondička je tým hotová celá.** Pod tenisovými grafmi
+pribudol prehľad druhej disciplíny za to isté obdobie, **s vlastnou stovkou** —
+`getLinkedDisciplineShares` počíta zvlášť, takže tenisové percentá ostávajú
+nedotknuté. Bez prepojenia (alebo v období bez záznamu) sa blok nevykreslí
+vôbec. `CategoryShareChart` sa neklonoval: dostal nepovinné props na **zoznam
+zameraní** (z tenisového zoznamu by kondičné vypadli jednofarebné) a na
+**nadpis**, a `currentCategory` smie byť `null` — v cudzích dátach nemá čo
+zvýrazňovať ani dopĺňať zameranie s nulou. Kondička má `shareChart: "bars"`,
+takže sa aj v tenisovej appke vykreslí ako stĺpce.
+
+**Smer je v samostatnom režime jednosmerný** (kondičný tréner tenisový blok
+nevidí) — vyplýva z toho, kto kód vydáva, a zodpovedá rozhodnutiu „obojsmernosť
+do v1 nedávať". Vo federácii ho vidia obaja, tam prepojenie plynie z priradenia.
 
 **Krok 4 (2026-08-15) — čo z neho vzišlo.** Prepojenie vzniká v každom režime
 inak: mimo federácie **kódom na kartu** (`player_links`, vydáva vlastník dát),

@@ -31,6 +31,8 @@
   "detailHeading": "Detail — {group}",
   "byCharacterHeading": "By shot character",
   "generalShareHeading": "Share of total training time",
+  "linkedShareHeading": "{discipline} in the same period",
+  "linkedShareNote": "Counted separately — these minutes are not part of the numbers above. Recorded by the player's {discipline} coach.",
   "chartPie": "Pie",
   "chartBar": "Bars",
   "otherGroupLabel": "Other",

@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { useTranslations } from "next-intl";
 import { useDiscipline } from "@/lib/discipline-context";
+import type { DisciplineConfig } from "@/lib/discipline";
 import type { CategoryShareStat } from "@/lib/actions/analytics";
 
 // Stabilná farba na zameranie (podľa jeho poradia v konfigurácii disciplíny),
@@ -63,23 +64,44 @@ function ShareTooltip({
 
 // Generálny graf: percentuálny podiel odohraných minút daného zamerania oproti
 // ostatným. Aktuálne zameranie je zvýraznené (plná krytie), ostatné stlmené.
+//
+// Ten istý komponent kreslí aj prehľad DRUHEJ disciplíny dole na stránke
+// (krok 5) — vtedy dostane jej konfiguráciu propom a `currentCategory` je
+// `null`. Preto sú obe veci, ktoré by inak bral z kontextu, prepísateľné:
+// **zoznam zameraní** (určuje farby a ich poradie — z tenisového zoznamu by
+// kondičné zamerania vypadli jednofarebné) a **podoba grafu** (kondička má
+// 10 zameraní, tie musia byť stĺpce). Bez toho by sa musel klonovať.
 export function CategoryShareChart({
   shares,
   currentCategory,
+  config,
+  heading,
 }: {
   shares: CategoryShareStat[];
-  currentCategory: string;
+  /** `null` = žiadne zvýraznené zameranie (prehľad cudzej disciplíny). */
+  currentCategory: string | null;
+  /** Konfigurácia disciplíny týchto dát; bez nej platí disciplína appky. */
+  config?: Pick<DisciplineConfig, "categories" | "analytics">;
+  heading?: string;
 }) {
   const t = useTranslations("Analytics");
-  const discipline = useDiscipline();
+  const ownDiscipline = useDiscipline();
+  const discipline = config ?? ownDiscipline;
+  const title = heading ?? t("generalShareHeading");
 
   // Aktuálne zameranie je v grafe VŽDY, aj keď v období nemá ani minútu —
   // vtedy sa vypíše s nulou. Bez toho by sa nedalo odlíšiť „toto zameranie
   // sa netrénovalo" od „zameranie tu vôbec nefiguruje" (požiadavka z pultu:
   // pri každom zameraní musí byť generálny graf úplný).
-  const data = shares.some((entry) => entry.category === currentCategory)
-    ? shares
-    : [...shares, { category: currentCategory, minutes: 0, percentage: 0 }];
+  //
+  // Pri cudzej disciplíne sa NEDOPĹŇA nič: „aktuálne zameranie" tam žiadne
+  // nie je a dopísané by bolo duchom s nulou, ktorý v cudzích dátach nemá čo
+  // hľadať.
+  const data =
+    currentCategory === null ||
+    shares.some((entry) => entry.category === currentCategory)
+      ? shares
+      : [...shares, { category: currentCategory, minutes: 0, percentage: 0 }];
 
   // Ak aktuálne zameranie v období nemá žiadne minúty, nezvýrazňujeme nič —
   // graf slúži ako neutrálny prehľad rozloženia (inak by boli stlmené všetky).
@@ -95,7 +117,7 @@ export function CategoryShareChart({
     return (
       <div className="viz-root flex flex-col gap-3 rounded-xl border border-border bg-surface p-4">
         <h2 className="text-sm font-medium text-muted">
-          {t("generalShareHeading")}
+          {title}
         </h2>
         <ul className="flex flex-col gap-2.5">
           {data.map((entry) => {

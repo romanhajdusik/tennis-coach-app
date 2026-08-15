@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelectedPlayer } from "@/lib/players/selected";
+import { getLinkedPlayerId } from "@/lib/players/linked";
 import {
   getDiscipline,
   getDisciplineConfig,
@@ -531,6 +532,50 @@ export async function getPlayerCategoryMinuteShares(
     .eq("status", "played");
 
   return aggregateCategoryShares(drills ?? []);
+}
+
+/**
+ * Podiely zameraní v DRUHEJ disciplíne za to isté obdobie — vstup pre kondičný
+ * prehľad dole v tenisovej analytike (docs §2.0, krok 5).
+ *
+ * **Vlastná stovka je celý dôvod, prečo je to samostatný blok.** Kondičné
+ * minúty sa nesmú dostať do `CategoryShareChart` — ten počíta podiel na
+ * celkovom čase, takže by ticho prepísali percentá všetkých tenisových
+ * zameraní naraz. Tu majú vlastný súčet a tenisové čísla ostávajú nedotknuté.
+ *
+ * Odkiaľ sa čítajú, závisí od režimu, a rozdiel je schovaný tu:
+ * mimo federácie je druhá disciplína INÁ KARTA (prepojenie kódom), vo
+ * federácii tá istá karta s druhým priradením. RLS vydá jedno aj druhé.
+ *
+ * `null` = nie je čo kresliť (žiadne prepojenie alebo v období nič), a vtedy
+ * sa blok nevykreslí vôbec — prázdny graf by len zaberal miesto.
+ */
+export async function getLinkedDisciplineShares(
+  supabase: SupabaseServerClient,
+  userId: string,
+  start: Date,
+  end: Date,
+): Promise<{ discipline: DisciplineId; shares: CategoryShareStat[] } | null> {
+  const player = await getSelectedPlayer(supabase, userId);
+
+  if (!player) {
+    return null;
+  }
+
+  const mine = await getDiscipline();
+  const other: DisciplineId = mine === "tennis" ? "fitness" : "tennis";
+  const sourcePlayerId =
+    (await getLinkedPlayerId(supabase, player.id)) ?? player.id;
+
+  const shares = await getPlayerCategoryMinuteShares(
+    supabase,
+    sourcePlayerId,
+    start,
+    end,
+    other,
+  );
+
+  return shares.length > 0 ? { discipline: other, shares } : null;
 }
 
 export async function getCategoryAnalytics(

@@ -1093,6 +1093,29 @@ async function main() {
         .count()) === 1,
     );
 
+    // Krok 5: kondičný prehľad je DOLE a s vlastnou stovkou. Kontroluje sa
+    // presne to, čo by inak ticho pokazilo všetky čísla nad ním — že sa
+    // kondičné zameranie nedostalo medzi tenisové podiely.
+    await linkPage.goto(`${soloBase}/analytics/Forehand`);
+    await linkPage.waitForTimeout(2000);
+    const analyticsText = await browserText(linkPage);
+    const [aboveLinked, belowLinked] = analyticsText.split(
+      "Fitness in the same period",
+    );
+    check(
+      "analytika má dole prehľad druhej disciplíny",
+      belowLinked !== undefined,
+      analyticsText.slice(0, 200),
+    );
+    check(
+      "kondičné zameranie je LEN v tom dolnom bloku",
+      !/STRENGTH/.test(aboveLinked) && /STRENGTH/.test(belowLinked ?? ""),
+    );
+    check(
+      "pri bloku je vysvetlené, že sa nepočíta do čísel nad ním",
+      /not part of the numbers above/i.test(belowLinked ?? ""),
+    );
+
     await linkPage.goto(`${soloBase}/linked-sessions/${fitnessSession.id}`);
     await linkPage.waitForTimeout(1200);
     const detailText = await browserText(linkPage);
@@ -1114,6 +1137,13 @@ async function main() {
     check(
       "po zrušení prepojenia cudzí tréning z kalendára zmizne",
       !/Fitness/.test(await browserText(linkPage)),
+    );
+
+    await linkPage.goto(`${soloBase}/analytics/Forehand`);
+    await linkPage.waitForTimeout(2000);
+    check(
+      "a zmizne aj kondičný blok v analytike",
+      !/Fitness in the same period/.test(await browserText(linkPage)),
     );
   } finally {
     await db.from("player_links").delete().eq("link_code", "BRWLINK1");

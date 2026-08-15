@@ -6,11 +6,16 @@ import {
   getCategoryAnalytics,
   getCategoryMinuteShares,
   getDefaultPeriodValue,
+  getLinkedDisciplineShares,
   getPeriodRange,
   getPreviousYearValue,
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
-import { getDisciplineConfig, showsStrokes } from "@/lib/discipline";
+import {
+  disciplineConfig,
+  getDisciplineConfig,
+  showsStrokes,
+} from "@/lib/discipline";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import { CategoryCharts } from "./category-charts";
 import { CategoryShareChart } from "./category-share-chart";
@@ -104,6 +109,9 @@ export default async function AnalyticsPage({
     start,
     end,
   );
+  // Rovnaké obdobie ako zvyšok stránky — inak by sa dve čísla vedľa seba
+  // vzťahovali na iné týždne a nedali by sa porovnať.
+  const linked = await getLinkedDisciplineShares(supabase, user.id, start, end);
   const previousYearValue = getPreviousYearValue(range, value);
 
   const periodQuery = (r: PeriodRangeType, v: string) =>
@@ -235,6 +243,29 @@ export default async function AnalyticsPage({
           groups={discipline.analytics.groupedCategories[category]}
           showStrokes={await showsStrokes(category)}
         />
+      )}
+
+      {/* Príprava v druhej disciplíne — ZÁMERNE DOLE a s vlastnou stovkou.
+          Je to samostatný pohľad, nie súčasť čísel nad ním: keby sa kondičné
+          minúty počítali do generálneho grafu, prepísali by percentá všetkých
+          zameraní naraz. Bez prepojenia (a v období bez záznamu) sa
+          nevykreslí vôbec — prázdny graf by len zaberal miesto. */}
+      {linked && (
+        <div className="flex flex-col gap-2">
+          <CategoryShareChart
+            shares={linked.shares}
+            currentCategory={null}
+            config={disciplineConfig(linked.discipline)}
+            heading={t("linkedShareHeading", {
+              discipline: disciplineConfig(linked.discipline).label,
+            })}
+          />
+          <p className="px-1 text-xs text-muted">
+            {t("linkedShareNote", {
+              discipline: disciplineConfig(linked.discipline).label,
+            })}
+          </p>
+        </div>
       )}
     </div>
   );
