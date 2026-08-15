@@ -20,8 +20,10 @@ import {
   lastPracticeLabel,
   nextPracticeLabel,
 } from "@/components/roster-status";
+import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { AddPlayerForm } from "./add-player-form";
 import { SharePlayerSection } from "./share-player-section";
+import { LinkPlayerSection } from "./link-player-section";
 
 export default async function PlayersPage() {
   const t = await getTranslations("Players");
@@ -85,6 +87,34 @@ export default async function PlayersPage() {
     (connections ?? []).map((connection) => [connection.player_id, connection]),
   );
 
+  // Prepojenie kariet hráča naprieč disciplínami (docs §2.0, krok 4) — tiež len
+  // v samostatnom režime: vo federácii oboch trénerov prideľuje šéftréner a
+  // žiadny kód sa nevydáva. Pýtame sa ČLENSTVA, nie hostname (RLS robí to isté).
+  //
+  // Ktorú stranu appka hrá, hovorí konfigurácia disciplíny — vlastník dát kód
+  // vydáva na svoju kartu (`source_player_id`), druhá strana ho zadáva a link
+  // potom visí na jej karte (`target_player_id`). Preto sa mapa kľúčuje inak
+  // pre každú rolu; RLS aj tak vydá len riadky, kde je tréner jednou zo strán.
+  const cardLinkRole = (await getDisciplineConfig()).cardLink;
+  const { data: cardLinks } = !membership
+    ? await supabase
+        .from("player_links")
+        .select(
+          "id, source_player_id, target_player_id, status, link_code, source_discipline",
+        )
+        .in("status", ["pending", "active"])
+    : { data: null };
+
+  const linkByPlayer = new Map(
+    (cardLinks ?? [])
+      .map((link) => {
+        const key =
+          cardLinkRole === "owner" ? link.source_player_id : link.target_player_id;
+        return key ? ([key, link] as const) : null;
+      })
+      .filter((entry) => entry !== null),
+  );
+
   // Koľko hráčov smie mať účet naraz aktívnych, je cenová hladina. Rozhoduje
   // o nej `lib/subscription.ts` (aj o rozdiele „vyčerpaná" vs „prekročená");
   // tu sa číta len preto, aby sa nevykreslilo tlačidlo, ktoré by server aj tak
@@ -95,7 +125,12 @@ export default async function PlayersPage() {
   // dávajú stavy „X dní bez tréningu" zmysel, preto sa dopočítavajú len preň.
   const isRoster = activePlayers.length > 1;
   const overview = isRoster
-    ? await getRosterOverview(supabase, activePlayers, await getTimeZone())
+    ? await getRosterOverview(
+        supabase,
+        activePlayers,
+        await getTimeZone(),
+        await getDiscipline(),
+      )
     : null;
   // Texty stavov sa skladajú vopred — `map()` v JSX nevie čakať na preklady.
   const rosterLabels = new Map<
@@ -216,6 +251,14 @@ export default async function PlayersPage() {
                     <SharePlayerSection
                       playerId={player.id}
                       connection={connectionByPlayer.get(player.id) ?? null}
+                    />
+                  )}
+
+                  {!membership && (
+                    <LinkPlayerSection
+                      playerId={player.id}
+                      link={linkByPlayer.get(player.id) ?? null}
+                      role={cardLinkRole}
                     />
                   )}
                 </li>

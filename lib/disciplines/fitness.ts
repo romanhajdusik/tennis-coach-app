@@ -13,6 +13,8 @@ import type { DisciplineConfig } from "@/lib/disciplines/types";
 export const FITNESS_DISCIPLINE: DisciplineConfig = {
   id: "fitness",
 
+  label: "Fitness",
+
   domain: "fitness.plawsports.com",
 
   // Posledné dve sú rezervné zamerania s PEVNÝM názvom — tréner si do nich
@@ -42,6 +44,12 @@ export const FITNESS_DISCIPLINE: DisciplineConfig = {
 
   // Charakter úderu (offensive/neutral/defensive) je tenisový slovník.
   character: null,
+
+  // Kondičný tréner je VLASTNÍK dát, takže kód vydáva on — rovnaký smer ako
+  // pri zdieľaní s rodičom. Kód je viazaný na kartu, nie na účet, takže tréner
+  // s dvadsiatimi hráčmi vydá dvadsať kódov a každý tenisový kolega dostane
+  // prístup len k svojmu dieťaťu.
+  cardLink: "owner",
 
   analytics: {
     // Každé zameranie ukáže úplný rozpad svojich kódov + prepínač grafu;

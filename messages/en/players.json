@@ -51,10 +51,31 @@
     "activeStatusUnknown": "Connected",
     "revokeButton": "Stop sharing"
   },
+  "link": {
+    "heading": "Link with another coach",
+    "ownerDescription": "Generate a code and send it to the player's coach in the other discipline. They enter it once and will see this player's practices in their calendar, read-only. You keep full control — stop the link any time and they lose access.",
+    "viewerDescription": "Enter the code you got from the player's coach in the other discipline. Their practices will show up in your calendar, read-only — you can see them, but not change them.",
+    "generateButton": "Generate code",
+    "codeLabel": "Link code",
+    "codePlaceholder": "Code",
+    "copyButton": "Copy",
+    "copiedButton": "Copied!",
+    "pendingStatus": "Waiting for the code to be entered",
+    "claimButton": "Link",
+    "claimPending": "Linking...",
+    "activeStatus": "Linked",
+    "revokeButton": "Unlink"
+  },
   "errors": {
     "missingName": "Enter the player's name.",
     "invalidBirthYear": "Enter a valid year of birth.",
     "createFailed": "Failed to create the player.",
-    "playerLimitReached": "You've reached the number of active players your plan allows. Archive a player first, or move up to a higher plan."
+    "playerLimitReached": "You've reached the number of active players your plan allows. Archive a player first, or move up to a higher plan.",
+    "linkMissingCode": "Enter the code.",
+    "linkInvalidCode": "That code is invalid or has already been used.",
+    "linkSameDiscipline": "That code is from a coach of the same discipline. Links connect a player's tennis card with their fitness card.",
+    "linkSamePlayer": "That code belongs to this player's own card.",
+    "linkNotYourPlayer": "You can only link your own player.",
+    "linkNotInOrganization": "In a federation, players are assigned by the head coach — no code is needed."
   }
 }

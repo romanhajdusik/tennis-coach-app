@@ -41,6 +41,12 @@ export type StrokesConfig = {
 export type DisciplineConfig = {
   id: DisciplineId;
   /**
+   * Ľudský názov disciplíny. Vypisuje sa tam, kde vedľa seba stoja tréningy
+   * z dvoch disciplín (cudzí tréning v kalendári, jeho read-only detail) —
+   * inak by tréner nevedel, čím sa od jeho vlastných líšia.
+   */
+  label: string;
+  /**
    * Verejná adresa nasadenia — vypisuje sa pod názvom appky. Musí byť
    * konfigurácia, nie natvrdo napísaný reťazec: kondičný tréner na
    * `fitness.plawsports.com` by inak čítal adresu tenisového produktu.
@@ -54,6 +60,21 @@ export type DisciplineConfig = {
   /** Ponuka trvania cvičenia v minútach. */
   durations: number[];
   character: CharacterConfig | null;
+  /**
+   * Ktorú stranu hrá táto disciplína pri prepojení kariet hráča
+   * (docs/roadmap-buduce-smery.md §2.0, krok 4):
+   *
+   * - `owner` — vlastník dát. VYDÁVA kód na svoju kartu hráča.
+   * - `viewer` — kód ZADÁVA a odteraz vidí vo svojom kalendári tréningy
+   *   z prepojenej karty, read-only.
+   *
+   * Smer je rozhodnutie používateľa z 2026-08-10 a je rovnaký ako pri zdieľaní
+   * s rodičom: kód dáva ten, komu dáta patria. Preto je to konfigurácia a nie
+   * vetvenie v komponente — keď raz pribudne padel, dostane rolu bez zásahu do
+   * UI. **Vo federácii sa nepoužije vôbec**: tam hráča obom trénerom prideľuje
+   * šéftréner a žiadny kód sa nevydáva.
+   */
+  cardLink: "owner" | "viewer";
   analytics: {
     /** Zamerania s úplným rozpadom kódov + prepínačom koláč/stĺpce. */
     fullBreakdownCategories: string[];

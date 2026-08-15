@@ -8,6 +8,8 @@ import type { DisciplineConfig } from "@/lib/disciplines/types";
 export const TENNIS_DISCIPLINE: DisciplineConfig = {
   id: "tennis",
 
+  label: "Tennis",
+
   domain: "plaw.win",
 
   categories: [
@@ -85,6 +87,10 @@ export const TENNIS_DISCIPLINE: DisciplineConfig = {
     },
     defaultValue: "neutral",
   },
+
+  // Tenisový tréner kód ZADÁVA: kondičná príprava jeho zverenca patrí
+  // kondičnému trénerovi, on ju len vidí v kalendári.
+  cardLink: "viewer",
 
   analytics: {
     // Tieto zamerania zobrazujú vždy úplný rozpad (bez zbaľovania do
