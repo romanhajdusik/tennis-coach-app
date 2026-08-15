@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getTranslations, getFormatter, getTimeZone } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelectedPlayer } from "@/lib/players/selected";
+import { getLinkedPlayerId } from "@/lib/players/linked";
+import { getDiscipline, disciplineConfig, type DisciplineId } from "@/lib/discipline";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import {
   LABEL_TIME_ZONE,
@@ -37,9 +39,15 @@ type CalendarView = "week" | "month";
 
 // Naplánované tréningy zelenou, dokončené červenou — ak má deň oboje,
 // naplánovaný (ešte nadchádzajúci) vyhráva, nech si ho tréner nepremkne.
-function dayStatus(daySessions: { status: string }[]) {
-  if (daySessions.some((session) => session.status === "planned")) return "planned";
-  if (daySessions.some((session) => session.status === "completed")) return "completed";
+//
+// **Cudzie tréningy (druhá disciplína) sa do farby dňa nerátajú.** Bodka
+// v mriežke znamená „tu mám ja niečo s hráčom"; kondičný tréning by trénera
+// pomýlil rovnako ako v „dňoch bez tréningu" v rosteri — vyzeralo by, že hráč
+// bol na kurte, hoci bol na posilňovni. V zozname pod mriežkou ho vidí.
+function dayStatus(daySessions: { status: string; isForeign: boolean }[]) {
+  const own = daySessions.filter((session) => !session.isForeign);
+  if (own.some((session) => session.status === "planned")) return "planned";
+  if (own.some((session) => session.status === "completed")) return "completed";
   return null;
 }
 
@@ -125,11 +133,23 @@ export default async function CalendarPage({
     addPlainDays(windowDays[windowDays.length - 1], 2),
   ).toISOString();
 
+  // Prepojenie kariet (docs §2.0, krok 4): v samostatnom režime je hráč u
+  // druhého trénera INÁ karta, takže sa treba spýtať aj na ňu. Vo federácii je
+  // to tá istá karta s dvoma priradeniami, takže `getLinkedPlayerId` nevráti
+  // nič a cudziu disciplínu vydá RLS na tom istom `player_id`.
+  const myDiscipline = await getDiscipline();
+  const linkedPlayerId = activePlayer
+    ? await getLinkedPlayerId(supabase, activePlayer.id)
+    : null;
+  const playerIds = activePlayer
+    ? [activePlayer.id, ...(linkedPlayerId ? [linkedPlayerId] : [])]
+    : [];
+
   const { data: sessions } = activePlayer
     ? await supabase
         .from("sessions")
-        .select("id, status, planned_data, actual_data")
-        .eq("player_id", activePlayer.id)
+        .select("id, status, planned_data, actual_data, discipline")
+        .in("player_id", playerIds)
         .or(
           `and(planned_data->>date.gte.${queryFrom},planned_data->>date.lt.${queryTo}),` +
             `and(actual_data->>date.gte.${queryFrom},actual_data->>date.lt.${queryTo})`,
@@ -138,7 +158,13 @@ export default async function CalendarPage({
 
   const sessionsByDay = new Map<
     string,
-    { id: string; status: string; date: string }[]
+    {
+      id: string;
+      status: string;
+      date: string;
+      discipline: string;
+      isForeign: boolean;
+    }[]
   >();
   for (const session of sessions ?? []) {
     const planned = session.planned_data as PlannedData | null;
@@ -150,7 +176,17 @@ export default async function CalendarPage({
     const key = dayKeyIn(timeZone, date);
     if (!windowKeys.has(key)) continue;
     const list = sessionsByDay.get(key) ?? [];
-    list.push({ id: session.id, status: session.status, date: dateValue });
+    // Cudzí je ten, ktorý patrí do inej disciplíny — v OBOCH režimoch. Podľa
+    // `player_id` sa to rozlíšiť nedá: vo federácii má hráč jednu kartu pre
+    // obe disciplíny. Vlastná karta cudziu disciplínu obsahovať nemôže,
+    // nasadenie zapisuje vždy tú svoju.
+    list.push({
+      id: session.id,
+      status: session.status,
+      date: dateValue,
+      discipline: session.discipline,
+      isForeign: session.discipline !== myDiscipline,
+    });
     sessionsByDay.set(key, list);
   }
 
@@ -328,11 +364,23 @@ export default async function CalendarPage({
                     key={session.id}
                     id={`day-${dayKeyIn(timeZone, new Date(session.date))}`}
                   >
+                    {/* Cudzí tréning vedie na READ-ONLY detail, nie na
+                        editovateľný `/sessions/[id]` — nie je trénerov a
+                        zapisovacie policy by ho aj tak odmietli. Odlíšený je
+                        prerušovaným rámčekom: stavové farby (zelená/červená)
+                        sú obsadené a druhá výplň by v mriežke aj v zozname
+                        súperila s tým, čo tréner reálne robí. */}
                     <Link
-                      href={`/sessions/${session.id}`}
-                      className={`flex items-center justify-between rounded-xl border ${
-                        CARD_BORDER_CLASSES[session.status] ?? "border-border"
-                      } bg-surface p-4`}
+                      href={
+                        session.isForeign
+                          ? `/linked-sessions/${session.id}`
+                          : `/sessions/${session.id}`
+                      }
+                      className={`flex items-center justify-between rounded-xl border bg-surface p-4 ${
+                        session.isForeign
+                          ? "border-dashed border-border"
+                          : (CARD_BORDER_CLASSES[session.status] ?? "border-border")
+                      }`}
                     >
                       <p className="font-medium text-foreground ">
                         {format.dateTime(new Date(session.date), {
@@ -340,14 +388,22 @@ export default async function CalendarPage({
                           timeStyle: "short",
                         })}
                       </p>
-                      <span
-                        className={`text-xs font-medium ${
-                          STATUS_TEXT_CLASSES[session.status] ??
-                          "text-muted "
-                        }`}
-                      >
-                        {tCommon(`status.${session.status}`)}
-                      </span>
+                      {session.isForeign ? (
+                        <span className="text-xs font-medium text-muted">
+                          {disciplineConfig(
+                            session.discipline as DisciplineId,
+                          ).label}
+                        </span>
+                      ) : (
+                        <span
+                          className={`text-xs font-medium ${
+                            STATUS_TEXT_CLASSES[session.status] ??
+                            "text-muted "
+                          }`}
+                        >
+                          {tCommon(`status.${session.status}`)}
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}

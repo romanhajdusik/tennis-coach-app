@@ -14,6 +14,15 @@
     "locked": "Locked",
     "noDrills": "No drills yet."
   },
+  "linked": {
+    "heading": "{discipline} practice",
+    "readOnlyNote": "Recorded by the player's {discipline} coach. You can see it, but only they can change it.",
+    "totalDuration": "Total duration: {minutes} min",
+    "notes": "Notes",
+    "noNotes": "No notes.",
+    "drillsHeading": "Drills",
+    "noDrills": "No drills recorded."
+  },
   "newForm": {
     "heading": "Schedule a practice",
     "dateLabel": "Date and time",
