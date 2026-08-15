@@ -408,6 +408,60 @@ export type Database = {
           },
         ]
       }
+      player_links: {
+        Row: {
+          created_at: string
+          id: string
+          link_code: string
+          source_coach_id: string
+          source_discipline: string
+          source_player_id: string
+          status: string
+          target_coach_id: string | null
+          target_player_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          link_code: string
+          source_coach_id: string
+          source_discipline: string
+          source_player_id: string
+          status?: string
+          target_coach_id?: string | null
+          target_player_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          link_code?: string
+          source_coach_id?: string
+          source_discipline?: string
+          source_player_id?: string
+          status?: string
+          target_coach_id?: string | null
+          target_player_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_links_source_player_id_fkey"
+            columns: ["source_player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_links_target_player_id_fkey"
+            columns: ["target_player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           birth_date: string | null
@@ -639,6 +693,10 @@ export type Database = {
           player_id: string
         }[]
       }
+      claim_player_link: {
+        Args: { p_code: string; p_discipline: string; p_player_id: string }
+        Returns: string
+      }
       copy_session_to_org_player: {
         Args: { p_session_id: string; p_target_player_id: string }
         Returns: string
@@ -671,6 +729,9 @@ export type Database = {
         }[]
       }
       owns_personal_player: { Args: { p_player_id: string }; Returns: boolean }
+      reads_linked_player: { Args: { p_player_id: string }; Returns: boolean }
+      reads_linked_session: { Args: { p_session_id: string }; Returns: boolean }
+      revoke_player_link: { Args: { p_link_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
