@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -109,6 +109,7 @@ export type Database = {
         Row: {
           coach_id: string
           created_at: string
+          discipline: string
           id: string
           notes: string | null
           organization_id: string | null
@@ -121,6 +122,7 @@ export type Database = {
         Insert: {
           coach_id: string
           created_at?: string
+          discipline?: string
           id?: string
           notes?: string | null
           organization_id?: string | null
@@ -133,6 +135,7 @@ export type Database = {
         Update: {
           coach_id?: string
           created_at?: string
+          discipline?: string
           id?: string
           notes?: string | null
           organization_id?: string | null
@@ -162,6 +165,7 @@ export type Database = {
       organization_members: {
         Row: {
           created_at: string
+          discipline: string
           id: string
           invite_code: string | null
           organization_id: string
@@ -172,6 +176,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          discipline?: string
           id?: string
           invite_code?: string | null
           organization_id: string
@@ -182,6 +187,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          discipline?: string
           id?: string
           invite_code?: string | null
           organization_id?: string
@@ -312,6 +318,51 @@ export type Database = {
           synced_at?: string
         }
         Relationships: []
+      }
+      player_assignments: {
+        Row: {
+          coach_id: string
+          created_at: string
+          discipline: string
+          id: string
+          organization_id: string
+          player_id: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          discipline: string
+          id?: string
+          organization_id: string
+          player_id: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          discipline?: string
+          id?: string
+          organization_id?: string
+          player_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_assignments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_assignments_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       player_connections: {
         Row: {
@@ -592,12 +643,14 @@ export type Database = {
         Args: { p_session_id: string; p_target_player_id: string }
         Returns: string
       }
+      current_org_discipline: { Args: never; Returns: string }
       current_org_id: { Args: never; Returns: string }
       current_org_role: { Args: never; Returns: string }
       delete_organization_member: {
         Args: { p_member_id: string }
         Returns: undefined
       }
+      is_assigned_player: { Args: { p_player_id: string }; Returns: boolean }
       is_member_of_my_org: { Args: { p_user_id: string }; Returns: boolean }
       org_players_for_copy: {
         Args: never
