@@ -167,6 +167,65 @@ async function browserLogin(page, email, baseUrl) {
   await page.waitForLoadState("networkidle").catch(() => {});
 }
 
+/** Meno karty, ktorú vedie kondičný tréner v scenároch prepojenia kariet. */
+const FITNESS_COACH_EMAIL = "fitness-coach@test.local";
+const FITNESS_PLAYER_NAME = "Adam Kováč (fitness)";
+
+/**
+ * Kondičný tréner a jeho karta hráča — idempotentne, ako seed.
+ *
+ * Prepojenie kariet (krok 4) je zo svojej podstaty scenár DVOCH samostatných
+ * účtov na dvoch doménach, takže druhá strana musí niekde vzniknúť. V seede
+ * nie je zámerne: týka sa len sád `card-links.js` a `browser-coach.js` §11 a
+ * seed by ju musel vytvárať aj tam, kde na nej nič nestojí.
+ */
+async function ensureFitnessCoach(db) {
+  const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
+  let coach = users.users.find((user) => user.email === FITNESS_COACH_EMAIL);
+
+  if (!coach) {
+    const { data, error } = await db.auth.admin.createUser({
+      email: FITNESS_COACH_EMAIL,
+      password: PASSWORD,
+      email_confirm: true,
+      user_metadata: { full_name: "Fitness Coach", role: "coach" },
+    });
+    if (error) throw new Error(`createUser: ${error.message}`);
+    coach = data.user;
+  }
+
+  // Bez toho by účet po 14 dňoch prestal zapisovať a sada by padala na niečom,
+  // čo s prepojením kariet nesúvisí.
+  await db
+    .from("profiles")
+    .update({ subscription_status: "complimentary", player_limit: 20 })
+    .eq("id", coach.id);
+
+  let { data: player } = await db
+    .from("players")
+    .select("id")
+    .eq("coach_id", coach.id)
+    .eq("name", FITNESS_PLAYER_NAME)
+    .maybeSingle();
+
+  if (!player) {
+    const { data, error } = await db
+      .from("players")
+      .insert({
+        coach_id: coach.id,
+        name: FITNESS_PLAYER_NAME,
+        birth_year: 2012,
+        is_active: true,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(`insert player: ${error.message}`);
+    player = data;
+  }
+
+  return { coach, player };
+}
+
 /** Jednoduchý zberač výsledkov — každý skript končí `report()`. */
 function createChecks() {
   let passed = 0;
@@ -213,5 +272,8 @@ module.exports = {
   browserText,
   chromiumArgs,
   browserLogin,
+  ensureFitnessCoach,
+  FITNESS_COACH_EMAIL,
+  FITNESS_PLAYER_NAME,
   createChecks,
 };

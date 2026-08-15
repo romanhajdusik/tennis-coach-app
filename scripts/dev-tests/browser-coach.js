@@ -12,6 +12,7 @@ const {
   browserLogin,
   browserText,
   chromiumArgs,
+  ensureFitnessCoach,
   createChecks,
 } = require("./helpers");
 
@@ -988,6 +989,138 @@ async function main() {
     }
   } finally {
     await soloRescheduleContext.close();
+  }
+
+  section("11) Prepojenie kariet hráča naprieč disciplínami (krok 4)");
+  // Druhá strana prepojenia je samostatný kondičný účet na vlastnej doméne,
+  // a dva dev servery naraz Next 16 v tom istom priečinku nespustí. Kód preto
+  // vydá `service_role` (tú cestu overuje `card-links.js` §1) a v prehliadači
+  // sa kontroluje to, čo sa inak overiť nedá: že tenisový tréner kód reálne
+  // zadá, uvidí cudzí tréning v kalendári a nedostane sa k jeho úprave.
+  const linkContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
+  const linkPage = await linkContext.newPage();
+  let linkedSessionId = null;
+  try {
+    const { coach: fitnessCoach, player: fitnessPlayer } =
+      await ensureFitnessCoach(db);
+    const { data: soloPlayer } = await db
+      .from("players")
+      .select("id, name")
+      .eq("coach_id", solo.id)
+      .eq("is_active", true)
+      .is("organization_id", null)
+      .limit(1)
+      .single();
+
+    // Dnešný tréning kotvený na poludnie: beh tesne pred polnocou by ho inak
+    // posunul do iného týždňa, než ktorý kalendár práve ukazuje.
+    const noon = new Date();
+    noon.setHours(12, 0, 0, 0);
+
+    const { data: fitnessSession } = await db
+      .from("sessions")
+      .insert({
+        coach_id: fitnessCoach.id,
+        player_id: fitnessPlayer.id,
+        status: "planned",
+        discipline: "fitness",
+        planned_data: { date: noon.toISOString(), duration_minutes: 60 },
+        notes: "Kondičný blok pred turnajom",
+      })
+      .select("id")
+      .single();
+    linkedSessionId = fitnessSession.id;
+
+    await db.from("session_drills").insert({
+      session_id: fitnessSession.id,
+      coach_id: fitnessCoach.id,
+      category: "STRENGTH",
+      character: null,
+      drill_code: "STR-1",
+      duration_minutes: 30,
+      status: "played",
+      sort_order: 1,
+    });
+
+    await db.from("player_links").insert({
+      source_player_id: fitnessPlayer.id,
+      source_coach_id: fitnessCoach.id,
+      source_discipline: "fitness",
+      link_code: "BRWLINK1",
+      status: "pending",
+    });
+
+    const soloBase = `http://${APP_HOST}`;
+    await browserLogin(linkPage, "demo@plaw.win", soloBase);
+    await linkPage.goto(`${soloBase}/players`);
+
+    // Panel je zbalený v `<details>` — bez rozbalenia sa formulár nevykreslí.
+    await linkPage.click("summary:has-text('Link with another coach')");
+    // Formulár sa cieli cez VLASTNÉ pole: na stránke je aj panel zdieľania
+    // s rodičom a `form` .first() by trafil jeho.
+    const linkForm = linkPage.locator('form:has(input[name="code"])').first();
+    await linkForm.locator('input[name="code"]').fill("brwlink1");
+    await linkForm.locator('button[type="submit"]').click();
+    await linkPage.waitForTimeout(2500);
+
+    const { data: linkRow } = await db
+      .from("player_links")
+      .select("status, target_player_id")
+      .eq("link_code", "BRWLINK1")
+      .single();
+    check(
+      "zadanie kódu prepojenie aktivovalo",
+      linkRow?.status === "active" && linkRow?.target_player_id === soloPlayer.id,
+      JSON.stringify(linkRow),
+    );
+    // Kód sa píše malými písmenami — appka ho normalizuje, inak by tréner
+    // narazil na „neplatný kód" pri správne prepísanom kóde.
+    check(
+      "stránka hlási prepojené",
+      /Linked/.test(await browserText(linkPage)),
+    );
+
+    await linkPage.goto(`${soloBase}/calendar?view=week`);
+    await linkPage.waitForTimeout(1500);
+    const calendarText = await browserText(linkPage);
+    check("v kalendári je cudzí tréning označený disciplínou", /Fitness/.test(calendarText));
+    check(
+      "cudzí tréning vedie na read-only detail",
+      (await linkPage
+        .locator(`a[href="/linked-sessions/${fitnessSession.id}"]`)
+        .count()) === 1,
+    );
+
+    await linkPage.goto(`${soloBase}/linked-sessions/${fitnessSession.id}`);
+    await linkPage.waitForTimeout(1200);
+    const detailText = await browserText(linkPage);
+    check("detail ukáže cvičenia cudzieho tréningu", /STRENGTH/.test(detailText));
+    check("detail ukáže aj poznámku", /Kondičný blok pred turnajom/.test(detailText));
+    check(
+      "detail nemá jediné zapisovacie tlačidlo",
+      (await linkPage.locator("form button, button[type='submit']").count()) === 0,
+    );
+
+    // Po zrušení musí prístup zmiznúť — to je celý rozdiel oproti kópiám,
+    // ktoré dostáva rodič.
+    await db
+      .from("player_links")
+      .update({ status: "revoked" })
+      .eq("link_code", "BRWLINK1");
+    await linkPage.goto(`${soloBase}/calendar?view=week`);
+    await linkPage.waitForTimeout(1500);
+    check(
+      "po zrušení prepojenia cudzí tréning z kalendára zmizne",
+      !/Fitness/.test(await browserText(linkPage)),
+    );
+  } finally {
+    await db.from("player_links").delete().eq("link_code", "BRWLINK1");
+    if (linkedSessionId) {
+      await db.from("sessions").delete().eq("id", linkedSessionId);
+    }
+    await linkContext.close();
   }
 
   report();

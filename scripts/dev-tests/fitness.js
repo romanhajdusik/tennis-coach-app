@@ -169,6 +169,27 @@ async function main() {
       detailText.includes("ENDURANCE") && !detailText.includes("Backhand"),
     );
   }
+
+  section("5) Prepojenie kariet: kondička je VLASTNÍK dát, teda vydáva kód");
+  // Smer prepojenia je vlastnosť disciplíny (`cardLink` v konfigurácii), nie
+  // vetvenie v komponente: kód dáva ten, komu dáta patria — rovnako ako pri
+  // zdieľaní s rodičom. Kondičný tréner teda vidí tlačidlo na vygenerovanie
+  // kódu, nie pole na jeho zadanie (to má tenisová strana).
+  const players = await request("/players", { host: APP_HOST, cookies });
+  const playersText = textOf(players.body);
+  check(
+    "panel prepojenia sa vykreslí",
+    /Link with another coach/.test(playersText),
+    playersText.slice(0, 200),
+  );
+  check(
+    "kondičný tréner kód VYDÁVA",
+    /Generate code/.test(playersText) && /send it to the player's coach/i.test(playersText),
+  );
+  check(
+    "pole na zadanie cudzieho kódu tu nie je",
+    !/Enter the code you got/i.test(playersText),
+  );
 }
 
 main()

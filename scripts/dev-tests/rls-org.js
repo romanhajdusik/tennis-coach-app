@@ -646,11 +646,29 @@ async function fitnessInFederation({ db, director, org, check, section }) {
       JSON.stringify(after.data),
     );
 
-    const foreignSessions = await fitnessCoach.from("sessions").select("id");
+    // KROK 4 zmenil pravidlo: dovtedy tréner videl len svoju disciplínu
+    // (vedomé obmedzenie v1), teraz vidí celú prípravu hráča, ktorého má
+    // prideleného — vo federácii je to tá istá karta s dvoma priradeniami.
+    // Meniť ju naďalej nesmie, to overuje kontrola hneď pod tým.
+    const foreignSessions = await fitnessCoach
+      .from("sessions")
+      .select("id, discipline");
     check(
-      "tenisové tréningy hráča nevidí (v1 bez cross-readu)",
-      (foreignSessions.data ?? []).length === 0,
+      "kondičná trénerka vidí aj tenisové tréningy svojho hráča (cross-read)",
+      (foreignSessions.data ?? []).some((row) => row.discipline === "tennis"),
       "počet: " + (foreignSessions.data ?? []).length,
+    );
+
+    const foreignEdit = await fitnessCoach
+      .from("sessions")
+      .update({ notes: "cudzia disciplína" })
+      .eq("discipline", "tennis")
+      .eq("player_id", player.id)
+      .select("id");
+    check(
+      "cudzí (tenisový) tréning upraviť nesmie",
+      (foreignEdit.data ?? []).length === 0,
+      "zmenených: " + (foreignEdit.data ?? []).length,
     );
 
     const wrongLabel = await fitnessCoach
@@ -685,15 +703,32 @@ async function fitnessInFederation({ db, director, org, check, section }) {
     check("kondičný tréning zapíše", ownWrite.error === null, ownWrite.error?.message);
     sessionId = ownWrite.data?.id ?? null;
 
-    // Druhá strana: tenisový tréner o kondičnom tréningu nevie.
-    const tennisView = await (await signIn("coach-today@test.local"))
+    // Druhá strana toho istého pravidla: tenisový tréner kondičný tréning
+    // svojho hráča VIDÍ (od kroku 4), ale je preň read-only. Práve preto
+    // musí analytika a „dni bez tréningu" filtrovať disciplínu v SQL —
+    // inak by sa mu kondičné minúty primiešali do percent na kurte.
+    const asTennisCoach = await signIn("coach-today@test.local");
+    const tennisView = await asTennisCoach
       .from("sessions")
       .select("id")
-      .eq("discipline", "fitness");
+      .eq("discipline", "fitness")
+      .eq("player_id", player.id);
     check(
-      "tenisový tréner kondičný tréning nevidí",
-      (tennisView.data ?? []).length === 0,
+      "tenisový tréner kondičný tréning svojho hráča vidí",
+      (tennisView.data ?? []).length > 0,
       "počet: " + (tennisView.data ?? []).length,
+    );
+
+    const tennisEdit = await asTennisCoach
+      .from("sessions")
+      .update({ notes: "cudzia disciplína" })
+      .eq("discipline", "fitness")
+      .eq("player_id", player.id)
+      .select("id");
+    check(
+      "ale zmeniť ho nesmie",
+      (tennisEdit.data ?? []).length === 0,
+      "zmenených: " + (tennisEdit.data ?? []).length,
     );
   } finally {
     if (sessionId) {

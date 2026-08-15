@@ -32,7 +32,8 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
 | `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun a zrušenie naplánovaného tréningu v oboch režimoch |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
-| `fitness.js` | **Kondičné nasadenie** — 10 zameraní, prázdne sloty kódov, chýbajúce pole charakteru, trvanie 60, analytika bez odhadu úderov, žiadna tenisová landing |
+| `fitness.js` | **Kondičné nasadenie** — 10 zameraní, prázdne sloty kódov, chýbajúce pole charakteru, trvanie 60, analytika bez odhadu úderov, žiadna tenisová landing, kondička kód prepojenia VYDÁVA |
+| `card-links.js` | **Prepojenie kariet hráča naprieč disciplínami** — vydanie a zaklaimovanie kódu, cross-read je len na čítanie, cudzia karta sa nedostane medzi hráčov, po zrušení prístup zmizne. Nepotrebuje dev server |
 
 ```bash
 node scripts/dev-tests/http-coach.js      # a ostatné rovnako
