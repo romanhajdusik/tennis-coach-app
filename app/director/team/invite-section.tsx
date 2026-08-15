@@ -11,12 +11,17 @@ import {
   type InviteFormState,
 } from "@/lib/actions/organization-members";
 
-export type PendingInvite = { id: string; code: string };
+export type PendingInvite = {
+  id: string;
+  code: string;
+  discipline: string;
+};
 
 export type ActiveMember = {
   id: string;
   name: string;
   role: string;
+  discipline: string;
   playerCount: number;
 };
 
@@ -72,7 +77,23 @@ export function InviteSection({
           {seatsFull && ` — ${t("seatsFull")}`}
         </p>
 
-        <form action={inviteAction}>
+        {/* Disciplína sa volí pri POZVÁNKE, nie neskôr: je vlastnosťou členstva
+            a po prijatí ju už zmeniť nemožno (rozišla by sa s priradeniami
+            hráčov). Kondičný tréner tak dostane kondičnú podobu appky. */}
+        <form action={inviteAction} className="flex flex-wrap items-end gap-2">
+          <label className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-muted">
+              {t("disciplineLabel")}
+            </span>
+            <select
+              name="discipline"
+              defaultValue="tennis"
+              className="rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground"
+            >
+              <option value="tennis">{t("disciplineTennis")}</option>
+              <option value="fitness">{t("disciplineFitness")}</option>
+            </select>
+          </label>
           <button
             type="submit"
             disabled={invitePending}
@@ -99,9 +120,16 @@ export function InviteSection({
                   key={invite.id}
                   className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background p-3"
                 >
-                  <code className="text-lg font-semibold tracking-widest text-foreground">
-                    {invite.code}
-                  </code>
+                  <span className="min-w-0">
+                    <code className="block text-lg font-semibold tracking-widest text-foreground">
+                      {invite.code}
+                    </code>
+                    <span className="block text-xs text-muted">
+                      {invite.discipline === "fitness"
+                        ? t("disciplineFitness")
+                        : t("disciplineTennis")}
+                    </span>
+                  </span>
                   <span className="flex flex-none gap-2">
                     <button
                       type="button"
@@ -142,7 +170,11 @@ export function InviteSection({
                   <span className="block text-xs text-muted">
                     {member.role === "director"
                       ? t("roleDirector")
-                      : `${t("roleCoach")} · ${t("playersCount", { count: member.playerCount })}`}
+                      : `${
+                          member.discipline === "fitness"
+                            ? t("disciplineFitness")
+                            : t("disciplineTennis")
+                        } · ${t("playersCount", { count: member.playerCount })}`}
                   </span>
                 </span>
 

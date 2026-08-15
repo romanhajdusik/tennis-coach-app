@@ -50,31 +50,46 @@ export default async function DirectorPlayerPage({
   // a nie samostatným dotazom na `profiles`.
   const { data: members } = await supabase
     .from("organization_members")
-    .select("user_id")
+    .select("user_id, discipline")
     .eq("organization_id", org.id)
     .eq("role", "coach")
     .eq("status", "active");
 
-  const coachIds = (members ?? [])
-    .map((member) => member.user_id)
-    .filter((userId): userId is string => Boolean(userId));
+  const activeCoaches = (members ?? []).filter(
+    (member): member is { user_id: string; discipline: string } =>
+      Boolean(member.user_id),
+  );
+  const coachIds = activeCoaches.map((member) => member.user_id);
 
   const { data: profiles } = await supabase
     .from("profiles")
     .select("id, full_name, email")
     .in("id", coachIds.length > 0 ? coachIds : [org.id]);
 
-  const assignable = coachIds.map((userId) => {
-    const profile = (profiles ?? []).find((row) => row.id === userId);
+  const assignable = activeCoaches.map(({ user_id, discipline }) => {
+    const profile = (profiles ?? []).find((row) => row.id === user_id);
     return {
-      userId,
+      userId: user_id,
       name: profile?.full_name?.trim() || profile?.email || "—",
+      discipline,
     };
   });
   assignable.sort((a, b) => a.name.localeCompare(b.name));
 
+  // Súčasný tréner sa hľadá cez PRIRADENIE na kurt, nie cez `players.coach_id`
+  // — ten je v org režime autor riadku. Hráč môže mať aj kondičného trénera,
+  // toho preradenie na kurte nemení.
+  const { data: playerAssignments } = await supabase
+    .from("player_assignments")
+    .select("coach_id, discipline")
+    .eq("player_id", player.id);
+
+  const courtCoachId =
+    (playerAssignments ?? []).find((row) => row.discipline === "tennis")
+      ?.coach_id ?? null;
+
   const currentCoach =
-    assignable.find((coach) => coach.userId === player.coach_id) ?? null;
+    assignable.find((coach) => coach.userId === courtCoachId) ?? null;
 
   const { data: sessions } = await supabase
     .from("sessions")

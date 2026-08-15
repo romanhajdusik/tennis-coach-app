@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { getTranslations, getTimeZone } from "next-intl/server";
 import { logout } from "@/lib/actions/auth";
-import { getDirectorDashboard, type DirectorPlayer } from "@/lib/org/director";
+import {
+  getDirectorDashboard,
+  coachIdFor,
+  COURT_DISCIPLINE,
+  type DirectorPlayer,
+} from "@/lib/org/director";
 import { requireDirector } from "./guard";
 import { AssignPlayer } from "./assign-player";
 import {
@@ -39,13 +44,30 @@ export default async function DirectorPage() {
     });
   }
 
+  // Kurt vs kondícia vedľa seba — to je hodnota, ktorú pult federácii dáva
+  // a ktorú tréner ani jednej disciplíny sám nevidí (§2.2). Vypisuje sa len
+  // tam, kde je čo porovnávať; hráč bez kondície by inak dostal riadok s nulou.
+  const loadSplits = new Map<string, string>();
+  for (const entry of dashboard.players) {
+    const { tennis, fitness } = entry.minutesByDiscipline;
+    if (tennis === 0 && fitness === 0) continue;
+    loadSplits.set(
+      entry.player.id,
+      t("loadSplit", { court: tennis, fitness }),
+    );
+  }
+
   const attentionCount = dashboard.attention.length;
 
   // Komu sa dá hráč prideliť — len aktívni tréneri (skupina po odídenom
   // trénerovi `userId` nemá).
   const assignable = dashboard.coaches
     .filter((coach) => coach.userId)
-    .map((coach) => ({ userId: coach.userId as string, name: coach.name }));
+    .map((coach) => ({
+      userId: coach.userId as string,
+      name: coach.name,
+      discipline: coach.discipline ?? "tennis",
+    }));
 
   return (
     // Pult je nástroj pre laptop/tablet (na rozdiel od trénerovej appky, ktorá
@@ -121,7 +143,8 @@ export default async function DirectorPage() {
                   next={labels.get(entry.player.id)?.next ?? ""}
                   coachName={
                     dashboard.coaches.find(
-                      (coach) => coach.userId === entry.coachId,
+                      (coach) =>
+                        coach.userId === coachIdFor(entry, COURT_DISCIPLINE),
                     )?.name ?? t("formerCoach")
                   }
                 />
@@ -155,11 +178,24 @@ export default async function DirectorPage() {
                       {coach.userId ? coach.name : t("formerCoach")}
                     </span>
                     <span className="block text-xs text-muted">
+                      {coach.discipline &&
+                        `${
+                          coach.discipline === "fitness"
+                            ? t("disciplineFitness")
+                            : t("disciplineTennis")
+                        } · `}
                       {t("coachSummary", { players: coach.players.length })}
-                      {" · "}
-                      {coach.attentionCount > 0
-                        ? t("attentionTag", { count: coach.attentionCount })
-                        : t("allActive")}
+                      {/* Stav pozornosti je vec KURTU — kondičnému trénerovi sa
+                          nezobrazuje, dni bez tréningu na kurte nie sú jeho
+                          zodpovednosť. */}
+                      {coach.discipline !== "fitness" && (
+                        <>
+                          {" · "}
+                          {coach.attentionCount > 0
+                            ? t("attentionTag", { count: coach.attentionCount })
+                            : t("allActive")}
+                        </>
+                      )}
                     </span>
                   </span>
                   <span
@@ -186,6 +222,7 @@ export default async function DirectorPage() {
                         entry={entry}
                         last={labels.get(entry.player.id)?.last ?? ""}
                         next={labels.get(entry.player.id)?.next ?? ""}
+                        loadSplit={loadSplits.get(entry.player.id)}
                       />
                       {/* Prideliť sa dá ktokoľvek (cez profil hráča), ale tu
                           na to treba siahnuť hneď — bez trénera s hráčom
@@ -227,11 +264,14 @@ function PlayerCard({
   last,
   next,
   coachName,
+  loadSplit,
 }: {
   entry: DirectorPlayer;
   last: string;
   next: string;
   coachName?: string;
+  /** „30 dní: 840 min kurt · 120 min kondícia" — hodnota federácie z §2.2. */
+  loadSplit?: string;
 }) {
   return (
     <Link
@@ -257,6 +297,9 @@ function PlayerCard({
           {last}
         </span>
         <span className="block text-xs text-muted">{next}</span>
+        {loadSplit && (
+          <span className="block text-xs text-muted">{loadSplit}</span>
+        )}
       </span>
       <span aria-hidden className="flex-none text-muted">
         ›

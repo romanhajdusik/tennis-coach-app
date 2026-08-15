@@ -88,7 +88,12 @@ async function main() {
   // „meno je na stránke" by prešlo aj pri zle priradenom hráčovi.
   check(
     "ukazuje prideleného trénera",
-    /<option[^>]*\sselected[^>]*>(Andrea Prva|Boris Druhy)</.test(detail.body),
+    // Za menom je od migrácie 20260815090000 aj disciplína („Andrea Prva —
+    // court"): preradenie sa týka len jednej disciplíny, takže výber musí
+    // povedať, ktorú mení.
+    /<option[^>]*\sselected[^>]*>(Andrea Prva|Boris Druhy) — (court|fitness)</.test(
+      detail.body,
+    ),
     detailText.slice(0, 250),
   );
   check("zoznam tréningov", /Practices/.test(detailText));

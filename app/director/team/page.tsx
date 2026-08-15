@@ -20,7 +20,7 @@ export default async function DirectorTeamPage() {
 
   const { data: members } = await supabase
     .from("organization_members")
-    .select("id, user_id, role, status, invite_code")
+    .select("id, user_id, role, status, discipline, invite_code")
     .eq("organization_id", org.id)
     .in("status", ["invited", "active", "removed"])
     .order("created_at", { ascending: true });
@@ -28,7 +28,11 @@ export default async function DirectorTeamPage() {
   const active = (members ?? []).filter((member) => member.status === "active");
   const pending: PendingInvite[] = (members ?? [])
     .filter((member) => member.status === "invited" && member.invite_code)
-    .map((member) => ({ id: member.id, code: member.invite_code as string }));
+    .map((member) => ({
+      id: member.id,
+      code: member.invite_code as string,
+      discipline: member.discipline,
+    }));
 
   // Odobratý tréner zo zoznamu nezmizne — šéftréner ho môže vrátiť späť alebo
   // vymazať natrvalo. Zrušené pozvánky (nikdy neprijaté, teda bez `user_id`)
@@ -46,15 +50,20 @@ export default async function DirectorTeamPage() {
     .select("id, full_name, email")
     .in("id", userIds.length > 0 ? userIds : [org.id]);
 
-  const { data: players } = await supabase
-    .from("players")
-    .select("coach_id")
+  // Počet hráčov sa berie z PRIRADENÍ, nie z `players.coach_id` — ten je v org
+  // režime len autor riadku a kondičnému trénerovi by ukázal nulu, hoci hráčov má.
+  const { data: assignments } = await supabase
+    .from("player_assignments")
+    .select("coach_id, players!inner(is_active)")
     .eq("organization_id", org.id)
-    .eq("is_active", true);
+    .eq("players.is_active", true);
 
   const playerCounts = new Map<string, number>();
-  for (const player of players ?? []) {
-    playerCounts.set(player.coach_id, (playerCounts.get(player.coach_id) ?? 0) + 1);
+  for (const assignment of assignments ?? []) {
+    playerCounts.set(
+      assignment.coach_id,
+      (playerCounts.get(assignment.coach_id) ?? 0) + 1,
+    );
   }
 
   const profileById = new Map(
@@ -67,6 +76,7 @@ export default async function DirectorTeamPage() {
       id: member.id,
       name: profile?.full_name?.trim() || profile?.email || "—",
       role: member.role,
+      discipline: member.discipline,
       playerCount: member.user_id
         ? (playerCounts.get(member.user_id) ?? 0)
         : 0,
@@ -82,6 +92,7 @@ export default async function DirectorTeamPage() {
       id: member.id,
       name: profile?.full_name?.trim() || profile?.email || "—",
       role: member.role,
+      discipline: member.discipline,
       playerCount: member.user_id
         ? (playerCounts.get(member.user_id) ?? 0)
         : 0,

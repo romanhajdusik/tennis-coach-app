@@ -7,7 +7,11 @@ import { createClient } from "@/lib/supabase/server";
 import { requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
-import { getDisciplineConfig } from "@/lib/discipline";
+import {
+  getDisciplineConfig,
+  isCategoryOfAnyDiscipline,
+  type DisciplineConfig,
+} from "@/lib/discipline";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -31,10 +35,16 @@ async function drillCodeOwnerFilter(userId: string) {
     : { column: "coach_id" as const, value: userId };
 }
 
+/**
+ * `discipline` sa dá podať zvonka: šéftréner nastavuje štandard aj pre
+ * disciplínu, ktorú sám nerobí, takže predvolené kódy sa nesmú brať z jeho
+ * vlastnej konfigurácie — dostal by prázdno.
+ */
 export async function getDrillCodeSlots(
   supabase: SupabaseServerClient,
   userId: string,
   category: string,
+  discipline?: DisciplineConfig,
 ): Promise<string[]> {
   const owner = await drillCodeOwnerFilter(userId);
 
@@ -47,7 +57,9 @@ export async function getDrillCodeSlots(
   const slots = Array.from({ length: SLOT_COUNT }, () => "");
 
   if (!data || data.length === 0) {
-    const defaults = (await getDisciplineConfig()).drills[category] ?? [];
+    const defaults = (discipline ?? (await getDisciplineConfig())).drills[
+      category
+    ] ?? [];
     defaults.forEach((code, index) => {
       if (index < SLOT_COUNT) slots[index] = code;
     });
@@ -168,7 +180,9 @@ export async function saveOrgDrillCodes(
 ): Promise<DrillCodesFormState> {
   const t = await getTranslations("DrillCodes.errors");
 
-  if (!(await isKnownCategory(category))) {
+  // Šéftréner štandardizuje kódy pre OBE disciplíny — jeho vlastná (tenis)
+  // by kondičné zamerania zamietla.
+  if (!isCategoryOfAnyDiscipline(category)) {
     return { error: t("invalidCategory") };
   }
 

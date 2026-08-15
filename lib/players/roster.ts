@@ -99,12 +99,18 @@ function attentionOf(
 /**
  * Zoznam hráčov sa berie ako parameter (nie userId), aby si ho volajúca
  * stránka nemusela ťahať druhýkrát — `/players` ho už má.
+ *
+ * `discipline` hovorí, KTORÉ tréningy sa počítajú. Trénerovi RLS aj tak vydá
+ * len jeho vlastné, ale šéftréner vidí celú organizáciu vrátane cudzej
+ * disciplíny — a **kondičný tréning sa nesmie počítať ako tréning na kurte**:
+ * hráč by vyzeral ošetrený, hoci na kurte nebol. `null` = bez filtra.
  */
 export async function getRosterOverview(
   supabase: SupabaseServerClient,
   players: ActivePlayer[],
   timeZone: string,
   now: Date = new Date(),
+  discipline: string | null = null,
 ): Promise<RosterOverview> {
   if (players.length === 0) {
     return { entries: [], today: [], tomorrow: [], attentionCount: 0 };
@@ -116,7 +122,7 @@ export async function getRosterOverview(
 
   // Zrušené tréningy sa nepočítajú ani ako odtrénované, ani ako nadchádzajúce —
   // v org režime nahrádzajú mazanie (§5.4), takže ich v histórii bude pribúdať.
-  const { data } = await supabase
+  let query = supabase
     .from("sessions")
     .select("id, player_id, status, planned_data, actual_data")
     .in(
@@ -124,8 +130,15 @@ export async function getRosterOverview(
       players.map((player) => player.id),
     )
     .neq("status", "cancelled")
-    .gte("planned_data->>date", windowStart)
-    .order("planned_data->>date", { ascending: true });
+    .gte("planned_data->>date", windowStart);
+
+  if (discipline) {
+    query = query.eq("discipline", discipline);
+  }
+
+  const { data } = await query.order("planned_data->>date", {
+    ascending: true,
+  });
 
   const playersById = new Map(players.map((player) => [player.id, player]));
   const todayKey = dayKeyIn(timeZone, now);

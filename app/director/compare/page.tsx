@@ -131,7 +131,9 @@ export default async function DirectorComparePage({
       ? dashboard.players.filter(
           (entry) => String(entry.player.birth_year ?? "") === group,
         )
-      : dashboard.players.filter((entry) => entry.coachId === group);
+      : dashboard.players.filter((entry) =>
+          entry.assignments.some((assignment) => assignment.coachId === group),
+        );
 
   const { start, end, label } = await getPeriodRange(range, value);
   const analytics = await getPlayersCategoryAnalytics(

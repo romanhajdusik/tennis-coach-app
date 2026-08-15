@@ -33,7 +33,9 @@
       "targetNotCoach": "That account is no longer an active coach of the organization.",
       "playerNotInOrg": "This player does not belong to the organization.",
       "failed": "Failed to reassign the player."
-    }
+    },
+    "disciplineTennis": "court",
+    "disciplineFitness": "fitness"
   },
   "team": {
     "link": "Coaches and seats",
@@ -72,11 +74,17 @@
       "reactivateMemberElsewhere": "This coach has meanwhile joined another organization.",
       "seatLimitReached": "All seats are taken. Free one up first.",
       "deleteFailed": "Failed to delete the coach."
-    }
+    },
+    "disciplineLabel": "Discipline",
+    "disciplineTennis": "Court coach",
+    "disciplineFitness": "Fitness coach"
   },
   "drillCodes": {
     "link": "Drill codes",
-    "description": "The federation standard for all coaches in {organization}. Coaches only use these codes — thanks to that, analytics is comparable across the whole organization."
+    "description": "The federation standard for all coaches in {organization}. Coaches only use these codes — thanks to that, analytics is comparable across the whole organization.",
+    "disciplineHeading": "Discipline",
+    "disciplineTennis": "Court",
+    "disciplineFitness": "Fitness"
   },
   "compare": {
     "link": "Compare players",
@@ -110,5 +118,8 @@
     "noDrills": "No drills.",
     "totalDuration": "Total duration: {minutes} min",
     "back": "Back to the player"
-  }
+  },
+  "disciplineTennis": "Court",
+  "disciplineFitness": "Fitness",
+  "loadSplit": "Last 30 days: {court} min court · {fitness} min fitness"
 }

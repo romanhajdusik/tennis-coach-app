@@ -77,6 +77,18 @@ export function disciplineConfig(id: DisciplineId): DisciplineConfig {
 }
 
 /**
+ * Pozná zameranie ktorákoľvek disciplína? Šéftréner federácie nastavuje
+ * štandard kódov pre OBE (kondičný tréner v jeho organizácii ich potrebuje
+ * tiež), takže sa jeho vstup nesmie overovať proti jednej disciplíne — sám
+ * pritom žiadnu „nerobí".
+ */
+export function isCategoryOfAnyDiscipline(category: string): boolean {
+  return Object.values(DISCIPLINES).some((config) =>
+    config.categories.includes(category),
+  );
+}
+
+/**
  * Má sa v tomto zameraní zobraziť odhad počtu úderov? Nie, ak ho disciplína
  * nepočíta vôbec (kondička = len čas a %), alebo ak je v ňom nevýpovedný
  * (tenisové POINTS = zápasové body).

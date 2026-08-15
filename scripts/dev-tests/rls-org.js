@@ -6,6 +6,7 @@ const {
   anonClient,
   signIn,
   ORG_SLUG,
+  PASSWORD,
   createChecks,
 } = require("./helpers");
 
@@ -553,11 +554,159 @@ async function main() {
     }
   }
 
+  await fitnessInFederation({ db, director, coach, org, check, section });
+
   // upratanie
   await db.from("organization_members").delete().eq("invite_code", "RLS-TEST1");
   await db.from("drill_codes").delete().eq("code", "RLS-VOL");
 
   report();
+}
+
+/**
+ * 12) Kondička vo federácii (migrácia 20260815090000, docs §2.2).
+ *
+ * Jadro modelu: hráč má naraz tenisového AJ kondičného trénera, prístup určuje
+ * `player_assignments` a nie `players.coach_id`. Do v1 pritom platí, že tréner
+ * vidí LEN svoju disciplínu — cross-read príde až s krokom 4.
+ *
+ * Kondičný člen sa zakladá tu (seed ho nemá, aby sa nezmenili čísla ostatných
+ * scenárov) a v `finally` sa celý zmaže.
+ */
+async function fitnessInFederation({ db, director, org, check, section }) {
+  section("12) Kondička vo federácii");
+
+  const email = "rls-fitness@test.local";
+  let userId = null;
+  let sessionId = null;
+
+  try {
+    const { data: created, error: createError } = await db.auth.admin.createUser({
+      email,
+      password: PASSWORD,
+      email_confirm: true,
+      user_metadata: { full_name: "Jana Kondicna", role: "coach" },
+    });
+    if (createError) throw createError;
+    userId = created.user.id;
+
+    await db.from("organization_members").insert({
+      organization_id: org.id,
+      user_id: userId,
+      role: "coach",
+      status: "active",
+      discipline: "fitness",
+    });
+
+    const fitnessCoach = await signIn(email);
+
+    // Hráč tenisového kolegu — kondičná trénerka ho zatiaľ pridelený nemá.
+    const { data: player } = await db
+      .from("players")
+      .select("id, name, coach_id")
+      .eq("organization_id", org.id)
+      .eq("is_active", true)
+      .eq("name", "Adam Kovac")
+      .single();
+
+    const before = await fitnessCoach.from("players").select("id");
+    check(
+      "bez priradenia nevidí žiadneho hráča",
+      (before.data ?? []).length === 0,
+      "počet: " + (before.data ?? []).length,
+    );
+
+    const assign = await director.rpc("assign_player_to_coach", {
+      p_player_id: player.id,
+      p_coach_id: userId,
+    });
+    check("šéftréner pridelí hráča kondičnej trénerke", assign.error === null, assign.error?.message);
+
+    const { data: assignments } = await db
+      .from("player_assignments")
+      .select("coach_id, discipline")
+      .eq("player_id", player.id);
+    check(
+      "hráč má naraz tenisové aj kondičné priradenie",
+      (assignments ?? []).length === 2,
+      JSON.stringify(assignments),
+    );
+    check(
+      "tenisové priradenie ostalo nedotknuté",
+      (assignments ?? []).some(
+        (row) => row.discipline === "tennis" && row.coach_id === player.coach_id,
+      ),
+      JSON.stringify(assignments),
+    );
+
+    const after = await fitnessCoach.from("players").select("id, name");
+    check(
+      "po pridelení vidí práve toho hráča",
+      (after.data ?? []).length === 1 && after.data[0].id === player.id,
+      JSON.stringify(after.data),
+    );
+
+    const foreignSessions = await fitnessCoach.from("sessions").select("id");
+    check(
+      "tenisové tréningy hráča nevidí (v1 bez cross-readu)",
+      (foreignSessions.data ?? []).length === 0,
+      "počet: " + (foreignSessions.data ?? []).length,
+    );
+
+    const wrongLabel = await fitnessCoach
+      .from("sessions")
+      .insert({
+        coach_id: userId,
+        organization_id: org.id,
+        player_id: player.id,
+        status: "planned",
+        planned_data: { date: "2099-03-03T10:00:00.000Z", duration_minutes: 60 },
+        discipline: "tennis",
+      })
+      .select("id");
+    check(
+      "tréning označený ako tenisový jej RLS nedovolí",
+      wrongLabel.error !== null,
+      wrongLabel.error?.code ?? "PRESLO!",
+    );
+
+    const ownWrite = await fitnessCoach
+      .from("sessions")
+      .insert({
+        coach_id: userId,
+        organization_id: org.id,
+        player_id: player.id,
+        status: "planned",
+        planned_data: { date: "2099-03-03T10:00:00.000Z", duration_minutes: 60 },
+        discipline: "fitness",
+      })
+      .select("id")
+      .single();
+    check("kondičný tréning zapíše", ownWrite.error === null, ownWrite.error?.message);
+    sessionId = ownWrite.data?.id ?? null;
+
+    // Druhá strana: tenisový tréner o kondičnom tréningu nevie.
+    const tennisView = await (await signIn("coach-today@test.local"))
+      .from("sessions")
+      .select("id")
+      .eq("discipline", "fitness");
+    check(
+      "tenisový tréner kondičný tréning nevidí",
+      (tennisView.data ?? []).length === 0,
+      "počet: " + (tennisView.data ?? []).length,
+    );
+  } finally {
+    if (sessionId) {
+      await db.from("sessions").delete().eq("id", sessionId);
+    }
+    if (userId) {
+      // Priradenie treba vrátiť, inak by ďalší beh začínal s hráčom, ktorý má
+      // kondičného trénera — a `player_assignments` prežije aj zmazanie člena.
+      await db.from("player_assignments").delete().eq("coach_id", userId);
+      await db.from("organization_members").delete().eq("user_id", userId);
+      await db.auth.admin.deleteUser(userId);
+    }
+  }
 }
 
 main().catch((error) => {

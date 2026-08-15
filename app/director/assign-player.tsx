@@ -7,7 +7,11 @@ import {
   type AssignFormState,
 } from "@/lib/actions/player-assignment";
 
-export type AssignableCoach = { userId: string; name: string };
+export type AssignableCoach = {
+  userId: string;
+  name: string;
+  discipline: string;
+};
 
 /**
  * Preradenie hráča inému trénerovi — jediné miesto, kde šéftréner zasahuje do
@@ -51,9 +55,16 @@ export function AssignPlayer({
           className="min-w-0 flex-1 rounded-lg border border-border bg-input px-3 py-1.5 text-sm text-foreground"
         >
           {!currentCoachId && <option value="">{t("placeholder")}</option>}
+          {/* Disciplína je pri mene zámerne: preradenie sa týka LEN jej, takže
+              výberom kondičného trénera sa tenisové priradenie nezmení. Bez
+              štítku by šéftréner nevedel, čo vlastne mení. */}
           {coaches.map((coach) => (
             <option key={coach.userId} value={coach.userId}>
-              {coach.name}
+              {`${coach.name} — ${
+                coach.discipline === "fitness"
+                  ? t("disciplineFitness")
+                  : t("disciplineTennis")
+              }`}
             </option>
           ))}
         </select>

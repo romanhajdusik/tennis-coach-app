@@ -188,13 +188,16 @@ async function main() {
       profiles.find((profile) => profile.id === member.user_id)?.full_name ===
       "Andrea Prva",
   );
-  const { data: orphan } = await db
-    .from("players")
-    .select("id, name")
+  // Hráč sa hľadá cez PRIRADENIE, nie cez `players.coach_id` — ten je od
+  // migrácie 20260815090000 v org režime len autor riadku a prístup určuje
+  // `player_assignments` (hráč × tréner × disciplína).
+  const { data: borisAssignment } = await db
+    .from("player_assignments")
+    .select("player_id, discipline, players(id, name, is_active)")
     .eq("coach_id", boris.user_id)
-    .eq("is_active", true)
     .limit(1)
     .single();
+  const orphan = borisAssignment.players;
   const { data: orphanSessions } = await db
     .from("sessions")
     .select("id")
@@ -237,11 +240,12 @@ async function main() {
     await director.waitForTimeout(3000);
 
     const { data: reassigned } = await db
-      .from("players")
+      .from("player_assignments")
       .select("coach_id")
-      .eq("id", orphan.id)
+      .eq("player_id", orphan.id)
+      .eq("discipline", borisAssignment.discipline)
       .single();
-    check("hráč prešiel na zvoleného trénera", reassigned.coach_id === andrea.user_id);
+    check("priradenie prešlo na zvoleného trénera", reassigned.coach_id === andrea.user_id);
     const { count: strandedSessions } = await db
       .from("sessions")
       .select("id", { count: "exact", head: true })
@@ -271,6 +275,15 @@ async function main() {
     // Návrat do pôvodného stavu aj keď scenár spadne uprostred — inak by ďalší
     // beh začínal s odobratým trénerom a rozpadol by sa už na sedadlách.
     await db.from("organization_members").update({ status: "active" }).eq("id", boris.id);
+    // POZOR: vrátiť treba aj PRIRADENIE, nie len `coach_id`. Kým sa to
+    // nerobilo, ďalší beh našiel hráča podľa `coach_id` pri Borisovi, ale
+    // priradený bol stále Andrei — po odobratí Borisa teda nevznikla skupina
+    // „No longer in the organization" a scenár padol bez zjavnej príčiny.
+    await db
+      .from("player_assignments")
+      .update({ coach_id: boris.user_id })
+      .eq("player_id", orphan.id)
+      .eq("discipline", borisAssignment.discipline);
     await db.from("players").update({ coach_id: boris.user_id }).eq("id", orphan.id);
     await db.from("sessions").update({ coach_id: boris.user_id }).eq("player_id", orphan.id);
     if (orphanSessionIds.length > 0) {

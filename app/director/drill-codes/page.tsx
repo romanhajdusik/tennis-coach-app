@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
 import { getDrillCodeSlots } from "@/lib/actions/drill-codes";
-import { getDisciplineConfig } from "@/lib/discipline";
+import { disciplineConfig, type DisciplineId } from "@/lib/discipline";
 import { DrillCodeForm } from "@/app/drill-codes/drill-code-form";
 
 /**
@@ -12,16 +12,26 @@ import { DrillCodeForm } from "@/app/drill-codes/drill-code-form";
  * Nie je to kozmetika: bez jednotných kódov by sa rozpad v riadiacom pulte
  * nedal poskladať a analytika naprieč federáciou by nebola porovnateľná.
  */
-export default async function DirectorDrillCodesPage() {
-  const discipline = await getDisciplineConfig();
+export default async function DirectorDrillCodesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ discipline?: string }>;
+}) {
   const t = await getTranslations("Director.drillCodes");
   const tDrillCodes = await getTranslations("DrillCodes");
   const tTeam = await getTranslations("Director.team");
   const { supabase, org, userId } = await requireDirector();
 
+  // Šéftréner nastavuje štandard pre OBE disciplíny — kondičný tréner v jeho
+  // organizácii kódy potrebuje tiež, ale sám ich meniť nesmie (§5.5). Sám
+  // pritom žiadnu disciplínu „nerobí", takže si ju tu vyberá.
+  const selected: DisciplineId =
+    (await searchParams).discipline === "fitness" ? "fitness" : "tennis";
+  const discipline = disciplineConfig(selected);
+
   const slotsByCategory = await Promise.all(
     discipline.categories.map((category) =>
-      getDrillCodeSlots(supabase, userId, category),
+      getDrillCodeSlots(supabase, userId, category, discipline),
     ),
   );
 
@@ -45,6 +55,27 @@ export default async function DirectorDrillCodesPage() {
       <p className="text-sm text-muted">
         {t("description", { organization: org.name })}
       </p>
+
+      <div className="flex flex-col gap-2">
+        <h2 className="text-xs font-medium uppercase tracking-wide text-muted">
+          {t("disciplineHeading")}
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {(["tennis", "fitness"] as const).map((id) => (
+            <Link
+              key={id}
+              href={`/director/drill-codes?discipline=${id}`}
+              className={
+                selected === id
+                  ? "rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+                  : "rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground"
+              }
+            >
+              {id === "fitness" ? t("disciplineFitness") : t("disciplineTennis")}
+            </Link>
+          ))}
+        </div>
+      </div>
 
       {discipline.categories.map((category, index) => (
         <DrillCodeForm

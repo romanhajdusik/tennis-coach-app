@@ -92,9 +92,19 @@ async function requireDirectorOrg() {
  */
 export async function createInvite(
   _prevState: InviteFormState,
-  _formData: FormData,
+  formData: FormData,
 ): Promise<InviteFormState> {
   const { supabase, org } = await requireDirectorOrg();
+
+  // Disciplína je vlastnosťou ČLENSTVA (docs §2.2) — pozvánka teda určuje aj
+  // to, akú podobu appky pozvaný dostane. Neznáma hodnota = tenis, rovnaké
+  // pravidlo ako všade inde: chýbajúca disciplína nikdy nesmie znamenať „žiadna".
+  //
+  // Po prijatí sa už zmeniť nedá (trigger `enforce_membership_rules`), lebo by
+  // sa členstvo rozišlo s priradeniami hráčov. Kto zmení disciplínu, dostane
+  // novú pozvánku.
+  const discipline =
+    formData.get("discipline") === "fitness" ? "fitness" : "tennis";
 
   // Kolízia kódu je nepravdepodobná, ale unique index ju zachytí — skúsime
   // niekoľkokrát namiesto toho, aby onboarding spadol na náhode.
@@ -103,6 +113,7 @@ export async function createInvite(
       organization_id: org.id,
       role: "coach",
       status: "invited",
+      discipline,
       invite_code: generateInviteCode(),
     });
 
