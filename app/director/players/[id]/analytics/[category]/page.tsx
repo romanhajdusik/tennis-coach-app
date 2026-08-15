@@ -59,7 +59,7 @@ export default async function DirectorPlayerAnalyticsPage({
   params: Promise<{ id: string; category: string }>;
   searchParams: Promise<{ range?: string; value?: string }>;
 }) {
-  const discipline = getDisciplineConfig();
+  const discipline = await getDisciplineConfig();
   const { id, category: rawCategory } = await params;
   // Next.js v tomto projekte dynamické segmenty nedekóduje — bez toho by
   // kategória s medzerou („GAME DRILLS", „CORE MUSCLES") nikdy nesedela.
@@ -241,7 +241,7 @@ export default async function DirectorPlayerAnalyticsPage({
               category,
             )}
             groups={discipline.analytics.groupedCategories[category]}
-            showStrokes={showsStrokes(category)}
+            showStrokes={await showsStrokes(category)}
           />
         )}
       </div>

@@ -18,13 +18,13 @@ type DrillInputError = "missingFields" | "invalidCharacter" | "invalidDuration";
  * Overenie vstupov cvičenia proti aktívnej disciplíne — ponuka trvaní aj
  * existencia charakteru sú jej vlastnosťou, nie konštantou appky.
  */
-function checkDrillInput(
+async function checkDrillInput(
   category: string,
   character: string,
   drillCode: string,
   durationMinutes: number,
-): DrillInputError | null {
-  const discipline = getDisciplineConfig();
+): Promise<DrillInputError | null> {
+  const discipline = await getDisciplineConfig();
 
   if (!category || !drillCode) {
     return "missingFields";
@@ -51,8 +51,8 @@ function checkDrillInput(
  * — nie ako prázdny reťazec, ktorý by neprešiel cez CHECK a v analytike by
  * vyrobil výsek bez mena.
  */
-function drillCharacterValue(character: string): string | null {
-  return getDisciplineConfig().character ? character : null;
+async function drillCharacterValue(character: string): Promise<string | null> {
+  return (await getDisciplineConfig()).character ? character : null;
 }
 
 export async function addDrill(
@@ -66,7 +66,7 @@ export async function addDrill(
   const durationMinutes = Number(formData.get("duration_minutes"));
   const t = await getTranslations("Sessions.errors");
 
-  const invalidInput = checkDrillInput(
+  const invalidInput = await checkDrillInput(
     category,
     character,
     drillCode,
@@ -109,7 +109,7 @@ export async function addDrill(
       coach_id: user.id,
       organization_id: org?.id ?? null,
       category,
-      character: drillCharacterValue(character),
+      character: await drillCharacterValue(character),
       drill_code: drillCode,
       duration_minutes: durationMinutes,
       sort_order: (lastDrill?.sort_order ?? 0) + 1,
@@ -240,7 +240,7 @@ export async function replaceDrill(
   const durationMinutes = Number(formData.get("duration_minutes"));
   const t = await getTranslations("Sessions.errors");
 
-  const invalidInput = checkDrillInput(
+  const invalidInput = await checkDrillInput(
     category,
     character,
     drillCode,
@@ -298,7 +298,7 @@ export async function replaceDrill(
       coach_id: user.id,
       organization_id: org?.id ?? null,
       category,
-      character: drillCharacterValue(character),
+      character: await drillCharacterValue(character),
       drill_code: drillCode,
       duration_minutes: durationMinutes,
       replaces_drill_id: replacedDrillId,

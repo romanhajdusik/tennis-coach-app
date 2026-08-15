@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 async function appVariant(): Promise<"org" | "fitness" | undefined> {
   if (await getOrgContext()) return "org";
-  return getDiscipline() === "fitness" ? "fitness" : undefined;
+  return (await getDiscipline()) === "fitness" ? "fitness" : undefined;
 }
 
 export default async function RootLayout({
@@ -45,6 +45,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const discipline = await getDisciplineConfig();
 
   return (
     <html
@@ -55,9 +56,9 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
           {/* Disciplína sa podáva zhora, klientske komponenty si ju nečítajú
-              samy — vo federácii bude závisieť od členstva prihláseného
-              trénera, nie od nasadenia (docs §2.2). */}
-          <DisciplineProvider config={getDisciplineConfig()}>
+              samy — vo federácii závisí od členstva prihláseného trénera,
+              nie od nasadenia (docs §2.2), a to sa v prehliadači zistiť nedá. */}
+          <DisciplineProvider config={discipline}>
           {/* Nad obsahom, aby si tréner koniec skúšobnej doby nevšimol až
               vtedy, keď mu zlyhá uloženie. Sám sa skryje, kým je všetko
               v poriadku. */}

@@ -83,7 +83,7 @@ export default async function DirectorComparePage({
     value?: string;
   }>;
 }) {
-  const discipline = getDisciplineConfig();
+  const discipline = await getDisciplineConfig();
   const t = await getTranslations("Director.compare");
   const tAnalytics = await getTranslations("Analytics");
   const { supabase, org } = await requireDirector();
@@ -95,6 +95,10 @@ export default async function DirectorComparePage({
   if (!discipline.categories.includes(category)) {
     notFound();
   }
+
+  // Vyhodnotené raz, mimo cyklu cez hráčov — `await` sa do `.map()` nezmestí
+  // a odpoveď je pre všetky stĺpce rovnaká.
+  const showStrokes = await showsStrokes(category);
 
   const range: PeriodRangeType =
     search.range && isPeriodRangeType(search.range)
@@ -305,7 +309,7 @@ export default async function DirectorComparePage({
                       category,
                     )}
                     groups={discipline.analytics.groupedCategories[category]}
-                    showStrokes={showsStrokes(category)}
+                    showStrokes={showStrokes}
                   />
                 )}
               </section>

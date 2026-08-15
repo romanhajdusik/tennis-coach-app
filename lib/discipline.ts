@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { getOrgMembership } from "@/lib/org/membership";
 import type { DisciplineConfig, DisciplineId } from "@/lib/disciplines/types";
 import { TENNIS_DISCIPLINE } from "@/lib/disciplines/tennis";
 import { FITNESS_DISCIPLINE } from "@/lib/disciplines/fitness";
@@ -15,13 +17,16 @@ import { FITNESS_DISCIPLINE } from "@/lib/disciplines/fitness";
  * - z HOSTNAME nie, lebo vo federácii chodia tenisový aj kondičný tréner na
  *   tú istú org subdoménu.
  *
- * Disciplína je preto vec NASADENIA: jedno nasadenie = jedna disciplína
- * (`fitness.plawsports.com` vs `plaw.win`), a na tréningu sa ukladá ako
- * štítok, aby sa dala prečítať aj tam, kde nasadenie nič nehovorí.
+ * Disciplína má preto DVA zdroje podľa toho, kde appka beží:
  *
- * Prečo funkcia a nie konštanta: keď raz bude jedno nasadenie obsluhovať
- * obe disciplíny naraz (kondička vo federácii — do v1 zámerne nejde),
- * pribudne sem argument s kontextom a volajúce miesta sa meniť nemusia.
+ * 1. **Samostatný režim** (`plaw.win`, `fitness.plawsports.com`) — vec
+ *    NASADENIA. Jedno nasadenie = jedna disciplína.
+ * 2. **Federácia** (`<slug>.plaw.win`) — vlastnosť ČLENSTVA prihláseného
+ *    trénera (`organization_members.discipline`, docs §2.2). Adresa o nej
+ *    nehovorí nič, obaja tréneri chodia na tú istú subdoménu.
+ *
+ * Na tréningu sa aj tak ukladá ako štítok (`sessions.discipline`), aby sa dala
+ * prečítať aj tam, kde ani jeden z týchto zdrojov nič nehovorí.
  */
 
 const DISCIPLINES: Record<DisciplineId, DisciplineConfig> = {
@@ -30,22 +35,45 @@ const DISCIPLINES: Record<DisciplineId, DisciplineConfig> = {
 };
 
 /**
- * `NEXT_PUBLIC_*`, lebo ponuky zameraní, trvaní a charakteru potrebujú aj
- * klientske komponenty (formulár cvičenia, grafy). Next ho pri builde vloží
- * do balíka natvrdo — čo je presne správne, keďže sa počas behu nasadenia
- * nemení. Musí sa čítať týmto celým zápisom, dynamický prístup sa nevloží.
+ * Disciplína NASADENIA. `NEXT_PUBLIC_*`, lebo ju pri builde treba vložiť do
+ * balíka; musí sa čítať týmto celým zápisom, dynamický prístup sa nevloží.
  *
  * Neznáma alebo chýbajúca hodnota = tenis: `plaw.win` beží v produkcii bez
  * tejto premennej a nesmie sa zmeniť tým, že ju niekto zabudne nastaviť.
  */
-export function getDiscipline(): DisciplineId {
+export function getDeploymentDiscipline(): DisciplineId {
   return process.env.NEXT_PUBLIC_PLAW_DISCIPLINE === "fitness"
     ? "fitness"
     : "tennis";
 }
 
-export function getDisciplineConfig(): DisciplineConfig {
-  return DISCIPLINES[getDiscipline()];
+/**
+ * Disciplína prihláseného. Vo federácii ju určuje ČLENSTVO, mimo nej nasadenie.
+ *
+ * Rozhoduje členstvo, nie subdoména: RLS sa pýta rovnako (`current_org_id()`
+ * číta `organization_members`), takže by sa appka a databáza inak mohli
+ * rozísť — a hlavičky od proxy navyše v každom rendri k dispozícii nie sú.
+ *
+ * Odhlásený a šéftréner (ten žiadnu disciplínu „nerobí", vidí obe) dostanú
+ * disciplínu nasadenia, teda na org subdoméne tenis.
+ */
+export const getDiscipline = cache(async (): Promise<DisciplineId> => {
+  const membership = await getOrgMembership();
+
+  if (!membership || membership.role === "director") {
+    return getDeploymentDiscipline();
+  }
+
+  return membership.discipline;
+});
+
+export const getDisciplineConfig = cache(
+  async (): Promise<DisciplineConfig> => DISCIPLINES[await getDiscipline()],
+);
+
+/** Konfigurácia konkrétnej disciplíny — pre riadky s vlastným štítkom. */
+export function disciplineConfig(id: DisciplineId): DisciplineConfig {
+  return DISCIPLINES[id];
 }
 
 /**
@@ -53,8 +81,8 @@ export function getDisciplineConfig(): DisciplineConfig {
  * nepočíta vôbec (kondička = len čas a %), alebo ak je v ňom nevýpovedný
  * (tenisové POINTS = zápasové body).
  */
-export function showsStrokes(category: string): boolean {
-  const { strokes } = getDisciplineConfig().analytics;
+export async function showsStrokes(category: string): Promise<boolean> {
+  const { strokes } = (await getDisciplineConfig()).analytics;
   return Boolean(strokes && !strokes.hiddenCategories.includes(category));
 }
 

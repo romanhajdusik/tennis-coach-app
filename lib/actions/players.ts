@@ -6,8 +6,26 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requirePlayerSlot, requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
+import { getOrgMembership } from "@/lib/org/membership";
 
 export type PlayerFormState = { error?: string } | undefined;
+
+/**
+ * Ako sa pri zápise obmedzí, že hráč je „môj": v samostatnom režime cez
+ * `coach_id`, vo federácii cez organizáciu.
+ *
+ * Vo federácii je totiž `players.coach_id` len AUTOR riadku — koho tréner
+ * trénuje, hovorí priradenie na disciplínu (`player_assignments`). Filtrovanie
+ * podľa `coach_id` by tam kondičnému trénerovi zamietlo aj vlastného hráča.
+ * Skutočnou hranicou je aj tak RLS (`players_org_coach_update` sa pýta
+ * `is_assigned_player`), toto je len zúženie dotazu.
+ */
+async function ownPlayerScope(userId: string) {
+  const membership = await getOrgMembership();
+  return membership
+    ? { column: "organization_id" as const, value: membership.organizationId }
+    : { column: "coach_id" as const, value: userId };
+}
 
 export async function createPlayer(
   _prevState: PlayerFormState,
@@ -91,11 +109,13 @@ export async function deactivatePlayer(playerId: string) {
     return;
   }
 
+  const scope = await ownPlayerScope(user.id);
+
   await supabase
     .from("players")
     .update({ is_active: false })
     .eq("id", playerId)
-    .eq("coach_id", user.id);
+    .eq(scope.column, scope.value);
 
   revalidatePath("/players");
 }
@@ -126,11 +146,13 @@ export async function activatePlayer(playerId: string) {
     return;
   }
 
+  const scope = await ownPlayerScope(user.id);
+
   await supabase
     .from("players")
     .update({ is_active: true })
     .eq("id", playerId)
-    .eq("coach_id", user.id);
+    .eq(scope.column, scope.value);
 
   revalidatePath("/players");
 }

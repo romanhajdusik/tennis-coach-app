@@ -247,8 +247,18 @@ async function main() {
   const ok = await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: coachB });
   check(`šéftréner preradí hráča (${moved.name})`, ok.error === null, ok.error?.message);
 
+  // Od migrácie 20260815090000 hovorí o priradení `player_assignments`, nie
+  // `players.coach_id` — ten v org režime zamrzol ako AUTOR riadku, aby hráč
+  // mohol mať naraz tenisového aj kondičného trénera (docs §2.2).
+  const { data: afterAssignment } = await db
+    .from("player_assignments")
+    .select("coach_id, discipline")
+    .eq("player_id", moved.id);
+  const tennisAssignment = (afterAssignment ?? []).find((row) => row.discipline === "tennis");
+  check("priradenie prešlo na nového trénera", tennisAssignment?.coach_id === coachB);
+
   const { data: afterPlayer } = await db.from("players").select("coach_id").eq("id", moved.id).single();
-  check("hráč patrí novému trénerovi", afterPlayer.coach_id === coachB);
+  check("players.coach_id sa nemenil (autor riadku)", afterPlayer.coach_id !== coachB);
   const { count: movedSessions } = await db
     .from("sessions")
     .select("id", { count: "exact", head: true })

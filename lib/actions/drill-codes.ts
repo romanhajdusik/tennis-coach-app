@@ -14,8 +14,8 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 // Počet slotov je rovnaký v každej disciplíne (tenis aj kondička 20).
 const SLOT_COUNT = 20;
 
-function isKnownCategory(category: string): boolean {
-  return getDisciplineConfig().categories.includes(category);
+async function isKnownCategory(category: string): Promise<boolean> {
+  return (await getDisciplineConfig()).categories.includes(category);
 }
 
 /**
@@ -47,7 +47,7 @@ export async function getDrillCodeSlots(
   const slots = Array.from({ length: SLOT_COUNT }, () => "");
 
   if (!data || data.length === 0) {
-    const defaults = getDisciplineConfig().drills[category] ?? [];
+    const defaults = (await getDisciplineConfig()).drills[category] ?? [];
     defaults.forEach((code, index) => {
       if (index < SLOT_COUNT) slots[index] = code;
     });
@@ -81,7 +81,7 @@ export async function getDrillOptionsByCategory(
     rowsByCategory.set(row.category, rows);
   }
 
-  const discipline = getDisciplineConfig();
+  const discipline = await getDisciplineConfig();
   const result: Record<string, string[]> = {};
   for (const category of discipline.categories) {
     const rows = rowsByCategory.get(category);
@@ -105,7 +105,7 @@ export async function saveDrillCodes(
 ): Promise<DrillCodesFormState> {
   const t = await getTranslations("DrillCodes.errors");
 
-  if (!isKnownCategory(category)) {
+  if (!(await isKnownCategory(category))) {
     return { error: t("invalidCategory") };
   }
 
@@ -168,7 +168,7 @@ export async function saveOrgDrillCodes(
 ): Promise<DrillCodesFormState> {
   const t = await getTranslations("DrillCodes.errors");
 
-  if (!isKnownCategory(category)) {
+  if (!(await isKnownCategory(category))) {
     return { error: t("invalidCategory") };
   }
 

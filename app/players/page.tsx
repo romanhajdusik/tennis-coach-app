@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { activatePlayer, deactivatePlayer } from "@/lib/actions/players";
 import { selectPlayer } from "@/lib/actions/selected-player";
 import { getOrgContext } from "@/lib/org/context";
+import { getOrgMembership } from "@/lib/org/membership";
 import {
   getActivePlayers,
   pickSelectedPlayer,
@@ -44,11 +45,23 @@ export default async function PlayersPage() {
     await readSelectedPlayerId(),
   );
 
-  const { data: allPlayers } = await supabase
-    .from("players")
-    .select("id, name, birth_year, is_active")
-    .eq("coach_id", user.id)
-    .order("created_at", { ascending: true });
+  // Archív. Vo federácii sa aj tu pýtame PRIRADENIA, nie `coach_id` — ten je
+  // v org režime len autor riadku a kondičnému trénerovi by archív ostal
+  // prázdny (priradenie hráčovi archiváciou nezaniká, takže je na čo nadviazať).
+  const membership = await getOrgMembership();
+  const { data: allPlayers } = membership
+    ? await supabase
+        .from("players")
+        .select("id, name, birth_year, is_active, player_assignments!inner(coach_id)")
+        .eq("player_assignments.coach_id", user.id)
+        .eq("organization_id", membership.organizationId)
+        .order("created_at", { ascending: true })
+    : await supabase
+        .from("players")
+        .select("id, name, birth_year, is_active")
+        .eq("coach_id", user.id)
+        .is("organization_id", null)
+        .order("created_at", { ascending: true });
 
   const archivedPlayers = (allPlayers ?? []).filter(
     (player) => !player.is_active,

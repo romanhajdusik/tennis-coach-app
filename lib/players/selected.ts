@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import type { createClient } from "@/lib/supabase/server";
+import { getOrgMembership } from "@/lib/org/membership";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -19,19 +20,47 @@ export type ActivePlayer = {
 /**
  * Aktívni hráči trénera.
  *
- * Samostatný (1:1) režim: najviac jeden — drží to unikátny index
- * `one_active_player`. Federačný (org) režim: tréner je zamestnanec
- * s viacerými pridelenými hráčmi naraz (1:N), index je tam uvoľnený.
+ * Samostatný režim: hráč patrí trénerovi (`coach_id`), koľko ich smie byť
+ * naraz aktívnych hovorí cenová hladina. Federačný (org) režim: hráča vlastní
+ * organizácia a trénerovi je PRIRADENÝ na disciplínu — od migrácie
+ * `20260815090000` môže mať naraz tenisového aj kondičného trénera, takže
+ * `players.coach_id` už nehovorí, kto ho trénuje (je to autor riadku).
+ *
+ * Preto sa v org režime pýtame priradení. Nestačí spoľahnúť sa na RLS: tá by
+ * šéftrénerovi vydala celý roster organizácie.
+ *
+ * O režime rozhoduje ČLENSTVO (`getOrgMembership`), nie subdoména — hostname
+ * v niektorých rendroch nie je k dispozícii a tréner by ostal bez hráčov.
  */
 export async function getActivePlayers(
   supabase: SupabaseServerClient,
   userId: string,
 ): Promise<ActivePlayer[]> {
+  const membership = await getOrgMembership();
+
+  if (membership) {
+    const { data } = await supabase
+      .from("players")
+      .select("id, name, birth_year, player_assignments!inner(coach_id)")
+      .eq("player_assignments.coach_id", userId)
+      .eq("organization_id", membership.organizationId)
+      .eq("is_active", true)
+      .order("name", { ascending: true });
+
+    // Vnorené priradenie slúžilo len na filtrovanie — von ide čistý hráč.
+    return (data ?? []).map(({ id, name, birth_year }) => ({
+      id,
+      name,
+      birth_year,
+    }));
+  }
+
   const { data } = await supabase
     .from("players")
     .select("id, name, birth_year")
     .eq("coach_id", userId)
     .eq("is_active", true)
+    .is("organization_id", null)
     .order("name", { ascending: true });
 
   return data ?? [];

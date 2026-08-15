@@ -154,7 +154,7 @@ export default async function DirectorPlayerPage({
         </div>
 
         <Link
-          href={`/director/players/${player.id}/analytics/${encodeURIComponent(getDisciplineConfig().defaultCategory)}`}
+          href={`/director/players/${player.id}/analytics/${encodeURIComponent((await getDisciplineConfig()).defaultCategory)}`}
           className="flex-none rounded-lg bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground"
         >
           {t("openAnalytics")}

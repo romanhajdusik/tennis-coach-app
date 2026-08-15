@@ -8,7 +8,7 @@ import { getDisciplineConfig } from "@/lib/discipline";
 import { DrillCodeForm } from "./drill-code-form";
 
 export default async function DrillCodesPage() {
-  const discipline = getDisciplineConfig();
+  const discipline = await getDisciplineConfig();
   const t = await getTranslations("DrillCodes");
   const tCommon = await getTranslations("Common");
   const supabase = await createClient();

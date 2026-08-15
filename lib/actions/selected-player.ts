@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { SELECTED_PLAYER_COOKIE } from "@/lib/players/selected";
+import { getActivePlayers, SELECTED_PLAYER_COOKIE } from "@/lib/players/selected";
 
 /**
  * Prepnutie na iného hráča (federačný tréner má viacerých naraz).
@@ -22,15 +22,13 @@ async function applySelectedPlayer(playerId: string) {
 
   // Overenie, že hráč je naozaj môj a aktívny. RLS by cudzieho ani nevrátila —
   // toto je druhá poistka, aby sa do cookie nedostalo cudzie id.
-  const { data: player } = await supabase
-    .from("players")
-    .select("id")
-    .eq("id", playerId)
-    .eq("coach_id", user.id)
-    .eq("is_active", true)
-    .maybeSingle();
+  //
+  // Pýta sa cez `getActivePlayers`, nie vlastným dotazom na `coach_id`: vo
+  // federácii hráča určuje PRIRADENIE na disciplínu a `players.coach_id` je
+  // len autor riadku, takže kondičnému trénerovi by sa vlastný hráč zamietol.
+  const players = await getActivePlayers(supabase, user.id);
 
-  if (!player) {
+  if (!players.some((player) => player.id === playerId)) {
     return;
   }
 

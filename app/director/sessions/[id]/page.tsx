@@ -29,7 +29,7 @@ export default async function DirectorSessionPage({
 }) {
   const { id } = await params;
   // `null` v disciplíne, ktorá charakter cvičenia nezaznamenáva (kondička).
-  const characterLabels = getDisciplineConfig().character?.labels;
+  const characterLabels = (await getDisciplineConfig()).character?.labels;
   const t = await getTranslations("Director.session");
   const tSessions = await getTranslations("Sessions");
   const tDrillRow = await getTranslations("Sessions.drillRow");

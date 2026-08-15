@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getDisciplineConfig } from "@/lib/discipline";
 import {
   ageStrokeFactor,
   aggregateCategoryShares,
@@ -72,7 +73,12 @@ export async function getParentCategoryAnalytics(
   // players_select_connected_parent, takže netreba snapshot na strane kópie.
   const birthYear = await getConnectedPlayerBirthYear(supabase, parentId);
 
-  return aggregateDrillStats(drills ?? [], category, ageStrokeFactor(birthYear));
+  return aggregateDrillStats(
+    drills ?? [],
+    category,
+    await getDisciplineConfig(),
+    ageStrokeFactor(birthYear),
+  );
 }
 
 /**

@@ -55,7 +55,7 @@ export default async function ParentAnalyticsPage({
   params: Promise<{ category: string }>;
   searchParams: Promise<{ range?: string; value?: string }>;
 }) {
-  const discipline = getDisciplineConfig();
+  const discipline = await getDisciplineConfig();
   const { category: rawCategory } = await params;
   const category = decodeURIComponent(rawCategory);
   if (!discipline.categories.includes(category)) {
@@ -235,7 +235,7 @@ export default async function ParentAnalyticsPage({
                 category,
               )}
               groups={discipline.analytics.groupedCategories[category]}
-              showStrokes={showsStrokes(category)}
+              showStrokes={await showsStrokes(category)}
             />
           )}
         </>

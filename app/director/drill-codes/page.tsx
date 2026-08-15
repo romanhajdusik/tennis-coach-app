@@ -13,7 +13,7 @@ import { DrillCodeForm } from "@/app/drill-codes/drill-code-form";
  * nedal poskladať a analytika naprieč federáciou by nebola porovnateľná.
  */
 export default async function DirectorDrillCodesPage() {
-  const discipline = getDisciplineConfig();
+  const discipline = await getDisciplineConfig();
   const t = await getTranslations("Director.drillCodes");
   const tDrillCodes = await getTranslations("DrillCodes");
   const tTeam = await getTranslations("Director.team");

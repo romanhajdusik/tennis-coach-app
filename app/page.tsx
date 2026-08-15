@@ -19,23 +19,26 @@ import { getOrgRole } from "@/lib/org/membership";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import { TodayBoard } from "@/components/today-board";
 
-// Zameranie, na ktorom sa otvára analytika — kondičné („ENDURANCE") aj
-// tenisové („Forehand") sú bez medzery, ale kódovanie tu drž: konfigurácia
-// disciplíny povoľuje aj názvy typu „CORE MUSCLES".
-const ANALYTICS_HREF = `/analytics/${encodeURIComponent(
-  getDisciplineConfig().defaultCategory,
-)}`;
-
 // Rozcestník federačného trénera — tie isté obrazovky ako v samostatnom
 // režime, len pod dennou nástenkou „Dnes".
-const NAV_LINKS = [
-  { href: "/players", labelKey: "players" },
-  { href: "/sessions", labelKey: "sessions" },
-  { href: "/calendar", labelKey: "calendar" },
-  { href: "/drill-codes", labelKey: "drillCodes" },
-  { href: ANALYTICS_HREF, labelKey: "analytics" },
-  { href: "/settings", labelKey: "settings" },
-] as const;
+//
+// Odkaz na analytiku nesie zameranie, na ktorom sa otvára, a to je vec
+// disciplíny — vo federácii ju appka pozná až z členstva prihláseného trénera,
+// takže sa zoznam nedá poskladať na úrovni modulu. Kódovanie tu drž:
+// konfigurácia povoľuje aj názvy typu „CORE MUSCLES".
+function navLinks(defaultCategory: string) {
+  return [
+    { href: "/players", labelKey: "players" },
+    { href: "/sessions", labelKey: "sessions" },
+    { href: "/calendar", labelKey: "calendar" },
+    { href: "/drill-codes", labelKey: "drillCodes" },
+    {
+      href: `/analytics/${encodeURIComponent(defaultCategory)}`,
+      labelKey: "analytics",
+    },
+    { href: "/settings", labelKey: "settings" },
+  ] as const;
+}
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
@@ -68,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
   // dali do karty prehliadača cudziu vetu („Practices under control. Right
   // there on the court."). Tá dostane neutrálny názov appky — ten istý, aký
   // nesie ikona na ploche.
-  if (getDiscipline() !== "tennis") {
+  if ((await getDiscipline()) !== "tennis") {
     const tCommon = await getTranslations("Common");
     return {
       title: tCommon("appTitle"),
@@ -124,7 +127,7 @@ export default async function Home() {
     // z kurtu, cenník). Iná disciplína ju nesmie vykresliť ani omylom —
     // kondičný tréner na `fitness.plawsports.com` sem chodí pracovať,
     // nie čítať o tenise. Vlastný marketing kondička zatiaľ nemá.
-    if (getDiscipline() !== "tennis") {
+    if ((await getDiscipline()) !== "tennis") {
       redirect("/login");
     }
     return <LandingPage />;
@@ -162,7 +165,7 @@ export default async function Home() {
         <PlayerSwitcher />
 
         <nav className="flex flex-wrap gap-2">
-          {NAV_LINKS.map((link) => (
+          {navLinks((await getDisciplineConfig()).defaultCategory).map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -194,7 +197,9 @@ export default async function Home() {
         <p className="text-xs text-muted ">
           plan.log.analyze.win
         </p>
-        <p className="text-xs text-muted ">{getDisciplineConfig().domain}</p>
+        <p className="text-xs text-muted ">
+          {(await getDisciplineConfig()).domain}
+        </p>
       </div>
       <div className="flex flex-col items-center gap-3">
         <p className="text-muted ">
@@ -229,7 +234,9 @@ export default async function Home() {
             {t("drillCodes")}
           </Link>
           <Link
-            href={ANALYTICS_HREF}
+            href={`/analytics/${encodeURIComponent(
+              (await getDisciplineConfig()).defaultCategory,
+            )}`}
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("analytics")}

@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelectedPlayer } from "@/lib/players/selected";
-import { getDisciplineConfig } from "@/lib/discipline";
+import { getDisciplineConfig, type DisciplineConfig } from "@/lib/discipline";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -200,16 +200,21 @@ type DrillForStats = {
 // Zdieľané s lib/actions/parent-data.ts — rovnaká agregácia sa počíta aj
 // nad kópiou dát v parent_session_drill_records, len s inak získaným
 // zoznamom drills.
+// Disciplína ide dnu ako PARAMETER, nie cez `getDisciplineConfig()`: agregát je
+// zdieľaný engine a nesmie siahať na globálny stav. Pult šéftrénera navyše
+// počíta aj nad disciplínou, ktorú sám „nerobí" — tam je jediná správna
+// konfigurácia tá zo štítku tréningu, nie z jeho členstva.
 export function aggregateDrillStats(
   drills: DrillForStats[],
   category: string,
+  discipline: DisciplineConfig,
   strokeFactor = 1,
 ): { byCode: CodeStat[]; byCharacter: CharacterStat[] } {
   const codeTotals = new Map<string, { minutes: number; strokes: number }>();
   const characterTotals = new Map<string, number>();
   let totalMinutes = 0;
 
-  const { character: characterConfig, analytics } = getDisciplineConfig();
+  const { character: characterConfig, analytics } = discipline;
   const strokesConfig = analytics.strokes;
   const fixedStrokesPerMin = strokesConfig?.fixedPerMinByCategory[category];
 
@@ -376,6 +381,7 @@ export async function getPlayerCategoryAnalytics(
   return aggregateDrillStats(
     drills ?? [],
     category,
+    await getDisciplineConfig(),
     ageStrokeFactor(player.birth_year),
   );
 }
@@ -446,11 +452,14 @@ export async function getPlayersCategoryAnalytics(
     drillsByPlayer.set(playerId, [...(drillsByPlayer.get(playerId) ?? []), drill]);
   }
 
+  const discipline = await getDisciplineConfig();
+
   for (const player of players) {
     const own = drillsByPlayer.get(player.id) ?? [];
     const { byCode, byCharacter } = aggregateDrillStats(
       own.filter((drill) => drill.category === category),
       category,
+      discipline,
       ageStrokeFactor(player.birth_year),
     );
     result.set(player.id, {
@@ -515,7 +524,12 @@ export async function getCategoryAnalytics(
     .eq("category", category)
     .eq("status", "played");
 
-  return aggregateDrillStats(drills ?? [], category, ageStrokeFactor(birthYear));
+  return aggregateDrillStats(
+    drills ?? [],
+    category,
+    await getDisciplineConfig(),
+    ageStrokeFactor(birthYear),
+  );
 }
 
 // Podiel všetkých zameraní na celkovom odohranom čase v období (naprieč

@@ -31,7 +31,7 @@ export default async function ParentSessionDetailPage({
 }) {
   const { id } = await params;
   // `null` v disciplíne, ktorá charakter cvičenia nezaznamenáva (kondička).
-  const characterLabels = getDisciplineConfig().character?.labels;
+  const characterLabels = (await getDisciplineConfig()).character?.labels;
   const t = await getTranslations("Sessions.detail");
   const tSessions = await getTranslations("Sessions");
   const tReview = await getTranslations("Sessions.review");
