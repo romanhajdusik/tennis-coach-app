@@ -10,7 +10,11 @@ import {
   getPreviousYearValue,
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
-import { getDisciplineConfig, showsStrokes } from "@/lib/discipline";
+import {
+  disciplineOfCategory,
+  getDisciplineConfig,
+  showsStrokes,
+} from "@/lib/discipline";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -97,11 +101,14 @@ export default async function DirectorPlayerAnalyticsPage({
     start,
     end,
   );
+  // Generálny graf musí počítať nad tou istou disciplínou ako rozpad vedľa
+  // neho — hráč môže mať aj kondičné tréningy a percentá by sa rozišli.
   const categoryShares = await getPlayerCategoryMinuteShares(
     supabase,
     player.id,
     start,
     end,
+    disciplineOfCategory(category) ?? "tennis",
   );
   const previousYearValue = getPreviousYearValue(range, value);
 

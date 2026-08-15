@@ -102,8 +102,8 @@ export async function getDirectorDashboard(
     supabase,
     players,
     timeZone,
-    now,
     COURT_DISCIPLINE,
+    now,
   );
 
   const { data: assignmentRows } = await supabase

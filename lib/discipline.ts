@@ -77,6 +77,26 @@ export function disciplineConfig(id: DisciplineId): DisciplineConfig {
 }
 
 /**
+ * Ktorej disciplíne patrí zameranie. Katalógy zameraní sú disjunktné (tenis
+ * `Forehand…`, kondička `ENDURANCE…`), takže je odpoveď jednoznačná.
+ *
+ * Slúži jedinému účelu: **riadiaci pult analyzuje disciplínu, ktorú sám
+ * „nerobí"**. Šéftréner nemá disciplínu (vidí obe) a stránka analytiky sa
+ * otvára nad konkrétnym zameraním, takže je zameranie jediné, čo o disciplíne
+ * niečo hovorí. Nie je to obchádzka pravidla „disciplínu neodvodzuj z trénera
+ * ani z hráča" — tie zakazujú odvodenie od OSÔB, tu ide o vlastnosť dát.
+ *
+ * **Keby raz dve disciplíny mali rovnako pomenované zameranie, prestane to
+ * platiť** a pult bude musieť disciplínu dostať v adrese.
+ */
+export function disciplineOfCategory(category: string): DisciplineId | null {
+  const match = Object.values(DISCIPLINES).find((config) =>
+    config.categories.includes(category),
+  );
+  return match?.id ?? null;
+}
+
+/**
  * Pozná zameranie ktorákoľvek disciplína? Šéftréner federácie nastavuje
  * štandard kódov pre OBE (kondičný tréner v jeho organizácii ich potrebuje
  * tiež), takže sa jeho vstup nesmie overovať proti jednej disciplíne — sám

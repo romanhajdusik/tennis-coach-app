@@ -10,6 +10,7 @@ import {
   type ScheduledSession,
 } from "@/lib/players/roster";
 import { getActivePlayers } from "@/lib/players/selected";
+import { getDiscipline } from "@/lib/discipline";
 import { SummaryTile } from "@/components/roster-status";
 import type { OrgContext } from "@/lib/org/context";
 
@@ -55,7 +56,15 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
 
   const now = new Date();
   const players = await getActivePlayers(supabase, user.id);
-  const overview = await getRosterOverview(supabase, players, timeZone, now);
+  // Vlastná disciplína: nástenka je o tom, čo má tréner dnes robiť, nie
+  // o tom, čo s hráčom robí kolega z druhej disciplíny.
+  const overview = await getRosterOverview(
+    supabase,
+    players,
+    timeZone,
+    await getDiscipline(),
+    now,
+  );
   const focus = await getSessionFocus(
     supabase,
     [...overview.today, ...overview.tomorrow].map((session) => session.id),

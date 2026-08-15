@@ -100,17 +100,20 @@ function attentionOf(
  * Zoznam hráčov sa berie ako parameter (nie userId), aby si ho volajúca
  * stránka nemusela ťahať druhýkrát — `/players` ho už má.
  *
- * `discipline` hovorí, KTORÉ tréningy sa počítajú. Trénerovi RLS aj tak vydá
- * len jeho vlastné, ale šéftréner vidí celú organizáciu vrátane cudzej
- * disciplíny — a **kondičný tréning sa nesmie počítať ako tréning na kurte**:
- * hráč by vyzeral ošetrený, hoci na kurte nebol. `null` = bez filtra.
+ * `discipline` hovorí, KTORÉ tréningy sa počítajú, a je **povinná**: od kroku 4
+ * vidí cudziu disciplínu aj tréner (vo federácii cez spoločné priradenie
+ * hráča, mimo nej cez prepojenie kariet), nielen šéftréner. **Kondičný tréning
+ * sa nesmie počítať ako tréning na kurte** — hráč by vyzeral ošetrený, hoci na
+ * kurte nebol, a presne to je stav, ktorý má roster odhaliť. Predvolená
+ * hodnota tu zámerne nie je: „bez filtra" je práve tá chyba, na ktorú by sa
+ * dalo zabudnúť.
  */
 export async function getRosterOverview(
   supabase: SupabaseServerClient,
   players: ActivePlayer[],
   timeZone: string,
+  discipline: string,
   now: Date = new Date(),
-  discipline: string | null = null,
 ): Promise<RosterOverview> {
   if (players.length === 0) {
     return { entries: [], today: [], tomorrow: [], attentionCount: 0 };
@@ -132,9 +135,7 @@ export async function getRosterOverview(
     .neq("status", "cancelled")
     .gte("planned_data->>date", windowStart);
 
-  if (discipline) {
-    query = query.eq("discipline", discipline);
-  }
+  query = query.eq("discipline", discipline);
 
   const { data } = await query.order("planned_data->>date", {
     ascending: true,

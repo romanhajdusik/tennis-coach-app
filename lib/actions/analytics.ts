@@ -1,7 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelectedPlayer } from "@/lib/players/selected";
-import { getDisciplineConfig, type DisciplineConfig } from "@/lib/discipline";
+import {
+  getDiscipline,
+  getDisciplineConfig,
+  disciplineOfCategory,
+  type DisciplineConfig,
+  type DisciplineId,
+} from "@/lib/discipline";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -300,16 +306,24 @@ export function aggregateCategoryShares(
 // Id tréningov daného hráča spadajúce do obdobia (podľa reálneho, inak
 // plánovaného dátumu). Kto hráča smie vidieť, rieši RLS — trénerovi vráti
 // len jeho pridelených, šéftrénerovi ktoréhokoľvek hráča organizácie.
+//
+// **Disciplína je povinný parameter a filtruje sa v SQL** (docs §2.0, krok 4).
+// Odkedy tréner vidí aj cudziu disciplínu — vo federácii cez priradenie, mimo
+// nej cez prepojenie kariet — by sa bez tohto filtra kondičné minúty ticho
+// primiešali do percent tenisových zameraní. Je to poistka na najnižšom
+// spoločnom mieste: prejde ňou trénerova analytika, pult aj porovnanie.
 export async function getPlayerSessionIdsInPeriod(
   supabase: SupabaseServerClient,
   playerId: string,
   start: Date,
   end: Date,
+  discipline: DisciplineId,
 ): Promise<string[]> {
   const { data: sessions } = await supabase
     .from("sessions")
     .select("id, planned_data, actual_data")
-    .eq("player_id", playerId);
+    .eq("player_id", playerId)
+    .eq("discipline", discipline);
 
   return (sessions ?? [])
     .filter((session) => {
@@ -338,11 +352,14 @@ async function getActivePlayerSessionIdsInPeriod(
   }
 
   return {
+    // Tréner analyzuje vždy vlastnú disciplínu — tú cudziu vidí v kalendári,
+    // ale do jeho čísel nepatrí.
     sessionIds: await getPlayerSessionIdsInPeriod(
       supabase,
       activePlayer.id,
       start,
       end,
+      await getDiscipline(),
     ),
     birthYear: activePlayer.birth_year,
   };
@@ -360,11 +377,14 @@ export async function getPlayerCategoryAnalytics(
   start: Date,
   end: Date,
 ): Promise<{ byCode: CodeStat[]; byCharacter: CharacterStat[] }> {
+  // Pult analyzuje disciplínu ZAMERANIA, na ktoré sa práve pozerá — sám
+  // žiadnu „nerobí" a hráč môže mať tréningy oboch.
   const sessionIds = await getPlayerSessionIdsInPeriod(
     supabase,
     player.id,
     start,
     end,
+    disciplineOfCategory(category) ?? (await getDiscipline()),
   );
 
   if (sessionIds.length === 0) {
@@ -416,13 +436,19 @@ export async function getPlayersCategoryAnalytics(
     return result;
   }
 
+  // Aj tu sa filtruje disciplína zamerania: porovnanie stavia stĺpce vedľa
+  // seba a jeden hráč s kondičnou prípravou by inak mal iné percentá než
+  // ostatní bez toho, aby to bolo z grafu vidieť.
+  const analysedDiscipline = disciplineOfCategory(category) ?? (await getDiscipline());
+
   const { data: sessions } = await supabase
     .from("sessions")
     .select("id, player_id, planned_data, actual_data")
     .in(
       "player_id",
       players.map((player) => player.id),
-    );
+    )
+    .eq("discipline", analysedDiscipline);
 
   const playerBySession = new Map<string, string>();
   for (const session of sessions ?? []) {
@@ -472,18 +498,26 @@ export async function getPlayersCategoryAnalytics(
   return result;
 }
 
-/** Podiel zameraní na odohranom čase konkrétneho hráča (pult, drill-in). */
+/**
+ * Podiel zameraní na odohranom čase konkrétneho hráča (pult, drill-in).
+ *
+ * Disciplína je povinná: generálny graf počíta podiel na CELKOVOM čase, takže
+ * je to presne to miesto, kde by primiešané kondičné minúty prepísali všetky
+ * percentá naraz.
+ */
 export async function getPlayerCategoryMinuteShares(
   supabase: SupabaseServerClient,
   playerId: string,
   start: Date,
   end: Date,
+  discipline: DisciplineId,
 ): Promise<CategoryShareStat[]> {
   const sessionIds = await getPlayerSessionIdsInPeriod(
     supabase,
     playerId,
     start,
     end,
+    discipline,
   );
 
   if (sessionIds.length === 0) {
