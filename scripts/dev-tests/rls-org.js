@@ -114,7 +114,10 @@ async function main() {
   });
   check(
     "neprihlásený pozvánku nezaklaimuje",
-    /not_authenticated/.test(anonClaim.error?.message ?? ""),
+    // Dve vrstvy, stačí ktorákoľvek: po audite `20260815110000` nemá PUBLIC
+    // na funkciu EXECUTE (anon skončí na „permission denied"), a keby ten
+    // grant niekto vrátil, zastaví ho kontrola `not_authenticated` v tele.
+    /not_authenticated|permission denied/.test(anonClaim.error?.message ?? ""),
     anonClaim.error?.message ?? "PRESLO!",
   );
   const { data: inviteAfter } = await db

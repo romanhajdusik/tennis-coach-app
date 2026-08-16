@@ -190,7 +190,9 @@ async function main() {
     });
     check(
       "neprihlásený claim je odmietnutý",
-      /not_authenticated/.test(burn.error?.message ?? ""),
+      // Dve vrstvy, stačí ktorákoľvek — viď `20260815110000`: PUBLIC už na
+      // funkciu EXECUTE nemá, a keby ho niekto vrátil, drží kontrola v tele.
+      /not_authenticated|permission denied/.test(burn.error?.message ?? ""),
       burn.error?.message ?? "PRESLO!",
     );
     const { data: stillPending } = await db
