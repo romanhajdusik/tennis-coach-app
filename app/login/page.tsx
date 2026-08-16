@@ -61,6 +61,14 @@ export default function LoginPage() {
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-muted ">
+          <Link
+            href="/forgot-password"
+            className="font-medium text-foreground underline "
+          >
+            {t("forgotPassword")}
+          </Link>
+        </p>
+        <p className="mt-2 text-center text-sm text-muted ">
           {t("noAccount")}{" "}
           <Link
             href="/register"

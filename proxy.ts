@@ -28,6 +28,17 @@ const LOGIN_PATH = "/login";
 // zahodí mu session a onboarding sa zacyklí: kód nemá kde zadať.
 const JOIN_PATH = "/join";
 
+// Obnova hesla nezobrazuje žiadne dáta organizácie — je to len formulár.
+// Stráž členstva ju preto musí pustiť: odkaz z mailu vytvorí na tejto
+// subdoméne session a stráž by ju vzápätí zahodila, takže by sa nové heslo
+// nedalo nastaviť (a pri účte inej organizácie by človek skončil na
+// prihlásení bez vysvetlenia).
+const PASSWORD_RESET_PATHS = new Set([
+  "/forgot-password",
+  "/reset-password",
+  "/auth/confirm",
+]);
+
 // Supabase ukladá session do cookies `sb-<ref>-auth-token` (dlhé hodnoty sa
 // delia na `...auth-token.0`, `.1`).
 const AUTH_COOKIE_PATTERN = /^sb-.*auth-token/;
@@ -116,6 +127,10 @@ async function handleOrgRequest(request: NextRequest, slug: string) {
   // prístupu k dátam je aj tak RLS, nie hostname — stráž je tenant kontext
   // a UX, nie posledná obrana.
   if (user && request.method === "GET") {
+    if (PASSWORD_RESET_PATHS.has(pathname)) {
+      return response;
+    }
+
     const { data: currentOrgId } = await supabase.rpc("current_org_id");
 
     if (currentOrgId !== org.id) {

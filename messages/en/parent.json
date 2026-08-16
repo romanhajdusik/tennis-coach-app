@@ -7,7 +7,8 @@
     "submit": "Sign in",
     "submitPending": "Signing in...",
     "noAccount": "Don't have an account?",
-    "registerLink": "Sign up"
+    "registerLink": "Sign up",
+    "forgotPassword": "Forgot your password?"
   },
   "connect": {
     "heading": "Connect a coach",
