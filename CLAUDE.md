@@ -273,6 +273,19 @@ Kalendár ([`app/calendar/page.tsx`](app/calendar/page.tsx) pre trénera, [`app/
 - **Potvrdzovacia otázka pri rušení je iná v každom režime** (`Sessions.review.confirmDeleteMessage` vs `confirmCancelMessage`, prepína ich prop `isOrg` z `app/sessions/[id]/page.tsx`) — vo federácii by bolo nepravdivé sľubovať, že sa tréning „natrvalo zmaže".
 - **Obojsmerná synchronizácia (webhooks) je stále neskoršia fáza** — appka o zmenách urobených priamo v Google Kalendári nevie.
 
+## Obnova zabudnutého hesla (od 2026-08-16)
+
+Na prihlásení (trénerskom aj rodičovskom) je „Forgot your password?" → `/forgot-password` → mail s odkazom → `/auth/confirm` (vymení token za session) → `/reset-password`. Akcie sú v [`lib/actions/password-reset.ts`](lib/actions/password-reset.ts). **Bez migrácie**, celé to stojí na Supabase Auth. **Postup nasadenia, produkčné nastavenia a pasce sú v [`docs/obnova-hesla.md`](docs/obnova-hesla.md)** — tu len to, čo musí vedieť každý, kto sa toho dotkne:
+
+- **Cieľ odkazu, ktorý nie je na zozname povolených adries, Supabase TICHO zahodí** a do mailu dá `Site URL`. Odkaz potom vedie na úvodnú stránku, obnova sa nestane a **nikde nie je žiadna chyba**. Produkčný zoznam je v dashboarde (Authentication → URL Configuration → Redirect URLs) a musí obsahovať `plaw.win`, `*.plaw.win` aj `fitness.plawsports.com`; lokálny ekvivalent je `additional_redirect_urls` v `supabase/config.toml` a **produkciu neriadi**.
+- **Adresa sa skladá z hlavičky `Host`** ([`lib/request-origin.ts`](lib/request-origin.ts)), nikdy natvrdo — appka beží na viacerých hostoch nad jedným Supabase Auth a cookies sú host-only, takže pevná adresa by federačného trénera vyhodila zo subdomény aj zo session. Rovnaký princíp ako `originOf()` v `proxy.ts`.
+- **Odpoveď na žiadosť je vždy rovnaká**, aj pre neexistujúci účet a aj keď odoslanie zlyhá — inak by z tej stránky bol overovač, ktoré e-maily appku používajú. Zlyhanie ide do serverového logu.
+- **`?next` sa kontroluje** (musí to byť cesta, nie `//host` ani absolútna adresa) — odkaz z mailu je dôveryhodný, takže by inak bol odrazovým mostíkom na cudziu stránku.
+- **Stráž členstva v `proxy.ts` tieto tri cesty púšťa** (`PASSWORD_RESET_PATHS`): odkaz z mailu vytvorí na org subdoméne session a stráž by ju vzápätí zahodila, takže by sa heslo nedalo nastaviť.
+- **S predvolenou šablónou mailu funguje odkaz len v tom istom prehliadači**, ktorý o obnovu požiadal. `app/auth/confirm/route.ts` zvláda aj podobu s `token_hash` (funguje z akéhokoľvek zariadenia) — prepína sa to šablónou v dashboarde, bez zásahu do kódu.
+- **Kto mail posiela, je nastavenie, nie kód.** Vstavaný mailer Supabase je na testovanie: má prísny hodinový limit a na novších projektoch býva obmedzený len na adresy členov tímu — **tréner by mail vôbec nedostal a appka by o tom nevedela**. Cieľový stav je Resend s odosielacou subdoménou `mail.plawsports.com`, postup v [`docs/obnova-hesla.md`](docs/obnova-hesla.md) §2.3. Odosielacia subdoména (nie hlavná doména) preto, aby problém s doručovaním appkových mailov nepoškodil firemnú poštu na Workspace.
+- Overuje `scripts/dev-tests/password-reset.js` (24 kontrol vrátane celej cesty mail → odkaz → formulár) a `browser-coach.js` §12 (samotná zmena hesla — server action sa cez holé HTTP zavolať nedá).
+
 ## Zdieľanie s rodičom/manažérom/hráčom
 
 - Rola `player` (hráč) sa pridala 2026-07-18 k `parent`/`manager` — **rovnaké oprávnenia ako oni** (rola je len UI štítok, žiadna rozdielna logika), takže hráč sa môže prihlásiť sám za seba a sledovať vlastné tréningy. Všetko nižšie v tejto sekcii platí pre všetky tri role rovnako, pokiaľ nie je uvedené inak.

@@ -412,8 +412,10 @@ posiela ich stroj, chodia v nárazoch a musia mať vlastnú reputáciu.
   človeka, nie na aplikáciu, a pri prekročení ti zablokuje odosielanie —
   vrátane tvojej vlastnej pošty.
 
-Je to samostatná úloha, patrí k Stripe fáze. Zatiaľ stačí, že doména je
-pripravená.
+**Od 2026-08-16 to už nie je len téma Stripe fázy: appka odosiela mail pri
+obnove zabudnutého hesla**, takže vlastné SMTP sa stalo aktuálnym skôr.
+Postup krok za krokom (Resend, odosielacia subdoména `mail.plawsports.com`,
+nastavenie v Supabase) je v [`obnova-hesla.md`](obnova-hesla.md) §2.3.
 
 ---
 
