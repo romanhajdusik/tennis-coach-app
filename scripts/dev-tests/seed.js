@@ -13,6 +13,7 @@ const {
   ANON_KEY,
   ORG_SLUG,
   PASSWORD,
+  PASSWORDS,
   serviceClient,
 } = require("./helpers");
 
@@ -116,6 +117,149 @@ async function ensureMembership(organizationId, user, role) {
     p_code: code,
   });
   if (claimError) throw claimError;
+}
+
+/**
+ * Samostatný (1:1) tréner `demo@plaw.win` s jedným hráčom a históriou.
+ *
+ * Stojí na ňom šesť sád (`rls-solo`, `paywall`, `card-links`,
+ * `security-boundaries`, `fitness`, `browser-coach`), ale dovtedy v seede
+ * nebol — vznikol kedysi ručne pri fotení landingu, takže po každom
+ * `supabase stop --no-backup` (alebo na čerstvom stroji) tie sady padali na
+ * chýbajúcom účte. Preto je tu.
+ *
+ * **Presne jeden aktívny hráč a `player_limit = 1`** — `browser-coach.js` §8
+ * na tom overuje hlásenie „1 of 1 active players" a to, že server odmietne
+ * druhého hráča nad hladinou.
+ */
+const SOLO_COACH = "demo@plaw.win";
+const SOLO_PLAYER = "Adam Kováč";
+
+/** Cvičenia sa rotujú po štyroch, nech má analytika čo rozdeliť. */
+const SOLO_DRILLS = [
+  ["Forehand", "offensive", "FRH-CC", 20],
+  ["Forehand", "neutral", "FRH-DL", 15],
+  ["Backhand", "defensive", "BKH-CC", 15],
+  ["Backhand", "offensive", "BKH-DL", 10],
+  ["Volley", "offensive", "VOL-FRH", 10],
+  ["Serve", "offensive", "SR1-T", 15],
+  ["Return", "neutral", "RET-FRH-CC", 10],
+  ["GAME DRILLS", "neutral", "GD-2v1", 20],
+  ["POINTS", "offensive", "MATCH-TB", 30],
+];
+
+async function ensureSoloCoach() {
+  const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
+  let coach = users.users.find((account) => account.email === SOLO_COACH);
+
+  if (!coach) {
+    const { data, error } = await db.auth.admin.createUser({
+      email: SOLO_COACH,
+      password: PASSWORDS[SOLO_COACH],
+      email_confirm: true,
+      user_metadata: { full_name: "Demo Trener", role: "coach" },
+    });
+    if (error) throw error;
+    coach = data.user;
+  }
+
+  // Stav predplatného sa vracia na východiskový aj pri opakovanom seede —
+  // `paywall.js` a `browser-coach.js` §7 ním hýbu a po páde ho nemusia stihnúť
+  // vrátiť.
+  await db.from("profiles").upsert({
+    id: coach.id,
+    role: "coach",
+    email: SOLO_COACH,
+    full_name: "Demo Trener",
+    subscription_status: "complimentary",
+    player_limit: 1,
+  });
+
+  // Kópie u rodiča treba zmazať PRED tréningmi: DELETE sa k nemu zámerne
+  // nepropaguje (kópia má prežiť aj zmazanie trénerovho účtu), takže by mu
+  // pri každom seede pribudla ďalšia sada tréningov navyše.
+  const { data: oldSessions } = await db
+    .from("sessions")
+    .select("id")
+    .eq("coach_id", coach.id);
+  const oldIds = (oldSessions ?? []).map((session) => session.id);
+  if (oldIds.length) {
+    await db
+      .from("parent_session_records")
+      .delete()
+      .in("source_session_id", oldIds);
+  }
+  await db.from("sessions").delete().eq("coach_id", coach.id);
+  await db.from("players").delete().eq("coach_id", coach.id);
+
+  const { data: player, error: playerError } = await db
+    .from("players")
+    .insert({
+      coach_id: coach.id,
+      organization_id: null,
+      name: SOLO_PLAYER,
+      birth_year: 2011,
+      is_active: true,
+    })
+    .select("id")
+    .single();
+  if (playerError) throw playerError;
+
+  // Odohrané tréningy siahajú ~9 týždňov dozadu, aby mala analytika čo
+  // porovnávať aj v predvolenom rozsahu „posledných 12 mesiacov".
+  const completedOffsets = [-3, -7, -10, -14, -17, -21, -28, -35, -42, -49, -63];
+  const plannedOffsets = [2, 5];
+  let drillCount = 0;
+
+  for (const [index, dayOffset] of completedOffsets.entries()) {
+    const date = at(dayOffset, 0);
+    const { data: session, error } = await db
+      .from("sessions")
+      .insert({
+        coach_id: coach.id,
+        player_id: player.id,
+        status: "completed",
+        planned_data: { date, duration_minutes: 90 },
+        actual_data: { date },
+        notes: "Practice notes",
+      })
+      .select("id")
+      .single();
+    if (error) throw error;
+
+    const rows = [0, 1, 2, 3].map((slot) => {
+      const [category, character, drill_code, duration_minutes] =
+        SOLO_DRILLS[(index + slot) % SOLO_DRILLS.length];
+      return {
+        session_id: session.id,
+        coach_id: coach.id,
+        category,
+        character,
+        drill_code,
+        duration_minutes,
+        status: "played",
+        sort_order: slot + 1,
+      };
+    });
+    const { error: drillError } = await db.from("session_drills").insert(rows);
+    if (drillError) throw drillError;
+    drillCount += rows.length;
+  }
+
+  for (const dayOffset of plannedOffsets) {
+    const { error } = await db.from("sessions").insert({
+      coach_id: coach.id,
+      player_id: player.id,
+      status: "planned",
+      planned_data: { date: at(dayOffset, 0), duration_minutes: 90 },
+    });
+    if (error) throw error;
+  }
+
+  return {
+    coach,
+    note: `${SOLO_PLAYER} — ${completedOffsets.length} odohraných (${drillCount} cvičení), ${plannedOffsets.length} naplánované`,
+  };
 }
 
 async function main() {
@@ -267,9 +411,10 @@ async function main() {
     drillCount += rows.length;
   }
 
+  // --- samostatný (1:1) tréner s hráčom a históriou ------------------------
+  const { coach: demoCoach, note: soloNote } = await ensureSoloCoach();
+
   // --- rodič pripojený k hráčovi samostatného trénera ----------------------
-  const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
-  const demoCoach = users.users.find((u) => u.email === "demo@plaw.win");
   let parentNote = "preskočené (demo@plaw.win neexistuje)";
 
   if (demoCoach) {
@@ -348,6 +493,7 @@ async function main() {
   console.log("organizácia:", ORG_SLUG);
   console.log("hráči trénera Andrea:", created.join(", "));
   console.log("cvičenia doplnené:", drillCount);
+  console.log("samostatný tréner:", soloNote);
   console.log("rodič:", parentNote);
   console.log("očakávania:", JSON.stringify(expectations));
 }

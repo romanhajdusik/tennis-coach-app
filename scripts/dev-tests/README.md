@@ -30,10 +30,11 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča, životný cyklus členstva, skupinový tréning naprieč trénermi |
 | `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, kód uplatní len prihlásený, rodičovi ostáva jeho prístup |
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
-| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun a zrušenie naplánovaného tréningu v oboch režimoch |
+| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun a zrušenie naplánovaného tréningu v oboch režimoch, obnova hesla až po prihlásenie novým heslom (§12) |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
 | `fitness.js` | **Kondičné nasadenie** — 10 zameraní, prázdne sloty kódov, chýbajúce pole charakteru, trvanie 60, analytika bez odhadu úderov, žiadna tenisová landing, kondička kód prepojenia VYDÁVA |
 | `card-links.js` | **Prepojenie kariet hráča naprieč disciplínami** — vydanie a zaklaimovanie kódu, cross-read je len na čítanie, cudzia karta sa nedostane medzi hráčov, po zrušení prístup zmizne. Nepotrebuje dev server |
+| `password-reset.js` | **Obnova zabudnutého hesla** — stránky a odkazy na oboch prihláseniach, neplatný a už použitý odkaz, `?next` na cudziu adresu, a celý reťazec mail → overenie → formulár presne ako v appke (vrátane toho, že odkaz v maili naozaj vedie na `/auth/confirm`, nie na východziu adresu) |
 | `security-boundaries.js` | **Hranice medzi tromi režimami** (audit 2026-08-15) — najmenšie potrebné granty, neprihlásený proti tabuľkám aj RPC, prepojenie nesiaha na federačného hráča, čitateľ sa nedostane za hranicu čítania, org tréner mimo svojej org, rodič bez živých dát. Nepotrebuje dev server |
 
 ```bash
@@ -167,9 +168,16 @@ Heslo `TestPlaw2026!`, okrem `demo@plaw.win`, ktorý má `DemoPlaw2026!`.
 | `coach-today@test.local` | tréner (5 hráčov v rôznych stavoch) |
 | `coach2-today@test.local` | tréner (1 hráč — kvôli zoskupovaniu v pulte) |
 | `coach-new@test.local` | bez členstva — na test onboardingu |
-| `demo@plaw.win` | samostatný (1:1) tréner, dáta v jún–júl 2026 |
+| `demo@plaw.win` | samostatný (1:1) tréner — jeden aktívny hráč („Adam Kováč") a ~9 týždňov histórie |
 | `parent-test@test.local` | rodič pripojený k hráčovi demo trénera |
 | `fitness-coach@test.local` | samostatný **kondičný** tréner s kartou „Adam Kováč (fitness)" — druhá strana prepojenia kariet |
+
+`demo@plaw.win` **je od 2026-08-16 v `seed.js`** (`ensureSoloCoach`) — dovtedy
+vznikol kedysi ručne pri fotení landingu, takže po `supabase stop --no-backup`
+alebo na čerstvom stroji chýbal a **šesť sád padalo na neexistujúcom účte**.
+Seed mu vždy nastaví presne jedného aktívneho hráča a `player_limit = 1`
+(`browser-coach.js` §8 na tom stojí) a vráti `subscription_status` na
+`complimentary`, keby ho predošlý beh nechal v skúšobnej dobe.
 
 `fitness-coach@test.local` **nie je v `seed.js`**: zakladá ho `ensureFitnessCoach()`
 v `helpers.js` (idempotentne) a potrebujú ho len `card-links.js`,

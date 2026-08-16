@@ -1153,6 +1153,99 @@ async function main() {
     await linkContext.close();
   }
 
+  // ---------------------------------------------------------------------------
+  section("12) Obnova zabudnutého hesla končí novým heslom, nie len mailom");
+  // HTTP sada `password-reset.js` overí všetko okrem samotnej zmeny hesla —
+  // to je server action a tá sa cez holé HTTP zavolať nedá. Tu sa preto klikne
+  // celá cesta a nakoniec sa overí, že novým heslom sa dá prihlásiť.
+  //
+  // Odkaz z mailu MUSÍ otvoriť ten istý prehliadač, ktorý o obnovu požiadal:
+  // kód sa páruje s cookie uloženou pri žiadosti. Práve preto je táto sekcia
+  // klikacia a nie HTTP.
+  const MAILBOX_URL = process.env.MAILBOX_URL ?? "http://127.0.0.1:54324";
+  const NEW_PASSWORD = "NovePlaw2026!";
+  const resetContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
+  const resetPage = await resetContext.newPage();
+
+  try {
+    const appBaseReset = `http://${APP_HOST}`;
+    await resetPage.goto(`${appBaseReset}/login`);
+    await resetPage.click("text=Forgot your password?");
+    await resetPage.waitForURL(/\/forgot-password/, { timeout: 20000 });
+    check("odkaz z prihlásenia vedie na obnovu", true);
+
+    await resetPage.fill('input[name="email"]', "demo@plaw.win");
+    await resetPage.click('button[type="submit"]');
+    await resetPage.waitForTimeout(2000);
+    check(
+      "appka potvrdí odoslanie bez toho, aby prezradila, či účet existuje",
+      /link is on its way/i.test(await browserText(resetPage)),
+      (await browserText(resetPage)).slice(0, 120),
+    );
+
+    const list = await (await fetch(`${MAILBOX_URL}/api/v1/messages`)).json();
+    const mailId = list.messages?.[0]?.ID ?? list.messages?.[0]?.id;
+    const mail = await (
+      await fetch(`${MAILBOX_URL}/api/v1/message/${mailId}`)
+    ).json();
+    const body = mail.HTML || mail.Text || "";
+    const verifyUrl = (body.match(/href="([^"]*\/verify[^"]*)"/) ?? [])[1]?.replace(
+      /&amp;/g,
+      "&",
+    );
+    check("v schránke je mail s odkazom", Boolean(verifyUrl), body.slice(0, 120));
+
+    await resetPage.goto(verifyUrl);
+    await resetPage.waitForURL(/\/reset-password/, { timeout: 20000 });
+    check(
+      "odkaz otvorí formulár na nové heslo",
+      (await resetPage.locator('input[name="password"]').count()) === 1,
+      resetPage.url(),
+    );
+
+    await resetPage.fill('input[name="password"]', NEW_PASSWORD);
+    await resetPage.fill('input[name="password_confirm"]', NEW_PASSWORD);
+    await resetPage.click('button[type="submit"]');
+    await resetPage.waitForTimeout(3000);
+    check(
+      "po uložení je tréner prihlásený vo svojej appke",
+      /demo@plaw\.win/.test(await browserText(resetPage)) &&
+        !/reset-password/.test(resetPage.url()),
+      `${resetPage.url()} | ${(await browserText(resetPage)).slice(0, 90)}`,
+    );
+
+    // Podstata celej funkcie: heslo sa naozaj zmenilo.
+    const { createClient } = require("@supabase/supabase-js");
+    const { SUPABASE_URL, ANON_KEY, PASSWORDS } = require("./helpers");
+    const probe = createClient(SUPABASE_URL, ANON_KEY, {
+      auth: { persistSession: false },
+    });
+    const { error: newError } = await probe.auth.signInWithPassword({
+      email: "demo@plaw.win",
+      password: NEW_PASSWORD,
+    });
+    check("novým heslom sa dá prihlásiť", !newError, newError?.message);
+
+    const { error: oldError } = await probe.auth.signInWithPassword({
+      email: "demo@plaw.win",
+      password: PASSWORDS["demo@plaw.win"],
+    });
+    check("staré heslo už neplatí", Boolean(oldError), "staré heslo stále funguje");
+  } finally {
+    // Heslo sa musí vrátiť, inak si ďalšie sady (a ďalší beh tejto) nesadnú.
+    const { PASSWORDS } = require("./helpers");
+    const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
+    const demo = users.users.find((user) => user.email === "demo@plaw.win");
+    if (demo) {
+      await db.auth.admin.updateUserById(demo.id, {
+        password: PASSWORDS["demo@plaw.win"],
+      });
+    }
+    await resetContext.close();
+  }
+
   report();
   await browser.close();
 }

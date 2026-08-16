@@ -29,6 +29,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Pracovné súbory lokálnej Supabase (`supabase start` si sem generuje
+    // vlastný minifikovaný edge runtime). Nie je to náš kód a lint na ňom hlási
+    // stovky nálezov, takže sa po každom spustení DB tvárilo, že je repo pokazené.
+    "supabase/.temp/**",
   ]),
 ]);
 
