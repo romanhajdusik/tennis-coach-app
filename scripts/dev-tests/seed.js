@@ -34,8 +34,21 @@ const SIXTH_PLAYER = "Lukas Siesty";
 function at(dayOffset, direction) {
   const date = new Date();
   if (dayOffset === 0) {
-    if (direction < 0) date.setHours(0, 5, 0, 0);
-    else date.setHours(23, 55, 0, 0);
+    if (direction < 0) {
+      // Dnešný ODOHRANÝ tréning: 00:05, ale nikdy nie v budúcnosti.
+      //
+      // Samotné kotvenie na okraj dňa (namiesto „teraz − N hodín") rieši beh
+      // tesne pred polnocou. Má však päťminútové slepé miesto: seed spustený
+      // o 00:02 by tréning položil na 00:05, teda o tri minúty dopredu, a
+      // roster by hlásil „Practiced yesterday" — appka by mala pravdu a test
+      // by padol na dátach. Stalo sa to 2026-08-16.
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 5, 0, 0);
+      const justNow = new Date(date.getTime() - 60_000);
+      date.setTime(Math.min(startOfDay.getTime(), justNow.getTime()));
+    } else {
+      date.setHours(23, 55, 0, 0);
+    }
   } else {
     date.setDate(date.getDate() + dayOffset);
     date.setHours(15, 0, 0, 0);
