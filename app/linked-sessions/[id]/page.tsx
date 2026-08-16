@@ -2,11 +2,7 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getTranslations, getFormatter } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import {
-  getDiscipline,
-  disciplineConfig,
-  type DisciplineId,
-} from "@/lib/discipline";
+import { disciplineConfig, type DisciplineId } from "@/lib/discipline";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -71,7 +67,12 @@ export default async function LinkedSessionPage({
 
   // Vlastný tréning sem nepatrí — má svoju editovateľnú stránku a tréner by
   // na nej inak uviazol v read-only pohľade bez tlačidiel.
-  if (session.coach_id === user.id || session.discipline === (await getDiscipline())) {
+  //
+  // Rozhoduje VLASTNÍCTVO, nie štítok disciplíny (audit 2026-08-15): tréning
+  // z prepojenej karty môže niesť moju disciplínu, a podmienka na štítok by ma
+  // z tejto stránky poslala na editovateľnú, kde by mi server každý zápis
+  // zamietol. `coach_id` je zároveň to, čím sa riadi RLS.
+  if (session.coach_id === user.id) {
     redirect(`/sessions/${session.id}`);
   }
 

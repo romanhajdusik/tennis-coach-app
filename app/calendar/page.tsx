@@ -4,7 +4,7 @@ import { getTranslations, getFormatter, getTimeZone } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelectedPlayer } from "@/lib/players/selected";
 import { getLinkedPlayerId } from "@/lib/players/linked";
-import { getDiscipline, disciplineConfig, type DisciplineId } from "@/lib/discipline";
+import { disciplineConfig, type DisciplineId } from "@/lib/discipline";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import {
   LABEL_TIME_ZONE,
@@ -137,7 +137,6 @@ export default async function CalendarPage({
   // druhého trénera INÁ karta, takže sa treba spýtať aj na ňu. Vo federácii je
   // to tá istá karta s dvoma priradeniami, takže `getLinkedPlayerId` nevráti
   // nič a cudziu disciplínu vydá RLS na tom istom `player_id`.
-  const myDiscipline = await getDiscipline();
   const linkedPlayerId = activePlayer
     ? await getLinkedPlayerId(supabase, activePlayer.id)
     : null;
@@ -148,7 +147,7 @@ export default async function CalendarPage({
   const { data: sessions } = activePlayer
     ? await supabase
         .from("sessions")
-        .select("id, status, planned_data, actual_data, discipline")
+        .select("id, status, planned_data, actual_data, discipline, coach_id")
         .in("player_id", playerIds)
         .or(
           `and(planned_data->>date.gte.${queryFrom},planned_data->>date.lt.${queryTo}),` +
@@ -176,16 +175,22 @@ export default async function CalendarPage({
     const key = dayKeyIn(timeZone, date);
     if (!windowKeys.has(key)) continue;
     const list = sessionsByDay.get(key) ?? [];
-    // Cudzí je ten, ktorý patrí do inej disciplíny — v OBOCH režimoch. Podľa
-    // `player_id` sa to rozlíšiť nedá: vo federácii má hráč jednu kartu pre
-    // obe disciplíny. Vlastná karta cudziu disciplínu obsahovať nemôže,
-    // nasadenie zapisuje vždy tú svoju.
+    // **Cudzí = nie je môj, nie „má iný štítok".** Rozhoduje `coach_id`, teda
+    // vlastníctvo, lebo presne to určuje aj RLS: upraviť smiem len tréning,
+    // kde som `coach_id`. Štítok disciplíny na to nestačí — tréning
+    // z prepojenej karty môže niesť moju disciplínu (starý záznam, zápis cez
+    // API) a tváril by sa ako môj: plný rámček, odkaz na editovateľnú
+    // stránku a tlačidlá, ktoré server zamietne. Zistené auditom 2026-08-15.
+    //
+    // Vo federácii to vychádza rovnako: hráč má jednu kartu, ale tréning
+    // druhej disciplíny zapísal druhý tréner, takže `coach_id` je jeho.
+    // Štítok ostáva na to, ČO sa vypíše („Fitness"), nie na to, či je cudzí.
     list.push({
       id: session.id,
       status: session.status,
       date: dateValue,
       discipline: session.discipline,
-      isForeign: session.discipline !== myDiscipline,
+      isForeign: session.coach_id !== user.id,
     });
     sessionsByDay.set(key, list);
   }
