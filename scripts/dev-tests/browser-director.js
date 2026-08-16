@@ -379,6 +379,105 @@ async function main() {
     });
   }
 
+  section("9) Prepínač disciplíny v analytike pultu");
+  // Šéftréner žiadnu disciplínu „nerobí" a hráč môže mať tréningy oboch, takže
+  // sa analytika pultu riadi ZAMERANÍM, nie nasadením. Bez prepínača by sa ku
+  // kondičným zameraniam nedostal vôbec — appka by ich odmietla ako neznáme.
+  await director.setViewportSize({ width: 1440, height: 900 });
+  let fitnessSessionId = null;
+  try {
+    const { data: orgPlayer } = await db
+      .from("players")
+      .select("id, organization_id")
+      .not("organization_id", "is", null)
+      .eq("is_active", true)
+      .limit(1)
+      .single();
+
+    const { data: orgCoach } = await db
+      .from("organization_members")
+      .select("user_id")
+      .eq("organization_id", orgPlayer.organization_id)
+      .eq("role", "coach")
+      .eq("status", "active")
+      .limit(1)
+      .single();
+
+    const noon = new Date();
+    noon.setHours(12, 0, 0, 0);
+
+    const { data: fitnessSession } = await db
+      .from("sessions")
+      .insert({
+        coach_id: orgCoach.user_id,
+        organization_id: orgPlayer.organization_id,
+        player_id: orgPlayer.id,
+        status: "completed",
+        discipline: "fitness",
+        planned_data: { date: noon.toISOString(), duration_minutes: 60 },
+      })
+      .select("id")
+      .single();
+    fitnessSessionId = fitnessSession.id;
+
+    await db.from("session_drills").insert({
+      session_id: fitnessSession.id,
+      coach_id: orgCoach.user_id,
+      organization_id: orgPlayer.organization_id,
+      category: "ENDURANCE",
+      character: null,
+      drill_code: "END-1",
+      duration_minutes: 30,
+      status: "played",
+      sort_order: 1,
+    });
+
+    const analyticsBase = `${BASE}/director/players/${orgPlayer.id}/analytics`;
+    await director.goto(`${analyticsBase}/Forehand`);
+    await director.waitForTimeout(2000);
+    const tennisView = await browserText(director);
+    check("v pulte je prepínač disciplíny", /Tennis/.test(tennisView) && /Fitness/.test(tennisView));
+    check("na kurte sú tenisové zamerania", /Backhand/.test(tennisView));
+
+    await director.click("a:has-text('Fitness')");
+    await director.waitForURL((url) => /ENDURANCE/.test(url.pathname), {
+      timeout: 20000,
+    });
+    await director.waitForTimeout(2000);
+    const fitnessView = await browserText(director);
+    check(
+      "prepnutie ukáže kondičné zamerania",
+      /STRENGTH/.test(fitnessView) && !/Backhand/.test(fitnessView),
+    );
+    check("a kondičné dáta hráča", /END-1/.test(fitnessView));
+    // Kondička odhad úderov nepočíta vôbec — pult sa preto musí pýtať
+    // konfigurácie PREZERANEJ disciplíny, nie svojej.
+    check(
+      "pri kondičke sa nedopočítava odhad úderov",
+      !/strokes/i.test(fitnessView),
+    );
+
+    await director.screenshot({
+      path: `${SCREENSHOT_DIR}/director-fitness-analytics.png`,
+      fullPage: true,
+    });
+
+    // To isté v porovnaní hráčov.
+    await director.goto(`${BASE}/director/compare`);
+    await director.waitForTimeout(2200);
+    await director.click("a:has-text('Fitness')");
+    await director.waitForTimeout(2500);
+    const compareFitness = await browserText(director);
+    check(
+      "porovnanie sa tiež prepne na kondičné zamerania",
+      /ENDURANCE/.test(compareFitness) && !/Backhand/.test(compareFitness),
+    );
+  } finally {
+    if (fitnessSessionId) {
+      await db.from("sessions").delete().eq("id", fitnessSessionId);
+    }
+  }
+
   // upratanie, nech seed ostane v pôvodnom stave
   await db.from("drill_codes").delete().eq("code", "FED-TEST");
   if (fresh) await db.from("organization_members").delete().eq("user_id", fresh.id);

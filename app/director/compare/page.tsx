@@ -10,7 +10,17 @@ import {
   getPreviousYearValue,
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
-import { getDisciplineConfig, showsStrokes } from "@/lib/discipline";
+import {
+  disciplineConfig,
+  disciplineOfCategory,
+  showsStrokesIn,
+  type DisciplineId,
+} from "@/lib/discipline";
+
+/** Obe disciplíny v pevnom poradí — kurt prvý, je to hlavná os federácie. */
+const ALL_DISCIPLINES: DisciplineId[] = ["tennis", "fitness"];
+/** Predvolené zameranie porovnania: pult sa otvára na kurte. */
+const TENNIS_DEFAULT_CATEGORY = disciplineConfig("tennis").defaultCategory;
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -83,22 +93,25 @@ export default async function DirectorComparePage({
     value?: string;
   }>;
 }) {
-  const discipline = await getDisciplineConfig();
   const t = await getTranslations("Director.compare");
   const tAnalytics = await getTranslations("Analytics");
   const { supabase, org } = await requireDirector();
   const search = await searchParams;
 
+  // Disciplína sa aj tu riadi ZAMERANÍM, nie nasadením — porovnanie je pult,
+  // a ten sa pozerá na obe (viď `/director/players/[id]/analytics`).
   const category = search.category
     ? decodeURIComponent(search.category)
-    : discipline.defaultCategory;
-  if (!discipline.categories.includes(category)) {
+    : TENNIS_DEFAULT_CATEGORY;
+  const viewedId = disciplineOfCategory(category);
+  if (!viewedId) {
     notFound();
   }
+  const discipline = disciplineConfig(viewedId);
 
   // Vyhodnotené raz, mimo cyklu cez hráčov — `await` sa do `.map()` nezmestí
   // a odpoveď je pre všetky stĺpce rovnaká.
-  const showStrokes = await showsStrokes(category);
+  const showStrokes = showsStrokesIn(discipline, category);
 
   const range: PeriodRangeType =
     search.range && isPeriodRangeType(search.range)
@@ -211,6 +224,23 @@ export default async function DirectorComparePage({
         )}
       </div>
 
+      {/* Prepínač disciplíny — rovnaký ako v analytike hráča. Vedie na prvé
+          zameranie druhej disciplíny, zvyšok voľby (skupina, obdobie) ostáva. */}
+      <div className="flex flex-wrap items-center gap-2">
+        {ALL_DISCIPLINES.map((option) => {
+          const config = disciplineConfig(option);
+          return (
+            <Link
+              key={option}
+              href={query({ category: config.defaultCategory })}
+              className={tabClass(option === viewedId)}
+            >
+              {config.label}
+            </Link>
+          );
+        })}
+      </div>
+
       <div className="flex min-w-0 flex-wrap gap-2">
         {discipline.categories.map((option) => (
           <Link
@@ -298,6 +328,7 @@ export default async function DirectorComparePage({
                   <CategoryShareChart
                     shares={stats.shares}
                     currentCategory={category}
+                    config={discipline}
                   />
                 )}
 
@@ -312,6 +343,7 @@ export default async function DirectorComparePage({
                     )}
                     groups={discipline.analytics.groupedCategories[category]}
                     showStrokes={showStrokes}
+                    character={discipline.character}
                   />
                 )}
               </section>

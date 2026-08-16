@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import {
@@ -16,6 +16,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useDiscipline } from "@/lib/discipline-context";
 import type { AnalyticsCodeGroup } from "@/lib/drill-options";
+import type { CharacterConfig } from "@/lib/disciplines/types";
 import type { CharacterStat, CodeStat } from "@/lib/actions/analytics";
 
 type ChartType = "pie" | "bar";
@@ -122,12 +123,16 @@ function CodeTooltip({
 function CharacterTooltip({
   active,
   payload,
+  labels,
 }: {
   active?: boolean;
   payload?: { payload: CharacterStat; fill?: string; color?: string }[];
+  /** Popisky charakteru; bez nich platí disciplína appky (viď `CategoryCharts`). */
+  labels?: Record<string, string>;
 }) {
   const t = useTranslations("Analytics");
-  const characterLabels = useDiscipline().character?.labels ?? {};
+  const ownLabels = useDiscipline().character?.labels;
+  const characterLabels = labels ?? ownLabels ?? {};
   if (!active || !payload?.length) return null;
   const { payload: item, fill, color } = payload[0];
   return (
@@ -189,18 +194,25 @@ export function CategoryCharts({
   fullBreakdown,
   groups,
   showStrokes = true,
+  character,
 }: {
   byCode: CodeStat[];
   byCharacter: CharacterStat[];
   fullBreakdown: boolean;
   groups?: AnalyticsCodeGroup[];
   showStrokes?: boolean;
+  /** Charakter cvičenia analyzovanej disciplíny; bez neho platí tá appková. */
+  character?: CharacterConfig | null;
 }) {
   const t = useTranslations("Analytics");
   // Charakter cvičenia je vlastnosťou disciplíny — kondička ho nezaznamenáva,
   // takže je konfigurácia `null`, popisky prázdne a celý panel „podľa
   // charakteru" sa nevykreslí (inak by ostal nadpis nad prázdnym grafom).
-  const CHARACTER_CONFIG = useDiscipline().character;
+  //
+  // Propom ju posiela pult: šéftréner si prezerá aj disciplínu, ktorú sám
+  // nerobí, takže by z kontextu dostal cudziu (tenisovú) odpoveď.
+  const ownCharacter = useDiscipline().character;
+  const CHARACTER_CONFIG = character !== undefined ? character : ownCharacter;
   const CHARACTER_LABELS: Record<string, string> = CHARACTER_CONFIG?.labels ?? {};
   const otherLabel = t("otherGroupLabel");
   const [codeChartType, setCodeChartType] = useState<ChartType>("pie");
@@ -387,7 +399,7 @@ export function CategoryCharts({
                   />
                 ))}
               </Pie>
-              <Tooltip content={<CharacterTooltip />} />
+              <Tooltip content={<CharacterTooltip labels={CHARACTER_CONFIG?.labels} />} />
             </PieChart>
           ) : (
             <BarChart data={byCharacter} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
@@ -398,7 +410,7 @@ export function CategoryCharts({
                 tick={{ fontSize: 11 }}
               />
               <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-              <Tooltip content={<CharacterTooltip />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
+              <Tooltip content={<CharacterTooltip labels={CHARACTER_CONFIG?.labels} />} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
               <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
                 {byCharacter.map((entry) => (
                   <Cell

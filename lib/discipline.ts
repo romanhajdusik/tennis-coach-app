@@ -112,10 +112,20 @@ export function isCategoryOfAnyDiscipline(category: string): boolean {
  * Má sa v tomto zameraní zobraziť odhad počtu úderov? Nie, ak ho disciplína
  * nepočíta vôbec (kondička = len čas a %), alebo ak je v ňom nevýpovedný
  * (tenisové POINTS = zápasové body).
+ *
+ * Verzia s explicitnou konfiguráciou je pre pult: šéftréner si prezerá aj
+ * disciplínu, ktorú sám „nerobí", takže sa nesmie pýtať tej svojej.
  */
-export async function showsStrokes(category: string): Promise<boolean> {
-  const { strokes } = (await getDisciplineConfig()).analytics;
+export function showsStrokesIn(
+  config: DisciplineConfig,
+  category: string,
+): boolean {
+  const { strokes } = config.analytics;
   return Boolean(strokes && !strokes.hiddenCategories.includes(category));
+}
+
+export async function showsStrokes(category: string): Promise<boolean> {
+  return showsStrokesIn(await getDisciplineConfig(), category);
 }
 
 export type { DisciplineConfig, DisciplineId };

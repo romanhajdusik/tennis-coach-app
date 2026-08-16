@@ -11,10 +11,14 @@ import {
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
 import {
+  disciplineConfig,
   disciplineOfCategory,
-  getDisciplineConfig,
-  showsStrokes,
+  showsStrokesIn,
+  type DisciplineId,
 } from "@/lib/discipline";
+
+/** Obe disciplíny v pevnom poradí — kurt prvý, je to hlavná os federácie. */
+const ALL_DISCIPLINES: DisciplineId[] = ["tennis", "fitness"];
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -63,14 +67,21 @@ export default async function DirectorPlayerAnalyticsPage({
   params: Promise<{ id: string; category: string }>;
   searchParams: Promise<{ range?: string; value?: string }>;
 }) {
-  const discipline = await getDisciplineConfig();
   const { id, category: rawCategory } = await params;
   // Next.js v tomto projekte dynamické segmenty nedekóduje — bez toho by
   // kategória s medzerou („GAME DRILLS", „CORE MUSCLES") nikdy nesedela.
   const category = decodeURIComponent(rawCategory);
-  if (!discipline.categories.includes(category)) {
+
+  // **Pult sa neriadi disciplínou appky, ale zameraním, ktoré si šéftréner
+  // otvoril.** Sám žiadnu disciplínu „nerobí" (vidí obe) a hráč môže mať
+  // tréningy oboch, takže `getDisciplineConfig()` by tu bola nesprávna
+  // odpoveď: kondičné zameranie by odmietla ako neznáme a kondičným dátam by
+  // dopočítala tenisové sadzby úderov.
+  const viewedId = disciplineOfCategory(category);
+  if (!viewedId) {
     notFound();
   }
+  const discipline = disciplineConfig(viewedId);
 
   const t = await getTranslations("Analytics");
   const tPlayer = await getTranslations("Director.player");
@@ -131,6 +142,26 @@ export default async function DirectorPlayerAnalyticsPage({
         >
           {tPlayer("back")}
         </Link>
+      </div>
+
+      {/* Prepínač disciplíny — pult je jediné miesto, kde treba. Tréner má
+          disciplínu jednu (z nasadenia alebo z členstva), šéftréner obe,
+          a bez tejto voľby by sa ku kondičným zameraniam nedostal vôbec.
+          Prepnutie vedie na PRVÉ zameranie druhej disciplíny, obdobie sa
+          zachová — porovnáva sa tým istým oknom. */}
+      <div className="flex flex-wrap items-center gap-2">
+        {ALL_DISCIPLINES.map((option) => {
+          const config = disciplineConfig(option);
+          return (
+            <Link
+              key={option}
+              href={`${basePath}/${encodeURIComponent(config.defaultCategory)}?${periodQuery(range, value)}`}
+              className={tabClass(option === viewedId)}
+            >
+              {config.label}
+            </Link>
+          );
+        })}
       </div>
 
       <div className="flex min-w-0 flex-wrap gap-2">
@@ -231,10 +262,15 @@ export default async function DirectorPlayerAnalyticsPage({
           na mobile pod sebou. Generálny graf ide PRVÝ — rovnaké poradie ako
           v trénerovej analytike. */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+        {/* Grafy dostávajú konfiguráciu PREZERANEJ disciplíny propom — inak by
+            si ju vzali z kontextu, kde je disciplína nasadenia (tenis), a
+            kondičné zamerania by dostali koláč so siedmimi farbami namiesto
+            stĺpcov, tenisový charakter a odhad úderov, ktorý kondička nemá. */}
         {categoryShares.length > 0 && (
           <CategoryShareChart
             shares={categoryShares}
             currentCategory={category}
+            config={discipline}
           />
         )}
 
@@ -248,7 +284,8 @@ export default async function DirectorPlayerAnalyticsPage({
               category,
             )}
             groups={discipline.analytics.groupedCategories[category]}
-            showStrokes={await showsStrokes(category)}
+            showStrokes={showsStrokesIn(discipline, category)}
+            character={discipline.character}
           />
         )}
       </div>
