@@ -417,7 +417,7 @@ Samostatný tréner má **14 dní všetko zadarmo, potom platí**. **Druhou osou
 
 ## Lokálne overovanie (scripts/dev-tests)
 
-Repo nemá test framework, ale má sadu ručne spúšťaných scenárov v [`scripts/dev-tests/`](scripts/dev-tests/) — HTTP, RLS a klikacie (Playwright) sady pre trénerovu appku aj federačný pult. **Pri zmenách v org vrstve, RLS, analytike alebo predplatnom ich prejdi**, ušetria hodinu hľadania. Postup, účty a pasce (časové pásmo, hydratácia org subdomény, čítanie vykresleného HTML) sú v [`scripts/dev-tests/README.md`](scripts/dev-tests/README.md).
+Repo nemá test framework, ale má sadu ručne spúšťaných scenárov v [`scripts/dev-tests/`](scripts/dev-tests/) — HTTP, RLS a klikacie (Playwright) sady pre trénerovu appku, kondičné nasadenie aj federačný pult. **Pri zmenách v org vrstve, RLS, analytike alebo predplatnom ich prejdi**, ušetria hodinu hľadania. **Pri čomkoľvek, čo sa dotýka RLS, grantov alebo prístupu naprieč režimami, prejdi navyše `security-boundaries.js`** — overuje hranice medzi samostatným, kondičným a federačným svetom a granty kontroluje **správaním**, nie čítaním migrácie (viď zásadu „`grant` nič neodoberá" vyššie). Postup, účty a pasce (časové pásmo, hydratácia org subdomény, čítanie vykresleného HTML) sú v [`scripts/dev-tests/README.md`](scripts/dev-tests/README.md).
 
 ```bash
 node scripts/dev-tests/seed.js        # dáta (idempotentné)

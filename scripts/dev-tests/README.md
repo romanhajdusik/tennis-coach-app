@@ -142,6 +142,20 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   v `finally`.** `browser-director.js` trénera odoberá a zase vracia; keď taký
   scenár spadne uprostred, ďalší beh sa rozsype už na počte sedadiel. Preto sa
   členstvá seedovaných trénerov navyše obnovujú aj na štarte sady.
+- **Dev server po zmene stránky vie ostať v starom stave — reštartuj skôr, než
+  začneš hľadať chybu v kóde** (2026-08-16). Po úprave pultovej analytiky
+  začala tá jediná cesta vracať 404, kým susedné stránky fungovali; po
+  `rm -rf .next/dev` a čerstvom `npm run dev` prešlo 26/26 bez jediného zásahu
+  do kódu. Príznak je charakteristický: **padá jedna stránka, nie sada.**
+- **Po polnoci preseeduj — a ak test padne aj potom, pozri na hodiny.** Seed
+  kotví dnešný odohraný tréning na 00:05, takže beh medzi polnocou a 00:05 ho
+  kedysi položil do budúcnosti a roster potom správne hlásil „Practiced
+  yesterday". Opravené (`min(00:05, teraz − 1 min)`), ale princíp platí ďalej:
+  **tvrdenia o „dnes" sú funkciou času behu**, nie kódu.
+- **Sada `security-boundaries.js` overuje granty SPRÁVANÍM, nie čítaním
+  migrácie** — zámerne. Nález z auditu 2026-08-15 vznikol práve tým, že
+  `grant select` v migrácii nič neodobral a tabuľka mala plné DML z default
+  privileges schémy. Keby sa to zopakovalo, chytia to jej prvé tri kontroly.
 
 ## Účty
 
@@ -155,3 +169,9 @@ Heslo `TestPlaw2026!`, okrem `demo@plaw.win`, ktorý má `DemoPlaw2026!`.
 | `coach-new@test.local` | bez členstva — na test onboardingu |
 | `demo@plaw.win` | samostatný (1:1) tréner, dáta v jún–júl 2026 |
 | `parent-test@test.local` | rodič pripojený k hráčovi demo trénera |
+| `fitness-coach@test.local` | samostatný **kondičný** tréner s kartou „Adam Kováč (fitness)" — druhá strana prepojenia kariet |
+
+`fitness-coach@test.local` **nie je v `seed.js`**: zakladá ho `ensureFitnessCoach()`
+v `helpers.js` (idempotentne) a potrebujú ho len `card-links.js`,
+`security-boundaries.js` a `browser-coach.js` §11. Seed by ho musel vytvárať aj
+tam, kde na ňom nič nestojí.
