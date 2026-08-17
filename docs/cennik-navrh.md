@@ -171,6 +171,19 @@ uplynutí predplatného sa mu **pozastaví prístup**, nie zmažú záznamy — 
 tá obrazovka musí povedať doslova: *„Tvoje záznamy tu sú, predplatným ich
 znova sprístupníš."* Rovnaká slušnosť, akú má trénerská vetva.
 
+**Upresnenie používateľa (2026-08-16): „sledovanie a uchovanie dát áno, ale
+bez platenia dáta nevidí."** Z toho vyplývajú dve veci, ktoré treba dodržať:
+
+1. **Kopírovanie beží ďalej aj počas neplatenia.** Triggery
+   `sync_session_to_parent` / `sync_drill_to_parent` sa pýtajú len na to, či
+   je prepojenie aktívne — o predplatnom nevedia a **vedieť nemajú**. Rodič,
+   ktorý sa vráti po pol roku, teda uvidí aj to, čo sa dialo medzitým.
+   **Nezavádzaj im kontrolu predplatného** — tým by sa tá história stratila
+   nenávratne a `uchovanie dát` by prestalo platiť.
+2. **Bez predplatného musia ostať prístupné dve veci:** zadanie kódu od
+   trénera (`/parent` bez pripojenia) a samotné predplatenie. Inak sa novo
+   pripojený rodič nedostane ani k tomu, aby mohol zaplatiť.
+
 ### 8.4 Čo sa musí postaviť
 
 1. **Stráž na ČÍTANIE** — nová vec (§8.3). Rodičovské stránky (`app/parent/**`)
