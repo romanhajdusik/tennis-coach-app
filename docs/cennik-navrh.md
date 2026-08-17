@@ -50,12 +50,17 @@ cenníka. Klub s tromi trénermi patrí do federačného, aj keby mal hráčov m
 
 | Hladina | Hráčov | Mesačne | Ročne | Za hráča/mes |
 |---|---|---|---|---|
-| 1. | 3 | **6,90 €** | 69 € | 2,30 € |
-| 2. | 6 | **12,90 €** | 129 € | 2,15 € |
-| 3. | 12 | **24,90 €** | 249 € | 2,08 € |
+| 1. | 3 | **6,90 €** | **49,90 €** | 2,30 € |
+| 2. | 6 | **12,90 €** | **92,90 €** | 2,15 € |
+| 3. | 12 | **24,90 €** | **179,90 €** | 2,08 € |
 
-**Ročne = desať mesiacov za dvanásť.** Ľahko sa to povie jednou vetou
-a zákazník si to prepočíta z hlavy.
+**Ročná cena = mesačná × 12 − 40 %** (rozhodnuté 2026-08-16, nahradilo pôvodné
+pravidlo „desať mesiacov za dvanásť"). Ročný zákazník teda platí ako za **7,2
+mesiaca**. Presný prepočet pred zaokrúhlením: 49,68 / 92,88 / 179,28.
+
+Je to výrazne štedrejšia zľava než býva zvykom (−16 % pri „dvoch mesiacoch
+zadarmo") a je to zámer: ročná platba znamená hotovosť dopredu a podstatne
+menší odchod zákazníkov počas sezóny.
 
 **Cena za hráča so stúpajúcou hladinou klesá** — to je zámer. Prvý nástrel mal
 najvyššiu hladinu na 10 hráčov za 24,90, čím cena za hráča naopak rástla
@@ -169,6 +174,13 @@ Mesačná vychádza na 70,80 € ročne, čiže **ročná platba ušetrí takmer
 — je to zámerne veľký rozdiel. Mesačná voľba tu nie je preto, aby ju niekto
 bral, ale aby bola ročná zjavne výhodná a aby mal kam siahnuť ten, kto sa na
 rok zaviazať nechce.
+
+**Rodičovská cena je vedomá výnimka z pravidla −40 %** (rozhodnuté 2026-08-16).
+To pravidlo by dalo 42,48 €, čím by padla veta „pod 10 centov na deň" (vyšlo by
+11,8 centa). Používateľ si zvolil ponechať **36 €**, čo je zľava −49 %. Veta je
+tu dôležitejšia než jednotnosť pravidla — 36 € vychádza na **9,86 centa denne**.
+Zvažovaná bola aj cesta cez zníženie mesačnej ceny na 4,90 € (dá 35,90 € a
+pravidlo by platilo všade), ale mesačná ostala na 5,90 €.
 
 **Argument, ktorý bol prebitý** (nechávam ho tu ako riziko na sledovanie, nie
 ako námietku): rodičovská vrstva je zároveň dôvod, prečo tréner appku chce —
