@@ -100,9 +100,13 @@ hráčov ľudia reálne majú.
 
 1. **S DPH alebo bez?** Zákazník je spotrebiteľ (tréner-živnostník), takže na
    webe sa bežne uvádza cena **s DPH**. Otázka na účtovníka, nie na appku.
-2. **Rovnaké ceny pre kondičku?** Je to ten istý engine a tá istá hodnota —
-   odporúčam áno. V Stripe to nech sú **samostatné produkty** („P.L.A.W Tenis",
-   „P.L.A.W Kondícia"), aby si v prehľade videl, koľko zarobila ktorá appka.
+2. **Kondička má ROVNAKÉ hladiny ako tenis** (rozhodnuté 2026-08-16). Je to ten
+   istý engine a tá istá hodnota, takže niet dôvodu rozlišovať. **V Stripe to
+   aj tak nech sú samostatné produkty** („P.L.A.W Tenis", „P.L.A.W Kondícia")
+   s rovnakými cenami — ceny sa tým nekomplikujú a v prehľade uvidíš, koľko
+   zarobila ktorá appka. **V appke to nič nestojí:** `player_limit` aj
+   `subscription_status` sú na `profiles`, ktoré sú spoločné pre obe nasadenia,
+   takže kondičný tréner sa spravuje presne ako tenisový.
 3. **Skúšobná doba ostáva 14 dní bez karty?** Odporúčam áno — appka to už vie
    a „vyskúšaj bez karty" je najsilnejšia veta na celom cenníku.
 4. **Čo po roku zadarmo testerom?** Stripe má na to zľavové kupóny — testerovi
