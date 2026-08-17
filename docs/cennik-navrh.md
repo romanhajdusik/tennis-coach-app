@@ -123,7 +123,77 @@ cenníku na to mysli: **prechod nadol nie je bezbolestný a má to tak byť.**
 
 ---
 
-## 8. Čo z toho vyplýva pre Stripe
+## 8. Hráč, rodič a manažér — druhá strana appky
+
+### 8.1 Čo majú dnes
+
+Všetci traja (`parent` / `player` / `manager`) sú v DB **tá istá rola s tými
+istými právami** — rozdiel je len štítok. Pripoja sa kódom od trénera a vidia
+**čítaním** kalendár, detail tréningu a analytiku. Dáta sú **kópie**
+(`parent_session_records`), takže im história ostane, aj keď spolupráca
+s trénerom skončí.
+
+**Platia nič.** A hlavne: **`one_active_connection_per_parent` im dovolí
+jediné aktívne prepojenie naraz** — nový kód automaticky zruší predošlé.
+
+### 8.2 Prečo sa im dnes nedá nič predať
+
+Poctivo: **dostávajú presne to, čo appka pre nich vie.** Neexistuje funkcia,
+ktorú by sme im mohli zamknúť za platbu bez toho, aby sme im zobrali niečo, čo
+už majú. Jediná os, ktorá dnes technicky existuje, je **počet sledovaných
+hráčov** — a tá je zaujímavá len pre rodiča s viacerými deťmi a pre manažéra.
+
+**Strategické varovanie:** rodičovská vrstva nie je samostatný produkt, je to
+**dôvod, prečo tréner appku chce**. Ukazuje rodičom, že s deťmi pracuje
+systematicky. Keď rodič narazí na platobnú stenu, prvý, kto sa o tom dozvie,
+je tréner — a jemu appka práve prestala robiť dobré meno. Preto:
+**jedno dieťa zadarmo, navždy.**
+
+### 8.3 Návrh
+
+| Hladina | Koho sleduje | Cena | Stav |
+|---|---|---|---|
+| **Rodič / Hráč** | 1 hráča | **zadarmo** | funguje dnes |
+| **Rodina** | až 4 hráčov | ~4,90 €/mes | treba uvoľniť limit prepojení |
+| **Manažér** | až 15 hráčov + prehľad | ~19,90 €/mes | **treba postaviť** |
+| **Manažér Plus** | až 40 hráčov | ~34,90 €/mes | **treba postaviť** |
+
+**„Rodina"** je súrodenecký prípad: rodič s dvomi–tromi deťmi v akadémii dnes
+musí prepínať kódy, čím o predošlé dieťa príde. Je to malá zmena a dá sa
+predať.
+
+**„Manažér"** je jediná z týchto hladín, ktorá je naozaj biznis: športový
+riaditeľ menšej akadémie sleduje 15 detí naprieč trénermi. **Dnes preňho
+appka nemá vôbec nič** — je to nápad z 2026-07-17 (mockupy v `docs/mockups/`),
+nie postavená funkcia.
+
+### 8.4 Čo by sa muselo postaviť
+
+1. **Uvoľniť `one_active_connection_per_parent`** (migrácia
+   `20260715100000_player_connections.sql`) — dnes je to unikátny index na
+   `parent_id`, musel by platiť len po hladinu účtu.
+2. **`profiles.connection_limit`** — obdoba `player_limit` pre druhú stranu,
+   plus stráž v `claim_player_connection` (dnes tam žiadna nie je, RPC len
+   overí kód a prihlásenie).
+3. **Prehľadová stránka pre manažéra** — dnešný `/parent` predpokladá **práve
+   jedného** pripojeného hráča. Pre 15 hráčov treba roster so stavmi, podobný
+   tomu, čo má tréner a pult.
+4. **Rozhodnúť, čo manažér NEsmie** — inak si federačný produkt zožerie sám
+   seba. Manažér **sleduje** hráčov (kópie, read-only, žiadny dohľad nad
+   trénermi); federácia **zamestnáva trénerov**, vlastní dáta a má pult. Manažér
+   nesmie dostať `/director`, inak nemá zväz dôvod platiť za sedadlá.
+
+### 8.5 Odporúčanie
+
+**Do prvej verzie Stripe dať LEN trénerské hladiny.** Rodič a hráč ostávajú
+zadarmo (tak to aj je), „Rodina" a „Manažér" sú samostatná dávka práce —
+a hlavne: kým nemáš prvého platiaceho trénera, nevieš, či o manažérsku
+hladinu vôbec niekto stojí. **Manažér bez postavenej prehľadovej stránky sa
+predať nedá**, takže by to aj tak nebola otázka cenníka, ale rozvoja.
+
+---
+
+## 9. Čo z toho vyplýva pre Stripe
 
 Pri návrhu A vznikne v Stripe **jeden produkt a šesť cien** (3 hladiny × mesačne
 a ročne), pri návrhu B štyri ceny. Každá cena má svoje `price_...` ID, ktoré ide
