@@ -67,6 +67,24 @@ najvyššiu hladinu na 10 hráčov za 24,90, čím cena za hráča naopak rástl
 (2,49 €); kto si to prepočíta, vidí opak toho, čo od vyššej hladiny čaká.
 Posun na 12 hráčov to otočil bez zmeny ceny.
 
+**Koľko to je na deň a na hráča** (podklad pre texty na webe):
+
+| Hladina | Ročná platba | Mesačná platba |
+|---|---|---|
+| 3 hráči | **4,6 centa** | 7,6 centa |
+| 6 hráčov | **4,2 centa** | 7,1 centa |
+| 12 hráčov | **4,1 centa** | 6,8 centa |
+
+Veta na web: **„Od 4 centov na deň za hráča"** — platí pri každej hladine, nie
+len pri najvyššej.
+
+**POZOR pri písaní cenníka:** tréner tak platí za hráča **menej než rodič**
+(4,1–4,6 vs. 9,9 centa denne). Dáva to zmysel, lebo platí za viacerých naraz,
+ale vedľa seba v jednej tabuľke by to vyzeralo divne — rodič má menej funkcií
+a platil by viac. **Cenník pre trénera a pre rodiča preto patrí na dve
+samostatné stránky.** Sú to aj tak dve rôzne otázky: „koľko ma to stojí pri
+mojom počte detí" a „oplatí sa mi vidieť, čo moje dieťa trénuje".
+
 **Prečo najnižšia hladina 3 a nie 1:** pri jednom hráčovi sa **vôbec
 nezapne** prepínač hráčov, roster ani nástenka „Dnes" — zákazník by za peniaze
 dostal okresanú appku a ani by nevedel, že mu niečo chýba. Trojka je najnižšie
