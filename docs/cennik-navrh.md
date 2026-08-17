@@ -171,8 +171,29 @@ uplynutí predplatného sa mu **pozastaví prístup**, nie zmažú záznamy — 
 tá obrazovka musí povedať doslova: *„Tvoje záznamy tu sú, predplatným ich
 znova sprístupníš."* Rovnaká slušnosť, akú má trénerská vetva.
 
-**Upresnenie používateľa (2026-08-16): „sledovanie a uchovanie dát áno, ale
-bez platenia dáta nevidí."** Z toho vyplývajú dve veci, ktoré treba dodržať:
+**FINÁLNY MODEL (používateľ, 2026-08-16, po dvoch upresneniach): rodič vidí
+TRÉNINGY vždy, ANALYTIKA je za platbou.**
+
+| | Zadarmo | Za 36 €/rok |
+|---|---|---|
+| Kalendár tréningov | ✅ | ✅ |
+| Detail tréningu (cvičenia, čas, poznámky) | ✅ | ✅ |
+| Uchovanie histórie | ✅ | ✅ |
+| **Analytika** (rozbory, %, odhad úderov, porovnanie období) | ❌ | ✅ |
+
+**Prečo je to lepšie než pôvodné „bez platenia nevidí nič":** to, čo robí dobré
+meno trénerovi — že rodič vidí systematickú prácu s dieťaťom — ostáva zadarmo,
+takže platobná stena nepoškodzuje predajný argument appky. Platí sa za vrstvu,
+ktorá je naozaj navyše. **A rozsah práce je menší:** stráž stačí na analytike,
+nie na celej rodičovskej časti.
+
+**Čo to znamená v kóde:** ochrániť treba `app/parent/analytics/**` a načítavače
+v `lib/actions/parent-data.ts` (`getParentCategoryAnalytics`,
+`getParentCategoryMinuteShares`). Kalendár, detail tréningu a zoznam ostávajú
+nedotknuté. **Záložku na analytiku neskrývaj — zamkni ju**: kto nevie, čo si
+kupuje, si to nekúpi.
+
+Ďalej platia dve veci, ktoré treba dodržať:
 
 1. **Kopírovanie beží ďalej aj počas neplatenia.** Triggery
    `sync_session_to_parent` / `sync_drill_to_parent` sa pýtajú len na to, či
