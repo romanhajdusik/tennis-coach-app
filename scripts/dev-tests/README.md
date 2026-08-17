@@ -34,6 +34,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
 | `fitness.js` | **Kondičné nasadenie** — 10 zameraní, prázdne sloty kódov, chýbajúce pole charakteru, trvanie 60, analytika bez odhadu úderov, žiadna tenisová landing, kondička kód prepojenia VYDÁVA |
 | `card-links.js` | **Prepojenie kariet hráča naprieč disciplínami** — vydanie a zaklaimovanie kódu, cross-read je len na čítanie, cudzia karta sa nedostane medzi hráčov, po zrušení prístup zmizne. Nepotrebuje dev server |
+| `promo-codes.js` | **Registrácia na pozvánku** — kódy nesmie nikto čítať ani meniť, vymyslený kód v metadátach nedá nič, hromadný kód sa vyčerpá a viac nepustí, rok vs. doživotne, kód sa míňa len trénerovi, na org subdoméne vedie `/register` na `/join` |
 | `password-reset.js` | **Obnova zabudnutého hesla** — stránky a odkazy na oboch prihláseniach, neplatný a už použitý odkaz, `?next` na cudziu adresu, a celý reťazec mail → overenie → formulár presne ako v appke (vrátane toho, že odkaz v maili naozaj vedie na `/auth/confirm`, nie na východziu adresu) |
 | `security-boundaries.js` | **Hranice medzi tromi režimami** (audit 2026-08-15) — najmenšie potrebné granty, neprihlásený proti tabuľkám aj RPC, prepojenie nesiaha na federačného hráča, čitateľ sa nedostane za hranicu čítania, org tréner mimo svojej org, rodič bez živých dát. Nepotrebuje dev server |
 

@@ -273,6 +273,20 @@ Kalendár ([`app/calendar/page.tsx`](app/calendar/page.tsx) pre trénera, [`app/
 - **Potvrdzovacia otázka pri rušení je iná v každom režime** (`Sessions.review.confirmDeleteMessage` vs `confirmCancelMessage`, prepína ich prop `isOrg` z `app/sessions/[id]/page.tsx`) — vo federácii by bolo nepravdivé sľubovať, že sa tréning „natrvalo zmaže".
 - **Obojsmerná synchronizácia (webhooks) je stále neskoršia fáza** — appka o zmenách urobených priamo v Google Kalendári nevie.
 
+## Registrácia na pozvánku a promo kódy (od 2026-08-16)
+
+Dovtedy sa registrácia dala len zapnúť alebo vypnúť (`REGISTRATION_ENABLED`) a účty trénerov sa zakladali ručne — tester sa k appke nedostal sám. Odteraz je vstupenkou **promo kód**, ktorý zároveň určuje, ako dlho má tréner appku zadarmo. Tabuľky `promo_codes` + `promo_code_redemptions`, migrácia `20260816090000_promo_codes.sql`. **Vydávanie kódov, kontrola použitia a poradie nasadenia sú v [`docs/promo-kody.md`](docs/promo-kody.md)** — tu len pravidlá pre kód:
+
+- **Kód uplatňuje trigger `handle_new_user`, nie appka.** Appka nedrží `service_role` kľúč a do `profiles` nezapisuje vôbec (inak by si účet nastavil „zaplatené" sám), takže kód putuje v **metadátach registrácie** a overí si ho databáza. **Metadáta si píše prehliadač** — vymyslený kód preto dá presne to isté, čo žiadny kód: 14 dní a jedného hráča.
+- **`free_days = null` znamená doživotne** (`complimentary`), číslo znamená toľko dní skúšobnej doby. Jeden stĺpec pokrýva „rok zadarmo" aj „doživotne", takže pribudnutie ďalšieho druhu prístupu nie je migrácia.
+- **Overenie a započítanie sú JEDEN `update ... where used_count < max_uses`** — dva súbežné pokusy o posledné voľné použitie sa tak nemôžu podariť obidva.
+- **Obe tabuľky sú bez policy a bez grantov** (`revoke all ... from anon, authenticated`). Kto by vedel čítať `promo_codes`, prečítal by si nepoužité kódy. `revoke` je tu povinné, nie dekoratívne — default privileges by novej tabuľke dali `select` (viď zásadu „`grant` nič neodoberá").
+- **Kód sa míňa len trénerovi** (rola `coach`) — rodič/hráč/manažér nič neplatia a inak by ticho zožrali jedno použitie.
+- `promo_code_is_valid()` vracia **len áno/nie** a smie ju volať aj `anon` (registrácia je z definície bez prihlásenia) — cez ňu sa nedá zistiť, čo kód dáva ani koľko použití mu ostáva.
+- **Na org subdoméne `/register` presmeruje na `/join`** (`proxy.ts`) — do federácie sa vstupuje pozývacím kódom od šéftrénera, nie samoobsluhou.
+- **Potvrdzovanie mailu pri registrácii** (dashboard) si vyžiadalo obrazovku „skontroluj si mail" v `register-form.tsx`: pri zapnutom potvrdzovaní Supabase nevydá session a bez tej obrazovky by to vyzeralo, že odoslanie formulára nespravilo nič. `app/auth/confirm/route.ts` prijíma aj typ `signup`.
+- Overuje `scripts/dev-tests/promo-codes.js` (20 kontrol).
+
 ## Obnova zabudnutého hesla (od 2026-08-16)
 
 Na prihlásení (trénerskom aj rodičovskom) je „Forgot your password?" → `/forgot-password` → mail s odkazom → `/auth/confirm` (vymení token za session) → `/reset-password`. Akcie sú v [`lib/actions/password-reset.ts`](lib/actions/password-reset.ts). **Bez migrácie**, celé to stojí na Supabase Auth. **Postup nasadenia, produkčné nastavenia a pasce sú v [`docs/obnova-hesla.md`](docs/obnova-hesla.md)** — tu len to, čo musí vedieť každý, kto sa toho dotkne:

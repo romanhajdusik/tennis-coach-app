@@ -27,6 +27,7 @@ const LOGIN_PATH = "/login";
 // zadať pozývací kód. Bez tejto výnimky ho stráž nižšie pošle na /login,
 // zahodí mu session a onboarding sa zacyklí: kód nemá kde zadať.
 const JOIN_PATH = "/join";
+const REGISTER_PATH = "/register";
 
 // Obnova hesla nezobrazuje žiadne dáta organizácie — je to len formulár.
 // Stráž členstva ju preto musí pustiť: odkaz z mailu vytvorí na tejto
@@ -109,6 +110,14 @@ export async function proxy(request: NextRequest) {
 async function handleOrgRequest(request: NextRequest, slug: string) {
   const { pathname, search } = request.nextUrl;
   const org = await resolveOrgBySlug(slug);
+
+  // Do federácie sa vstupuje POZÝVACÍM KÓDOM od šéftrénera, nie samoobslužnou
+  // registráciou (§5.1, členstvo je dobrovoľné, ale prideľuje ho organizácia).
+  // Kto si tu založí účet sám, vyrobí si samostatného trénera bez členstva —
+  // a stráž nižšie ho aj tak vzápätí pošle na `/join`. Posielame ho tam rovno.
+  if (pathname === REGISTER_PATH && request.method === "GET") {
+    return NextResponse.redirect(new URL(JOIN_PATH, originOf(request)), 307);
+  }
 
   // Neexistujúca organizácia sa správa, akoby subdoména nebola — pošleme
   // návštevníka na hlavnú doménu namiesto zobrazenia appky bez kontextu.

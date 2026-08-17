@@ -1,30 +1,20 @@
-import Link from "next/link";
-import { getTranslations } from "next-intl/server";
 import { RegisterForm } from "./register-form";
 
-export default async function RegisterPage() {
-  const registrationEnabled = process.env.REGISTRATION_ENABLED === "true";
-  const t = await getTranslations("Auth.register");
-
-  if (!registrationEnabled) {
-    return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background px-4 text-center ">
-        <p className="max-w-sm text-sm text-muted ">
-          {t("closed")}
-        </p>
-        <Link
-          href="/login"
-          className="font-medium text-foreground underline "
-        >
-          {t("loginLink")}
-        </Link>
-      </div>
-    );
-  }
+/**
+ * Registrácia. Od 2026-08-16 sa nezatvára úplne — beží buď verejne
+ * (`REGISTRATION_ENABLED=true`), alebo **na pozvánku**, teda len s promo
+ * kódom. Predtým tu bola len hláška „registrácia je zatvorená" a účty sa
+ * zakladali ručne, čím sa k appke nedostal ani tester.
+ *
+ * Kód platí pre obe nasadenia rovnako (tenis aj kondička) — je to vlastnosť
+ * účtu, nie disciplíny.
+ */
+export default function RegisterPage() {
+  const promoRequired = process.env.REGISTRATION_ENABLED !== "true";
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-4 ">
-      <RegisterForm />
+      <RegisterForm promoRequired={promoRequired} />
     </div>
   );
 }

@@ -21,8 +21,12 @@ import { requestOrigin } from "@/lib/request-origin";
  */
 const NEW_PASSWORD_PATH = "/reset-password";
 
-/** Typy odkazov, ktoré sme ochotní prijať — dnes výhradne obnova hesla. */
-const ALLOWED_TYPES: EmailOtpType[] = ["recovery"];
+/**
+ * Typy odkazov, ktoré sme ochotní prijať: obnova hesla a potvrdenie
+ * registrácie. Zoznam je zámerne uzavretý — čokoľvek iné (napr. zmena
+ * e-mailu) appka neponúka, takže by taký odkaz nemal odkiaľ prísť.
+ */
+const ALLOWED_TYPES: EmailOtpType[] = ["recovery", "signup", "email"];
 
 /**
  * Cieľ presmerovania musí byť cesta v tejto appke. Bez tejto kontroly by

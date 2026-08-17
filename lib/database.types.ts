@@ -542,6 +542,68 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_code_redemptions: {
+        Row: {
+          promo_code_id: string
+          redeemed_at: string
+          user_id: string
+        }
+        Insert: {
+          promo_code_id: string
+          redeemed_at?: string
+          user_id: string
+        }
+        Update: {
+          promo_code_id?: string
+          redeemed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_code_redemptions_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          free_days: number | null
+          id: string
+          max_uses: number
+          note: string | null
+          player_limit: number
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string | null
+          free_days?: number | null
+          id?: string
+          max_uses?: number
+          note?: string | null
+          player_limit?: number
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string | null
+          free_days?: number | null
+          id?: string
+          max_uses?: number
+          note?: string | null
+          player_limit?: number
+          used_count?: number
+        }
+        Relationships: []
+      }
       session_drills: {
         Row: {
           category: string
@@ -729,6 +791,7 @@ export type Database = {
         }[]
       }
       owns_personal_player: { Args: { p_player_id: string }; Returns: boolean }
+      promo_code_is_valid: { Args: { p_code: string }; Returns: boolean }
       reads_linked_player: { Args: { p_player_id: string }; Returns: boolean }
       reads_linked_session: { Args: { p_session_id: string }; Returns: boolean }
       revoke_player_link: { Args: { p_link_id: string }; Returns: undefined }
