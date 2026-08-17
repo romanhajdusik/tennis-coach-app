@@ -44,16 +44,23 @@ cenníka. Klub s tromi trénermi patrí do federačného, aj keby mal hráčov m
 
 ---
 
-## 3. Návrh A — tri hladiny (odporúčaný)
+## 3. ROZHODNUTÉ — trénerské hladiny (2026-08-16)
 
-| Hladina | Hráčov | Mesačne | Ročne | Komu |
+**Platí rovnako pre tenis aj pre kondičku.**
+
+| Hladina | Hráčov | Mesačne | Ročne | Za hráča/mes |
 |---|---|---|---|---|
-| **Štart** | 3 | 9,90 € | 99 € | tréner s pár zverencami, rodič-tréner |
-| **Tréner** | 10 | 19,90 € | 199 € | tréner na plný úväzok |
-| **Klub** | 25 | 34,90 € | 349 € | tréner so skupinami v klube |
+| 1. | 3 | **6,90 €** | 69 € | 2,30 € |
+| 2. | 6 | **12,90 €** | 129 € | 2,15 € |
+| 3. | 12 | **24,90 €** | 249 € | 2,08 € |
 
-**Ročne = desať mesiacov za dvanásť.** Ľahko sa to povie jednou vetou a
-zákazník to vie prepočítať z hlavy.
+**Ročne = desať mesiacov za dvanásť.** Ľahko sa to povie jednou vetou
+a zákazník si to prepočíta z hlavy.
+
+**Cena za hráča so stúpajúcou hladinou klesá** — to je zámer. Prvý nástrel mal
+najvyššiu hladinu na 10 hráčov za 24,90, čím cena za hráča naopak rástla
+(2,49 €); kto si to prepočíta, vidí opak toho, čo od vyššej hladiny čaká.
+Posun na 12 hráčov to otočil bez zmeny ceny.
 
 **Prečo najnižšia hladina 3 a nie 1:** pri jednom hráčovi sa **vôbec
 nezapne** prepínač hráčov, roster ani nástenka „Dnes" — zákazník by za peniaze
@@ -64,9 +71,15 @@ dostal okresanú appku a ani by nevedel, že mu niečo chýba. Trojka je najniž
 pre zákazníka a ďalšie dve položky v Stripe. Pri troch si vyberie za pár
 sekúnd.
 
+**OTVORENÉ: strop je 12 hráčov.** Tréner, ktorý vedie skupiny v klube, ich má
+bežne 15–25 a **federačný produkt preňho nie je** (ten je pre organizácie
+s viacerými trénermi a pultom). Buď pribudne štvrtá hladina, alebo — lacnejšie
+a poučnejšie — štvrtá dlaždica v cenníku **„Viac hráčov? Napíšte nám"**
+s adresou. Tá nič nestojí a rovno ukáže, či taký dopyt existuje.
+
 ---
 
-## 4. Návrh B — dve hladiny
+## 4. Zvažované a neprijaté: dve hladiny
 
 | Hladina | Hráčov | Mesačne | Ročne |
 |---|---|---|---|
@@ -79,7 +92,7 @@ dvadsať. **Odporúčam vtedy, ak chceš spustiť rýchlo a doladiť neskôr.**
 
 ---
 
-## 5. Návrh C — platba za hráča
+## 5. Zvažované a neprijaté (zatiaľ): platba za hráča
 
 `2,50 € / hráč / mesiac`, minimum 3 hráči (teda od 7,50 €).
 
