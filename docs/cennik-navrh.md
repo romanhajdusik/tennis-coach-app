@@ -160,12 +160,15 @@ jediné aktívne prepojenie naraz** — nový kód automaticky zruší predošl�
 rodičovskú vrstvu zadarmo; **odporúčanie bolo prebité vedome**, argument proti
 je zapísaný nižšie, aby sa nemusel objavovať znova.
 
-| Hladina | Koho sleduje | Ročne | Mesačne (na doriešenie) |
+| Hladina | Koho sleduje | Ročne | Mesačne |
 |---|---|---|---|
-| **Hráč / Rodič / Manažér** | 1 hráča | **36 €** | ~3,90 € |
+| **Hráč / Rodič / Manažér** | 1 hráča | **36 €** | **5,90 €** |
 
-Ročná cena je hlavná (tak sa to komunikuje: *„pod 10 centov na deň"*), mesačná
-je pohodlnostná voľba a má byť citeľne drahšia, inak si ju vezme každý.
+Ročná cena je hlavná a tak sa aj komunikuje: *„pod 10 centov na deň."*
+Mesačná vychádza na 70,80 € ročne, čiže **ročná platba ušetrí takmer polovicu**
+— je to zámerne veľký rozdiel. Mesačná voľba tu nie je preto, aby ju niekto
+bral, ale aby bola ročná zjavne výhodná a aby mal kam siahnuť ten, kto sa na
+rok zaviazať nechce.
 
 **Argument, ktorý bol prebitý** (nechávam ho tu ako riziko na sledovanie, nie
 ako námietku): rodičovská vrstva je zároveň dôvod, prečo tréner appku chce —
