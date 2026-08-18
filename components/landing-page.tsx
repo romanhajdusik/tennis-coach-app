@@ -6,6 +6,13 @@ import {
   loadLandingMessages,
 } from "@/lib/landing-locale";
 import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
+import { LandingPricing } from "@/components/landing-pricing";
+import {
+  COACH_TIERS,
+  CONTACT_EMAIL,
+  centsPerPlayerDay,
+  formatEur,
+} from "@/lib/landing-pricing";
 import {
   CalendarIcon,
   ChartBarIcon,
@@ -44,6 +51,18 @@ export async function LandingPage() {
   // Appka je len SK/EN — slovenský landing dostane slovenské zábery,
   // ostatné jazyky anglické.
   const shotLocale = locale === "sk" ? "sk" : "en";
+  // Ceny formátuje server podľa jazyka (6,90 € vs €6.90) — v prehliadači sa
+  // prepína len obdobie. Počet hráčov je preložený reťazec, lebo pluralita
+  // („3 hráči" vs „6 hráčov") je vec jazyka, nie čísla.
+  const tiers = COACH_TIERS.map((tier, index) => ({
+    players: t.pricingPlayerCounts[index],
+    monthly: formatEur(locale, tier.monthly),
+    yearly: formatEur(locale, tier.yearly),
+    yearlyPerMonth: formatEur(locale, tier.yearly / 12),
+    centsMonthly: centsPerPlayerDay(locale, tier.monthly * 12, tier.players),
+    centsYearly: centsPerPlayerDay(locale, tier.yearly, tier.players),
+    featured: tier.featured === true,
+  }));
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -186,24 +205,39 @@ export async function LandingPage() {
         </div>
       </section>
 
-      <section className="w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-8 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-xs font-medium text-muted ring-1 ring-inset ring-border">
-            {t.pricingBadge}
-          </span>
-          <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
-            {t.pricingTitle}
-          </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted">
-            {t.pricingText}
-          </p>
-          <Link
-            href="/register"
-            className="mt-5 inline-block rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary-hover"
-          >
-            {t.pricingCta}
-          </Link>
-        </div>
+      <section
+        id="cennik"
+        className="w-full max-w-5xl scroll-mt-20 px-4 py-8 sm:px-6 sm:py-12"
+      >
+        <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          {t.pricingTitle}
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-base text-balance text-muted">
+          {t.pricingSubtitle}
+        </p>
+        <LandingPricing
+          tiers={tiers}
+          contactEmail={CONTACT_EMAIL}
+          labels={{
+            monthly: t.pricingMonthly,
+            yearly: t.pricingYearly,
+            yearlySave: t.pricingYearlySave,
+            perMonth: t.pricingPerMonth,
+            perYear: t.pricingPerYear,
+            yearlyNote: t.pricingYearlyNote,
+            perDay: t.pricingPerDay,
+            recommended: t.pricingRecommended,
+            includedTitle: t.pricingIncludedTitle,
+            included: t.pricingIncluded,
+            moreTitle: t.pricingMoreTitle,
+            moreText: t.pricingMoreText,
+            moreCta: t.pricingMoreCta,
+            vat: t.pricingVat,
+            followerText: t.pricingFollowerText,
+            followerCta: t.pricingFollowerCta,
+            cta: t.pricingCta,
+          }}
+        />
       </section>
 
       <section className="relative mt-6 w-full overflow-hidden bg-primary py-16 sm:py-20">
