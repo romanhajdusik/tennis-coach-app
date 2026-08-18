@@ -1,8 +1,8 @@
 {
   "eyebrow": "For tennis coaches",
-  "heroTitle": "Practices under control. Right there on the court.",
-  "heroSubtitle": "P.L.A.W helps you plan, log and analyze every training practice from your phone — no paper, no spreadsheets.",
-  "ctaPrimary": "Try it for 14 days",
+  "heroTitle": "Coach your way. Show the progress. End the evening questions from parents.",
+  "heroSubtitle": "P.L.A.W is the first coaching app that doesn't push someone else's templates on you. Write down your own drills, follow every player's development in clear charts, and give parents read-only access to their practices.",
+  "ctaPrimary": "Try P.L.A.W",
   "ctaSecondary": "Sign in",
   "guideLink": "Guide",
   "guideCoach": "Coach guide",
@@ -26,15 +26,15 @@
     },
     {
       "title": "Your own drill codes",
-      "description": "20 slots per focus area, matching your own shorthand system — no need to adapt to someone else's terminology."
+      "description": "It adapts to you, not the other way round. No preset templates — write down the drills you trust and coach exactly the way you believe in."
     },
     {
       "title": "Analytics and charts",
-      "description": "Breakdowns by week, month, quarter and year with a comparison to last season, split by drill code and by stroke character."
+      "description": "Data instead of gut feeling. No more chaos in notebooks and spreadsheets — the charts show you at a glance whether a player is improving and where the gaps are, in quality and in volume."
     },
     {
       "title": "Sharing with players, parents and managers",
-      "description": "A player, their parent or their manager gets their own access to the training history — nothing to forward manually."
+      "description": "No more long explanations after practice. Give the parent an access code and let the practice log speak for you — they see what their child worked on, you go home with a clear head."
     },
     {
       "title": "Built for the phone",
@@ -70,8 +70,8 @@
   "pricingFollowerText": "Are you a player, parent or manager?",
   "pricingFollowerCta": "See the price for following one player",
   "pricingCta": "Sign up",
-  "finalCtaTitle": "Get ready for the season with a clear overview",
-  "finalCtaSubtitle": "Create an account in a couple of minutes and plan your first practice today.",
+  "finalCtaTitle": "Raise the value of your coaching",
+  "finalCtaSubtitle": "Show parents and clients that you approach preparation at a professional level — a digital practice log is now part of your service.",
   "finalCtaButton": "Create account",
   "footerTagline": "P.L.A.W — a training log for tennis coaches"
 }

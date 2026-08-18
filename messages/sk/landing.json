@@ -1,8 +1,8 @@
 {
   "eyebrow": "Pre tenisových trénerov",
-  "heroTitle": "Tréningy pod kontrolou. Priamo na kurte.",
-  "heroSubtitle": "P.L.A.W ti pomôže naplánovať, zaznamenať a analyzovať každý tréning z telefónu — bez papierov a excelov.",
-  "ctaPrimary": "Vyskúšať 14 dní",
+  "heroTitle": "Trénuj podľa seba. Ukáž progres. Zbav sa večerných otázok od rodičov.",
+  "heroSubtitle": "P.L.A.W je prvá trénerská aplikácia, ktorá ťa nenúti používať cudzie šablóny. Zapíš si vlastné drily, sleduj vývoj hráčov v jasných grafoch a daj rodičom read-only prístup k ich tréningom.",
+  "ctaPrimary": "Vyskúšať P.L.A.W",
   "ctaSecondary": "Prihlásiť sa",
   "guideLink": "Návod",
   "guideCoach": "Návod pre trénera",
@@ -26,15 +26,15 @@
     },
     {
       "title": "Vlastné kódy cvičení",
-      "description": "20 slotov na každé zameranie, presne podľa tvojho vlastného systému skratiek — žiadne prispôsobovanie sa cudzej terminológii."
+      "description": "Prispôsobí sa tebe, nie ty jej. Žiadne prednastavené šablóny — zapíš si vlastné overené drily a trénuj presne podľa svojej filozofie."
     },
     {
       "title": "Analytika a grafy",
-      "description": "Prehľad podľa týždňa, mesiaca, kvartálu aj roka s porovnaním voči minulej sezóne, rozpad podľa kódu cvičenia aj charakteru úderu."
+      "description": "Dáta namiesto pocitov. Koniec chaosu v zošitoch a tabuľkách — grafy ti okamžite ukážu, či hráč napreduje a kde má medzery v kvalite či kvantite tréningu."
     },
     {
       "title": "Zdieľanie s hráčom, rodičom a manažérom",
-      "description": "Hráč, rodič alebo manažér dostane vlastný prístup s históriou tréningov — nič netreba posielať ručne."
+      "description": "Už žiadne siahodlhé vysvetľovanie po tréningu. Daj rodičovi prístupový kód a nechaj záznam tréningov hovoriť za teba — on vidí, čo dieťa trénovalo, ty máš po tréningu čistú hlavu."
     },
     {
       "title": "Postavené pre telefón",
@@ -70,8 +70,8 @@
   "pricingFollowerText": "Si hráč, rodič alebo manažér?",
   "pricingFollowerCta": "Pozri cenu za sledovanie jedného hráča",
   "pricingCta": "Zaregistrovať sa",
-  "finalCtaTitle": "Priprav sa na sezónu s prehľadom",
-  "finalCtaSubtitle": "Založ si účet za pár minút a začni plánovať prvý tréning ešte dnes.",
+  "finalCtaTitle": "Zvýš hodnotu svojich tréningov",
+  "finalCtaSubtitle": "Ukáž rodičom aj klientom, že k príprave pristupuješ na svetovej úrovni — digitálny denník je odteraz súčasťou tvojich služieb.",
   "finalCtaButton": "Vytvoriť účet",
   "footerTagline": "P.L.A.W — tréningový denník pre tenisových trénerov"
 }
