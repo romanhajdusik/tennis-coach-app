@@ -1,0 +1,39 @@
+{
+  "metaTitle": "Pricing for player, parent and manager — P.L.A.W",
+  "metaDescription": "What it costs to follow one player in P.L.A.W: the practice list and every detail are visible without a subscription, the calendar and the analytics come with it.",
+  "eyebrow": "For player, parent & manager",
+  "backToHome": "Back to home",
+  "title": "One player, one price.",
+  "subtitle": "You follow the practices of the player the coach's code connected you to. The list of practices and every detail stay visible without a subscription — the subscription adds the calendar and the analytics.",
+  "yearlyLabel": "Yearly",
+  "monthlyLabel": "Monthly",
+  "perYear": "/ year",
+  "perMonth": "/ month",
+  "perDay": "{amount} cents a day.",
+  "yearlyNote": "Paying for the year costs almost half of paying monthly.",
+  "trialNote": "14 days to try it out, then it's paid.",
+  "vat": "Prices include VAT.",
+  "compareTitle": "What you get",
+  "compareSubtitle": "Without a subscription you still get the answer to “what did my child practise”. What you pay for is the convenience and the overview.",
+  "compareWithoutSub": "No subscription",
+  "comparePaid": "Subscribed",
+  "compareRows": [
+    "Practice list with a month filter",
+    "Practice detail — drills, time, notes",
+    "Your history is kept",
+    "Calendar — weekly and monthly view",
+    "Analytics — breakdowns, percentages, comparison over time"
+  ],
+  "notesTitle": "Good to know",
+  "notes": [
+    "Records keep arriving even when you're not subscribed — nothing is deleted, and a subscription makes them visible again.",
+    "One subscription covers one player. Following two children needs two accounts for now.",
+    "You need a connect code from the coach — without it there is nothing to follow.",
+    "The first 14 days are a trial; after that it's paid — same as for coaches."
+  ],
+  "ctaTitle": "Got a code from your coach?",
+  "ctaText": "Log in or create an account and start following the practices.",
+  "ctaButton": "Log in or sign up",
+  "crossLinkText": "Not sure how it works?",
+  "crossLinkCta": "See the guide for player, parent and manager"
+}

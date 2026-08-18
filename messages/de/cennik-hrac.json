@@ -1,0 +1,39 @@
+{
+  "metaTitle": "Preise für Spieler, Eltern und Manager — P.L.A.W",
+  "metaDescription": "Was es kostet, einen Spieler in P.L.A.W zu verfolgen: Liste und Details der Trainings sind auch ohne Abo sichtbar, Kalender und Analysen gehören zum Abo.",
+  "eyebrow": "Für Spieler, Eltern & Manager",
+  "backToHome": "Zurück zur Startseite",
+  "title": "Ein Spieler, ein Preis.",
+  "subtitle": "Du verfolgst die Trainings des Spielers, mit dem dich der Code des Trainers verbunden hat. Die Trainingsliste und jedes Detail bleiben auch ohne Abo sichtbar — das Abo bringt Kalender und Analysen dazu.",
+  "yearlyLabel": "Jährlich",
+  "monthlyLabel": "Monatlich",
+  "perYear": "/ Jahr",
+  "perMonth": "/ Monat",
+  "perDay": "{amount} Cent pro Tag.",
+  "yearlyNote": "Jährlich zahlen kostet fast die Hälfte von monatlich.",
+  "trialNote": "14 Tage zum Testen, danach kostenpflichtig.",
+  "vat": "Preise inkl. MwSt.",
+  "compareTitle": "Was du bekommst",
+  "compareSubtitle": "Auch ohne Abo bekommst du die Antwort auf die Frage, was dein Kind trainiert hat. Bezahlt werden Komfort und Überblick.",
+  "compareWithoutSub": "Ohne Abo",
+  "comparePaid": "Mit Abo",
+  "compareRows": [
+    "Trainingsliste mit Monatsfilter",
+    "Trainingsdetails — Übungen, Zeit, Notizen",
+    "Die Historie bleibt erhalten",
+    "Kalender — Wochen- und Monatsansicht",
+    "Analysen — Auswertungen, Prozente, Vergleich von Zeiträumen"
+  ],
+  "notesTitle": "Gut zu wissen",
+  "notes": [
+    "Die Aufzeichnungen laufen auch ohne Abo weiter — nichts wird gelöscht, mit einem Abo sind sie wieder sichtbar.",
+    "Ein Abo gilt für einen Spieler. Wer zwei Kinder verfolgt, braucht vorerst zwei Konten.",
+    "Du brauchst einen Code vom Trainer — ohne ihn gibt es nichts zu verfolgen.",
+    "Die ersten 14 Tage sind zum Testen, danach kostenpflichtig — wie beim Trainer."
+  ],
+  "ctaTitle": "Hast du einen Code vom Trainer?",
+  "ctaText": "Melde dich an oder erstelle ein Konto und verfolge die Trainings.",
+  "ctaButton": "Anmelden oder registrieren",
+  "crossLinkText": "Noch unsicher, wie es funktioniert?",
+  "crossLinkCta": "Anleitung für Spieler, Eltern und Manager ansehen"
+}

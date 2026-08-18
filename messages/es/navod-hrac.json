@@ -23,11 +23,13 @@
   "tipsTitle": "Bueno saber",
   "tips": [
     "Tu historial se mantiene — aunque la colaboración con el entrenador termine o recibas un código nuevo, los entrenamientos anteriores no desaparecen.",
-    "El acceso es gratuito por ahora."
+    "La lista de entrenamientos y su detalle se ven también sin suscripción; el calendario y la analítica van con la suscripción."
   ],
   "ctaTitle": "¿Tienes un código del entrenador?",
   "ctaText": "Inicia sesión o crea una cuenta y empieza a seguir los entrenamientos.",
   "ctaButton": "Iniciar sesión o registrarse",
   "crossLinkText": "¿Eres entrenador?",
-  "crossLinkCta": "Ver la guía para entrenadores"
+  "crossLinkCta": "Ver la guía para entrenadores",
+  "pricingLinkText": "¿Te interesa el precio?",
+  "pricingLinkCta": "Ver el precio por seguir a un jugador"
 }

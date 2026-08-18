@@ -1,0 +1,39 @@
+{
+  "metaTitle": "Precios para jugador, padre y mánager — P.L.A.W",
+  "metaDescription": "Cuánto cuesta seguir a un jugador en P.L.A.W: la lista y el detalle de los entrenamientos se ven sin suscripción, el calendario y la analítica van con ella.",
+  "eyebrow": "Para jugador, padre y mánager",
+  "backToHome": "Volver al inicio",
+  "title": "Un jugador, un precio.",
+  "subtitle": "Sigues los entrenamientos del jugador con el que te ha conectado el código del entrenador. La lista de entrenamientos y su detalle se ven también sin suscripción — la suscripción añade el calendario y la analítica.",
+  "yearlyLabel": "Anual",
+  "monthlyLabel": "Mensual",
+  "perYear": "/ año",
+  "perMonth": "/ mes",
+  "perDay": "{amount} céntimos al día.",
+  "yearlyNote": "Pagar el año sale casi a mitad de precio que pagar el mes.",
+  "trialNote": "14 días de prueba y después se paga.",
+  "vat": "Precios con IVA incluido.",
+  "compareTitle": "Qué obtienes",
+  "compareSubtitle": "Sin suscripción sigues teniendo la respuesta a qué ha entrenado tu hijo. Lo que se paga es la comodidad y la visión de conjunto.",
+  "compareWithoutSub": "Sin suscripción",
+  "comparePaid": "Con suscripción",
+  "compareRows": [
+    "Lista de entrenamientos con filtro por mes",
+    "Detalle del entrenamiento — ejercicios, tiempo, notas",
+    "Se conserva el historial",
+    "Calendario — vista semanal y mensual",
+    "Analítica — desgloses, porcentajes, comparación de periodos"
+  ],
+  "notesTitle": "Bueno saberlo",
+  "notes": [
+    "Los registros siguen llegando aunque no tengas suscripción — no se borra nada y con la suscripción vuelven a verse.",
+    "Una suscripción cubre a un jugador. Para seguir a dos hijos hacen falta, por ahora, dos cuentas.",
+    "Necesitas el código del entrenador — sin él no hay nada que seguir.",
+    "Los primeros 14 días son de prueba; después se paga, igual que el entrenador."
+  ],
+  "ctaTitle": "¿Tienes un código del entrenador?",
+  "ctaText": "Inicia sesión o crea una cuenta y empieza a seguir los entrenamientos.",
+  "ctaButton": "Iniciar sesión o registrarse",
+  "crossLinkText": "¿No tienes claro cómo funciona?",
+  "crossLinkCta": "Ver la guía para jugador, padre y mánager"
+}

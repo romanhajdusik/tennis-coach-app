@@ -1,0 +1,39 @@
+{
+  "metaTitle": "Cenník pre hráča, rodiča a manažéra — P.L.A.W",
+  "metaDescription": "Koľko stojí sledovanie jedného hráča v P.L.A.W: zoznam a detail tréningov vidíš aj bez predplatného, kalendár a analytika sú jeho súčasťou.",
+  "eyebrow": "Pre hráča, rodiča a manažéra",
+  "backToHome": "Späť na úvod",
+  "title": "Jeden hráč, jedna cena.",
+  "subtitle": "Sleduješ tréningy hráča, ku ktorému ťa pripojil kód od trénera. Zoznam tréningov aj ich detail vidíš aj bez predplatného — predplatné pridáva kalendár a analytiku.",
+  "yearlyLabel": "Ročne",
+  "monthlyLabel": "Mesačne",
+  "perYear": "/ rok",
+  "perMonth": "/ mesiac",
+  "perDay": "{amount} centa na deň.",
+  "yearlyNote": "Ročná platba vyjde takmer o polovicu lacnejšie než mesačná.",
+  "trialNote": "14 dní na skúšku, potom sa platí.",
+  "vat": "Ceny sú vrátane DPH.",
+  "compareTitle": "Čo dostaneš",
+  "compareSubtitle": "Aj bez predplatného dostaneš odpoveď na otázku, čo dieťa trénovalo. Za platbu ide pohodlie a prehľad.",
+  "compareWithoutSub": "Bez predplatného",
+  "comparePaid": "S predplatným",
+  "compareRows": [
+    "Zoznam tréningov s filtrom na mesiac",
+    "Detail tréningu — cvičenia, čas, poznámky",
+    "Uchovanie histórie",
+    "Kalendár — týždenný aj mesačný pohľad",
+    "Analytika — rozbory, percentá, porovnanie období"
+  ],
+  "notesTitle": "Dobré vedieť",
+  "notes": [
+    "Záznamy ti pribúdajú aj v čase, keď predplatné nemáš — nič sa nemaže a predplatným ich znova sprístupníš.",
+    "Jedno predplatné platí pre jedného hráča. Kto sleduje dve deti, potrebuje zatiaľ dva účty.",
+    "Potrebuješ kód od trénera — bez neho nie je čo sledovať.",
+    "Prvých 14 dní je na skúšku, potom sa platí — rovnako ako u trénera."
+  ],
+  "ctaTitle": "Máš kód od trénera?",
+  "ctaText": "Prihlás sa alebo si vytvor účet a začni sledovať tréningy.",
+  "ctaButton": "Prihlásiť sa alebo registrovať",
+  "crossLinkText": "Nie si si istý, ako to funguje?",
+  "crossLinkCta": "Pozri návod pre hráča, rodiča a manažéra"
+}

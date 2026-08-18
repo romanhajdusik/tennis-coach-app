@@ -138,6 +138,18 @@ export default async function NavodHracPage() {
         </div>
       </section>
 
+      {t.pricingLinkText && t.pricingLinkCta ? (
+        <div className="w-full max-w-3xl px-4 pt-6 text-center text-sm text-muted sm:px-6">
+          {t.pricingLinkText}{" "}
+          <Link
+            href="/cennik-hrac"
+            className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
+          >
+            {t.pricingLinkCta}
+          </Link>
+        </div>
+      ) : null}
+
       <div className="w-full max-w-3xl px-4 py-6 text-center text-sm text-muted sm:px-6">
         {t.crossLinkText}{" "}
         <Link

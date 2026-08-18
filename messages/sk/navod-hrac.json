@@ -23,11 +23,13 @@
   "tipsTitle": "Dobré vedieť",
   "tips": [
     "História ti ostáva — aj keď sa spolupráca s trénerom skončí alebo dostaneš nový kód, doterajšie tréningy nezmiznú.",
-    "Prístup je zatiaľ zadarmo."
+    "Zoznam tréningov aj ich detail vidíš aj bez predplatného; kalendár a analytika sú súčasťou predplatného."
   ],
   "ctaTitle": "Máš kód od trénera?",
   "ctaText": "Prihlás sa alebo si vytvor účet a začni sledovať tréningy.",
   "ctaButton": "Prihlásiť sa alebo registrovať",
   "crossLinkText": "Si tréner?",
-  "crossLinkCta": "Pozri návod pre trénerov"
+  "crossLinkCta": "Pozri návod pre trénerov",
+  "pricingLinkText": "Zaujíma ťa cena?",
+  "pricingLinkCta": "Pozri cenník pre hráča, rodiča a manažéra"
 }

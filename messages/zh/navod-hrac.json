@@ -23,11 +23,13 @@
   "tipsTitle": "小贴士",
   "tips": [
     "你的历史会一直保留——即使与教练的合作结束，或者你换了新代码，过往的训练也不会消失。",
-    "目前访问免费。"
+    "没有订阅也能看到训练列表和训练详情；日历和分析包含在订阅中。"
   ],
   "ctaTitle": "拿到教练给的代码了吗？",
   "ctaText": "登录或创建账户，开始关注训练。",
   "ctaButton": "登录或注册",
   "crossLinkText": "你是教练吗？",
-  "crossLinkCta": "查看教练指南"
+  "crossLinkCta": "查看教练指南",
+  "pricingLinkText": "想知道价格？",
+  "pricingLinkCta": "查看关注一位球员的价格"
 }

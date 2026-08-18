@@ -23,11 +23,13 @@
   "tipsTitle": "Gut zu wissen",
   "tips": [
     "Deine Historie bleibt — auch wenn die Zusammenarbeit mit dem Trainer endet oder du einen neuen Code bekommst, verschwinden vergangene Trainings nicht.",
-    "Der Zugang ist vorerst kostenlos."
+    "Die Trainingsliste und jedes Detail siehst du auch ohne Abo; Kalender und Analysen gehören zum Abo."
   ],
   "ctaTitle": "Hast du einen Code vom Trainer?",
   "ctaText": "Melde dich an oder erstelle ein Konto und verfolge die Trainings.",
   "ctaButton": "Anmelden oder registrieren",
   "crossLinkText": "Bist du Trainer?",
-  "crossLinkCta": "Zur Trainer-Anleitung"
+  "crossLinkCta": "Zur Trainer-Anleitung",
+  "pricingLinkText": "Interessiert dich der Preis?",
+  "pricingLinkCta": "Preis für einen Spieler ansehen"
 }

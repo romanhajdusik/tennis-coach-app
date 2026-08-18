@@ -1,0 +1,39 @@
+{
+  "metaTitle": "Prezzi per giocatore, genitore e manager — P.L.A.W",
+  "metaDescription": "Quanto costa seguire un giocatore in P.L.A.W: elenco e dettaglio degli allenamenti si vedono anche senza abbonamento, calendario e analisi fanno parte dell'abbonamento.",
+  "eyebrow": "Per giocatore, genitore e manager",
+  "backToHome": "Torna alla home",
+  "title": "Un giocatore, un prezzo.",
+  "subtitle": "Segui gli allenamenti del giocatore a cui ti ha collegato il codice dell'allenatore. L'elenco degli allenamenti e il loro dettaglio restano visibili anche senza abbonamento — l'abbonamento aggiunge il calendario e le analisi.",
+  "yearlyLabel": "Annuale",
+  "monthlyLabel": "Mensile",
+  "perYear": "/ anno",
+  "perMonth": "/ mese",
+  "perDay": "{amount} centesimi al giorno.",
+  "yearlyNote": "Pagare l'anno costa quasi la metà rispetto al mese.",
+  "trialNote": "14 giorni di prova, poi si paga.",
+  "vat": "Prezzi IVA inclusa.",
+  "compareTitle": "Cosa ottieni",
+  "compareSubtitle": "Anche senza abbonamento hai la risposta alla domanda: cosa ha allenato mio figlio. Quello che paghi è la comodità e la visione d'insieme.",
+  "compareWithoutSub": "Senza abbonamento",
+  "comparePaid": "Con abbonamento",
+  "compareRows": [
+    "Elenco degli allenamenti con filtro per mese",
+    "Dettaglio dell'allenamento — esercizi, tempo, note",
+    "Lo storico resta",
+    "Calendario — vista settimanale e mensile",
+    "Analisi — ripartizioni, percentuali, confronto tra periodi"
+  ],
+  "notesTitle": "Buono a sapersi",
+  "notes": [
+    "Le registrazioni continuano ad arrivare anche senza abbonamento — non si cancella nulla e con l'abbonamento tornano visibili.",
+    "Un abbonamento vale per un giocatore. Per seguire due figli servono per ora due account.",
+    "Ti serve il codice dell'allenatore — senza non c'è nulla da seguire.",
+    "I primi 14 giorni sono di prova, poi si paga, come per l'allenatore."
+  ],
+  "ctaTitle": "Hai ricevuto un codice dal tuo allenatore?",
+  "ctaText": "Accedi o crea un account e inizia a seguire gli allenamenti.",
+  "ctaButton": "Accedi o registrati",
+  "crossLinkText": "Non sai ancora come funziona?",
+  "crossLinkCta": "Guarda la guida per giocatore, genitore e manager"
+}

@@ -23,11 +23,13 @@
   "tipsTitle": "Good to know",
   "tips": [
     "Your history stays — even if the collaboration with the coach ends or you get a new code, past practices don't disappear.",
-    "Access is free for now."
+    "You see the list of practices and every detail without a subscription; the calendar and the analytics are part of the subscription."
   ],
   "ctaTitle": "Got a code from your coach?",
   "ctaText": "Log in or create an account and start following the practices.",
   "ctaButton": "Log in or sign up",
   "crossLinkText": "Are you a coach?",
-  "crossLinkCta": "See the coach guide"
+  "crossLinkCta": "See the coach guide",
+  "pricingLinkText": "Wondering about the price?",
+  "pricingLinkCta": "See the price for following one player"
 }

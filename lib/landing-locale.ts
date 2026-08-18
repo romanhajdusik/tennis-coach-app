@@ -41,8 +41,25 @@ export async function loadLandingMessages(locale: LandingLocale) {
     featuresTitle: string;
     features: { title: string; description: string }[];
     pricingTitle: string;
-    pricingBadge: string;
-    pricingText: string;
+    pricingSubtitle: string;
+    pricingMonthly: string;
+    pricingYearly: string;
+    pricingYearlySave: string;
+    pricingPerMonth: string;
+    pricingPerYear: string;
+    pricingYearlyNote: string;
+    pricingPerDay: string;
+    /** Počet hráčov na hladinu — preložený, lebo pluralita je vec jazyka. */
+    pricingPlayerCounts: string[];
+    pricingRecommended: string;
+    pricingIncludedTitle: string;
+    pricingIncluded: string[];
+    pricingMoreTitle: string;
+    pricingMoreText: string;
+    pricingMoreCta: string;
+    pricingVat: string;
+    pricingFollowerText: string;
+    pricingFollowerCta: string;
     pricingCta: string;
     finalCtaTitle: string;
     finalCtaSubtitle: string;
@@ -70,6 +87,10 @@ export type NavodMessages = {
   ctaButton: string;
   crossLinkText: string;
   crossLinkCta: string;
+  // Len /navod-hrac: odkaz na cenník pre hráča, rodiča a manažéra.
+  // Trénerský návod tieto kľúče nemá, preto sú nepovinné.
+  pricingLinkText?: string;
+  pricingLinkCta?: string;
 };
 
 export async function loadNavodMessages(
@@ -86,6 +107,51 @@ export async function loadNavodHracMessages(
 ): Promise<NavodMessages> {
   const messages = await import(`../messages/${locale}/navod-hrac.json`);
   return messages.default as NavodMessages;
+}
+
+// Cenník pre hráča, rodiča a manažéra (/cennik-hrac) je zámerne SAMOSTATNÁ
+// stránka, nie sekcia landingu: tréner platí za hráča menej než rodič
+// (4,1–4,6 vs. 9,9 centa denne), lebo platí za viacerých naraz — vedľa seba
+// v jednej tabuľke by to vyzeralo, že rodič má menej funkcií za viac peňazí
+// (docs/cennik-navrh.md §8.2). Sú to aj dve rôzne otázky: „koľko ma to stojí
+// pri mojom počte hráčov" a „oplatí sa mi vidieť, čo dieťa trénuje".
+//
+// Texty sú zámerne bez tenisu (žiadny kurt ani úder) — tú istú stránku
+// dostane aj rodič kondičného hráča.
+export type CennikHracMessages = {
+  metaTitle: string;
+  metaDescription: string;
+  eyebrow: string;
+  backToHome: string;
+  title: string;
+  subtitle: string;
+  yearlyLabel: string;
+  monthlyLabel: string;
+  perYear: string;
+  perMonth: string;
+  perDay: string;
+  yearlyNote: string;
+  trialNote: string;
+  vat: string;
+  compareTitle: string;
+  compareSubtitle: string;
+  compareWithoutSub: string;
+  comparePaid: string;
+  compareRows: string[];
+  notesTitle: string;
+  notes: string[];
+  ctaTitle: string;
+  ctaText: string;
+  ctaButton: string;
+  crossLinkText: string;
+  crossLinkCta: string;
+};
+
+export async function loadCennikHracMessages(
+  locale: LandingLocale,
+): Promise<CennikHracMessages> {
+  const messages = await import(`../messages/${locale}/cennik-hrac.json`);
+  return messages.default as CennikHracMessages;
 }
 
 // Stránka pre federácie/kluby/akadémie (/federacie) je zámerne LEN po slovensky

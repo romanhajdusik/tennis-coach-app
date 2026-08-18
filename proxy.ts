@@ -14,7 +14,13 @@ import {
 // a všetko ostatné presmerujeme na rovnakú cestu na plaw.win.
 // (Zoznam hostiteľov je v `lib/public-face.ts` — pozná ho aj `app/page.tsx`,
 // ktorý podľa neho vykreslí rozcestník namiesto consumer landingu.)
-const PUBLIC_PATHS = new Set(["/", "/navod", "/navod-hrac", "/federacie"]);
+const PUBLIC_PATHS = new Set([
+  "/",
+  "/navod",
+  "/navod-hrac",
+  "/cennik-hrac",
+  "/federacie",
+]);
 const APP_ORIGIN = "https://plaw.win";
 
 // Stránka pre federácie je marketing, nie produkt — patrí výhradne na verejnú

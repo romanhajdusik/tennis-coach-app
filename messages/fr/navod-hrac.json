@@ -23,11 +23,13 @@
   "tipsTitle": "Bon à savoir",
   "tips": [
     "Ton historique reste — même si la collaboration avec le coach se termine ou que tu reçois un nouveau code, les séances passées ne disparaissent pas.",
-    "L'accès est gratuit pour le moment."
+    "La liste des séances et leur détail restent visibles sans abonnement ; le calendrier et les analyses font partie de l'abonnement."
   ],
   "ctaTitle": "Tu as un code de ton coach ?",
   "ctaText": "Connecte-toi ou crée un compte et commence à suivre les séances.",
   "ctaButton": "Se connecter ou s'inscrire",
   "crossLinkText": "Tu es coach ?",
-  "crossLinkCta": "Voir le guide du coach"
+  "crossLinkCta": "Voir le guide du coach",
+  "pricingLinkText": "Tu te demandes le prix ?",
+  "pricingLinkCta": "Voir le prix pour suivre un joueur"
 }

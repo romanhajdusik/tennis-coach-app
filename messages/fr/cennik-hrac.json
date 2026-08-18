@@ -1,0 +1,39 @@
+{
+  "metaTitle": "Tarifs pour joueur, parent et manager — P.L.A.W",
+  "metaDescription": "Ce que coûte le suivi d'un joueur dans P.L.A.W : la liste et le détail des séances sont visibles sans abonnement, le calendrier et les analyses en font partie.",
+  "eyebrow": "Pour joueur, parent et manager",
+  "backToHome": "Retour à l'accueil",
+  "title": "Un joueur, un prix.",
+  "subtitle": "Tu suis les séances du joueur auquel le code du coach t'a relié. La liste des séances et leur détail restent visibles sans abonnement — l'abonnement ajoute le calendrier et les analyses.",
+  "yearlyLabel": "Annuel",
+  "monthlyLabel": "Mensuel",
+  "perYear": "/ an",
+  "perMonth": "/ mois",
+  "perDay": "{amount} centimes par jour.",
+  "yearlyNote": "Payer à l'année coûte presque moitié moins qu'au mois.",
+  "trialNote": "14 jours d'essai, ensuite c'est payant.",
+  "vat": "Prix TTC.",
+  "compareTitle": "Ce que tu obtiens",
+  "compareSubtitle": "Même sans abonnement, tu as la réponse à la question « qu'a travaillé mon enfant ». Ce que tu paies, c'est le confort et la vue d'ensemble.",
+  "compareWithoutSub": "Sans abonnement",
+  "comparePaid": "Avec abonnement",
+  "compareRows": [
+    "Liste des séances avec filtre par mois",
+    "Détail de la séance — exercices, durée, notes",
+    "L'historique est conservé",
+    "Calendrier — vue semaine et mois",
+    "Analyses — répartitions, pourcentages, comparaison des périodes"
+  ],
+  "notesTitle": "Bon à savoir",
+  "notes": [
+    "Les enregistrements continuent d'arriver même sans abonnement — rien n'est supprimé, et l'abonnement les rend de nouveau visibles.",
+    "Un abonnement couvre un joueur. Pour suivre deux enfants, il faut pour l'instant deux comptes.",
+    "Il te faut un code du coach — sans lui, il n'y a rien à suivre.",
+    "Les 14 premiers jours sont un essai, ensuite c'est payant, comme pour le coach."
+  ],
+  "ctaTitle": "Tu as un code de ton coach ?",
+  "ctaText": "Connecte-toi ou crée un compte et commence à suivre les séances.",
+  "ctaButton": "Se connecter ou s'inscrire",
+  "crossLinkText": "Tu ne sais pas encore comment ça marche ?",
+  "crossLinkCta": "Voir le guide pour joueur, parent et manager"
+}

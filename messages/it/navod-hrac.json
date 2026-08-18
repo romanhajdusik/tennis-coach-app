@@ -23,11 +23,13 @@
   "tipsTitle": "Buono a sapersi",
   "tips": [
     "Il tuo storico resta — anche se la collaborazione con l'allenatore finisce o ricevi un nuovo codice, gli allenamenti passati non spariscono.",
-    "Per ora l'accesso è gratuito."
+    "L'elenco degli allenamenti e il loro dettaglio si vedono anche senza abbonamento; il calendario e le analisi fanno parte dell'abbonamento."
   ],
   "ctaTitle": "Hai ricevuto un codice dal tuo allenatore?",
   "ctaText": "Accedi o crea un account e inizia a seguire gli allenamenti.",
   "ctaButton": "Accedi o registrati",
   "crossLinkText": "Sei un allenatore?",
-  "crossLinkCta": "Vedi la guida per l'allenatore"
+  "crossLinkCta": "Vedi la guida per l'allenatore",
+  "pricingLinkText": "Ti interessa il prezzo?",
+  "pricingLinkCta": "Guarda il prezzo per seguire un giocatore"
 }
