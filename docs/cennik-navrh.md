@@ -334,7 +334,7 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
 | Kde | Čo tam je |
 |---|---|
 | Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, dlaždica „Viac hráčov?" |
-| `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka zadarmo vs. s predplatným |
+| `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka bez predplatného vs. s predplatným (päť riadkov podľa §8.3) |
 | `/federacie` | naďalej „čoskoro" — sedadlá sa fakturujú mimo appky |
 
 **Čo sa pritom rozhodlo (a nebolo v tomto dokumente):**
