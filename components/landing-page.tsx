@@ -205,6 +205,30 @@ export async function LandingPage() {
         </div>
       </section>
 
+      {/* Argument, ktorý tréner používa v rozhovore s rodičom — preto je to
+          citát, nie ďalšia dlaždica funkcie. Texty existujú len v SK a EN,
+          takže sa sekcia inde nevykreslí. */}
+      {t.transparencyTitle && t.transparencyQuote ? (
+        <section className="w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+          <h2 className="text-center text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+            {t.transparencyTitle}
+          </h2>
+          {t.transparencyIntro ? (
+            <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted">
+              {t.transparencyIntro}
+            </p>
+          ) : null}
+          <blockquote className="mt-6 rounded-2xl border border-border border-l-4 border-l-primary bg-surface p-5 text-base leading-relaxed text-foreground sm:p-6">
+            {t.transparencyQuote}
+          </blockquote>
+          {t.transparencyNote ? (
+            <p className="mx-auto mt-4 max-w-xl text-center text-sm text-balance text-muted">
+              {t.transparencyNote}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
       <section
         id="cennik"
         className="w-full max-w-5xl scroll-mt-20 px-4 py-8 sm:px-6 sm:py-12"
