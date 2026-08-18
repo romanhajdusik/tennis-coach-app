@@ -24,7 +24,12 @@
     "calendar": "Calendar",
     "analytics": "Analytics",
     "sessionsHeading": "Practices",
-    "noSessions": "No practices yet."
+    "noSessions": "No practices yet.",
+    "recentRange": "Last 12 months and everything planned ahead",
+    "browseByMonth": "Browse by month",
+    "showRecent": "Back to recent",
+    "noSessionsInMonth": "No practices in this month.",
+    "listTruncated": "Only the {count} most recent practices are shown — use the month filter to look further back."
   },
   "calendar": {
     "back": "Back",

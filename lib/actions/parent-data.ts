@@ -26,10 +26,26 @@ async function getParentRecordIdsInPeriod(
   start: Date,
   end: Date,
 ): Promise<string[]> {
+  // Dotaz je ohraničený obdobím, nie na celú históriu — bez toho narazí
+  // dlhá história na `max_rows` PostgRESTu a analytika by ticho počítala
+  // len z časti tréningov. Okraje sú o dva dni širšie kvôli časovému
+  // pásmu, presné orezanie robí až porovnanie nižšie (ako v kalendári).
+  //
+  // **Strop (`limit`) sem zámerne nepatrí:** oreznutý riadok by nespôsobil
+  // chýbajúcu položku v zozname, ale NESPRÁVNE ČÍSLO v grafe. Hranicou je
+  // okno, nie počet.
+  const margin = 2 * 24 * 60 * 60 * 1000;
+  const from = new Date(start.getTime() - margin).toISOString();
+  const to = new Date(end.getTime() + margin).toISOString();
+
   const { data: records } = await supabase
     .from("parent_session_records")
     .select("id, planned_data, actual_data")
-    .eq("parent_id", parentId);
+    .eq("parent_id", parentId)
+    .or(
+      `and(planned_data->>date.gte.${from},planned_data->>date.lt.${to}),` +
+        `and(actual_data->>date.gte.${from},actual_data->>date.lt.${to})`,
+    );
 
   return (records ?? [])
     .filter((record) => {
