@@ -56,13 +56,18 @@
     "12 giocatori attivi"
   ],
   "pricingRecommended": "Consigliato",
-  "pricingIncludedTitle": "In ogni piano",
-  "pricingIncluded": [
-    "Tutte le funzioni — i piani cambiano solo nel numero di giocatori",
-    "I giocatori archiviati non contano e lo storico non viene mai cancellato",
-    "Alla fine dell'abbonamento l'account continua a leggere — non perdi mai il tuo lavoro",
-    "40 % di sconto pagando l'anno"
+  "pricingCompareTitle": "Cosa ottieni",
+  "pricingCompareWithoutSub": "Senza abbonamento",
+  "pricingComparePaid": "Con abbonamento",
+  "pricingCompareRows": [
+    "Elenco degli allenamenti — registrati e pianificati, con filtro per mese",
+    "Dettaglio dell'allenamento — esercizi, tempo, note",
+    "Lo storico resta",
+    "Calendario — vista settimanale e mensile",
+    "Analisi — ripartizioni, percentuali, confronto tra periodi",
+    "Pianificare, registrare e i tuoi codici degli esercizi"
   ],
+  "pricingCompareNote": "I giocatori archiviati non contano nel piano e lo storico non viene mai cancellato. Pagando l'anno risparmi il 40 %.",
   "pricingMoreTitle": "Più giocatori?",
   "pricingMoreText": "Chi allena gruppi ne ha spesso 15 – 25. Scrivici e troviamo la soluzione.",
   "pricingMoreCta": "info@plawsports.com",

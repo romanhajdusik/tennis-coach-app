@@ -59,8 +59,11 @@ export async function loadLandingMessages(locale: LandingLocale) {
     /** Počet hráčov na hladinu — preložený, lebo pluralita je vec jazyka. */
     pricingPlayerCounts: string[];
     pricingRecommended: string;
-    pricingIncludedTitle: string;
-    pricingIncluded: string[];
+    pricingCompareTitle: string;
+    pricingCompareWithoutSub: string;
+    pricingComparePaid: string;
+    pricingCompareRows: string[];
+    pricingCompareNote: string;
     pricingMoreTitle: string;
     pricingMoreText: string;
     pricingMoreCta: string;

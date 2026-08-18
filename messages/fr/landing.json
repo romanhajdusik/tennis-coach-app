@@ -56,13 +56,18 @@
     "12 joueurs actifs"
   ],
   "pricingRecommended": "Recommandé",
-  "pricingIncludedTitle": "Dans chaque formule",
-  "pricingIncluded": [
-    "Toutes les fonctions — les formules ne diffèrent que par le nombre de joueurs",
-    "Les joueurs archivés ne comptent pas et l'historique n'est jamais supprimé",
-    "À la fin de l'abonnement, le compte reste en lecture — tu ne perds jamais ton travail",
-    "40 % de réduction en payant à l'année"
+  "pricingCompareTitle": "Ce que tu obtiens",
+  "pricingCompareWithoutSub": "Sans abonnement",
+  "pricingComparePaid": "Avec abonnement",
+  "pricingCompareRows": [
+    "Liste des séances — enregistrées et planifiées, avec filtre par mois",
+    "Détail de la séance — exercices, durée, notes",
+    "L'historique est conservé",
+    "Calendrier — vue semaine et mois",
+    "Analyses — répartitions, pourcentages, comparaison des périodes",
+    "Planifier, enregistrer et tes propres codes d'exercices"
   ],
+  "pricingCompareNote": "Les joueurs archivés ne comptent pas dans la formule et l'historique n'est jamais supprimé. Payer à l'année fait économiser 40 %.",
   "pricingMoreTitle": "Plus de joueurs ?",
   "pricingMoreText": "Un coach qui gère des groupes en a souvent 15 à 25. Écris-nous, on trouvera une solution.",
   "pricingMoreCta": "info@plawsports.com",

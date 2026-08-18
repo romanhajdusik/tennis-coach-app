@@ -56,13 +56,18 @@
     "12 位活跃球员"
   ],
   "pricingRecommended": "推荐",
-  "pricingIncludedTitle": "每个方案都包含",
-  "pricingIncluded": [
-    "全部功能——方案之间只有球员人数的差别",
-    "已归档的球员不占名额，历史记录永不删除",
-    "订阅结束后账户仍可查看——你的记录不会丢失",
-    "按年付费立省 40 %"
+  "pricingCompareTitle": "你能得到什么",
+  "pricingCompareWithoutSub": "无订阅",
+  "pricingComparePaid": "已订阅",
+  "pricingCompareRows": [
+    "训练列表——已记录和已计划，可按月筛选",
+    "训练详情——练习、时长、备注",
+    "历史记录保留",
+    "日历——周视图和月视图",
+    "分析——细分、百分比、周期对比",
+    "计划、记录和自定义训练代码"
   ],
+  "pricingCompareNote": "已归档的球员不占名额，历史记录永不删除。按年付费可省 40 %。",
   "pricingMoreTitle": "需要更多球员？",
   "pricingMoreText": "带训练组的教练通常有 15 – 25 位球员。写信给我们，我们一起解决。",
   "pricingMoreCta": "info@plawsports.com",

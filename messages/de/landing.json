@@ -56,13 +56,18 @@
     "12 aktive Spieler"
   ],
   "pricingRecommended": "Empfohlen",
-  "pricingIncludedTitle": "In jeder Stufe",
-  "pricingIncluded": [
-    "Alle Funktionen — die Stufen unterscheiden sich nur in der Spielerzahl",
-    "Archivierte Spieler zählen nicht, und die Historie wird nie gelöscht",
-    "Nach Ablauf des Abos bleibt der Lesezugriff — deine Arbeit geht nie verloren",
-    "40 % Rabatt bei jährlicher Zahlung"
+  "pricingCompareTitle": "Was du bekommst",
+  "pricingCompareWithoutSub": "Ohne Abo",
+  "pricingComparePaid": "Mit Abo",
+  "pricingCompareRows": [
+    "Trainingsliste — erfasst und geplant, mit Monatsfilter",
+    "Trainingsdetails — Übungen, Zeit, Notizen",
+    "Die Historie bleibt erhalten",
+    "Kalender — Wochen- und Monatsansicht",
+    "Analysen — Auswertungen, Prozente, Vergleich von Zeiträumen",
+    "Planen, Erfassen und eigene Übungscodes"
   ],
+  "pricingCompareNote": "Archivierte Spieler zählen nicht zur Stufe, und die Historie wird nie gelöscht. Jährliche Zahlung spart 40 %.",
   "pricingMoreTitle": "Mehr Spieler?",
   "pricingMoreText": "Wer Gruppen trainiert, hat oft 15 – 25 Spieler. Schreib uns, wir finden eine Lösung.",
   "pricingMoreCta": "info@plawsports.com",

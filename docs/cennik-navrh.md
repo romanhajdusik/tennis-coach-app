@@ -18,6 +18,15 @@ vie ustrážiť:
   to je silný predajný argument, nie technický detail.
 - **`subscription_status`** — po skončení predplatného účet **ďalej číta**, len
   prestane zapisovať. Zákazník nikdy nepríde o svoju prácu.
+  **Upresnené 2026-08-18: čítanie už nebude úplné.** Trénerovi bez
+  predplatného ostane zoznam tréningov (zapísaných aj naplánovaných, s filtrom
+  na mesiac), detail, história **a kalendár**; **analytika ide za platbu**,
+  rovnako ako zápis. Kalendár zámerne ostáva — tréner musí vidieť, kedy má
+  tréningy, inak mu appka prestane byť použiteľná ako denník. Je to zrkadlo
+  rodičovského modelu (§8.3) s jedným rozdielom: rodičovi kalendár za platbou
+  je, trénerovi nie. **Appka to zatiaľ nevynucuje** — dnes zastavuje len zápis
+  (`requireWriteAccess`), stráž na analytiku pribudne so Stripe a musí sedieť
+  s poľom `WITHOUT_SUBSCRIPTION` v `components/landing-pricing.tsx`.
 - **Skúšobná doba 14 dní** beží už dnes, bez karty.
 - **Rodič/hráč/manažér platí nič.** Je to funkcia, ktorá drží trénera pri
   appke, nie samostatný produkt.
@@ -333,7 +342,7 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
 
 | Kde | Čo tam je |
 |---|---|
-| Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, dlaždica „Viac hráčov?" |
+| Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, dlaždica „Viac hráčov?", tabuľka „Čo dostaneš" (bez predplatného vs. s predplatným) |
 | `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka bez predplatného vs. s predplatným (päť riadkov podľa §8.3) |
 | `/federacie` | naďalej „čoskoro" — sedadlá sa fakturujú mimo appky |
 

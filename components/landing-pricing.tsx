@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { CompareMark } from "@/components/compare-mark";
 
 // Cenník na landing page. Klientský komponent je tu len kvôli prepínaču
 // mesačne/ročne — samotné ceny prídu už naformátované zo servera
@@ -30,8 +31,11 @@ export type PricingLabels = {
   yearlyNote: string;
   perDay: string;
   recommended: string;
-  includedTitle: string;
-  included: string[];
+  compareTitle: string;
+  compareWithoutSub: string;
+  comparePaid: string;
+  compareRows: string[];
+  compareNote: string;
   moreTitle: string;
   moreText: string;
   moreCta: string;
@@ -42,6 +46,17 @@ export type PricingLabels = {
 };
 
 type Period = "monthly" | "yearly";
+
+// Ktoré riadky tabuľky platia aj BEZ predplatného, teda po skončení
+// skúšobnej doby. Poradie sedí s `pricingCompareRows` v prekladoch
+// (rozhodnuté 2026-08-18): zoznam tréningov, detail, história a KALENDÁR
+// ostávajú, analytika a zápis sú za platbou. Tréner tak po skončení skúšky
+// stále vidí, čo a kedy odtrénoval — len to prestane vyhodnocovať a dopĺňať.
+//
+// **Appka to zatiaľ nevynucuje** — dnes zastavuje len zápis
+// (`requireWriteAccess`), analytiku číta ďalej. Stráž pribudne so Stripe
+// a musí sedieť s týmto poľom, inak stránka sľubuje niečo iné, než appka robí.
+const WITHOUT_SUBSCRIPTION = [true, true, true, true, false, false];
 
 function fill(template: string, amount: string) {
   return template.replace("{amount}", amount);
@@ -151,30 +166,34 @@ export function LandingPricing({
         </a>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-border bg-surface p-5 sm:p-6">
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-          {labels.includedTitle}
-        </h3>
-        <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-          {labels.included.map((item) => (
-            <li key={item} className="flex gap-2.5 text-sm text-muted">
-              <span
-                aria-hidden
-                className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
-              >
-                <svg viewBox="0 0 20 20" fill="currentColor" className="h-3 w-3">
-                  <path
-                    fillRule="evenodd"
-                    d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 0 1 1.4-1.4l3.3 3.3 6.8-6.8a1 1 0 0 1 1.4 0Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface">
+        <div className="grid grid-cols-[1fr_auto_auto] items-end gap-x-3 border-b border-border px-4 py-3 text-xs font-medium leading-tight text-muted sm:gap-x-6 sm:px-6">
+          <span className="text-sm font-semibold text-foreground">
+            {labels.compareTitle}
+          </span>
+          <span className="w-20 hyphens-auto break-words text-center sm:w-28">
+            {labels.compareWithoutSub}
+          </span>
+          <span className="w-20 hyphens-auto break-words text-center sm:w-28">
+            {labels.comparePaid}
+          </span>
+        </div>
+        {labels.compareRows.map((row, index) => (
+          <div
+            key={row}
+            className="grid grid-cols-[1fr_auto_auto] items-center gap-x-3 border-b border-border/60 px-4 py-3.5 last:border-b-0 sm:gap-x-6 sm:px-6"
+          >
+            <span className="text-sm text-foreground">{row}</span>
+            <span className="flex w-20 justify-center sm:w-28">
+              <CompareMark ok={WITHOUT_SUBSCRIPTION[index] === true} />
+            </span>
+            <span className="flex w-20 justify-center sm:w-28">
+              <CompareMark ok />
+            </span>
+          </div>
+        ))}
       </div>
+      <p className="mt-3 text-xs text-muted">{labels.compareNote}</p>
 
       <div className="mt-6 flex flex-col items-center gap-3 text-center">
         <Link

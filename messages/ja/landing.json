@@ -56,13 +56,18 @@
     "アクティブな選手12人"
   ],
   "pricingRecommended": "おすすめ",
-  "pricingIncludedTitle": "すべてのプランに含まれるもの",
-  "pricingIncluded": [
-    "全機能を利用可能 — プランの違いは選手の人数だけ",
-    "アーカイブした選手は人数に含まれず、履歴が消えることはありません",
-    "サブスクリプションが終了しても閲覧は続けられます — 記録を失うことはありません",
-    "年払いなら40％お得"
+  "pricingCompareTitle": "できること",
+  "pricingCompareWithoutSub": "サブスクなし",
+  "pricingComparePaid": "サブスク加入",
+  "pricingCompareRows": [
+    "練習一覧 — 記録済みと予定、月で絞り込み",
+    "練習の詳細 — ドリル、時間、メモ",
+    "履歴の保存",
+    "カレンダー — 週表示と月表示",
+    "分析 — 内訳、割合、期間の比較",
+    "計画・記録と自分のドリルコード"
   ],
+  "pricingCompareNote": "アーカイブした選手はプランの人数に含まれず、履歴が消えることはありません。年払いなら40％お得です。",
   "pricingMoreTitle": "もっと多くの選手が必要ですか？",
   "pricingMoreText": "グループを指導するコーチは15〜25人を抱えることも珍しくありません。ご連絡ください、一緒に考えます。",
   "pricingMoreCta": "info@plawsports.com",

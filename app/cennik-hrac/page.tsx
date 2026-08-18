@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getLandingLocale } from "@/components/landing-page";
 import { loadCennikHracMessages } from "@/lib/landing-locale";
 import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
+import { CompareMark } from "@/components/compare-mark";
 import {
   FOLLOWER_PRICE,
   centsPerPlayerDay,
@@ -31,26 +32,6 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t.metaDescription,
     robots: { index: false, follow: false },
   };
-}
-
-function CheckIcon({ ok }: { ok: boolean }) {
-  return ok ? (
-    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-      <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-        <path
-          fillRule="evenodd"
-          d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 0 1 1.4-1.4l3.3 3.3 6.8-6.8a1 1 0 0 1 1.4 0Z"
-          clipRule="evenodd"
-        />
-      </svg>
-    </span>
-  ) : (
-    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border text-muted">
-      <svg viewBox="0 0 20 20" fill="currentColor" className="h-3 w-3">
-        <path d="M4.5 9h11v2h-11z" />
-      </svg>
-    </span>
-  );
 }
 
 export default async function CennikHracPage() {
@@ -167,10 +148,10 @@ export default async function CennikHracPage() {
             >
               <span className="text-sm text-foreground">{row}</span>
               <span className="flex w-20 justify-center sm:w-28">
-                <CheckIcon ok={WITHOUT_SUBSCRIPTION[index] === true} />
+                <CompareMark ok={WITHOUT_SUBSCRIPTION[index] === true} />
               </span>
               <span className="flex w-20 justify-center sm:w-28">
-                <CheckIcon ok />
+                <CompareMark ok />
               </span>
             </div>
           ))}

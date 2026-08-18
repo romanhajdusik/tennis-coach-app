@@ -56,13 +56,18 @@
     "12 jugadores activos"
   ],
   "pricingRecommended": "Recomendado",
-  "pricingIncludedTitle": "En todos los planes",
-  "pricingIncluded": [
-    "Todas las funciones — los planes solo cambian en el número de jugadores",
-    "Los jugadores archivados no cuentan y el historial nunca se borra",
-    "Al terminar la suscripción la cuenta sigue leyendo — nunca pierdes tu trabajo",
-    "40 % de descuento pagando al año"
+  "pricingCompareTitle": "Qué obtienes",
+  "pricingCompareWithoutSub": "Sin suscripción",
+  "pricingComparePaid": "Con suscripción",
+  "pricingCompareRows": [
+    "Lista de entrenamientos — registrados y planificados, con filtro por mes",
+    "Detalle del entrenamiento — ejercicios, tiempo, notas",
+    "Se conserva el historial",
+    "Calendario — vista semanal y mensual",
+    "Analítica — desgloses, porcentajes, comparación de periodos",
+    "Planificar, registrar y tus propios códigos de ejercicios"
   ],
+  "pricingCompareNote": "Los jugadores archivados no cuentan para el plan y el historial nunca se borra. Pagando al año ahorras un 40 %.",
   "pricingMoreTitle": "¿Más jugadores?",
   "pricingMoreText": "Quien entrena grupos suele tener entre 15 y 25. Escríbenos y lo resolvemos.",
   "pricingMoreCta": "info@plawsports.com",
