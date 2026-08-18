@@ -134,8 +134,10 @@ hráčov ľudia reálne majú.
 
 ## 6. Čo treba rozhodnúť okrem čísel
 
-1. **S DPH alebo bez?** Zákazník je spotrebiteľ (tréner-živnostník), takže na
-   webe sa bežne uvádza cena **s DPH**. Otázka na účtovníka, nie na appku.
+1. **S DPH alebo bez? ROZHODNUTÉ 2026-08-17: ceny na webe sú VRÁTANE DPH** —
+   pri cenníku trénera aj pri cenníku pre hráča/rodiča/manažéra je to napísané
+   (kľúče `pricingVat` / `vat`). Čísla sa tým nemenili, len text okolo nich.
+   Ako to nakoniec vyzerá účtovne, je otázka na účtovníka, nie na appku.
 2. **Kondička má ROVNAKÉ hladiny ako tenis** (rozhodnuté 2026-08-16). Je to ten
    istý engine a tá istá hodnota, takže niet dôvodu rozlišovať. **V Stripe to
    aj tak nech sú samostatné produkty** („P.L.A.W Tenis", „P.L.A.W Kondícia")
@@ -221,27 +223,49 @@ uplynutí predplatného sa mu **pozastaví prístup**, nie zmažú záznamy — 
 tá obrazovka musí povedať doslova: *„Tvoje záznamy tu sú, predplatným ich
 znova sprístupníš."* Rovnaká slušnosť, akú má trénerská vetva.
 
-**FINÁLNY MODEL (používateľ, 2026-08-16, po dvoch upresneniach): rodič vidí
-TRÉNINGY vždy, ANALYTIKA je za platbou.**
+**FINÁLNY MODEL (používateľ, 2026-08-16 a 2026-08-17, po troch upresneniach):
+rodič vidí ZOZNAM tréningov a ich detail vždy; KALENDÁR a ANALYTIKA sú za
+platbou.**
 
 | | Zadarmo | Za 36 €/rok |
 |---|---|---|
-| Kalendár tréningov | ✅ | ✅ |
+| Zoznam tréningov (od najnovšieho) | ✅ | ✅ |
+| Filter zoznamu na mesiac | ✅ | ✅ |
 | Detail tréningu (cvičenia, čas, poznámky) | ✅ | ✅ |
 | Uchovanie histórie | ✅ | ✅ |
+| **Kalendár** (týždenný aj mesačný pohľad) | ❌ | ✅ |
 | **Analytika** (rozbory, %, odhad úderov, porovnanie období) | ❌ | ✅ |
+
+**Zadarmo ostáva odpoveď na otázku „čo dieťa trénovalo", za platbu ide POHODLIE
+a PREHĽAD.** Rodič si aj bez predplatného nájde ktorýkoľvek tréning podľa
+mesiaca a prečíta si ho celý — len sa musí prehrabať zoznamom namiesto mriežky.
 
 **Prečo je to lepšie než pôvodné „bez platenia nevidí nič":** to, čo robí dobré
 meno trénerovi — že rodič vidí systematickú prácu s dieťaťom — ostáva zadarmo,
-takže platobná stena nepoškodzuje predajný argument appky. Platí sa za vrstvu,
-ktorá je naozaj navyše. **A rozsah práce je menší:** stráž stačí na analytike,
-nie na celej rodičovskej časti.
+takže platobná stena nepoškodzuje predajný argument appky.
 
-**Čo to znamená v kóde:** ochrániť treba `app/parent/analytics/**` a načítavače
-v `lib/actions/parent-data.ts` (`getParentCategoryAnalytics`,
-`getParentCategoryMinuteShares`). Kalendár, detail tréningu a zoznam ostávajú
-nedotknuté. **Záložku na analytiku neskrývaj — zamkni ju**: kto nevie, čo si
-kupuje, si to nekúpi.
+**Filter na mesiac musí byť zadarmo, a to je dôležité:** bez neho je bezplatná
+verzia po dvoch rokoch histórie zoznam 200+ položiek, v ktorom sa nedá nič
+nájsť — a to už nie je okresaná verzia, ale trest. Zoznam má byť použiteľný;
+kalendár sa predáva prehľadom, nie tým, že alternatíva je nepoužiteľná.
+
+**Čo to znamená v kóde** (menej, než to vyzerá — nová stránka netreba,
+`app/parent/page.tsx` už dnes JE ten zoznam):
+
+1. Stráž na `app/parent/calendar` a `app/parent/analytics/**` + na načítavače
+   v `lib/actions/parent-data.ts` (`getParentCategoryAnalytics`,
+   `getParentCategoryMinuteShares`).
+2. **Filter na mesiac do `app/parent/page.tsx`** — dnes tam žiadny nie je.
+3. **Strop alebo stránkovanie v tom istom dotaze** — dnes ťahá všetky záznamy
+   bez obmedzenia a pri dlhej histórii narazí na `max_rows` PostgRESTu.
+   Rovnaká pasca, akú kalendár aj roster už riešia oknom.
+4. **Odkazy na kalendár a analytiku neskrývaj — zamkni ich**: kto nevie, čo si
+   kupuje, si to nekúpi.
+
+**Naplánované tréningy ostávajú v bezplatnom zozname** (dnes tam sú). Rodič si
+tak aj zadarmo odpovie, kedy má dieťa ďalší tréning — a to je zámer: rodič,
+ktorý to nevie, otravuje trénera, a tomu má appka predchádzať. Kalendár sa
+predáva prehľadom týždňa, nie zamknutím tejto informácie.
 
 Ďalej platia dve veci, ktoré treba dodržať:
 
@@ -297,3 +321,42 @@ Pri návrhu A vznikne v Stripe **jeden produkt a šesť cien** (3 hladiny × mes
 a ročne), pri návrhu B štyri ceny. Každá cena má svoje `price_...` ID, ktoré ide
 do premenných prostredia appky. **Ceny sa v Stripe nedajú mazať, len
 archivovať** — preto ich zakladaj až po rozhodnutí.
+
+---
+
+## 10. Kde tieto čísla žijú na webe (hotové 2026-08-17)
+
+Rozhodnuté ceny sú od 2026-08-17 na verejnom webe. **V kóde majú jediný
+výskyt — `lib/landing-pricing.ts`** (`COACH_TIERS`, `FOLLOWER_PRICE`,
+`CONTACT_EMAIL`); deväť jazykových súborov nesie len text okolo čísel, takže
+zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
+
+| Kde | Čo tam je |
+|---|---|
+| Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, dlaždica „Viac hráčov?" |
+| `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka zadarmo vs. s predplatným |
+| `/federacie` | naďalej „čoskoro" — sedadlá sa fakturujú mimo appky |
+
+**Čo sa pritom rozhodlo (a nebolo v tomto dokumente):**
+
+- **Predvolené obdobie v prepínači je ROČNE.** Pri ňom platí veta „od 4 centov
+  na deň" a je vidieť zľavu −40 %; mesačná cena je jeden klik vedľa.
+- **Zvýraznená je stredná hladina (6 hráčov)** štítkom „Odporúčame" — nie
+  „najpredávanejšie", to by dnes nebola pravda (zákazníkov ešte niet).
+- **Štvrtá hladina nevznikla**, je tam dlaždica „Viac hráčov? Napíšte nám"
+  s `info@plawsports.com` — presne podľa §3.
+- **Centy na deň sa dopočítavajú z ceny**, neopisujú sa odtiaľto. Tabuľka v §3
+  a text na webe sa tak nemôžu rozísť.
+- **Ceny sú uvádzané vrátane DPH** (§6, bod 1).
+- **Na webe nie je nič „zadarmo" (rozhodnuté 2026-08-17).** Vypadli aj
+  „Vyskúšať zadarmo", „Zaregistrovať sa zadarmo" a „14 dní zadarmo, bez
+  karty"; ostalo len **„14 dní na skúšku, potom sa platí"**. Dôvod: dnu sa
+  ide **na pozvánku** (promo kód) a prístup zadarmo má len ten, komu sa kód
+  vydá — plošný sľub na webe by bol nepravdivý. Rodičovský stĺpec sa preto
+  volá **„Bez predplatného"**, nie „Zadarmo".
+
+**Čo zatiaľ NIE JE pravda a treba to vedieť:** tabuľka na `/cennik-hrac`
+sľubuje, že analytika je za platbou. **Appka to ešte nevynucuje** — stráž na
+čítanie (`requireViewAccess`, §8.4 bod 1) sa postaví so Stripe. Dovtedy
+stránka opisuje cieľový stav. Rovnako nikde nie je tlačidlo „Predplatiť":
+obe stránky vedú na registráciu, lebo pokladňa neexistuje.
