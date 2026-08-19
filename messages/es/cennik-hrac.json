@@ -9,6 +9,7 @@
   "monthlyLabel": "Mensual",
   "perYear": "/ año",
   "perMonth": "/ mes",
+  "monthlyYearTotal": "({amount} al año)",
   "perDay": "{amount} céntimos al día.",
   "yearlyNote": "Pagar el año sale casi a mitad de precio que pagar el mes.",
   "trialNote": "14 días de prueba y después se paga.",

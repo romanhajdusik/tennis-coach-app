@@ -47,6 +47,7 @@
   "pricingYearly": "年払い",
   "pricingYearlySave": "−40 %",
   "pricingPerMonth": "/ 月",
+  "pricingMonthlyYearTotal": "(年間 {amount})",
   "pricingPerYear": "/ 年",
   "pricingYearlyNote": "月あたり約 {amount} です。",
   "pricingPerDay": "選手1人あたり1日 {amount} セント。",

@@ -47,6 +47,7 @@
   "pricingYearly": "按年",
   "pricingYearlySave": "−40 %",
   "pricingPerMonth": "/ 月",
+  "pricingMonthlyYearTotal": "(每年 {amount})",
   "pricingPerYear": "/ 年",
   "pricingYearlyNote": "相当于每月 {amount}。",
   "pricingPerDay": "每位球员每天 {amount} 欧分。",

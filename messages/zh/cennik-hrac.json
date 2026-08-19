@@ -9,6 +9,7 @@
   "monthlyLabel": "按月",
   "perYear": "/ 年",
   "perMonth": "/ 月",
+  "monthlyYearTotal": "(每年 {amount})",
   "perDay": "每天 {amount} 欧分。",
   "yearlyNote": "按年付费比按月付费省下将近一半。",
   "trialNote": "14 天试用期，之后需付费。",

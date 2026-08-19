@@ -47,6 +47,7 @@
   "pricingYearly": "Anual",
   "pricingYearlySave": "−40 %",
   "pricingPerMonth": "/ mes",
+  "pricingMonthlyYearTotal": "({amount} al año)",
   "pricingPerYear": "/ año",
   "pricingYearlyNote": "Son {amount} al mes.",
   "pricingPerDay": "{amount} céntimos al día por jugador.",

@@ -40,6 +40,7 @@ export default async function CennikHracPage() {
 
   const yearly = formatEur(locale, FOLLOWER_PRICE.yearly);
   const monthly = formatEur(locale, FOLLOWER_PRICE.monthly);
+  const monthlyYearTotal = formatEur(locale, FOLLOWER_PRICE.monthly * 12);
   const cents = centsPerPlayerDay(locale, FOLLOWER_PRICE.yearly, 1);
 
   return (
@@ -117,6 +118,9 @@ export default async function CennikHracPage() {
               </span>
               <span className="text-sm text-muted">{t.perMonth}</span>
             </div>
+            <p className="mt-1 text-sm text-muted">
+              {t.monthlyYearTotal.replace("{amount}", monthlyYearTotal)}
+            </p>
             <p className="mt-2 text-sm text-muted">{t.trialNote}</p>
           </div>
         </div>

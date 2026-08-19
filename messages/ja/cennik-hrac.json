@@ -9,6 +9,7 @@
   "monthlyLabel": "月払い",
   "perYear": "/ 年",
   "perMonth": "/ 月",
+  "monthlyYearTotal": "(年間 {amount})",
   "perDay": "1日 {amount} セント。",
   "yearlyNote": "年払いなら月払いに比べて半分近く安くなります。",
   "trialNote": "14日間のお試し、そのあとは有料。",

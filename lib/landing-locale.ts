@@ -53,6 +53,8 @@ export async function loadLandingMessages(locale: LandingLocale) {
     pricingYearly: string;
     pricingYearlySave: string;
     pricingPerMonth: string;
+    /** „(82,80 € za rok)" pri mesačnej cene — mesačná × 12. */
+    pricingMonthlyYearTotal: string;
     pricingPerYear: string;
     pricingYearlyNote: string;
     pricingPerDay: string;
@@ -139,6 +141,7 @@ export type CennikHracMessages = {
   monthlyLabel: string;
   perYear: string;
   perMonth: string;
+  monthlyYearTotal: string;
   perDay: string;
   yearlyNote: string;
   trialNote: string;

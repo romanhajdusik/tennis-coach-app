@@ -51,6 +51,7 @@
   "pricingYearly": "Ročne",
   "pricingYearlySave": "−40 %",
   "pricingPerMonth": "/ mesiac",
+  "pricingMonthlyYearTotal": "({amount} za rok)",
   "pricingPerYear": "/ rok",
   "pricingYearlyNote": "Vychádza to na {amount} mesačne.",
   "pricingPerDay": "{amount} centa na deň za hráča.",

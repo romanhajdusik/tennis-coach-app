@@ -9,6 +9,7 @@
   "monthlyLabel": "Помесячно",
   "perYear": "/ год",
   "perMonth": "/ месяц",
+  "monthlyYearTotal": "({amount} в год)",
   "perDay": "{amount} цента в день.",
   "yearlyNote": "Оплата за год почти вдвое выгоднее помесячной.",
   "trialNote": "14 дней на пробу, потом — по подписке.",

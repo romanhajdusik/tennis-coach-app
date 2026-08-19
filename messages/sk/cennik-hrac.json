@@ -9,6 +9,7 @@
   "monthlyLabel": "Mesačne",
   "perYear": "/ rok",
   "perMonth": "/ mesiac",
+  "monthlyYearTotal": "({amount} za rok)",
   "perDay": "{amount} centa na deň.",
   "yearlyNote": "Ročná platba vyjde takmer o polovicu lacnejšie než mesačná.",
   "trialNote": "14 dní na skúšku, potom sa platí.",

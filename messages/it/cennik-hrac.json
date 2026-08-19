@@ -9,6 +9,7 @@
   "monthlyLabel": "Mensile",
   "perYear": "/ anno",
   "perMonth": "/ mese",
+  "monthlyYearTotal": "({amount} all'anno)",
   "perDay": "{amount} centesimi al giorno.",
   "yearlyNote": "Pagare l'anno costa quasi la metà rispetto al mese.",
   "trialNote": "14 giorni di prova, poi si paga.",

@@ -17,6 +17,8 @@ export type PricingTierView = {
   yearly: string;
   /** Ročná cena rozpočítaná na mesiac — hlavný argument ročnej platby. */
   yearlyPerMonth: string;
+  /** Mesačná cena × 12 — koľko mesačný platca minie za rok. */
+  monthlyYearTotal: string;
   centsMonthly: string;
   centsYearly: string;
   featured: boolean;
@@ -27,6 +29,7 @@ export type PricingLabels = {
   yearly: string;
   yearlySave: string;
   perMonth: string;
+  monthlyYearTotal: string;
   perYear: string;
   yearlyNote: string;
   perDay: string;
@@ -135,6 +138,11 @@ export function LandingPricing({
               <span className="text-sm text-muted">
                 {yearly ? labels.perYear : labels.perMonth}
               </span>
+              {yearly ? null : (
+                <span className="text-sm text-muted">
+                  {fill(labels.monthlyYearTotal, tier.monthlyYearTotal)}
+                </span>
+              )}
             </div>
             <p className="mt-1.5 text-sm text-muted">
               {yearly

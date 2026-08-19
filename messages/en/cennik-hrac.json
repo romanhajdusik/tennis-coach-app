@@ -9,6 +9,7 @@
   "monthlyLabel": "Monthly",
   "perYear": "/ year",
   "perMonth": "/ month",
+  "monthlyYearTotal": "({amount} a year)",
   "perDay": "{amount} cents a day.",
   "yearlyNote": "Paying for the year costs almost half of paying monthly.",
   "trialNote": "14 days to try it out, then it's paid.",

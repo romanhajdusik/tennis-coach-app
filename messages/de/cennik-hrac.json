@@ -9,6 +9,7 @@
   "monthlyLabel": "Monatlich",
   "perYear": "/ Jahr",
   "perMonth": "/ Monat",
+  "monthlyYearTotal": "({amount} pro Jahr)",
   "perDay": "{amount} Cent pro Tag.",
   "yearlyNote": "Jährlich zahlen kostet fast die Hälfte von monatlich.",
   "trialNote": "14 Tage zum Testen, danach kostenpflichtig.",

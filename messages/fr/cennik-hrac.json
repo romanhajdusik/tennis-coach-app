@@ -9,6 +9,7 @@
   "monthlyLabel": "Mensuel",
   "perYear": "/ an",
   "perMonth": "/ mois",
+  "monthlyYearTotal": "({amount} par an)",
   "perDay": "{amount} centimes par jour.",
   "yearlyNote": "Payer à l'année coûte presque moitié moins qu'au mois.",
   "trialNote": "14 jours d'essai, ensuite c'est payant.",

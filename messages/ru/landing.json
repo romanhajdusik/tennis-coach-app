@@ -47,6 +47,7 @@
   "pricingYearly": "На год",
   "pricingYearlySave": "−40 %",
   "pricingPerMonth": "/ месяц",
+  "pricingMonthlyYearTotal": "({amount} в год)",
   "pricingPerYear": "/ год",
   "pricingYearlyNote": "Это {amount} в месяц.",
   "pricingPerDay": "{amount} цента в день за игрока.",
