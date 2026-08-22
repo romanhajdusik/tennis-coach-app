@@ -72,9 +72,6 @@ export async function loadLandingMessages(locale: LandingLocale) {
     pricingComparePaid: string;
     pricingCompareRows: string[];
     pricingCompareNote: string;
-    pricingMoreTitle: string;
-    pricingMoreText: string;
-    pricingMoreCta: string;
     pricingVat: string;
     pricingFollowerText: string;
     pricingFollowerCta: string;

@@ -9,7 +9,6 @@ import { LandingLanguageSwitcher } from "@/components/landing-language-switcher"
 import { LandingPricing } from "@/components/landing-pricing";
 import {
   COACH_TIERS,
-  CONTACT_EMAIL,
   centsPerPlayerDay,
   formatEur,
 } from "@/lib/landing-pricing";
@@ -267,7 +266,6 @@ export async function LandingPage() {
         </p>
         <LandingPricing
           tiers={tiers}
-          contactEmail={CONTACT_EMAIL}
           labels={{
             monthly: t.pricingMonthly,
             yearly: t.pricingYearly,
@@ -283,9 +281,6 @@ export async function LandingPage() {
             comparePaid: t.pricingComparePaid,
             compareRows: t.pricingCompareRows,
             compareNote: t.pricingCompareNote,
-            moreTitle: t.pricingMoreTitle,
-            moreText: t.pricingMoreText,
-            moreCta: t.pricingMoreCta,
             vat: t.pricingVat,
             followerText: t.pricingFollowerText,
             followerCta: t.pricingFollowerCta,

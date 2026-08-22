@@ -31,9 +31,6 @@ export const COACH_TIERS: readonly CoachTier[] = [
 // na deň", ktorá je na tejto stránke hlavným argumentom (docs §8.2).
 export const FOLLOWER_PRICE = { monthly: 5.9, yearly: 36 } as const;
 
-/** Adresa pre trénerov nad najvyššou hladinou (docs §3, „Viac hráčov?"). */
-export const CONTACT_EMAIL = "info@plawsports.com";
-
 export function formatEur(locale: LandingLocale, amount: number) {
   return new Intl.NumberFormat(locale, {
     style: "currency",

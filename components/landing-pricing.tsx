@@ -39,9 +39,6 @@ export type PricingLabels = {
   comparePaid: string;
   compareRows: string[];
   compareNote: string;
-  moreTitle: string;
-  moreText: string;
-  moreCta: string;
   vat: string;
   followerText: string;
   followerCta: string;
@@ -68,11 +65,9 @@ function fill(template: string, amount: string) {
 export function LandingPricing({
   tiers,
   labels,
-  contactEmail,
 }: {
   tiers: PricingTierView[];
   labels: PricingLabels;
-  contactEmail: string;
 }) {
   // Ročná platba je predvolená: je to výhodnejšia voľba pre obe strany
   // (hotovosť dopredu, nižšia cena) a pri nej platí veta „od 4 centov na deň".
@@ -156,22 +151,6 @@ export function LandingPricing({
             ) : null}
           </div>
         ))}
-      </div>
-
-      {/* Tréner so skupinami má bežne 15–25 hráčov a federačný produkt preňho
-          nie je. Štvrtá hladina by bola rozhodnutie navyše — dlaždica s adresou
-          nič nestojí a rovno ukáže, či taký dopyt existuje (docs §3). */}
-      <div className="mt-4 flex flex-col items-center gap-1.5 rounded-2xl border border-dashed border-border bg-surface/60 p-5 text-center sm:flex-row sm:justify-between sm:text-left">
-        <div>
-          <h3 className="font-semibold text-foreground">{labels.moreTitle}</h3>
-          <p className="mt-0.5 text-sm text-muted">{labels.moreText}</p>
-        </div>
-        <a
-          href={`mailto:${contactEmail}`}
-          className="shrink-0 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:border-primary/50 hover:bg-surface"
-        >
-          {labels.moreCta}
-        </a>
       </div>
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface">

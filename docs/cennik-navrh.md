@@ -337,12 +337,12 @@ archivovať** — preto ich zakladaj až po rozhodnutí.
 
 Rozhodnuté ceny sú od 2026-08-17 na verejnom webe. **V kóde majú jediný
 výskyt — `lib/landing-pricing.ts`** (`COACH_TIERS`, `FOLLOWER_PRICE`,
-`CONTACT_EMAIL`); deväť jazykových súborov nesie len text okolo čísel, takže
+); deväť jazykových súborov nesie len text okolo čísel, takže
 zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
 
 | Kde | Čo tam je |
 |---|---|
-| Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, dlaždica „Viac hráčov?", tabuľka „Čo dostaneš" (bez predplatného vs. s predplatným) |
+| Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, tabuľka „Čo dostaneš" (bez predplatného vs. s predplatným) |
 | `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka bez predplatného vs. s predplatným (päť riadkov podľa §8.3) |
 | `/federacie` | naďalej „čoskoro" — sedadlá sa fakturujú mimo appky |
 
@@ -352,8 +352,11 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
   na deň" a je vidieť zľavu −40 %; mesačná cena je jeden klik vedľa.
 - **Zvýraznená je stredná hladina (6 hráčov)** štítkom „Odporúčame" — nie
   „najpredávanejšie", to by dnes nebola pravda (zákazníkov ešte niet).
-- **Štvrtá hladina nevznikla**, je tam dlaždica „Viac hráčov? Napíšte nám"
-  s `info@plawsports.com` — presne podľa §3.
+- **Štvrtá hladina nevznikla** a dlaždica „Viac hráčov? Napíšte nám" bola
+  **2026-08-21 z cenníka odstránená** (rozhodnutie používateľa). Tréner nad
+  12 hráčov teda na webe nemá kam kliknúť ani napísať — otázka zo §3 ostáva
+  otvorená a keď sa bude riešiť, bude to buď štvrtá hladina, alebo návrat
+  tejto dlaždice.
 - **Centy na deň sa dopočítavajú z ceny**, neopisujú sa odtiaľto. Tabuľka v §3
   a text na webe sa tak nemôžu rozísť.
 - **Ceny sú uvádzané vrátane DPH** (§6, bod 1).
