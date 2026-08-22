@@ -103,11 +103,17 @@ dostal okresanú appku a ani by nevedel, že mu niečo chýba. Trojka je najniž
 pre zákazníka a ďalšie dve položky v Stripe. Pri troch si vyberie za pár
 sekúnd.
 
-**OTVORENÉ: strop je 12 hráčov.** Tréner, ktorý vedie skupiny v klube, ich má
-bežne 15–25 a **federačný produkt preňho nie je** (ten je pre organizácie
-s viacerými trénermi a pultom). Buď pribudne štvrtá hladina, alebo — lacnejšie
-a poučnejšie — štvrtá dlaždica v cenníku **„Viac hráčov? Napíšte nám"**
-s adresou. Tá nič nestojí a rovno ukáže, či taký dopyt existuje.
+**ROZHODNUTÉ 2026-08-21: strop je 12 hráčov a ostáva.** Žiadna štvrtá
+hladina, žiadna dlaždica „Viac hráčov? Napíšte nám" (tá bola v ten istý deň
+z cenníka odstránená). Tréner, ktorý vedie skupiny v klube, ich má bežne
+15–25 — **spotrebiteľský produkt preňho zámerne nie je** a federačný tiež nie
+(ten je pre organizácie s viacerými trénermi a pultom).
+
+**Čo to znamená v praxi:** kto potrebuje viac než 12 hráčov, nemá na webe kam
+kliknúť ani napísať; buď si vystačí s archiváciou hráčov mimo sezóny, alebo
+nie je zákazník. Je to vedomá voľba jednoduchosti — tri hladiny, šesť cien
+v Stripe a žiadne vyjednávanie. Keby dopyt raz prišiel sám, vracia sa sem
+štvrtá hladina, nie dlaždica.
 
 ---
 
@@ -352,11 +358,10 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
   na deň" a je vidieť zľavu −40 %; mesačná cena je jeden klik vedľa.
 - **Zvýraznená je stredná hladina (6 hráčov)** štítkom „Odporúčame" — nie
   „najpredávanejšie", to by dnes nebola pravda (zákazníkov ešte niet).
-- **Štvrtá hladina nevznikla** a dlaždica „Viac hráčov? Napíšte nám" bola
-  **2026-08-21 z cenníka odstránená** (rozhodnutie používateľa). Tréner nad
-  12 hráčov teda na webe nemá kam kliknúť ani napísať — otázka zo §3 ostáva
-  otvorená a keď sa bude riešiť, bude to buď štvrtá hladina, alebo návrat
-  tejto dlaždice.
+- **Štvrtá hladina nevznikla a nevznikne** — strop 12 hráčov je od
+  2026-08-21 rozhodnutý (§3). Dlaždica „Viac hráčov? Napíšte nám" bola v ten
+  istý deň z cenníka odstránená, takže tréner nad 12 hráčov na webe nemá kam
+  kliknúť ani napísať. Je to zámer, nie nedorobok.
 - **Centy na deň sa dopočítavajú z ceny**, neopisujú sa odtiaľto. Tabuľka v §3
   a text na webe sa tak nemôžu rozísť.
 - **Ceny sú uvádzané vrátane DPH** (§6, bod 1).
