@@ -48,15 +48,17 @@ export type PricingLabels = {
 type Period = "monthly" | "yearly";
 
 // Ktoré riadky tabuľky platia aj BEZ predplatného, teda po skončení
-// skúšobnej doby. Poradie sedí s `pricingCompareRows` v prekladoch
-// (rozhodnuté 2026-08-18): zoznam tréningov, detail, história a KALENDÁR
+// skúšobnej doby. Poradie sedí s `pricingCompareRows` v prekladoch:
+// zoznam tréningov, detail, história, KALENDÁR a VLASTNÉ KÓDY CVIČENÍ
 // ostávajú, analytika a zápis sú za platbou. Tréner tak po skončení skúšky
-// stále vidí, čo a kedy odtrénoval — len to prestane vyhodnocovať a dopĺňať.
+// stále vidí, čo a kedy odtrénoval, a vie si appku nachystať podľa seba —
+// len ju prestane vyhodnocovať a dopĺňať.
 //
-// **Appka to zatiaľ nevynucuje** — dnes zastavuje len zápis
-// (`requireWriteAccess`), analytiku číta ďalej. Stráž pribudne so Stripe
-// a musí sedieť s týmto poľom, inak stránka sľubuje niečo iné, než appka robí.
-const WITHOUT_SUBSCRIPTION = [true, true, true, true, false, false];
+// Kódy cvičení sú v tomto poli jediná položka, ktorú appka **už dnes**
+// dovoľuje bez predplatného (`lib/actions/drill-codes.ts`, rozhodnuté
+// 2026-08-21). Stráž na analytiku pribudne so Stripe a musí sedieť s týmto
+// poľom, inak stránka sľubuje niečo iné, než appka robí.
+const WITHOUT_SUBSCRIPTION = [true, true, true, true, true, false, false];
 
 function fill(template: string, amount: string) {
   return template.replace("{amount}", amount);

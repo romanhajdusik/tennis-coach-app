@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireWriteAccess } from "@/lib/subscription";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
 import {
@@ -132,10 +131,17 @@ export async function saveDrillCodes(
     redirect("/login");
   }
 
-  const blocked = await requireWriteAccess(supabase, user.id);
-  if (blocked) {
-    return { error: (await getTranslations("Common"))(blocked) };
-  }
+  // **Jediná zapisovacia akcia BEZ `requireWriteAccess`** (rozhodnuté
+  // 2026-08-21) — a je to zámer, nie prehliadnutie. Tréner si kódy nastaví aj
+  // bez predplatného, takže po zaplatení má appku pripravenú podľa seba od
+  // prvej sekundy. Personalizácia kódov je zároveň hlavný sľub landingu
+  // („zapíš si vlastné drily"); za platobnou stenou by pôsobila ako návnada.
+  //
+  // Prečo je to bezpečné: kódy sú vlastníctvo trénera, počet je zhora
+  // ohraničený (20 slotov na zameranie), nič sa nimi nezverejňuje a analytika
+  // z nich nepočíta nič, kým nevznikne tréning — a ten bez predplatného
+  // nevznikne. Neplatiaci účet si teda vie appku nachystať, ale nie ju
+  // používať.
 
   // V org režime kódy štandardizuje federácia (§5.5) — tréner ich len používa.
   // RLS by zápis aj tak zamietla; tu vrátime zrozumiteľnú hlášku namiesto

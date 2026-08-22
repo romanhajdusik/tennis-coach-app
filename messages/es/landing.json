@@ -65,10 +65,11 @@
     "Detalle del entrenamiento — ejercicios, tiempo, notas",
     "Se conserva el historial",
     "Calendario — vista semanal y mensual",
+    "Tus propios códigos de ejercicios",
     "Analítica — desgloses, porcentajes, comparación de periodos",
     "Planificar y registrar entrenamientos"
   ],
-  "pricingCompareNote": "Los jugadores archivados no cuentan para el plan y el historial nunca se borra. Pagando al año ahorras un 40 %.",
+  "pricingCompareNote": "Los jugadores archivados no cuentan para el plan y el historial nunca se borra. Pagando al año ahorras un 40 %. Puedes configurar tus códigos de ejercicios sin suscripción, así que en cuanto pagues, la app ya es tuya.",
   "pricingVat": "Precios con IVA incluido.",
   "pricingFollowerText": "¿Eres jugador, padre o mánager?",
   "pricingFollowerCta": "Ver el precio por seguir a un jugador",

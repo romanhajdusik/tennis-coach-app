@@ -20,7 +20,10 @@ vie ustrážiť:
   prestane zapisovať. Zákazník nikdy nepríde o svoju prácu.
   **Upresnené 2026-08-18: čítanie už nebude úplné.** Trénerovi bez
   predplatného ostane zoznam tréningov (zapísaných aj naplánovaných, s filtrom
-  na mesiac), detail, história **a kalendár**; **analytika ide za platbu**,
+  na mesiac), detail, história, **kalendár** a od 2026-08-21 aj **úprava
+  vlastných kódov cvičení** (jediná zapisovacia akcia bez stráže — kto si
+  appku nachystá bez platenia, má ju po zaplatení hotovú od prvej sekundy);
+  **analytika ide za platbu**,
   rovnako ako zápis. Kalendár zámerne ostáva — tréner musí vidieť, kedy má
   tréningy, inak mu appka prestane byť použiteľná ako denník. Je to zrkadlo
   rodičovského modelu (§8.3) s jedným rozdielom: rodičovi kalendár za platbou
