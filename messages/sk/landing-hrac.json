@@ -1,0 +1,83 @@
+{
+  "metaTitle": "P.L.A.W pre rodiča, hráča a manažéra — vidíš, čo sa na tréningoch deje",
+  "metaDescription": "Kód od trénera ti otvorí tréningy tvojho hráča: čo sa cvičilo, ako dlho a čo je naplánované. História ostáva v tvojom účte.",
+  "eyebrow": "Pre rodiča, hráča a manažéra",
+  "heroTitle": "Vieš, čo sa na tréningu naozaj dialo.",
+  "heroSubtitle": "Tréner ti pošle kód. Od tej chvíle vidíš každý tréning svojho hráča — čo sa cvičilo, ako dlho a čo je naplánované na ďalšie dni. Bez vypytovania sa po tréningu a bez čakania na odpoveď.",
+  "ctaPrimary": "Mám kód od trénera",
+  "ctaSecondary": "Ako to funguje",
+  "howTitle": "Tri kroky a si vnútri",
+  "howSubtitle": "Nič sa neinštaluje a nič sa nenastavuje — appka beží v prehliadači telefónu.",
+  "stepWord": "Krok",
+  "steps": [
+    {
+      "title": "Vytvor si účet",
+      "body": "Zaregistruj sa a vyber si, kto si — hráč, rodič alebo manažér. Práva sú rovnaké, líši sa len štítok."
+    },
+    {
+      "title": "Zadaj kód od trénera",
+      "body": "Tréner ti pošle krátky prístupový kód. Zadáš ho raz a tým sa prepojíš so svojím hráčom."
+    },
+    {
+      "title": "Pozeraj sa",
+      "body": "Tréningy ti pribúdajú samé, tak ako ich tréner zapisuje. Ty nevypĺňaš nič."
+    }
+  ],
+  "showcaseTitle": "Takto to vyzerá",
+  "showcaseSubtitle": "Celá appka je navrhnutá pre telefón — pozrieš sa kedykoľvek a odkiaľkoľvek.",
+  "showcaseNote": "Kalendár a analytika sú súčasťou predplatného.",
+  "showcaseCaptions": {
+    "calendar": "Kalendár tréningov tvojho hráča",
+    "session": "Detail tréningu — cvičenia, čas, poznámky",
+    "analytics": "Analytika: koľko času išlo na čo"
+  },
+  "featuresTitle": "Čo na svojom hráčovi uvidíš",
+  "featurePaidBadge": "S predplatným",
+  "features": [
+    {
+      "title": "Zoznam tréningov",
+      "description": "Odohrané aj naplánované, od najnovšieho. Filter na mesiac ti nájde ktorýkoľvek tréning aj po dvoch sezónach."
+    },
+    {
+      "title": "Detail každého tréningu",
+      "description": "Ktoré cvičenia sa robili, ako dlho tréning trval a čo si k nemu tréner poznačil. Vidíš aj to, ktoré cvičenie sa neodohralo alebo bolo nahradené."
+    },
+    {
+      "title": "Kalendár",
+      "description": "Týždenný aj mesačný pohľad. Jeden pohľad na to, ako vyzerá tréningový týždeň."
+    },
+    {
+      "title": "Analytika",
+      "description": "Koľko času išlo na ktoré zameranie, ako sa to mení v čase a dve obdobia vedľa seba."
+    },
+    {
+      "title": "História, ktorá ostáva tebe",
+      "description": "Záznamy máš vo svojom účte ako vlastnú kópiu. Nezmiznú, ani keď sa spolupráca s trénerom skončí."
+    },
+    {
+      "title": "Len na čítanie",
+      "description": "Nič nepokazíš a do trénerovej práce nezasiahneš. Appka je pre teba okno, nie formulár."
+    }
+  ],
+  "transparencyTitle": "Tréningový denník patrí tebe, nie trénerovi.",
+  "transparencyIntro": "Toto ti P.L.A.W sľubuje:",
+  "transparencyQuote": "Celá história tréningov ostáva v tvojom účte — aj tie, ktoré má tvoj hráč odtrénované s doterajším trénerom. Nikam sa nič neodosiela a nič sa nemaže. Ak sa vaše cesty rozídu, novému trénerovi doň vieš kedykoľvek dať nahliadnuť priamo u seba.",
+  "transparencyNote": "Tréner, ktorý sa nebojí dať záznam o svojej práci do rúk klienta, je skutočný profesionál.",
+  "pricingTitle": "Cena",
+  "pricingSubtitle": "Jedno predplatné, jeden hráč.",
+  "pricingPerYear": "/ rok",
+  "pricingPerDay": "{amount} centa na deň.",
+  "pricingTrial": "14 dní na skúšku, potom sa platí.",
+  "pricingFree": "Zoznam tréningov aj ich detail vidíš aj bez predplatného — predplatné pridáva kalendár a analytiku.",
+  "pricingOnePlayer": "Kto sleduje dve deti, potrebuje zatiaľ dva účty.",
+  "pricingVat": "Ceny sú vrátane DPH.",
+  "pricingCta": "Pozri celý cenník",
+  "finalCtaTitle": "Máš kód od trénera?",
+  "finalCtaSubtitle": "Prihlás sa alebo si vytvor účet a začni sledovať tréningy.",
+  "finalCtaButton": "Prihlásiť sa alebo registrovať",
+  "guideText": "Nie si si istý, ako to funguje?",
+  "guideCta": "Pozri návod pre hráča, rodiča a manažéra",
+  "coachText": "Si tréner a hľadáš appku pre seba?",
+  "coachCta": "P.L.A.W pre trénerov",
+  "footerTagline": "P.L.A.W — tréningový denník, ktorý ostáva tebe"
+}

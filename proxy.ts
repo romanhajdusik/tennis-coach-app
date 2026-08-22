@@ -2,8 +2,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { orgSlugFromHost, resolveOrgBySlug } from "@/lib/org/resolve";
 import {
+  APP_ORIGIN,
   PUBLIC_ONLY_HOSTS,
   PUBLIC_ORIGIN,
+  isParentFaceHost,
   normalizeHost,
 } from "@/lib/public-face";
 
@@ -21,7 +23,12 @@ const PUBLIC_PATHS = new Set([
   "/cennik-hrac",
   "/federacie",
 ]);
-const APP_ORIGIN = "https://plaw.win";
+
+// plaw.click hovorí k druhej strane appky (hráč, rodič, manažér), takže na nej
+// nie je celý verejný web — len jej landing na `/` a dve stránky, na ktoré
+// odkazuje. Trénerský marketing (`/navod`, cenník na landingu) sem nepatrí:
+// kto sem prišiel, prišiel sa pozerať, nie trénovať.
+const PARENT_FACE_PATHS = new Set(["/", "/navod-hrac", "/cennik-hrac"]);
 
 // Stránka pre federácie je marketing, nie produkt — patrí výhradne na verejnú
 // tvár. Na plaw.win sa preto presmeruje sem, aby mala jedinú adresu (opak
@@ -83,6 +90,18 @@ export async function proxy(request: NextRequest) {
       return NextResponse.next();
     }
     // Appkové cesty presmeruj na plaw.win + rovnaká cesta.
+    return NextResponse.redirect(new URL(pathname + search, APP_ORIGIN), 307);
+  }
+
+  // plaw.click = landing pre hráča, rodiča a manažéra. Tá istá mechanika ako
+  // pri plaw.online, len s vlastným (užším) zoznamom ciest: na `/` sa vykreslí
+  // rodičovská landing (app/page.tsx), zvyšok ide na plaw.win. Cookies sú
+  // per-doména, takže návštevník je tu vždy odhlásený a session netreba.
+  if (isParentFaceHost(host)) {
+    const { pathname, search } = request.nextUrl;
+    if (PARENT_FACE_PATHS.has(pathname)) {
+      return NextResponse.next();
+    }
     return NextResponse.redirect(new URL(pathname + search, APP_ORIGIN), 307);
   }
 

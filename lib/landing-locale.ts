@@ -163,6 +163,79 @@ export async function loadCennikHracMessages(
   return messages.default as CennikHracMessages;
 }
 
+// Landing pre hráča, rodiča a manažéra (`plaw.click`, od 2026-08-22) — druhá
+// strana appky konečne dostala vlastný PREDAJ, nie len vysvetlenie: dovtedy
+// mala iba návod (`/navod-hrac`) a cenník (`/cennik-hrac`), kým celý ostatný
+// verejný web hovoril k trénerovi.
+//
+// Rovnako ako cenník je zámerne bez tenisového slovníka (žiadny kurt ani
+// úder) — tú istú stránku dostane aj rodič kondičného hráča.
+//
+// POZOR na dve veci pri úpravách textov (rozhodnuté v CLAUDE.md, sekcia
+// „Ceny na verejnom webe" a pri nápade na túto stránku):
+// 1. **Nič sa nesmie sľubovať zadarmo** — jediné dovolené tvrdenie je 14 dní
+//    na skúšku a že potom sa platí.
+// 2. **Kalendár a analytika sú za predplatným**, takže sa nesmú spomínať ako
+//    samozrejmosť; ktoré dlaždice to sú, drží pole `PAID_FEATURES`
+//    v `components/landing-hrac.tsx`, nie preklady.
+// 3. **Prenos histórie na nového trénera neexistuje a nebude** (jediná policy
+//    na `parent_session_records` je `parent_id = auth.uid()`), takže veta
+//    o transparentnosti smie sľubovať len nahliadnutie u sledujúceho.
+export type LandingHracMessages = {
+  metaTitle: string;
+  metaDescription: string;
+  eyebrow: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  ctaPrimary: string;
+  ctaSecondary: string;
+  howTitle: string;
+  howSubtitle: string;
+  stepWord: string;
+  steps: { title: string; body: string }[];
+  showcaseTitle: string;
+  showcaseSubtitle: string;
+  /**
+   * Zábery kalendára a analytiky ukazujú funkcie ZA PREDPLATNÝM, takže pod
+   * nimi musí stáť veta, ktorá to povie — inak sekcia sľubuje viac, než
+   * sledujúci bez predplatného dostane.
+   */
+  showcaseNote: string;
+  showcaseCaptions: { calendar: string; session: string; analytics: string };
+  featuresTitle: string;
+  /** Štítok na dlaždiciach, ktoré sú za predplatným (kalendár, analytika). */
+  featurePaidBadge: string;
+  features: { title: string; description: string }[];
+  transparencyTitle: string;
+  transparencyIntro: string;
+  transparencyQuote: string;
+  transparencyNote: string;
+  pricingTitle: string;
+  pricingSubtitle: string;
+  pricingPerYear: string;
+  pricingPerDay: string;
+  pricingTrial: string;
+  pricingFree: string;
+  pricingOnePlayer: string;
+  pricingVat: string;
+  pricingCta: string;
+  finalCtaTitle: string;
+  finalCtaSubtitle: string;
+  finalCtaButton: string;
+  guideText: string;
+  guideCta: string;
+  coachText: string;
+  coachCta: string;
+  footerTagline: string;
+};
+
+export async function loadLandingHracMessages(
+  locale: LandingLocale,
+): Promise<LandingHracMessages> {
+  const messages = await import(`../messages/${locale}/landing-hrac.json`);
+  return messages.default as LandingHracMessages;
+}
+
 // Stránka pre federácie/kluby/akadémie (/federacie) je zámerne LEN po slovensky
 // — prvými B2B zákazníkmi sú slovenské zväzy a kluby a obchod sa vedie po
 // slovensky. Preto nemá `locale` parameter ani prepínač jazykov; keby raz

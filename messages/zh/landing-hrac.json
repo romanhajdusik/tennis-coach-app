@@ -1,0 +1,83 @@
+{
+  "metaTitle": "P.L.A.W 家长、球员与经纪人版 — 看清训练里发生了什么",
+  "metaDescription": "教练给你一个代码，就能看到你的球员的训练：练了什么、练了多久、接下来安排了什么。历史记录留在你自己的账号里。",
+  "eyebrow": "给家长、球员和经纪人",
+  "heroTitle": "训练场上到底发生了什么，你都知道。",
+  "heroSubtitle": "教练发给你一个代码。从那一刻起，你能看到球员的每一次训练——练了哪些内容、多长时间、接下来几天安排了什么。不用训练后追问，也不用等回复。",
+  "ctaPrimary": "我有教练给的代码",
+  "ctaSecondary": "它是怎么运作的",
+  "howTitle": "三步就能进来",
+  "howSubtitle": "无需安装、无需设置——在手机浏览器里就能用。",
+  "stepWord": "步骤",
+  "steps": [
+    {
+      "title": "创建账号",
+      "body": "注册并选择你的身份——球员、家长或经纪人。权限完全相同，区别只是标签。"
+    },
+    {
+      "title": "输入教练的代码",
+      "body": "教练会发给你一个简短的访问代码。输入一次，就与你的球员建立了连接。"
+    },
+    {
+      "title": "看就行了",
+      "body": "教练记录训练后，内容会自动出现。你什么都不用填。"
+    }
+  ],
+  "showcaseTitle": "它看起来是这样",
+  "showcaseSubtitle": "整个应用都是为手机设计的——随时随地都能看。",
+  "showcaseNote": "日历和数据分析包含在订阅中。",
+  "showcaseCaptions": {
+    "calendar": "你的球员的训练日历",
+    "session": "训练详情——练习、时长、备注",
+    "analytics": "数据分析：时间都花在了哪里"
+  },
+  "featuresTitle": "关于你的球员，你能看到什么",
+  "featurePaidBadge": "需订阅",
+  "features": [
+    {
+      "title": "训练清单",
+      "description": "已完成和已计划的训练，最新的排在最前。按月筛选，两个赛季之后也能找到任何一次训练。"
+    },
+    {
+      "title": "每次训练的细节",
+      "description": "做了哪些练习、训练持续多久、教练记了什么。哪个练习没做成或被替换，也一目了然。"
+    },
+    {
+      "title": "日历",
+      "description": "周视图和月视图。一眼看清训练的一周是什么样子。"
+    },
+    {
+      "title": "数据分析",
+      "description": "时间分别投入到哪些训练重点上、随时间如何变化，以及两个时期的并列对比。"
+    },
+    {
+      "title": "属于你的历史记录",
+      "description": "记录以你自己的副本形式存在你的账号里。即使与教练的合作结束，它们也不会消失。"
+    },
+    {
+      "title": "只读",
+      "description": "你不会弄坏任何东西，也不会干扰教练的工作。这个应用对你来说是一扇窗，不是一张表单。"
+    }
+  ],
+  "transparencyTitle": "训练日志属于你，而不是教练。",
+  "transparencyIntro": "这是 P.L.A.W 对你的承诺：",
+  "transparencyQuote": "全部训练历史都留在你的账号里——包括球员和现在这位教练一起完成的训练。不会被发送到任何地方，也不会被删除。如果日后你们分开，你随时可以在自己这里让新教练查看。",
+  "transparencyNote": "敢把自己工作的记录交到客户手上的教练，才是真正的专业人士。",
+  "pricingTitle": "价格",
+  "pricingSubtitle": "一份订阅，一名球员。",
+  "pricingPerYear": "/ 年",
+  "pricingPerDay": "每天 {amount} 欧分。",
+  "pricingTrial": "14 天试用，之后收费。",
+  "pricingFree": "训练清单和每次训练的细节，没有订阅也能看——订阅增加的是日历和数据分析。",
+  "pricingOnePlayer": "关注两个孩子的人目前需要两个账号。",
+  "pricingVat": "价格含增值税。",
+  "pricingCta": "查看完整价格",
+  "finalCtaTitle": "拿到教练给的代码了吗？",
+  "finalCtaSubtitle": "登录或注册账号，开始关注训练。",
+  "finalCtaButton": "登录或注册",
+  "guideText": "还不太清楚怎么用？",
+  "guideCta": "查看球员、家长与经纪人指南",
+  "coachText": "你是教练，想找一款自己用的应用？",
+  "coachCta": "P.L.A.W 教练版",
+  "footerTagline": "P.L.A.W — 留在你手里的训练日志"
+}

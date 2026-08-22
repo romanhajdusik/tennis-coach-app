@@ -1,0 +1,83 @@
+{
+  "metaTitle": "P.L.A.W for parents, players and managers — see what happens at practice",
+  "metaDescription": "One code from the coach opens your player's practices: which drills, how long, and what is planned next. The history stays in your own account.",
+  "eyebrow": "For parents, players and managers",
+  "heroTitle": "Know what really happened at practice.",
+  "heroSubtitle": "Your coach sends you a code. From that moment you see every practice your player does — which drills, how long, and what is planned for the days ahead. No questions after training, no waiting for an answer.",
+  "ctaPrimary": "I have a code",
+  "ctaSecondary": "How it works",
+  "howTitle": "Three steps and you are in",
+  "howSubtitle": "Nothing to install and nothing to set up — it runs in your phone's browser.",
+  "stepWord": "Step",
+  "steps": [
+    {
+      "title": "Create an account",
+      "body": "Sign up and pick who you are — player, parent or manager. The rights are the same; only the label differs."
+    },
+    {
+      "title": "Enter the coach's code",
+      "body": "Your coach sends you a short access code. You enter it once and that connects you to your player."
+    },
+    {
+      "title": "Just watch",
+      "body": "Practices show up on their own, as the coach logs them. You fill in nothing."
+    }
+  ],
+  "showcaseTitle": "This is what it looks like",
+  "showcaseSubtitle": "The whole app is built for the phone — check in whenever and wherever you are.",
+  "showcaseNote": "The calendar and analytics are part of the subscription.",
+  "showcaseCaptions": {
+    "calendar": "Your player's practice calendar",
+    "session": "Practice detail — drills, time, notes",
+    "analytics": "Analytics: where the time went"
+  },
+  "featuresTitle": "What you see about your player",
+  "featurePaidBadge": "With a subscription",
+  "features": [
+    {
+      "title": "The practice list",
+      "description": "Logged and planned, newest first. A month filter finds any practice, even two seasons back."
+    },
+    {
+      "title": "Every practice in detail",
+      "description": "Which drills were done, how long the session ran and what the coach noted. You also see which drill was skipped or replaced."
+    },
+    {
+      "title": "Calendar",
+      "description": "Weekly and monthly view. One look at what the training week looks like."
+    },
+    {
+      "title": "Analytics",
+      "description": "How much time went into which focus area, how that changes over time, and two periods side by side."
+    },
+    {
+      "title": "A history that stays yours",
+      "description": "The records live in your account as your own copy. They do not disappear when the work with the coach ends."
+    },
+    {
+      "title": "Read-only",
+      "description": "You cannot break anything and you do not touch the coach's work. The app is a window for you, not a form."
+    }
+  ],
+  "transparencyTitle": "The training log belongs to you, not to the coach.",
+  "transparencyIntro": "This is what P.L.A.W promises you:",
+  "transparencyQuote": "The whole practice history stays in your account — including the sessions your player has done with the coach you work with today. Nothing is sent anywhere and nothing is deleted. If your paths part, you can let a new coach look through it any time, right there with you.",
+  "transparencyNote": "A coach who is not afraid to put the record of their work into the client's hands is a true professional.",
+  "pricingTitle": "Price",
+  "pricingSubtitle": "One subscription, one player.",
+  "pricingPerYear": "/ year",
+  "pricingPerDay": "{amount} cents a day.",
+  "pricingTrial": "14 days to try, then it is paid.",
+  "pricingFree": "The practice list and every practice detail are yours without a subscription — the subscription adds the calendar and analytics.",
+  "pricingOnePlayer": "Following two children needs two accounts for now.",
+  "pricingVat": "Prices include VAT.",
+  "pricingCta": "See the full pricing",
+  "finalCtaTitle": "Got a code from your coach?",
+  "finalCtaSubtitle": "Sign in or create an account and start following practices.",
+  "finalCtaButton": "Sign in or sign up",
+  "guideText": "Not sure how it works?",
+  "guideCta": "Read the guide for players, parents and managers",
+  "coachText": "Are you a coach looking for an app of your own?",
+  "coachCta": "P.L.A.W for coaches",
+  "footerTagline": "P.L.A.W — the training log that stays yours"
+}

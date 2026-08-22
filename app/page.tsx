@@ -8,8 +8,10 @@ import { logout } from "@/lib/actions/auth";
 import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { LandingPage, getLandingLocale } from "@/components/landing-page";
 import { PublicFaceHome } from "@/components/public-face-home";
-import { isPublicFaceHost } from "@/lib/public-face";
+import { LandingHrac } from "@/components/landing-hrac";
+import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
 import {
+  loadLandingHracMessages,
   loadLandingMessages,
   loadRozcestnikMessages,
   rozcestnikLocale,
@@ -54,9 +56,22 @@ export async function generateMetadata(): Promise<Metadata> {
     return { title: org.name, robots: { index: false, follow: false } };
   }
 
+  // plaw.click má na `/` landing pre hráča, rodiča a manažéra. Je pred
+  // kontrolou disciplíny zámerne: tá stránka je bez tenisového slovníka, takže
+  // platí pre sledujúceho tenistu aj kondičného hráča.
+  const host = (await headers()).get("host");
+  if (isParentFaceHost(host)) {
+    const t = await loadLandingHracMessages(await getLandingLocale());
+    return {
+      title: t.metaTitle,
+      description: t.metaDescription,
+      robots: { index: false, follow: false },
+    };
+  }
+
   // Verejná tvár (plaw.online) má na `/` rozcestník, nie consumer landing —
   // metadata musia sedieť s tým, čo sa naozaj vykreslí.
-  if (isPublicFaceHost((await headers()).get("host"))) {
+  if (isPublicFaceHost(host)) {
     const t = await loadRozcestnikMessages(
       rozcestnikLocale(await getLandingLocale()),
     );
@@ -118,9 +133,16 @@ export default async function Home() {
     if (org) {
       redirect("/login");
     }
+    const host = (await headers()).get("host");
+    // plaw.click hovorí druhej strane appky (hráč, rodič, manažér). Musí byť
+    // PRED kontrolou disciplíny: stránka je zámerne bez tenisového slovníka,
+    // takže platí aj pre rodiča kondičného hráča.
+    if (isParentFaceHost(host)) {
+      return <LandingHrac />;
+    }
     // Verejná tvár ponúka oba produkty ako rovnocenné dvere; consumer landing
     // (funkcie, screenshoty, cenník) ostáva na plaw.win, kam prvé dvere vedú.
-    if (isPublicFaceHost((await headers()).get("host"))) {
+    if (isPublicFaceHost(host)) {
       return <PublicFaceHome />;
     }
     // Landing je marketing TENISOVÉHO produktu (jeho názov, screenshoty

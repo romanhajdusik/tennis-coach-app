@@ -1,0 +1,83 @@
+{
+  "metaTitle": "P.L.A.W für Eltern, Spieler und Manager — sieh, was im Training passiert",
+  "metaDescription": "Ein Code vom Trainer öffnet dir die Trainings deines Spielers: welche Übungen, wie lange und was als Nächstes geplant ist. Die Historie bleibt in deinem eigenen Konto.",
+  "eyebrow": "Für Eltern, Spieler und Manager",
+  "heroTitle": "Du weißt, was im Training wirklich passiert ist.",
+  "heroSubtitle": "Dein Trainer schickt dir einen Code. Ab diesem Moment siehst du jedes Training deines Spielers — welche Übungen, wie lange und was für die nächsten Tage geplant ist. Ohne Nachfragen nach dem Training und ohne auf eine Antwort zu warten.",
+  "ctaPrimary": "Ich habe einen Code",
+  "ctaSecondary": "So funktioniert es",
+  "howTitle": "Drei Schritte und du bist drin",
+  "howSubtitle": "Nichts zu installieren und nichts einzurichten — die App läuft im Browser deines Handys.",
+  "stepWord": "Schritt",
+  "steps": [
+    {
+      "title": "Konto erstellen",
+      "body": "Registriere dich und wähle, wer du bist — Spieler, Elternteil oder Manager. Die Rechte sind gleich, nur die Bezeichnung unterscheidet sich."
+    },
+    {
+      "title": "Code des Trainers eingeben",
+      "body": "Dein Trainer schickt dir einen kurzen Zugangscode. Du gibst ihn einmal ein und bist damit mit deinem Spieler verbunden."
+    },
+    {
+      "title": "Einfach zuschauen",
+      "body": "Die Trainings erscheinen von selbst, sobald der Trainer sie einträgt. Du füllst nichts aus."
+    }
+  ],
+  "showcaseTitle": "So sieht es aus",
+  "showcaseSubtitle": "Die ganze App ist fürs Handy gebaut — schau rein, wann und wo du willst.",
+  "showcaseNote": "Kalender und Auswertung sind Teil des Abos.",
+  "showcaseCaptions": {
+    "calendar": "Der Trainingskalender deines Spielers",
+    "session": "Trainingsdetail — Übungen, Zeit, Notizen",
+    "analytics": "Auswertung: wohin die Zeit ging"
+  },
+  "featuresTitle": "Was du über deinen Spieler siehst",
+  "featurePaidBadge": "Mit Abo",
+  "features": [
+    {
+      "title": "Die Trainingsliste",
+      "description": "Absolviert und geplant, das neueste zuerst. Der Monatsfilter findet jedes Training, auch nach zwei Saisons."
+    },
+    {
+      "title": "Jedes Training im Detail",
+      "description": "Welche Übungen gemacht wurden, wie lange die Einheit dauerte und was der Trainer notiert hat. Du siehst auch, welche Übung ausgefallen oder ersetzt wurde."
+    },
+    {
+      "title": "Kalender",
+      "description": "Wochen- und Monatsansicht. Ein Blick darauf, wie die Trainingswoche aussieht."
+    },
+    {
+      "title": "Auswertung",
+      "description": "Wie viel Zeit in welchen Schwerpunkt floss, wie sich das über die Zeit verändert und zwei Zeiträume nebeneinander."
+    },
+    {
+      "title": "Eine Historie, die dir bleibt",
+      "description": "Die Aufzeichnungen liegen als eigene Kopie in deinem Konto. Sie verschwinden nicht, wenn die Zusammenarbeit mit dem Trainer endet."
+    },
+    {
+      "title": "Nur zum Lesen",
+      "description": "Du kannst nichts kaputt machen und greifst nicht in die Arbeit des Trainers ein. Die App ist für dich ein Fenster, kein Formular."
+    }
+  ],
+  "transparencyTitle": "Das Trainingstagebuch gehört dir, nicht dem Trainer.",
+  "transparencyIntro": "Das verspricht dir P.L.A.W:",
+  "transparencyQuote": "Die gesamte Trainingshistorie bleibt in deinem Konto — auch die Einheiten, die dein Spieler mit dem heutigen Trainer absolviert hat. Es wird nichts irgendwohin gesendet und nichts gelöscht. Wenn sich eure Wege trennen, kannst du einem neuen Trainer jederzeit bei dir Einblick geben.",
+  "transparencyNote": "Ein Trainer, der keine Angst hat, die Aufzeichnung seiner Arbeit in die Hände des Kunden zu legen, ist ein echter Profi.",
+  "pricingTitle": "Preis",
+  "pricingSubtitle": "Ein Abo, ein Spieler.",
+  "pricingPerYear": "/ Jahr",
+  "pricingPerDay": "{amount} Cent pro Tag.",
+  "pricingTrial": "14 Tage zum Ausprobieren, danach kostenpflichtig.",
+  "pricingFree": "Die Trainingsliste und jedes Trainingsdetail hast du auch ohne Abo — das Abo ergänzt Kalender und Auswertung.",
+  "pricingOnePlayer": "Wer zwei Kinder verfolgt, braucht vorerst zwei Konten.",
+  "pricingVat": "Preise inklusive MwSt.",
+  "pricingCta": "Zur vollständigen Preisübersicht",
+  "finalCtaTitle": "Hast du einen Code vom Trainer?",
+  "finalCtaSubtitle": "Melde dich an oder erstelle ein Konto und verfolge die Trainings.",
+  "finalCtaButton": "Anmelden oder registrieren",
+  "guideText": "Nicht sicher, wie das funktioniert?",
+  "guideCta": "Zur Anleitung für Spieler, Eltern und Manager",
+  "coachText": "Bist du Trainer und suchst eine App für dich?",
+  "coachCta": "P.L.A.W für Trainer",
+  "footerTagline": "P.L.A.W — das Trainingstagebuch, das dir bleibt"
+}

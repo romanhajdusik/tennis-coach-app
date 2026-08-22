@@ -16,7 +16,17 @@ const nextConfig: NextConfig = {
   // POZOR: `*.plaw.win` **nezahŕňa holé `plaw.win`** — musí byť uvedené zvlášť.
   // Bez neho sa nehydratuje samostatný (1:1) režim, keď sa testuje cez ostré
   // hostname; prejaví sa to presne tak isto: klik ticho nespraví nič.
-  allowedDevOrigins: ["10.241.70.191", "plaw.win", "*.plaw.win"],
+  // Marketingové domény (plaw.online = rozcestník, plaw.click = landing pre
+  // hráča, rodiča a manažéra) majú prepínač jazykov, čo je klientský komponent —
+  // bez týchto hostnames sa pri lokálnom teste cez ostrú adresu nehydratujú a
+  // prepínač ticho nič nerobí. Rovnaká pasca ako pri org subdoménach vyššie.
+  allowedDevOrigins: [
+    "10.241.70.191",
+    "plaw.win",
+    "*.plaw.win",
+    "plaw.online",
+    "plaw.click",
+  ],
   async headers() {
     return [
       {

@@ -31,11 +31,13 @@ const FEATURE_ICONS = [
 ];
 
 // Reálne mobilné screenshoty appky (v poradí plán → záznam → analýza).
-// Appka samotná je len SK/EN, takže existujú dve sady záberov: slovenská
-// (public/screenshots/sk) a anglická (public/screenshots/en). Slovenský
-// landing ukazuje slovenské zábery, všetky ostatné jazyky (EN/DE/ES/RU/FR)
-// anglické — angličtina je univerzálnejší fallback než slovenčina. Popisky
-// pod zábermi sú preložené do každého jazyka (showcaseCaptions).
+//
+// **Vždy anglické, vo všetkých deviatich jazykoch** (zjednotené 2026-08-22,
+// rovnako ako na `components/landing-hrac.tsx`). Predtým dostával slovenský
+// landing sadu `public/screenshots/sk` — tá ale vznikla pred prechodom appky
+// na EN-only (2026-07-28), takže ukazovala UI, ktoré v produkte už
+// neexistuje. Popisky pod zábermi preložené ostávajú: tie sú súčasťou webu,
+// nie appky (showcaseCaptions).
 const SHOWCASE = ["calendar", "session", "analytics"] as const;
 
 export async function getLandingLocale() {
@@ -47,9 +49,6 @@ export async function getLandingLocale() {
 export async function LandingPage() {
   const locale = await getLandingLocale();
   const t = await loadLandingMessages(locale);
-  // Appka je len SK/EN — slovenský landing dostane slovenské zábery,
-  // ostatné jazyky anglické.
-  const shotLocale = locale === "sk" ? "sk" : "en";
   // Ceny formátuje server podľa jazyka (6,90 € vs €6.90) — v prehliadači sa
   // prepína len obdobie. Počet hráčov je preložený reťazec, lebo pluralita
   // („3 hráči" vs „6 hráčov") je vec jazyka, nie čísla.
@@ -187,7 +186,7 @@ export async function LandingPage() {
               <div className="w-[220px] rounded-[2rem] bg-input p-2.5 shadow-2xl ring-1 ring-border transition hover:-translate-y-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`/screenshots/${shotLocale}/${key}.webp`}
+                  src={`/screenshots/en/${key}.webp`}
                   alt={t.showcaseCaptions[key]}
                   width={640}
                   height={1385}

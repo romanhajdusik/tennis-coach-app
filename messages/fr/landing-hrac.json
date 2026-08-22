@@ -1,0 +1,83 @@
+{
+  "metaTitle": "P.L.A.W pour les parents, les joueurs et les managers — voyez ce qui se passe à l'entraînement",
+  "metaDescription": "Un code de l'entraîneur ouvre les entraînements de votre joueur : quels exercices, combien de temps et ce qui est prévu. L'historique reste dans votre propre compte.",
+  "eyebrow": "Pour les parents, les joueurs et les managers",
+  "heroTitle": "Vous savez ce qui s'est vraiment passé à l'entraînement.",
+  "heroSubtitle": "Votre entraîneur vous envoie un code. À partir de ce moment, vous voyez chaque séance de votre joueur — quels exercices, combien de temps et ce qui est prévu pour les jours à venir. Sans poser de questions après la séance et sans attendre de réponse.",
+  "ctaPrimary": "J'ai un code",
+  "ctaSecondary": "Comment ça marche",
+  "howTitle": "Trois étapes et vous y êtes",
+  "howSubtitle": "Rien à installer et rien à configurer — l'application tourne dans le navigateur du téléphone.",
+  "stepWord": "Étape",
+  "steps": [
+    {
+      "title": "Créez un compte",
+      "body": "Inscrivez-vous et choisissez qui vous êtes — joueur, parent ou manager. Les droits sont les mêmes, seule l'étiquette change."
+    },
+    {
+      "title": "Saisissez le code de l'entraîneur",
+      "body": "L'entraîneur vous envoie un court code d'accès. Vous le saisissez une fois et vous êtes relié à votre joueur."
+    },
+    {
+      "title": "Regardez, tout simplement",
+      "body": "Les séances apparaissent d'elles-mêmes, au fur et à mesure que l'entraîneur les enregistre. Vous ne remplissez rien."
+    }
+  ],
+  "showcaseTitle": "Voilà à quoi ça ressemble",
+  "showcaseSubtitle": "Toute l'application est pensée pour le téléphone — consultez-la quand et où vous voulez.",
+  "showcaseNote": "Le calendrier et l'analyse font partie de l'abonnement.",
+  "showcaseCaptions": {
+    "calendar": "Le calendrier des séances de votre joueur",
+    "session": "Détail de la séance — exercices, durée, notes",
+    "analytics": "Analyse : où est passé le temps"
+  },
+  "featuresTitle": "Ce que vous voyez de votre joueur",
+  "featurePaidBadge": "Avec abonnement",
+  "features": [
+    {
+      "title": "La liste des séances",
+      "description": "Réalisées et prévues, de la plus récente à la plus ancienne. Le filtre par mois retrouve n'importe quelle séance, même deux saisons plus tard."
+    },
+    {
+      "title": "Chaque séance en détail",
+      "description": "Quels exercices ont été faits, combien de temps la séance a duré et ce que l'entraîneur a noté. Vous voyez aussi quel exercice n'a pas eu lieu ou a été remplacé."
+    },
+    {
+      "title": "Calendrier",
+      "description": "Vue hebdomadaire et mensuelle. Un seul coup d'œil sur la semaine d'entraînement."
+    },
+    {
+      "title": "Analyse",
+      "description": "Combien de temps est allé à quel domaine de travail, comment cela évolue et deux périodes côte à côte."
+    },
+    {
+      "title": "Un historique qui vous reste",
+      "description": "Les enregistrements sont dans votre compte comme votre propre copie. Ils ne disparaissent pas quand le travail avec l'entraîneur s'arrête."
+    },
+    {
+      "title": "En lecture seule",
+      "description": "Vous ne pouvez rien casser et vous ne touchez pas au travail de l'entraîneur. L'application est pour vous une fenêtre, pas un formulaire."
+    }
+  ],
+  "transparencyTitle": "Le carnet d'entraînement vous appartient, pas à l'entraîneur.",
+  "transparencyIntro": "Voici ce que P.L.A.W vous promet :",
+  "transparencyQuote": "Tout l'historique des séances reste dans votre compte — y compris celles que votre joueur a faites avec l'entraîneur actuel. Rien n'est envoyé nulle part et rien n'est effacé. Si vos chemins se séparent, vous pouvez à tout moment le faire consulter par un nouvel entraîneur, directement chez vous.",
+  "transparencyNote": "Un entraîneur qui n'a pas peur de mettre la trace de son travail entre les mains du client est un vrai professionnel.",
+  "pricingTitle": "Prix",
+  "pricingSubtitle": "Un abonnement, un joueur.",
+  "pricingPerYear": "/ an",
+  "pricingPerDay": "{amount} centimes par jour.",
+  "pricingTrial": "14 jours pour essayer, ensuite c'est payant.",
+  "pricingFree": "La liste des séances et le détail de chacune sont à vous sans abonnement — l'abonnement ajoute le calendrier et l'analyse.",
+  "pricingOnePlayer": "Suivre deux enfants demande pour l'instant deux comptes.",
+  "pricingVat": "Prix TTC.",
+  "pricingCta": "Voir tous les tarifs",
+  "finalCtaTitle": "Vous avez un code de l'entraîneur ?",
+  "finalCtaSubtitle": "Connectez-vous ou créez un compte et commencez à suivre les séances.",
+  "finalCtaButton": "Se connecter ou s'inscrire",
+  "guideText": "Vous ne savez pas trop comment ça marche ?",
+  "guideCta": "Voir le guide pour le joueur, le parent et le manager",
+  "coachText": "Vous êtes entraîneur et cherchez une application pour vous ?",
+  "coachCta": "P.L.A.W pour les entraîneurs",
+  "footerTagline": "P.L.A.W — le carnet d'entraînement qui vous reste"
+}

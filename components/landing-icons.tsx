@@ -70,3 +70,23 @@ export function GlobeIcon({ className = base }: IconProps) {
     </svg>
   );
 }
+
+// Landing pre hráča, rodiča a manažéra (plaw.click): história, ktorá ostáva
+// sledujúcemu, a to, že celá jeho časť appky je len na čítanie.
+export function ShieldCheckIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={className}>
+      <path d="M12 2.75 4.75 5.5v6c0 4.35 2.9 8.2 7.25 9.75 4.35-1.55 7.25-5.4 7.25-9.75v-6L12 2.75Z" strokeLinejoin="round" />
+      <path d="M8.75 11.75 11 14l4.25-4.25" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function EyeIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={className}>
+      <path d="M2.5 12S6 5.75 12 5.75 21.5 12 21.5 12 18 18.25 12 18.25 2.5 12 2.5 12Z" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}

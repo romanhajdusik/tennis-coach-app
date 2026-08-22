@@ -352,6 +352,7 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
 | Kde | Čo tam je |
 |---|---|
 | Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, tabuľka „Čo dostaneš" (bez predplatného vs. s predplatným) |
+| Landing na `plaw.click` (od 2026-08-22) | jedno číslo — ročných 36 € + dopočítané centy na deň — a odkaz na `/cennik-hrac`; dlaždice kalendára a analytiky nesú štítok „S predplatným" |
 | `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka bez predplatného vs. s predplatným (päť riadkov podľa §8.3) |
 | `/federacie` | naďalej „čoskoro" — sedadlá sa fakturujú mimo appky |
 

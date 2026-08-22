@@ -1,0 +1,83 @@
+{
+  "metaTitle": "P.L.A.W per genitori, giocatori e manager — vedi cosa succede agli allenamenti",
+  "metaDescription": "Un codice dell'allenatore apre gli allenamenti del tuo giocatore: quali esercizi, per quanto tempo e cosa è in programma. Lo storico resta nel tuo account.",
+  "eyebrow": "Per genitori, giocatori e manager",
+  "heroTitle": "Sai cosa è successo davvero in allenamento.",
+  "heroSubtitle": "Il tuo allenatore ti manda un codice. Da quel momento vedi ogni allenamento del tuo giocatore — quali esercizi, per quanto tempo e cosa è previsto nei prossimi giorni. Senza fare domande a fine seduta e senza aspettare una risposta.",
+  "ctaPrimary": "Ho un codice",
+  "ctaSecondary": "Come funziona",
+  "howTitle": "Tre passi e sei dentro",
+  "howSubtitle": "Niente da installare e niente da configurare — funziona nel browser del telefono.",
+  "stepWord": "Passo",
+  "steps": [
+    {
+      "title": "Crea un account",
+      "body": "Registrati e scegli chi sei — giocatore, genitore o manager. I permessi sono gli stessi, cambia solo l'etichetta."
+    },
+    {
+      "title": "Inserisci il codice dell'allenatore",
+      "body": "L'allenatore ti manda un breve codice di accesso. Lo inserisci una volta e resti collegato al tuo giocatore."
+    },
+    {
+      "title": "Guarda e basta",
+      "body": "Gli allenamenti compaiono da soli, man mano che l'allenatore li registra. Tu non compili nulla."
+    }
+  ],
+  "showcaseTitle": "Ecco come si presenta",
+  "showcaseSubtitle": "Tutta l'app è pensata per il telefono — guardala quando e dove vuoi.",
+  "showcaseNote": "Calendario e analisi fanno parte dell'abbonamento.",
+  "showcaseCaptions": {
+    "calendar": "Il calendario degli allenamenti del tuo giocatore",
+    "session": "Dettaglio dell'allenamento — esercizi, tempo, note",
+    "analytics": "Analisi: dove è andato il tempo"
+  },
+  "featuresTitle": "Cosa vedi del tuo giocatore",
+  "featurePaidBadge": "Con abbonamento",
+  "features": [
+    {
+      "title": "L'elenco degli allenamenti",
+      "description": "Svolti e in programma, dal più recente. Il filtro per mese trova qualsiasi allenamento anche dopo due stagioni."
+    },
+    {
+      "title": "Ogni allenamento nel dettaglio",
+      "description": "Quali esercizi sono stati fatti, quanto è durata la seduta e cosa ha annotato l'allenatore. Vedi anche quale esercizio non si è svolto o è stato sostituito."
+    },
+    {
+      "title": "Calendario",
+      "description": "Vista settimanale e mensile. Un solo sguardo su com'è fatta la settimana di allenamento."
+    },
+    {
+      "title": "Analisi",
+      "description": "Quanto tempo è andato su ciascun ambito di lavoro, come cambia nel tempo e due periodi affiancati."
+    },
+    {
+      "title": "Uno storico che resta tuo",
+      "description": "I dati stanno nel tuo account come copia tua. Non spariscono quando il lavoro con l'allenatore finisce."
+    },
+    {
+      "title": "Sola lettura",
+      "description": "Non puoi rovinare nulla e non tocchi il lavoro dell'allenatore. L'app per te è una finestra, non un modulo."
+    }
+  ],
+  "transparencyTitle": "Il diario di allenamento è tuo, non dell'allenatore.",
+  "transparencyIntro": "Questo è ciò che P.L.A.W ti promette:",
+  "transparencyQuote": "Tutto lo storico degli allenamenti resta nel tuo account — comprese le sedute che il tuo giocatore ha fatto con l'allenatore di adesso. Niente viene inviato da nessuna parte e niente viene cancellato. Se le vostre strade si dividono, puoi farlo consultare a un nuovo allenatore in qualsiasi momento, direttamente da te.",
+  "transparencyNote": "Un allenatore che non ha paura di mettere la traccia del proprio lavoro nelle mani del cliente è un vero professionista.",
+  "pricingTitle": "Prezzo",
+  "pricingSubtitle": "Un abbonamento, un giocatore.",
+  "pricingPerYear": "/ anno",
+  "pricingPerDay": "{amount} centesimi al giorno.",
+  "pricingTrial": "14 giorni di prova, poi si paga.",
+  "pricingFree": "L'elenco degli allenamenti e il dettaglio di ciascuno li hai anche senza abbonamento — l'abbonamento aggiunge calendario e analisi.",
+  "pricingOnePlayer": "Chi segue due figli per ora ha bisogno di due account.",
+  "pricingVat": "Prezzi IVA inclusa.",
+  "pricingCta": "Vedi tutti i prezzi",
+  "finalCtaTitle": "Hai un codice dall'allenatore?",
+  "finalCtaSubtitle": "Accedi o crea un account e inizia a seguire gli allenamenti.",
+  "finalCtaButton": "Accedi o registrati",
+  "guideText": "Non sei sicuro di come funziona?",
+  "guideCta": "Guarda la guida per giocatore, genitore e manager",
+  "coachText": "Sei un allenatore e cerchi un'app per te?",
+  "coachCta": "P.L.A.W per allenatori",
+  "footerTagline": "P.L.A.W — il diario di allenamento che resta tuo"
+}

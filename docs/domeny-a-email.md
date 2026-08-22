@@ -18,6 +18,9 @@
    MX tvrdili svetu, že poštu prijímajú, hoci tam schránka nie je, a bez DMARC sa
    dali zneužiť). Zvyšné (padel, pickleball, badminton, pomlčkové, `plaw.click`)
    sú **zaparkované a zabezpečené**, aktivujú sa až keď ten šport reálne pôjde von.
+   **Výnimka od 2026-08-22: `plaw.click` už web MÁ** — beží na nej landing pre
+   hráča, rodiča a manažéra (Vercel, ten istý projekt ako `plaw.win`). Poštovo
+   ostáva zaparkovaná ako doteraz; parkovanie sa týka výhradne pošty.
    *Čo sa tým stráca:* kto napíše na `support@plaw.win` — a je to doména, ktorú má
    tréner denne v adresnom riadku — dostane okamžitú chybu; ty sa o tom pokuse
    nedozvieš. Vrátiť sa to dá kedykoľvek (alias doména je zadarmo, Krok 9).
@@ -47,7 +50,7 @@ Všetky domény sú registrované cez **Websupport** a delegované na
 | `plawtennis.com` | nič | (predvolené Websupport) |
 | `plawpadel.com`, `plawpickleball.com`, `plawbadminton.com` | nič | (predvolené Websupport) |
 | `plaw-tennis.com` a spol. (pomlčkové) | nič | (predvolené Websupport) |
-| `plaw.click` | nič | (predvolené Websupport) |
+| `plaw.click` | landing pre hráča, rodiča a manažéra (Vercel, od 2026-08-22) | (predvolené Websupport) |
 
 `plaw.win` má navyše SPF `v=spf1 a mx include:_spf.m1.websupport.sk -all`.
 
@@ -319,13 +322,66 @@ zapol. Na SEO to nemá vplyv, `plaw.win` je `noindex`.
 podľa Kroku 10, a v `plawtennis.com` sa pri tejto zmene nesmú stratiť jej
 poštové záznamy (je to alias doména, Krok 9).
 
+### Krok 9c — `plaw.click` = landing pre hráča, rodiča a manažéra (2026-08-22)
+
+Na rozdiel od Kroku 9b **tu sa NEROBÍ redirect** — `plaw.click` má servírovať
+projekt, lebo `proxy.ts` na nej vykreslí vlastnú stránku (`isParentFaceHost`
+v `lib/public-face.ts`, landing `components/landing-hrac.tsx`). Je to tá istá
+mechanika ako pri `plaw.online`.
+
+> **PORADIE SA NESMIE PREHODIŤ: najprv nasaď kód, až potom pridaj doménu vo
+> Verceli.** Nasadenie, ktoré `plaw.click` nepozná, ju prepustí do bežnej
+> vetvy appky a odhlásenému návštevníkovi vykreslí **trénerskú landing** — tá
+> istá pasca ako v Kroku 9b, len naopak. Kým doména na Verceli nie je, nič sa
+> nedeje: stránka je len nedostupná.
+
+**1. Nasadenie.** Push na `master` → Vercel build → over, že produkcia už pozná
+`plaw.click` (napr. že `plaw.win` stále funguje a build prešiel).
+
+**2. Vercel.** Projekt `tennis-coach-app` → Settings → Domains → Add Domain:
+
+| Hostname | Nastavenie |
+|---|---|
+| `plaw.click` | **bez** „Redirect to" — servíruje projekt (toto je hlavná adresa) |
+| `www.plaw.click` | Redirect to `plaw.click`, **307** |
+
+Krátka adresa je pri tejto doméne pointa — je to to, čo dá **tréner rodičovi do
+ruky**. Preto je hlavná apex a `www` naňho presmerúva, teda **opačne než pri
+`plaw.win`** (tam je hlavná `www`). Kód znesie oboje: `PARENT_FACE_HOSTS`
+obsahuje aj `www.plaw.click`, takže ani zle otočený redirect stránku nerozbije.
+
+**3. DNS (Websupport, zóna `plaw.click`).** Zapíš to, čo Vercel ukáže vo „View
+DNS configuration" — očakávané hodnoty sú tie isté ako pri ostatných doménach
+projektu:
+
+| Typ | Názov | Hodnota |
+|---|---|---|
+| `A` | `@` | `216.198.79.1` |
+| `CNAME` | `www` | `044898b4a673cb8d.vercel-dns-017.com` |
+
+Websupportové parkovacie `A` **aj `AAAA`** na `@` a `www` zmaž (pasca z Kroku 9:
+prvýkrát sa zmazali len `A` a `AAAA` ostali žiť).
+
+**4. Overenie zvonku** (nie podľa konzoly):
+
+- `https://plaw.click/` → landing pre hráča, rodiča a manažéra
+- `https://www.plaw.click/` → `307 → https://plaw.click/`
+- `https://plaw.click/login` → `307 → https://plaw.win/login`
+- `https://plaw.click/cennik-hrac` a `/navod-hrac` → 200 (to sú jediné ďalšie
+  povolené cesty, viď `PARENT_FACE_PATHS` v `proxy.ts`)
+
+**Pošta ostáva zaparkovaná** podľa Kroku 10 — `plaw.click` sa tým presúva do tej
+istej kategórie ako `plaw.win` a `plaw.online`: **web na nej beží, pošta nie**,
+takže sa jej pri null MX **nesmú zmazať `A`/`CNAME`**.
+
 ### Krok 10 — zabezpečenie zaparkovaných domén
 
 Týka sa: `plawpadel.com`, `plawpickleball.com`, `plawbadminton.com`, všetkých
 pomlčkových a `plaw.click`. **`plaw-tennis.com` je medzi nimi**, hoci jej web
 vedie na appku (Krok 9b) — parkovanie sa tu týka výhradne pošty. **Od 2026-08-12
 sem patria aj `plaw.win` a `plaw.online`** (§1): pošta na nich nebude, web na
-nich žije ďalej.
+nich žije ďalej. **Od 2026-08-22 je v tej istej situácii aj `plaw.click`** —
+nesmú sa jej teda zmazať `A`/`CNAME` záznamy, keď sa jej bude nastavovať null MX.
 
 > **Pri `plaw.win` a `plaw.online` sa dotýkaš VÝHRADNE `MX` a `TXT`.** Záznamy
 > `A` (`216.198.79.1`) a `CNAME` (`…vercel-dns-017.com`) sú Vercel — appka,
@@ -446,6 +502,7 @@ stránku, ktorá ho má osloviť.
 - [ ] `plaw.win` a `plaw.online`: parkovanie pošty (null MX + `v=spf1 -all` + DMARC `p=reject`)
 - [ ] `A`/`CNAME` na `plaw.win` a `plaw.online` **nedotknuté**
 - [x] `plawtennis.com` + `plaw-tennis.com` (aj `www`) → 307 redirect vo Verceli (2026-08-12; cieľ je **`www.plaw.win`**, nie apex — ušetrí to jeden skok navyše, lebo `plaw.win` sám presmerúva na `www`). Overené zvonku: všetky štyri hostnames vracajú `307 → https://www.plaw.win/`
+- [ ] `plaw.click` → pripojená vo Verceli **bez** redirectu (`www` → 307 na apex) + `A`/`CNAME`, Krok 9c. **Až PO nasadení kódu**, inak sa na nej ukáže trénerská landing
 - [ ] Zaparkované domény: null MX + `v=spf1 -all` + DMARC `p=reject`
 - [x] Dvojfaktorové overenie a záložné kódy (2026-08-12; záchranný mail + telefón sa dali nastaviť až cez Admin konzolu → Users → Security → Recovery information, cez `myaccount.google.com` to nový účet odmietal s „We couldn't verify it's you")
 - [ ] O ~2 týždne: DMARC na `p=quarantine`, potom `p=reject`
