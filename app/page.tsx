@@ -134,9 +134,10 @@ export default async function Home() {
       redirect("/login");
     }
     const host = (await headers()).get("host");
-    // plaw.click hovorí druhej strane appky (hráč, rodič, manažér). Musí byť
-    // PRED kontrolou disciplíny: stránka je zámerne bez tenisového slovníka,
-    // takže platí aj pre rodiča kondičného hráča.
+    // plaw.click hovorí druhej strane appky (hráč, rodič, manažér). Stojí PRED
+    // kontrolou disciplíny, lebo tá doména visí výhradne na tenisovom nasadení
+    // — kondička vlastný marketing nemá a túto stránku by ani použiť nemohla,
+    // odkedy menuje tenis (rodič kondičné tréningy nevidí, viď landing-locale).
     if (isParentFaceHost(host)) {
       return <LandingHrac />;
     }

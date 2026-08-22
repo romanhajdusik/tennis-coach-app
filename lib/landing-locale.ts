@@ -168,8 +168,13 @@ export async function loadCennikHracMessages(
 // mala iba návod (`/navod-hrac`) a cenník (`/cennik-hrac`), kým celý ostatný
 // verejný web hovoril k trénerovi.
 //
-// Rovnako ako cenník je zámerne bez tenisového slovníka (žiadny kurt ani
-// úder) — tú istú stránku dostane aj rodič kondičného hráča.
+// **Menuje tenis** (rozhodnuté 2026-08-22) — na rozdiel od /cennik-hrac, ktorý
+// je zámerne bez tenisového slovníka. Dôvod je vecný, nie marketingový: rodič
+// vidí len kópie JEDNEJ karty, takže KONDIČNÉ tréningy hráča nevidí (tie sú
+// cross-read cez prepojenie kariet a ten má výhradne tréner, pozri
+// lib/players/linked.ts). Veta "každý tréning hráča" by teda sľubovala viac,
+// než appka dá. Ak raz kondička dostane vlastný marketing, táto stránka sa
+// pre ňu nedá použiť tak, ako je.
 //
 // POZOR na dve veci pri úpravách textov (rozhodnuté v CLAUDE.md, sekcia
 // „Ceny na verejnom webe" a pri nápade na túto stránku):
