@@ -2,6 +2,20 @@
   "eyebrow": "For tennis coaches",
   "heroTitle": "Coach your way. Show the progress. End the evening questions from parents.",
   "heroSubtitle": "P.L.A.W is the first coaching app that doesn't push someone else's templates on you. Write down your own drills, follow every player's development in clear charts, and give parents read-only access to their practices.",
+  "heroPoints": [
+    {
+      "title": "Coach your way",
+      "text": "P.L.A.W never pushes someone else's templates on you — write down your own drills."
+    },
+    {
+      "title": "Show the progress",
+      "text": "Track your players' development and show it in clear, readable charts."
+    },
+    {
+      "title": "Keep parents in the loop",
+      "text": "Give parents read-only access to their child's practices and skip the questions about how it went."
+    }
+  ],
   "ctaPrimary": "Try P.L.A.W",
   "ctaSecondary": "Sign in",
   "guideLink": "Guide",
@@ -25,16 +39,16 @@
       "description": "After the practice, add the actual time and notes, and mark individual drills as skipped or swapped — the exact course of the practice stays on record. You can reorder drills anytime with the up/down arrows, as long as the practice is still planned."
     },
     {
-      "title": "Coach your way",
-      "description": "P.L.A.W never pushes someone else's templates on you — write down your own drills."
+      "title": "Your own drill codes",
+      "description": "It adapts to you, not the other way round. No preset templates — write down the drills you trust and coach exactly the way you believe in."
     },
     {
-      "title": "Show the progress",
-      "description": "Track your players' development and show it in clear, readable charts."
+      "title": "Analytics and charts",
+      "description": "Data instead of gut feeling. No more chaos in notebooks and spreadsheets — the charts show you at a glance whether a player is improving and where the gaps are, in quality and in volume."
     },
     {
-      "title": "Keep parents in the loop",
-      "description": "Give parents read-only access to their child's practices and skip the questions about how it went."
+      "title": "Sharing with players, parents and managers",
+      "description": "No more long explanations after practice. Give the parent an access code and let the practice log speak for you — they see what their child worked on, you go home with a clear head."
     },
     {
       "title": "Built for the phone",

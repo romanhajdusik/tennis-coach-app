@@ -111,12 +111,37 @@ export async function LandingPage() {
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {t.eyebrow}
         </span>
-        <h1 className="text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl">
-          {t.heroTitle}
-        </h1>
-        <p className="max-w-xl text-base text-balance text-muted sm:text-lg">
-          {t.heroSubtitle}
-        </p>
+        {t.heroPoints?.length ? (
+          // Prvé heslo je h1, zvyšné dve h2 — hierarchia stránky tak ostáva
+          // zmysluplná aj pre čítačku obrazovky a nič sa needuplikuje.
+          <div className="flex w-full flex-col gap-6 pt-1 text-left sm:gap-7">
+            {t.heroPoints.map((point, index) => (
+              <div key={point.title} className="flex flex-col gap-1.5">
+                {index === 0 ? (
+                  <h1 className="text-2xl font-bold tracking-tight text-balance text-foreground sm:text-3xl">
+                    {point.title}
+                  </h1>
+                ) : (
+                  <h2 className="text-2xl font-bold tracking-tight text-balance text-foreground sm:text-3xl">
+                    {point.title}
+                  </h2>
+                )}
+                <p className="text-base text-balance text-muted sm:text-lg">
+                  {point.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            <h1 className="text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl">
+              {t.heroTitle}
+            </h1>
+            <p className="max-w-xl text-base text-balance text-muted sm:text-lg">
+              {t.heroSubtitle}
+            </p>
+          </>
+        )}
         <div className="flex flex-wrap justify-center gap-3 pt-2">
           <Link
             href="/register"

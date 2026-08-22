@@ -2,6 +2,20 @@
   "eyebrow": "Pre tenisových trénerov",
   "heroTitle": "Trénuj podľa seba. Ukáž progres. Zbav sa večerných otázok od rodičov.",
   "heroSubtitle": "P.L.A.W je prvá trénerská aplikácia, ktorá ťa nenúti používať cudzie šablóny. Zapíš si vlastné drily, sleduj vývoj hráčov v jasných grafoch a daj rodičom read-only prístup k ich tréningom.",
+  "heroPoints": [
+    {
+      "title": "Trénuj podľa seba",
+      "text": "Trénerská aplikácia P.L.A.W ťa nenúti používať cudzie šablóny — zapíš si vlastné drily."
+    },
+    {
+      "title": "Ukáž progres",
+      "text": "Sleduj a ukáž rozvoj svojich hráčov v prehľadných grafoch."
+    },
+    {
+      "title": "Jednoducho zdieľaj informácie s rodičmi",
+      "text": "Daj rodičom read-only prístup k tréningom ich detí a vyhni sa otázkam o priebehu tréningov."
+    }
+  ],
   "ctaPrimary": "Vyskúšať P.L.A.W",
   "ctaSecondary": "Prihlásiť sa",
   "guideLink": "Návod",
@@ -25,16 +39,16 @@
       "description": "Po tréningu doplň reálny čas a poznámky, jednotlivé cvičenia označ ako neodohrané alebo nahradené — presný priebeh tréningu ostáva zachovaný. Poradie cvičení vieš kedykoľvek zmeniť šípkami hore/dole, kým je tréning ešte len naplánovaný."
     },
     {
-      "title": "Trénuj podľa seba",
-      "description": "Trénerská aplikácia P.L.A.W ťa nenúti používať cudzie šablóny — zapíš si vlastné drily."
+      "title": "Vlastné kódy cvičení",
+      "description": "Prispôsobí sa tebe, nie ty jej. Žiadne prednastavené šablóny — zapíš si vlastné overené drily a trénuj presne podľa svojej filozofie."
     },
     {
-      "title": "Ukáž progres",
-      "description": "Sleduj a ukáž rozvoj svojich hráčov v prehľadných grafoch."
+      "title": "Analytika a grafy",
+      "description": "Dáta namiesto pocitov. Koniec chaosu v zošitoch a tabuľkách — grafy ti okamžite ukážu, či hráč napreduje a kde má medzery v kvalite či kvantite tréningu."
     },
     {
-      "title": "Jednoducho zdieľaj informácie s rodičmi",
-      "description": "Daj rodičom read-only prístup k tréningom ich detí a vyhni sa otázkam o priebehu tréningov."
+      "title": "Zdieľanie s hráčom, rodičom a manažérom",
+      "description": "Už žiadne siahodlhé vysvetľovanie po tréningu. Daj rodičovi prístupový kód a nechaj záznam tréningov hovoriť za teba — on vidí, čo dieťa trénovalo, ty máš po tréningu čistú hlavu."
     },
     {
       "title": "Postavené pre telefón",

@@ -30,6 +30,12 @@ export async function loadLandingMessages(locale: LandingLocale) {
     eyebrow: string;
     heroTitle: string;
     heroSubtitle: string;
+    /**
+     * Tri heslá v hero (nadpis + veta). Majú ich len SK a EN — ostatné jazyky
+     * vykreslia pôvodný hero s `heroTitle`/`heroSubtitle`. `heroTitle` ostáva
+     * v každom jazyku, lebo z neho vychádza aj titulok stránky.
+     */
+    heroPoints?: { title: string; text: string }[];
     ctaPrimary: string;
     ctaSecondary: string;
     guideLink: string;
