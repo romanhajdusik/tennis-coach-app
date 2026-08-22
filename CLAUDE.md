@@ -399,6 +399,22 @@ Rozhodnuté ceny sú v [`docs/cennik-navrh.md`](docs/cennik-navrh.md); na webe i
 
 ### Nápady na neskôr (nepotvrdené, nezaradené do fázy)
 
+- **Samostatná landing pre RODIČOV** (2026-08-22): dnešný verejný web hovorí
+  výhradne k trénerovi; rodič má len `/navod-hrac` a `/cennik-hrac`, čo sú
+  návod a cenník, nie predaj. Z trénerskej landing bola v ten istý deň
+  odstránená sekcia o transparentnosti (commit `f746c5d`, znenie nižšie) —
+  **patrí na tú rodičovskú, nie sem.** Argument znel: *„Ukáž rodičom extrémnu
+  transparentnosť (a získaj si ich dôveru)"* + citát pre rodiča *„S P.L.A.W
+  patrí tréningový denník vám. Ak sa naše cesty niekedy rozídu, celá história
+  vám ostáva v účte — aj tréningy, ktoré sme odtrénovali spolu. Novému
+  trénerovi do nej viete kedykoľvek dať nahliadnuť priamo u seba; nikam sa nič
+  neodosiela a nič sa nemaže."* + podtext *„Tréner, ktorý sa nebojí dať dáta
+  do rúk klienta, je skutočný profesionál."* **Pozor pri opätovnom použití:**
+  prenos dát na nového trénera neexistuje a existovať nebude (jediná policy na
+  `parent_session_records` je `parent_id = auth.uid()`), takže veta smie
+  sľubovať len nahliadnutie u rodiča — nie odoslanie komukoľvek. A grafy sú
+  u rodiča za predplatným, takže sa v texte nesmú spomínať ako samozrejmosť.
+
 > Podrobné architektonické návrhy (multi-šport platforma + kondičná appka + Garmin/Polar,
 > vrátane odporúčaných modelov a otvorených otázok) sú vo verbatim znení v
 > [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md). Nižšie len stručné body.

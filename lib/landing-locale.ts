@@ -46,13 +46,6 @@ export async function loadLandingMessages(locale: LandingLocale) {
     showcaseCaptions: { calendar: string; session: string; analytics: string };
     featuresTitle: string;
     features: { title: string; description: string }[];
-    // Sekcia o transparentnosti voči rodičom je len v SK a EN — ostatné
-    // jazyky ju nemajú, preto sú kľúče nepovinné a landing ju vykreslí
-    // len tam, kde texty naozaj sú.
-    transparencyTitle?: string;
-    transparencyIntro?: string;
-    transparencyQuote?: string;
-    transparencyNote?: string;
     pricingTitle: string;
     pricingSubtitle: string;
     pricingMonthly: string;
