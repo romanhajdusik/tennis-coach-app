@@ -385,6 +385,28 @@ sem patria aj `plaw.win` a `plaw.online`** (§1): pošta na nich nebude, web na
 nich žije ďalej. **Od 2026-08-22 je v tej istej situácii aj `plaw.click`** —
 nesmú sa jej teda zmazať `A`/`CNAME` záznamy, keď sa jej bude nastavovať null MX.
 
+> **`plaw.click` je HOTOVÁ (2026-08-22), overená cez `dns.google`.** Po upratovaní
+> má zóna presne **štyri záznamy** a je to dobrý vzor, ako má zaparkovaná doména
+> so živým webom vyzerať:
+>
+> | Názov | Typ | Obsah | Načo |
+> |---|---|---|---|
+> | `plaw.click` | `A` | `216.198.79.1` | web (Vercel) |
+> | `www.plaw.click` | `CNAME` | `044898b4a673cb8d.vercel-dns-017.com` | web (Vercel) |
+> | `plaw.click` | `TXT` | `v=spf1 -all` | neodosielam poštu |
+> | `_dmarc.plaw.click` | `TXT` | `v=DMARC1; p=reject;` | čokoľvek v mojom mene zahoď |
+>
+> Zmazalo sa 16 záznamov: oba `MX`, `admin`, `autodiscover`, `autoconfig`,
+> `_autodiscover._tcp` SRV a `mail`/`webmail`/`smtp`/`pop3`/`imap` — každý z tých
+> piatich mal `A` **aj** `AAAA`.
+
+> **PASCA, ktorá sa objavila až tu: v paneli domény svietia kartičky
+> „Websupport Mail — Aktívne" a „Websupport Webadmin — Aktívne"** a píše sa pri
+> nich, že doménu *automaticky nasmerujú* na Websupport zmenou `MX`/`TXT`, resp.
+> `A`/`AAAA`/`CNAME`. Pri `plaw.click` sa po zmazaní nič nevrátilo, takže to nie
+> je aktívna synchronizácia — **ale ak ti na niektorej doméne parkovacie záznamy
+> samy pribudnú späť, príčina je tu** a treba tie služby pri doméne vypnúť.
+
 > **Pri `plaw.win` a `plaw.online` sa dotýkaš VÝHRADNE `MX` a `TXT`.** Záznamy
 > `A` (`216.198.79.1`) a `CNAME` (`…vercel-dns-017.com`) sú Vercel — appka,
 > verejný web aj org subdomény federácií. Pomôcka pri upratovaní zvyškov: **maž
@@ -505,6 +527,7 @@ stránku, ktorá ho má osloviť.
 - [ ] `A`/`CNAME` na `plaw.win` a `plaw.online` **nedotknuté**
 - [x] `plawtennis.com` + `plaw-tennis.com` (aj `www`) → 307 redirect vo Verceli (2026-08-12; cieľ je **`www.plaw.win`**, nie apex — ušetrí to jeden skok navyše, lebo `plaw.win` sám presmerúva na `www`). Overené zvonku: všetky štyri hostnames vracajú `307 → https://www.plaw.win/`
 - [x] `plaw.click` **ŽIVÁ (2026-08-22)**, Krok 9c. Hlavná je `www.plaw.click` (Production), apex naň ide `308` — teda rovnaký vzor ako `plaw.win` a `plaw.online`, nie apex-first, ako navrhoval runbook. `A @` = `216.198.79.1`, `CNAME www` = `044898b4a673cb8d.vercel-dns-017.com`, websupportové parkovacie `A`/`AAAA` na `@`, `www` aj `*` zmazané. Overené cez `dns.google` (apex `AAAA` už nevracia nič) aj v prehliadači
+- [x] `plaw.click`: pošta zaparkovaná (2026-08-22) — bez `MX`, `v=spf1 -all`, `_dmarc` = `v=DMARC1; p=reject;`, websupportové zvyšky zmazané, `A`/`CNAME` na Vercel nedotknuté. Overené cez `dns.google` vrátane kontroly, že web ďalej beží
 - [ ] Zaparkované domény: null MX + `v=spf1 -all` + DMARC `p=reject`
 - [x] Dvojfaktorové overenie a záložné kódy (2026-08-12; záchranný mail + telefón sa dali nastaviť až cez Admin konzolu → Users → Security → Recovery information, cez `myaccount.google.com` to nový účet odmietal s „We couldn't verify it's you")
 - [ ] O ~2 týždne: DMARC na `p=quarantine`, potom `p=reject`
