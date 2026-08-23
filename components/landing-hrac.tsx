@@ -57,9 +57,9 @@ const PAID_FEATURES = [false, false, true, true, false, false];
  *
  * Zámerne LEN anglická sada, vo všetkých deviatich jazykoch — rovnako ako na
  * trénerskej landing (zjednotené 2026-08-22): appka je od 2026-07-28 výhradne
- * anglická (`i18n/request.ts`), takže sada `public/screenshots/sk` ukazuje UI,
- * ktoré v produkte už neexistuje. Popisky pod zábermi preložené sú — tie sú
- * súčasťou webu, nie appky.
+ * anglická (`i18n/request.ts`), takže slovenské zábery ukazovali UI, ktoré
+ * v produkte už neexistuje, a boli zmazané. Popisky pod zábermi preložené
+ * sú — tie sú súčasťou webu, nie appky.
  */
 const SHOWCASE = ["calendar", "session", "analytics"] as const;
 

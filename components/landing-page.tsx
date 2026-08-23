@@ -33,11 +33,11 @@ const FEATURE_ICONS = [
 // Reálne mobilné screenshoty appky (v poradí plán → záznam → analýza).
 //
 // **Vždy anglické, vo všetkých deviatich jazykoch** (zjednotené 2026-08-22,
-// rovnako ako na `components/landing-hrac.tsx`). Predtým dostával slovenský
-// landing sadu `public/screenshots/sk` — tá ale vznikla pred prechodom appky
-// na EN-only (2026-07-28), takže ukazovala UI, ktoré v produkte už
-// neexistuje. Popisky pod zábermi preložené ostávajú: tie sú súčasťou webu,
-// nie appky (showcaseCaptions).
+// rovnako ako na `components/landing-hrac.tsx`). Slovenská sada existovala do
+// toho dňa a bola zmazaná: vznikla pred prechodom appky na EN-only
+// (2026-07-28), takže ukazovala UI, ktoré v produkte už neexistuje. Popisky
+// pod zábermi preložené ostávajú: tie sú súčasťou webu, nie appky
+// (showcaseCaptions).
 const SHOWCASE = ["calendar", "session", "analytics"] as const;
 
 export async function getLandingLocale() {
