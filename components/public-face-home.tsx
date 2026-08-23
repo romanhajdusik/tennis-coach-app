@@ -5,7 +5,8 @@ import {
   loadRozcestnikMessages,
   rozcestnikLocale,
 } from "@/lib/landing-locale";
-import { GlobeIcon, UsersIcon } from "@/components/landing-icons";
+import { EyeIcon, GlobeIcon, UsersIcon } from "@/components/landing-icons";
+import { PARENT_ORIGIN } from "@/lib/public-face";
 
 /**
  * Domovská stránka verejnej tváre (plaw.online) — **rozcestník medzi dvoma
@@ -60,15 +61,23 @@ export async function PublicFaceHome() {
         </p>
       </section>
 
-      {/* Dvoje dvere. Na mobile pod sebou, od `sm` vedľa seba a rovnako vysoké,
-          aby ani jedna ponuka nepôsobila ako tá hlavná. */}
-      <section className="grid w-full max-w-4xl grid-cols-1 gap-4 px-4 pb-12 sm:grid-cols-2 sm:px-6">
+      {/* Troje dvere. Na mobile pod sebou, od `md` vedľa seba a rovnako vysoké,
+          aby ani jedna ponuka nepôsobila ako tá hlavná. Tri stĺpce až od `md`:
+          na `sm` by boli karty užšie než ich vlastný nadpis. */}
+      <section className="grid w-full max-w-5xl grid-cols-1 gap-4 px-4 pb-12 md:grid-cols-3 sm:px-6">
         <Door
           href="https://plaw.win"
           icon={<UsersIcon className="h-5 w-5" />}
           title={t.consumerTitle}
           text={t.consumerText}
           cta={t.consumerCta}
+        />
+        <Door
+          href={PARENT_ORIGIN}
+          icon={<EyeIcon className="h-5 w-5" />}
+          title={t.followerTitle}
+          text={t.followerText}
+          cta={t.followerCta}
         />
         <Door
           href="/federacie"

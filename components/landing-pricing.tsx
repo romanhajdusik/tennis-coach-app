@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CompareMark } from "@/components/compare-mark";
+import { PARENT_ORIGIN } from "@/lib/public-face";
 
 // Cenník na landing page. Klientský komponent je tu len kvôli prepínaču
 // mesačne/ročne — samotné ceny prídu už naformátované zo servera
@@ -40,6 +41,12 @@ export type PricingLabels = {
   compareRows: string[];
   compareNote: string;
   vat: string;
+  /**
+   * Odkaz pre sledujúceho vedie na plaw.click (celá landing), nie rovno na
+   * /cennik-hrac: kto sem zablúdil, má najprv vidieť, čo dostane — cena je
+   * odtiaľ jeden klik. Trénerské a sledujúce ceny tak navyše naďalej nestoja
+   * vedľa seba, čo je zámer z docs/cennik-navrh.md §8.2.
+   */
   followerText: string;
   followerCta: string;
   cta: string;
@@ -195,7 +202,7 @@ export function LandingPricing({
         <p className="text-sm text-muted">
           {labels.followerText}{" "}
           <Link
-            href="/cennik-hrac"
+            href={PARENT_ORIGIN}
             className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
           >
             {labels.followerCta}
