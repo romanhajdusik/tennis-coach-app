@@ -1,6 +1,6 @@
 {
   "metaTitle": "P.L.A.W pour les parents, les joueurs et les managers — voyez ce qui se passe à l'entraînement",
-  "metaDescription": "Un code de l'entraîneur ouvre les entraînements de votre joueur : quels exercices, combien de temps et ce qui est prévu. L'historique reste dans votre propre compte.",
+  "metaDescription": "Un code de l'entraîneur ouvre les entraînements du joueur : quels exercices, combien de temps et ce qui est prévu. L'historique reste dans votre propre compte.",
   "eyebrow": "Pour les parents, les joueurs et les managers",
   "heroTitle": "Vous savez ce qui s'est vraiment passé à l'entraînement.",
   "heroSubtitle": "Votre entraîneur vous envoie un code. À partir de ce moment, vous voyez chaque séance de tennis du joueur — quels exercices, combien de temps et ce qui est prévu pour les jours à venir. Sans poser de questions après la séance et sans attendre de réponse.",
@@ -16,7 +16,7 @@
     },
     {
       "title": "Saisissez le code de l'entraîneur",
-      "body": "L'entraîneur vous envoie un court code d'accès. Vous le saisissez une fois et vous êtes relié à votre joueur."
+      "body": "L'entraîneur vous envoie un court code d'accès. Vous le saisissez une fois et vous êtes relié au joueur."
     },
     {
       "title": "Regardez, tout simplement",
@@ -27,11 +27,11 @@
   "showcaseSubtitle": "Toute l'application est pensée pour le téléphone — consultez-la quand et où vous voulez.",
   "showcaseNote": "Le calendrier et l'analyse font partie de l'abonnement.",
   "showcaseCaptions": {
-    "calendar": "Le calendrier des séances de votre joueur",
+    "calendar": "Le calendrier des séances du joueur",
     "session": "Détail de la séance — exercices, durée, notes",
     "analytics": "Analyse : où est passé le temps"
   },
-  "featuresTitle": "Ce que vous voyez de votre joueur",
+  "featuresTitle": "Ce que vous voyez du joueur",
   "featurePaidBadge": "Avec abonnement",
   "features": [
     {
@@ -61,7 +61,7 @@
   ],
   "transparencyTitle": "Le carnet d'entraînement vous appartient aussi, pas seulement à votre entraîneur.",
   "transparencyIntro": "Voici ce que P.L.A.W vous promet :",
-  "transparencyQuote": "Tout l'historique des séances reste dans votre compte — y compris celles que votre joueur a faites avec l'entraîneur actuel. Rien n'est envoyé nulle part et rien n'est effacé. Si vos chemins se séparent, vous pouvez à tout moment le faire consulter par un nouvel entraîneur, directement chez vous.",
+  "transparencyQuote": "Tout l'historique des séances reste dans votre compte — y compris celles que le joueur a faites avec l'entraîneur actuel. Rien n'est envoyé nulle part et rien n'est effacé. Si vos chemins se séparent, vous pouvez à tout moment le faire consulter par un nouvel entraîneur, directement chez vous.",
   "transparencyNote": "Un entraîneur qui n'a pas peur de mettre la trace de son travail entre les mains du client est un vrai professionnel.",
   "pricingTitle": "Prix",
   "pricingSubtitle": "Un abonnement, un joueur.",

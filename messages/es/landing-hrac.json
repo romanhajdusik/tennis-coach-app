@@ -1,6 +1,6 @@
 {
   "metaTitle": "P.L.A.W para padres, jugadores y managers — mira lo que pasa en los entrenamientos",
-  "metaDescription": "Un código del entrenador te abre los entrenamientos de tu jugador: qué se trabajó, cuánto tiempo y qué hay planificado. El historial se queda en tu propia cuenta.",
+  "metaDescription": "Un código del entrenador te abre los entrenamientos del jugador: qué se trabajó, cuánto tiempo y qué hay planificado. El historial se queda en tu propia cuenta.",
   "eyebrow": "Para padres, jugadores y managers",
   "heroTitle": "Sabes lo que pasó de verdad en el entrenamiento.",
   "heroSubtitle": "Tu entrenador te envía un código. Desde ese momento ves cada entrenamiento de tenis del jugador — qué ejercicios, cuánto tiempo y qué hay planificado para los próximos días. Sin preguntar al terminar y sin esperar respuesta.",
@@ -16,7 +16,7 @@
     },
     {
       "title": "Introduce el código del entrenador",
-      "body": "El entrenador te envía un código de acceso corto. Lo introduces una vez y quedas conectado con tu jugador."
+      "body": "El entrenador te envía un código de acceso corto. Lo introduces una vez y quedas conectado con el jugador."
     },
     {
       "title": "Solo mira",
@@ -27,11 +27,11 @@
   "showcaseSubtitle": "Toda la app está pensada para el móvil — míralo cuando y donde quieras.",
   "showcaseNote": "El calendario y la analítica forman parte de la suscripción.",
   "showcaseCaptions": {
-    "calendar": "El calendario de entrenamientos de tu jugador",
+    "calendar": "El calendario de entrenamientos del jugador",
     "session": "Detalle del entrenamiento — ejercicios, tiempo, notas",
     "analytics": "Analítica: adónde fue el tiempo"
   },
-  "featuresTitle": "Lo que ves de tu jugador",
+  "featuresTitle": "Lo que ves del jugador",
   "featurePaidBadge": "Con suscripción",
   "features": [
     {
@@ -61,7 +61,7 @@
   ],
   "transparencyTitle": "El diario de entrenamiento también es tuyo, no solo de tu entrenador.",
   "transparencyIntro": "Esto es lo que P.L.A.W te promete:",
-  "transparencyQuote": "Todo el historial de entrenamientos se queda en tu cuenta — incluidas las sesiones que tu jugador ha hecho con el entrenador de ahora. No se envía nada a ninguna parte y no se borra nada. Si vuestros caminos se separan, puedes enseñárselo a un nuevo entrenador cuando quieras, allí mismo contigo.",
+  "transparencyQuote": "Todo el historial de entrenamientos se queda en tu cuenta — incluidas las sesiones que el jugador ha hecho con el entrenador actual. No se envía nada a ninguna parte y no se borra nada. Si vuestros caminos se separan, puedes enseñárselo a un nuevo entrenador cuando quieras, allí mismo contigo.",
   "transparencyNote": "Un entrenador que no teme poner el registro de su trabajo en manos del cliente es un verdadero profesional.",
   "pricingTitle": "Precio",
   "pricingSubtitle": "Una suscripción, un jugador.",

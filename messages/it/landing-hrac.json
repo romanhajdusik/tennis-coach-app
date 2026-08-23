@@ -1,6 +1,6 @@
 {
   "metaTitle": "P.L.A.W per genitori, giocatori e manager — vedi cosa succede agli allenamenti",
-  "metaDescription": "Un codice dell'allenatore apre gli allenamenti del tuo giocatore: quali esercizi, per quanto tempo e cosa è in programma. Lo storico resta nel tuo account.",
+  "metaDescription": "Un codice dell'allenatore apre gli allenamenti del giocatore: quali esercizi, per quanto tempo e cosa è in programma. Lo storico resta nel tuo account.",
   "eyebrow": "Per genitori, giocatori e manager",
   "heroTitle": "Sai cosa è successo davvero in allenamento.",
   "heroSubtitle": "Il tuo allenatore ti manda un codice. Da quel momento vedi ogni allenamento di tennis del giocatore — quali esercizi, per quanto tempo e cosa è previsto nei prossimi giorni. Senza fare domande a fine seduta e senza aspettare una risposta.",
@@ -16,7 +16,7 @@
     },
     {
       "title": "Inserisci il codice dell'allenatore",
-      "body": "L'allenatore ti manda un breve codice di accesso. Lo inserisci una volta e resti collegato al tuo giocatore."
+      "body": "L'allenatore ti manda un breve codice di accesso. Lo inserisci una volta e resti collegato al giocatore."
     },
     {
       "title": "Guarda e basta",
@@ -27,11 +27,11 @@
   "showcaseSubtitle": "Tutta l'app è pensata per il telefono — guardala quando e dove vuoi.",
   "showcaseNote": "Calendario e analisi fanno parte dell'abbonamento.",
   "showcaseCaptions": {
-    "calendar": "Il calendario degli allenamenti del tuo giocatore",
+    "calendar": "Il calendario degli allenamenti del giocatore",
     "session": "Dettaglio dell'allenamento — esercizi, tempo, note",
     "analytics": "Analisi: dove è andato il tempo"
   },
-  "featuresTitle": "Cosa vedi del tuo giocatore",
+  "featuresTitle": "Cosa vedi del giocatore",
   "featurePaidBadge": "Con abbonamento",
   "features": [
     {
@@ -61,7 +61,7 @@
   ],
   "transparencyTitle": "Il diario di allenamento è anche tuo, non solo del tuo allenatore.",
   "transparencyIntro": "Questo è ciò che P.L.A.W ti promette:",
-  "transparencyQuote": "Tutto lo storico degli allenamenti resta nel tuo account — comprese le sedute che il tuo giocatore ha fatto con l'allenatore di adesso. Niente viene inviato da nessuna parte e niente viene cancellato. Se le vostre strade si dividono, puoi farlo consultare a un nuovo allenatore in qualsiasi momento, direttamente da te.",
+  "transparencyQuote": "Tutto lo storico degli allenamenti resta nel tuo account — comprese le sedute che il giocatore ha fatto con l'allenatore attuale. Niente viene inviato da nessuna parte e niente viene cancellato. Se le vostre strade si dividono, puoi farlo consultare a un nuovo allenatore in qualsiasi momento, direttamente da te.",
   "transparencyNote": "Un allenatore che non ha paura di mettere la traccia del proprio lavoro nelle mani del cliente è un vero professionista.",
   "pricingTitle": "Prezzo",
   "pricingSubtitle": "Un abbonamento, un giocatore.",

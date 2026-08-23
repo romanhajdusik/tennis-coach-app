@@ -1,6 +1,6 @@
 {
   "metaTitle": "P.L.A.W for parents, players and managers — see what happens at practice",
-  "metaDescription": "One code from the coach opens your player's practices: which drills, how long, and what is planned next. The history stays in your own account.",
+  "metaDescription": "One code from the coach opens the player's practices: which drills, how long, and what is planned next. The history stays in your own account.",
   "eyebrow": "For parents, players and managers",
   "heroTitle": "Know what really happened at practice.",
   "heroSubtitle": "Your coach sends you a code. From that moment you see every tennis practice the player does — which drills, how long, and what is planned for the days ahead. No questions after training, no waiting for an answer.",
@@ -16,7 +16,7 @@
     },
     {
       "title": "Enter the coach's code",
-      "body": "Your coach sends you a short access code. You enter it once and that connects you to your player."
+      "body": "Your coach sends you a short access code. You enter it once and that connects you to the player."
     },
     {
       "title": "Just watch",
@@ -27,11 +27,11 @@
   "showcaseSubtitle": "The whole app is built for the phone — check in whenever and wherever you are.",
   "showcaseNote": "The calendar and analytics are part of the subscription.",
   "showcaseCaptions": {
-    "calendar": "Your player's practice calendar",
+    "calendar": "The player's practice calendar",
     "session": "Practice detail — drills, time, notes",
     "analytics": "Analytics: where the time went"
   },
-  "featuresTitle": "What you see about your player",
+  "featuresTitle": "What you see about the player",
   "featurePaidBadge": "With a subscription",
   "features": [
     {
@@ -61,7 +61,7 @@
   ],
   "transparencyTitle": "The training log belongs to you too, not only to your coach.",
   "transparencyIntro": "This is what P.L.A.W promises you:",
-  "transparencyQuote": "The whole practice history stays in your account — including the sessions your player has done with the coach you work with today. Nothing is sent anywhere and nothing is deleted. If your paths part, you can let a new coach look through it any time, right there with you.",
+  "transparencyQuote": "The whole practice history stays in your account — including the sessions the player has done with their current coach. Nothing is sent anywhere and nothing is deleted. If your paths part, you can let a new coach look through it any time, right there with you.",
   "transparencyNote": "A coach who is not afraid to put the record of their work into the client's hands is a true professional.",
   "pricingTitle": "Price",
   "pricingSubtitle": "One subscription, one player.",

@@ -1,6 +1,6 @@
 {
   "metaTitle": "P.L.A.W pre rodiča, hráča a manažéra — vidíš, čo sa na tréningoch deje",
-  "metaDescription": "Kód od trénera ti otvorí tréningy tvojho hráča: čo sa cvičilo, ako dlho a čo je naplánované. História ostáva v tvojom účte.",
+  "metaDescription": "Kód od trénera ti otvorí tréningy hráča: čo sa cvičilo, ako dlho a čo je naplánované. História ostáva v tvojom účte.",
   "eyebrow": "Pre rodiča, hráča a manažéra",
   "heroTitle": "Vieš, čo sa na tréningu naozaj dialo.",
   "heroSubtitle": "Tréner ti pošle kód. Od tej chvíle vidíš každý tenisový tréning hráča — čo sa cvičilo, ako dlho a čo je naplánované na ďalšie dni. Bez vypytovania sa po tréningu a bez čakania na odpoveď.",
@@ -16,7 +16,7 @@
     },
     {
       "title": "Zadaj kód od trénera",
-      "body": "Tréner ti pošle krátky prístupový kód. Zadáš ho raz a tým sa prepojíš so svojím hráčom."
+      "body": "Tréner ti pošle krátky prístupový kód. Zadáš ho raz a tým sa prepojíš s hráčom."
     },
     {
       "title": "Pozeraj sa",
@@ -27,11 +27,11 @@
   "showcaseSubtitle": "Celá appka je navrhnutá pre telefón — pozrieš sa kedykoľvek a odkiaľkoľvek.",
   "showcaseNote": "Kalendár a analytika sú súčasťou predplatného.",
   "showcaseCaptions": {
-    "calendar": "Kalendár tréningov tvojho hráča",
+    "calendar": "Kalendár tréningov hráča",
     "session": "Detail tréningu — cvičenia, čas, poznámky",
     "analytics": "Analytika: koľko času išlo na čo"
   },
-  "featuresTitle": "Čo na svojom hráčovi uvidíš",
+  "featuresTitle": "Čo o hráčovi uvidíš",
   "featurePaidBadge": "S predplatným",
   "features": [
     {
@@ -61,7 +61,7 @@
   ],
   "transparencyTitle": "Tréningový denník patrí aj tebe, nie iba tvojmu trénerovi.",
   "transparencyIntro": "Toto ti P.L.A.W sľubuje:",
-  "transparencyQuote": "Celá história tréningov ostáva v tvojom účte — aj tie, ktoré má tvoj hráč odtrénované s doterajším trénerom. Nikam sa nič neodosiela a nič sa nemaže. Ak sa vaše cesty rozídu, novému trénerovi doň vieš kedykoľvek dať nahliadnuť priamo u seba.",
+  "transparencyQuote": "Celá história tréningov ostáva v tvojom účte — aj tie, ktoré má hráč odtrénované s doterajším trénerom. Nikam sa nič neodosiela a nič sa nemaže. Ak sa vaše cesty rozídu, novému trénerovi doň vieš kedykoľvek dať nahliadnuť priamo u seba.",
   "transparencyNote": "Tréner, ktorý sa nebojí dať záznam o svojej práci do rúk klienta, je skutočný profesionál.",
   "pricingTitle": "Cena",
   "pricingSubtitle": "Jedno predplatné, jeden hráč.",
