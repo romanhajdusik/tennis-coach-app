@@ -301,6 +301,57 @@ primiešali do percent zamerania.
 
 ---
 
+### 2.3 OPAČNÝ SMER CROSS-READU — návrh na rozhodnutie (2026-08-22)
+
+**Otázka používateľa:** môže rodič v budúcnosti zdieľať s kondičným trénerom aspoň
+generálny graf?
+
+**Odpoveď: technicky áno, ale cez rodiča to robiť netreba a nemalo by sa.**
+
+**Čo je dnes.** Prepojenie kariet je jednosmerné a je to zámer (migrácia
+`20260815100000`, bod 2): kód vydáva **vlastník dát** — kondičný tréner — a zadáva ho
+tenisový, ktorý dáta chce vidieť. `reads_linked_player` vracia `true` len vtedy, keď je
+karta **zdrojom** a volajúci je **cieľovým** trénerom. Kondičný tréner teda tenisové dáta
+nevidí vôbec.
+
+**Prečo NIE cez rodiča** (štyri dôvody, prvý je rozhodujúci):
+
+1. **Rodič by prerozdeľoval cudziu prácu.** `parent_session_records` sú kópie záznamu,
+   ktorý vytvoril tenisový tréner. Právo posunúť ich ďalej znamená právo šíriť niečo, čo
+   rodič nevytvoril — bez vedomia a bez súhlasu autora.
+2. **Rozbilo by to sľub na `plaw.click`:** *„Nikam sa nič neodosiela a nič sa nemaže."*
+   Buď platí, alebo rodič vie zdieľať.
+3. **Nedalo by sa to odvolať.** Kópie sa zámerne nemažú nikdy; prepojenie kariet sa
+   naopak zruší a dáta zmiznú (presne preto je pri trénerovi živý pohľad, nie kópie).
+4. **Rodič nič nepridáva.** Zdrojom je aj tak tenisový tréner — cesta cez rodiča len
+   obchádza jeho súhlas.
+
+**Odporúčaná cesta: opačné prepojenie kariet.** Kód vydá **tenisový** tréner, zadá ho
+**kondičný**. Rovnaká mechanika, len druhým smerom, a súhlas dáva ten, komu dáta patria.
+Je to lacnejšie, než to vyzerá:
+
+- `reads_linked_player` sa pýta výhradne na dvojicu *zdroj → cieľ* a o disciplíne nevie
+  nič, takže riadok s opačnými rolami **prejde cez existujúcu policy bez zmeny**.
+- Prekážkou sú unikátne indexy `player_links_one_active_source` a
+  `player_links_one_active_target` — dnes rátajú s jedným prepojením na kartu a museli by
+  povoliť dvojicu v oboch smeroch.
+- Obrazovky sú už disciplínovo neutrálne, takže kondičný tréner dostane ten istý blok,
+  aký má dnes tenisový.
+- **Vo federácii sa tým nemení nič** — tam sa kódy nevydávajú a cross-read ide
+  z priradení (§2.2).
+
+**ROZSAH SPÄTNÉHO SMERU MÁ BYŤ UŽŠÍ — a to je jadro nápadu.** Tenisový tréner vidí dnes
+celý detail kondičného tréningu vrátane cvičení a poznámok (rozhodnuté 2026-08-15).
+Opačne to **zrkadliť netreba**: kondičnému trénerovi má stačiť **agregovaný graf podielov
+zameraní**, teda „koľko záťaže už na hráčovi je". Nevydá tým ani jeden kód cvičenia a ani
+jednu poznámku — a kódy cvičení sú trénerovo know-how a hlavný sľub appky.
+
+Zámerne teda **asymetricky: tam detail, späť len súčty.**
+
+**Nerozhodnuté:** či sa spätný smer viaže na existujúce prepojenie (kondičný tréner, ktorý
+už kód vydal, dostane graf automaticky), alebo je to samostatný kód. Prvé je pohodlnejšie,
+druhé drží pravidlo „súhlas dáva vlastník dát" čisté.
+
 ## 3. Záťaž z hodiniek: SÚBOR OD HRÁČA (prepracované 2026-08-11)
 
 > **Zmena oproti pôvodnému zneniu (2026-07-20).** Pôvodne sa počítalo s **OAuth

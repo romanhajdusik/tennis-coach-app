@@ -407,6 +407,7 @@ Rozhodnuté ceny sú v [`docs/cennik-navrh.md`](docs/cennik-navrh.md); na webe i
 > vrátane odporúčaných modelov a otvorených otázok) sú vo verbatim znení v
 > [`docs/roadmap-buduce-smery.md`](docs/roadmap-buduce-smery.md). Nižšie len stručné body.
 
+- **Opačný smer cross-readu: kondičný tréner vidí SÚHRNNÝ tenisový graf** (2026-08-22, návrh na rozhodnutie, celé v [docs/roadmap-buduce-smery.md](docs/roadmap-buduce-smery.md) §2.3). Vzišlo z otázky, či by dáta mohol zdieľať RODIČ — **nemal by**: sú to kópie práce tenisového trénera, rodič by ju šíril bez jeho súhlasu, nedalo by sa to odvolať (kópie sa nemažú) a rozbilo by to sľub na `plaw.click`, že sa nikam nič neodosiela. Správna cesta je **opačné prepojenie kariet** (kód vydá tenisový tréner) a **zámerne užší rozsah než tam**: len agregovaný graf podielov zameraní, žiadne kódy cvičení ani poznámky — tie sú trénerovo know-how.
 - **Multi-šport platforma (tenis → padel, bedminton, pickleball)** (2026-08-01): tenisová
   appka je „inštancia #1" spoločného enginu; športy sa líšia len v ~10 % (zamerania + drills
   + pár analytických pravidiel). Zlaté pravidlo: **šport-špecifické = konfigurácia (SportConfig),
