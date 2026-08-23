@@ -329,6 +329,8 @@ projekt, lebo `proxy.ts` na nej vykreslí vlastnú stránku (`isParentFaceHost`
 v `lib/public-face.ts`, landing `components/landing-hrac.tsx`). Je to tá istá
 mechanika ako pri `plaw.online`.
 
+> **HOTOVÉ 2026-08-22** — postup nižšie ostáva ako vzor pre ďalšiu takúto doménu.
+
 > **PORADIE SA NESMIE PREHODIŤ: najprv nasaď kód, až potom pridaj doménu vo
 > Verceli.** Nasadenie, ktoré `plaw.click` nepozná, ju prepustí do bežnej
 > vetvy appky a odhlásenému návštevníkovi vykreslí **trénerskú landing** — tá
@@ -502,7 +504,7 @@ stránku, ktorá ho má osloviť.
 - [ ] `plaw.win` a `plaw.online`: parkovanie pošty (null MX + `v=spf1 -all` + DMARC `p=reject`)
 - [ ] `A`/`CNAME` na `plaw.win` a `plaw.online` **nedotknuté**
 - [x] `plawtennis.com` + `plaw-tennis.com` (aj `www`) → 307 redirect vo Verceli (2026-08-12; cieľ je **`www.plaw.win`**, nie apex — ušetrí to jeden skok navyše, lebo `plaw.win` sám presmerúva na `www`). Overené zvonku: všetky štyri hostnames vracajú `307 → https://www.plaw.win/`
-- [ ] `plaw.click` → pripojená vo Verceli **bez** redirectu (`www` → 307 na apex) + `A`/`CNAME`, Krok 9c. **Až PO nasadení kódu**, inak sa na nej ukáže trénerská landing
+- [x] `plaw.click` **ŽIVÁ (2026-08-22)**, Krok 9c. Hlavná je `www.plaw.click` (Production), apex naň ide `308` — teda rovnaký vzor ako `plaw.win` a `plaw.online`, nie apex-first, ako navrhoval runbook. `A @` = `216.198.79.1`, `CNAME www` = `044898b4a673cb8d.vercel-dns-017.com`, websupportové parkovacie `A`/`AAAA` na `@`, `www` aj `*` zmazané. Overené cez `dns.google` (apex `AAAA` už nevracia nič) aj v prehliadači
 - [ ] Zaparkované domény: null MX + `v=spf1 -all` + DMARC `p=reject`
 - [x] Dvojfaktorové overenie a záložné kódy (2026-08-12; záchranný mail + telefón sa dali nastaviť až cez Admin konzolu → Users → Security → Recovery information, cez `myaccount.google.com` to nový účet odmietal s „We couldn't verify it's you")
 - [ ] O ~2 týždne: DMARC na `p=quarantine`, potom `p=reject`
