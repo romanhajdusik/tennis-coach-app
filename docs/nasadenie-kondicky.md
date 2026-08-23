@@ -124,7 +124,8 @@ nebude prekážať.
 Prihlás sa novým účtom na `fitness.plawsports.com`:
 
 - [ ] `/drill-codes` ponúka **10 zameraní**: ENDURANCE, STRENGTH, SPEED,
-      FOOTWORK, COORDINATION, MOBILITY, CORE MUSCLES, STRETCHING, YOUR 1, YOUR 2
+      FOOTWORK, COORDINATION, MOBILITY, CORE MUSCLES, STRETCHING,
+      WARM UP - COOL DOWN, REGENERATION
 - [ ] každé zameranie má **20 prázdnych slotov** (tenis má predvyplnené kódy,
       kondička nie — sloty si tréner pomenuje sám)
 - [ ] pri zázname cvičenia **nie je pole charakteru** (offensive/neutral/defensive)

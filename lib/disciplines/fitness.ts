@@ -17,9 +17,18 @@ export const FITNESS_DISCIPLINE: DisciplineConfig = {
 
   domain: "fitness.plawsports.com",
 
-  // Posledné dve sú rezervné zamerania s PEVNÝM názvom — tréner si do nich
-  // dá vlastné cvičenia, ale zameranie sa nepremenúva (premenovateľné
-  // zamerania by museli byť dáta, nie konfigurácia).
+  // Posledné dve zamerania majú PEVNÝ názov rovnako ako ostatné — tréner si
+  // do nich dá vlastné cvičenia, ale zameranie sa nepremenúva (premenovateľné
+  // zameranie by muselo byť dáta, nie konfigurácia).
+  //
+  // Vznikli ako rezervné sloty „YOUR 1"/„YOUR 2"; **2026-08-22 dostali podľa
+  // návrhu testerov konkrétny názov** (migrácia
+  // `20260822090000_rename_fitness_reserve_categories`), lebo sa im v praxi
+  // zapĺňali práve rozcvičkou a regeneráciou.
+  //
+  // **V názve je spojovník, NIE lomka** — zameranie ide do adresy analytiky
+  // (`/analytics/[category]`), kde by lomka skončila ako `%2F` a rozbila
+  // segment routy.
   categories: [
     "ENDURANCE",
     "STRENGTH",
@@ -29,8 +38,8 @@ export const FITNESS_DISCIPLINE: DisciplineConfig = {
     "MOBILITY",
     "CORE MUSCLES",
     "STRETCHING",
-    "YOUR 1",
-    "YOUR 2",
+    "WARM UP - COOL DOWN",
+    "REGENERATION",
   ],
 
   defaultCategory: "ENDURANCE",
@@ -63,8 +72,8 @@ export const FITNESS_DISCIPLINE: DisciplineConfig = {
       "MOBILITY",
       "CORE MUSCLES",
       "STRETCHING",
-      "YOUR 1",
-      "YOUR 2",
+      "WARM UP - COOL DOWN",
+      "REGENERATION",
     ],
 
     // Prefixové skupiny sú tenisová vec (1st/2nd serve, forehand/backhand
