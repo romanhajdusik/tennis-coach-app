@@ -352,6 +352,44 @@ Zámerne teda **asymetricky: tam detail, späť len súčty.**
 už kód vydal, dostane graf automaticky), alebo je to samostatný kód. Prvé je pohodlnejšie,
 druhé drží pravidlo „súhlas dáva vlastník dát" čisté.
 
+### 2.3a ROZHODNUTÉ A POSTAVENÉ 2026-08-24 (migrácia `20260824090000`)
+
+**Rozhodnutie používateľa: ani jedno z toho — PREPÍNAČ na existujúcom prepojení.** Druhý
+kód by bol zbytočný (totožnosť kariet je už overená), automatický spätný smer by zas
+zapol zdieľanie na prepojeniach, ktoré vznikli pod sľubom jednosmernosti. Preto stĺpec
+`player_links.target_shares_summary` s `default false`, ktorý prepína **cieľová strana** —
+tá, ktorej dáta tečú späť.
+
+**Dve veci z návrhu vyššie sa pri stavbe ukázali inak, než sa čakalo** (obe overené
+zápisom do lokálnej DB, nie čítaním SQL):
+
+1. **Unikátne indexy prekážkou NIE SÚ.** `player_links_one_active_source` je nad
+   `source_player_id`, `_target` nad `target_player_id` — dvojica opačných riadkov prejde
+   oboma, lebo v každom stĺpci sú dve rôzne hodnoty. Opačné prepojenie sa dalo vytvoriť aj
+   bez akejkoľvek migrácie.
+2. **A práve preto bola prekážka opačná: DB by vydala PRIVIAC.** `reads_linked_player` sa
+   pýta výhradne na dvojicu *zdroj → cieľ* a o smere nevie nič, takže opačný riadok otvoril
+   `sessions` **aj `session_drills`** v plnom rozsahu — v skúške z 2026-08-24 z toho bolo
+   13 tréningov aj s poznámkou a 44 cvičení aj s kódmi. Užší rozsah teda nebola vec UI,
+   musel sa postaviť.
+
+**Ako je užší rozsah zaručený:** RLS obmedzuje RIADKY, nie stĺpce, takže policy „vidí
+minúty, ale nie kódy" sa napísať nedá. Súhrn preto nedostal žiadnu SELECT policy — vydáva
+ho `security definer` funkcia `linked_player_category_minutes`, ktorá vracia rovno agregát
+(zameranie + minúty). Volajúci nedostane prístup k jedinému riadku, takže nie je čo uniesť.
+
+**Pribudla poistka „jedna dvojica kariet = jedno prepojenie"** (`already_linked`
+v `claim_player_link`): keby si dvojica vymenila kódy oboma smermi, obišla by celú
+asymetriu a videli by si navzájom plný detail. Cez UI sa to vyvolať nedá, ale RPC je cez
+PostgREST dostupné priamo, takže hranica patrí do databázy.
+
+**Čo sa pritom opravilo:** koláčová vetva `CategoryShareChart` mala nadpis natvrdo a prop
+`heading` ignorovala. Na tenisovej strane to nebolo vidieť (kondičný blok kreslí stĺpce) —
+súhrn opačným smerom je prvý cudzí blok, ktorý sa kreslí koláčom.
+
+Overuje `card-links.js` §10 (15 scenárov), `security-boundaries.js` §4, `fitness.js` §6
+(že v ňom naozaj nie sú kódy ani poznámky) a `browser-coach.js` §11 (samotné zaškrtnutie).
+
 ## 3. Záťaž z hodiniek: SÚBOR OD HRÁČA (prepracované 2026-08-11)
 
 > **Zmena oproti pôvodnému zneniu (2026-07-20).** Pôvodne sa počítalo s **OAuth
