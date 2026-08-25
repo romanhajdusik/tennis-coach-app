@@ -1082,6 +1082,37 @@ async function main() {
       /Linked/.test(await browserText(linkPage)),
     );
 
+    // Súhrn opačným smerom (migrácia `20260824090000`) sa nespúšťa formulárom,
+    // ale zaškrtnutím — server action sa cez holé HTTP zavolať nedá, takže je
+    // toto jediné miesto, kde sa dá overiť, že klik naozaj niečo zapíše.
+    // Panel sa po odoslaní formulára mohol zabaliť, preto sa stav `<details>`
+    // najprv prečíta a klikne sa len vtedy, keď treba.
+    const linkDetails = linkPage
+      .locator("details:has(summary:has-text('Link with another coach'))")
+      .first();
+    if (!(await linkDetails.evaluate((node) => node.open))) {
+      await linkDetails.locator("summary").click();
+    }
+
+    const summaryToggle = linkDetails.locator('input[type="checkbox"]').first();
+    check(
+      "po prepojení sa ponúkne súhrn opačným smerom",
+      (await summaryToggle.count()) === 1,
+    );
+
+    await summaryToggle.check();
+    await linkPage.waitForTimeout(2500);
+    const { data: sharedRow } = await db
+      .from("player_links")
+      .select("target_shares_summary")
+      .eq("link_code", "BRWLINK1")
+      .single();
+    check(
+      "zaškrtnutie zapísalo súhlas so súhrnom",
+      sharedRow?.target_shares_summary === true,
+      JSON.stringify(sharedRow),
+    );
+
     await linkPage.goto(`${soloBase}/calendar?view=week`);
     await linkPage.waitForTimeout(1500);
     const calendarText = await browserText(linkPage);

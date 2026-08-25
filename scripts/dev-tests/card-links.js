@@ -309,7 +309,203 @@ async function main() {
       foreignRevoke.error?.message,
     );
 
-    section("10) Po zrušení prístup zmizne (rozdiel oproti rodičovi)");
+    // Opačný smer (migrácia `20260824090000`, docs §2.3). Jadro sekcie je
+    // ASYMETRIA: tam celý detail, späť len súčty. Preto sa tu nekontroluje len
+    // to, či súhrn príde, ale hlavne to, že s ním neprídu kódy cvičení,
+    // poznámky ani prístup k tréningom.
+    section("10) Súhrn opačným smerom");
+    const period = {
+      p_player_id: fitnessPlayer.id,
+      p_start: new Date(Date.UTC(2020, 0, 1)).toISOString(),
+      p_end: new Date(Date.UTC(2100, 0, 1)).toISOString(),
+    };
+
+    const beforeOptIn = await asFitness.rpc(
+      "linked_player_category_minutes",
+      period,
+    );
+    check(
+      "bez súhlasu nevidí vydávajúci nič",
+      (beforeOptIn.data ?? []).length === 0,
+      `riadkov: ${(beforeOptIn.data ?? []).length}`,
+    );
+
+    const sourceToggles = await asFitness.rpc("set_link_summary_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    check(
+      "vydávajúci si súhlas sám zapnúť nemôže",
+      sourceToggles.error !== null &&
+        /not_your_link/.test(sourceToggles.error.message),
+      sourceToggles.error?.message,
+    );
+
+    const outsiderToggles = await asOutsider.rpc("set_link_summary_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    check(
+      "cudzí účet súhlas neprepne",
+      outsiderToggles.error !== null &&
+        /not_your_link/.test(outsiderToggles.error.message),
+      outsiderToggles.error?.message,
+    );
+
+    const anonToggles = await anon.rpc("set_link_summary_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    check(
+      "neprihlásený súhlas neprepne",
+      anonToggles.error !== null &&
+        /not_authenticated|permission denied/.test(anonToggles.error.message),
+      anonToggles.error?.message,
+    );
+
+    const optIn = await asTennis.rpc("set_link_summary_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    check("cieľová strana súhlas zapne", !optIn.error, optIn.error?.message);
+
+    // Kontrolný výpočet cez service_role: čísla musia sedieť s tým, čo si
+    // z tých istých riadkov vypočíta appka, inak by graf klamal.
+    const { data: ownSessions } = await db
+      .from("sessions")
+      .select("id")
+      .eq("player_id", tennisPlayer.id)
+      .eq("discipline", "tennis");
+    const { data: ownDrills } = await db
+      .from("session_drills")
+      .select("category, duration_minutes")
+      .in("session_id", (ownSessions ?? []).map((row) => row.id))
+      .eq("status", "played");
+    const expected = new Map();
+    for (const drill of ownDrills ?? []) {
+      expected.set(
+        drill.category,
+        (expected.get(drill.category) ?? 0) + drill.duration_minutes,
+      );
+    }
+
+    const summary = await asFitness.rpc(
+      "linked_player_category_minutes",
+      period,
+    );
+    const got = new Map(
+      (summary.data ?? []).map((row) => [row.category, row.duration_minutes]),
+    );
+    check(
+      "so súhlasom vidí vydávajúci súhrn",
+      got.size > 0,
+      summary.error?.message ?? `riadkov: ${got.size}`,
+    );
+    check(
+      "minúty sedia s vlastným výpočtom",
+      got.size === expected.size &&
+        [...expected].every(([category, minutes]) => got.get(category) === minutes),
+      `dostal ${JSON.stringify([...got])}, čakal ${JSON.stringify([...expected])}`,
+    );
+    check(
+      "súhrn nenesie kódy cvičení ani poznámky",
+      (summary.data ?? []).every(
+        (row) => Object.keys(row).join(",") === "category,duration_minutes",
+      ),
+      `stĺpce: ${Object.keys((summary.data ?? [])[0] ?? {}).join(",")}`,
+    );
+
+    const stillNoSessions = await asFitness
+      .from("sessions")
+      .select("id")
+      .eq("player_id", tennisPlayer.id);
+    check(
+      "súhrn NEOTVORÍ tenisové tréningy",
+      (stillNoSessions.data ?? []).length === 0,
+      `riadkov: ${(stillNoSessions.data ?? []).length}`,
+    );
+
+    const stillNoDrills = await asFitness
+      .from("session_drills")
+      .select("id")
+      .in("session_id", (ownSessions ?? []).map((row) => row.id));
+    check(
+      "súhrn NEOTVORÍ tenisové cvičenia",
+      (stillNoDrills.data ?? []).length === 0,
+      `riadkov: ${(stillNoDrills.data ?? []).length}`,
+    );
+
+    const outsiderSummary = await asOutsider.rpc(
+      "linked_player_category_minutes",
+      period,
+    );
+    check(
+      "cudzí účet súhrn nedostane",
+      (outsiderSummary.data ?? []).length === 0,
+      `riadkov: ${(outsiderSummary.data ?? []).length}`,
+    );
+
+    const anonSummary = await anon.rpc(
+      "linked_player_category_minutes",
+      period,
+    );
+    check(
+      "neprihlásený sa k súhrnu nedostane",
+      anonSummary.error !== null ||
+        (anonSummary.data ?? []).length === 0,
+      anonSummary.error?.message,
+    );
+
+    // Poistka z časti D migrácie: dvojica kariet smie mať jeden riadok. Druhý,
+    // opačný, by z jednosmerného pohľadu spravil obojsmerný PLNÝ detail —
+    // presne to, čo sa rozhodlo nedať.
+    const backCode = await asTennis
+      .from("player_links")
+      .insert({
+        source_player_id: tennisPlayer.id,
+        source_coach_id: tennisCoach.id,
+        source_discipline: "tennis",
+        link_code: "CARDLNK4",
+        status: "pending",
+      })
+      .select("id")
+      .single();
+    if (backCode.data) madeLinks.push(backCode.data.id);
+    const backClaim = await asFitness.rpc("claim_player_link", {
+      p_code: "CARDLNK4",
+      p_player_id: fitnessPlayer.id,
+      p_discipline: "fitness",
+    });
+    check(
+      "opačné prepojenie tej istej dvojice sa odmietne",
+      backClaim.error !== null && /already_linked/.test(backClaim.error.message),
+      backClaim.error?.message,
+    );
+
+    const optOut = await asTennis.rpc("set_link_summary_sharing", {
+      p_link_id: link.id,
+      p_enabled: false,
+    });
+    check("súhlas sa dá vziať späť", !optOut.error, optOut.error?.message);
+
+    const afterOptOut = await asFitness.rpc(
+      "linked_player_category_minutes",
+      period,
+    );
+    check(
+      "po vypnutí je súhrn preč",
+      (afterOptOut.data ?? []).length === 0,
+      `riadkov: ${(afterOptOut.data ?? []).length}`,
+    );
+
+    // Zapnuté späť, aby ďalšia sekcia overila, že zrušenie prepojenia zhasne aj
+    // súhrn — nie iba prístup k tréningom.
+    await asTennis.rpc("set_link_summary_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+
+    section("11) Po zrušení prístup zmizne (rozdiel oproti rodičovi)");
     const revoked = await asTennis.rpc("revoke_player_link", {
       p_link_id: link.id,
     });
@@ -334,13 +530,29 @@ async function main() {
       (drillsAfterRevoke.data ?? []).length === 0,
       `riadkov: ${(drillsAfterRevoke.data ?? []).length}`,
     );
+
+    // Zrušené prepojenie nesmie ostať polovične živé: príznak na riadku síce
+    // ostane zapnutý, ale funkcia sa pýta aj na `status = 'active'`.
+    const summaryAfterRevoke = await asFitness.rpc(
+      "linked_player_category_minutes",
+      {
+        p_player_id: fitnessPlayer.id,
+        p_start: new Date(Date.UTC(2020, 0, 1)).toISOString(),
+        p_end: new Date(Date.UTC(2100, 0, 1)).toISOString(),
+      },
+    );
+    check(
+      "po zrušení zhasne aj súhrn opačným smerom",
+      (summaryAfterRevoke.data ?? []).length === 0,
+      `riadkov: ${(summaryAfterRevoke.data ?? []).length}`,
+    );
   } finally {
     // Upratuje sa podľa DÁT, nie podľa zapamätaných id: keď scenár spadne skôr,
     // než si id prečíta, riadok by ostal a ďalší beh by stroskotal na unikáte.
     await db
       .from("player_links")
       .delete()
-      .in("link_code", ["CARDLNK1", "CARDLNK2", "CARDLNK3"]);
+      .in("link_code", ["CARDLNK1", "CARDLNK2", "CARDLNK3", "CARDLNK4"]);
     for (const id of madeLinks) {
       await db.from("player_links").delete().eq("id", id);
     }

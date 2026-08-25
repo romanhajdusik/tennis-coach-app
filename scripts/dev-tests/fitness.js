@@ -30,8 +30,8 @@ const FITNESS_CATEGORIES = [
   "MOBILITY",
   "CORE MUSCLES",
   "STRETCHING",
-  "YOUR 1",
-  "YOUR 2",
+  "WARM UP - COOL DOWN",
+  "REGENERATION",
 ];
 
 const TENNIS_CATEGORIES = ["Forehand", "Backhand", "Volley", "Serve", "POINTS"];
@@ -190,6 +190,99 @@ async function main() {
     "pole na zadanie cudzieho kódu tu nie je",
     !/Enter the code you got/i.test(playersText),
   );
+
+  section("6) Súhrn opačným smerom: len súčty, žiadne know-how");
+  // Toto je jediné miesto, kde sa dá overiť VÝSLEDOK opačného smeru
+  // (migrácia `20260824090000`): vydávajúcou stranou je kondičný tréner, takže
+  // blok sa vykreslí len v tomto nasadení. Prihlasuje sa preto `fitness-coach`,
+  // nie `demo@plaw.win` — ten má na kondičnom serveri tú istú tenisovú kartu
+  // a prepojiť kartu so sebou samou nejde.
+  //
+  // Kontroluje sa oboje: že súčty prídu, aj že s nimi neprišli kódy cvičení
+  // a poznámky — celá asymetria stojí a padá na tom druhom.
+  const { data: fitnessUsers } = await db.auth.admin.listUsers({ perPage: 1000 });
+  const fitnessCoach = fitnessUsers.users.find(
+    (user) => user.email === "fitness-coach@test.local",
+  );
+  const { data: fitnessCard } = await db
+    .from("players")
+    .select("id")
+    .eq("coach_id", fitnessCoach.id)
+    .eq("is_active", true)
+    .limit(1)
+    .single();
+  const { data: tennisCard } = await db
+    .from("players")
+    .select("id")
+    .eq("coach_id", demo.id)
+    .eq("is_active", true)
+    .is("organization_id", null)
+    .limit(1)
+    .single();
+
+  await db.from("player_links").delete().eq("link_code", "FITSUM01");
+  const { data: summaryLink } = await db
+    .from("player_links")
+    .insert({
+      source_player_id: fitnessCard.id,
+      source_coach_id: fitnessCoach.id,
+      source_discipline: "fitness",
+      target_player_id: tennisCard.id,
+      target_coach_id: demo.id,
+      link_code: "FITSUM01",
+      status: "active",
+      target_shares_summary: false,
+    })
+    .select("id")
+    .single();
+
+  try {
+    const fitnessCookies = await authCookies("fitness-coach@test.local");
+    const analyticsPath = `/analytics/${encodeURIComponent("CORE MUSCLES")}`;
+
+    const withoutConsent = await request(analyticsPath, {
+      host: APP_HOST,
+      cookies: fitnessCookies,
+    });
+    check(
+      "bez súhlasu druhej strany sa blok nevykreslí",
+      !/Tennis in the same period/.test(textOf(withoutConsent.body)),
+    );
+
+    await db
+      .from("player_links")
+      .update({ target_shares_summary: true })
+      .eq("id", summaryLink.id);
+
+    const withConsent = await request(analyticsPath, {
+      host: APP_HOST,
+      cookies: fitnessCookies,
+    });
+    const summaryText = textOf(withConsent.body);
+    check(
+      "so súhlasom sa dole objaví tenisový súhrn",
+      /Tennis in the same period/.test(summaryText),
+      summaryText.slice(0, 200),
+    );
+    check(
+      "sú v ňom tenisové zamerania",
+      /Forehand/.test(summaryText) && /Backhand/.test(summaryText),
+    );
+    check(
+      "kódy cvičení tenisového trénera v ňom NIE SÚ",
+      !/FRH-|BKH-|SR1|RET-/.test(summaryText),
+    );
+    check(
+      "poznámky z tenisových tréningov v ňom NIE SÚ",
+      !/Practice notes/i.test(summaryText),
+    );
+    check(
+      "je pri ňom napísané, že sa nepočíta do čísel nad ním",
+      /not part of the numbers above/i.test(summaryText),
+    );
+  } finally {
+    await db.from("player_links").delete().eq("link_code", "FITSUM01");
+  }
 }
 
 main()

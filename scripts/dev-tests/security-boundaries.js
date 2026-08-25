@@ -185,6 +185,34 @@ async function main() {
       check(`cez prepojenie sa nedostane k ${name}`, (data ?? []).length === 0);
     }
 
+    // Súhrn opačným smerom (migrácia `20260824090000`) je cesta k CUDZÍM
+    // súčtom, takže patrí na hranicu režimov: rozhodnúť oň smie výhradne strana,
+    // ktorej dáta to sú, a federačný účet sa k nemu nedostane vôbec.
+    const orgToggles = await asOrgCoach.rpc("set_link_summary_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    check(
+      "org tréner neprepne súhlas cudzieho prepojenia",
+      orgToggles.error !== null && /not_your_link/.test(orgToggles.error.message),
+      orgToggles.error?.message,
+    );
+
+    await asSolo.rpc("set_link_summary_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    const orgSummary = await asOrgCoach.rpc("linked_player_category_minutes", {
+      p_player_id: fitnessPlayer.id,
+      p_start: new Date(Date.UTC(2020, 0, 1)).toISOString(),
+      p_end: new Date(Date.UTC(2100, 0, 1)).toISOString(),
+    });
+    check(
+      "org tréner nedostane súhrn z cudzieho prepojenia",
+      (orgSummary.data ?? []).length === 0,
+      `riadkov: ${(orgSummary.data ?? []).length}`,
+    );
+
     section("5) Federačný tréner mimo svojej organizácie");
     // RLS sa pýta ČLENSTVA, nie hostname — org tréner teda „na plaw.win"
     // nesmie vidieť ani si založiť osobné dáta.
