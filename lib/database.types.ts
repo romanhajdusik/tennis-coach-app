@@ -416,6 +416,7 @@ export type Database = {
           source_coach_id: string
           source_discipline: string
           source_player_id: string
+          source_shares_with_follower: boolean
           status: string
           target_coach_id: string | null
           target_player_id: string | null
@@ -429,6 +430,7 @@ export type Database = {
           source_coach_id: string
           source_discipline: string
           source_player_id: string
+          source_shares_with_follower?: boolean
           status?: string
           target_coach_id?: string | null
           target_player_id?: string | null
@@ -442,6 +444,7 @@ export type Database = {
           source_coach_id?: string
           source_discipline?: string
           source_player_id?: string
+          source_shares_with_follower?: boolean
           status?: string
           target_coach_id?: string | null
           target_player_id?: string | null
@@ -773,6 +776,14 @@ export type Database = {
         Args: { p_member_id: string }
         Returns: undefined
       }
+      follower_linked_category_minutes: {
+        Args: { p_end: string; p_start: string }
+        Returns: {
+          category: string
+          discipline: string
+          duration_minutes: number
+        }[]
+      }
       is_assigned_player: { Args: { p_player_id: string }; Returns: boolean }
       is_member_of_my_org: { Args: { p_user_id: string }; Returns: boolean }
       linked_player_category_minutes: {
@@ -805,6 +816,10 @@ export type Database = {
       reads_linked_player: { Args: { p_player_id: string }; Returns: boolean }
       reads_linked_session: { Args: { p_session_id: string }; Returns: boolean }
       revoke_player_link: { Args: { p_link_id: string }; Returns: undefined }
+      set_link_follower_sharing: {
+        Args: { p_enabled: boolean; p_link_id: string }
+        Returns: undefined
+      }
       set_link_summary_sharing: {
         Args: { p_enabled: boolean; p_link_id: string }
         Returns: undefined
