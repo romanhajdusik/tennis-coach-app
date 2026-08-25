@@ -6,6 +6,7 @@ import {
   claimCardLink,
   generateCardLinkCode,
   revokeCardLink,
+  setCardLinkFollowerSharing,
   setCardLinkSummary,
   type ClaimCardLinkState,
 } from "@/lib/actions/player-links";
@@ -16,6 +17,7 @@ export type CardLink = {
   link_code: string;
   source_discipline: string;
   target_shares_summary: boolean;
+  source_shares_with_follower: boolean;
 } | null;
 
 /**
@@ -46,6 +48,9 @@ export function LinkPlayerSection({
   >(claimCardLink, undefined);
   const [sharesSummary, setSharesSummary] = useOptimistic(
     link?.target_shares_summary ?? false,
+  );
+  const [sharesWithFollower, setSharesWithFollower] = useOptimistic(
+    link?.source_shares_with_follower ?? false,
   );
 
   function handleGenerate() {
@@ -78,6 +83,15 @@ export function LinkPlayerSection({
     startTransition(async () => {
       setSharesSummary(enabled);
       await setCardLinkSummary(link.id, enabled);
+    });
+  }
+
+  /** To isté pre sledujúceho druhej karty — iný súhlas, iná strana. */
+  function handleFollowerSharing(enabled: boolean) {
+    if (!link) return;
+    startTransition(async () => {
+      setSharesWithFollower(enabled);
+      await setCardLinkFollowerSharing(link.id, enabled);
     });
   }
 
@@ -176,6 +190,31 @@ export function LinkPlayerSection({
                 zapne. */}
             {role === "owner" && (
               <p className="text-xs text-muted">{t("summaryOwnerHint")}</p>
+            )}
+
+            {/* Súhrn pre SLEDUJÚCEHO druhej karty (docs §2.3b) — ponúka sa
+                vlastníkovi dát, teda opačnej strane než prepínač nižšie. Sú to
+                dva nezávislé súhlasy: že prácu ukazujem kolegovi, neznamená, že
+                ju chcem posielať aj rodičovi. */}
+            {link && role === "owner" && (
+              <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-border bg-input p-3">
+                <input
+                  type="checkbox"
+                  checked={sharesWithFollower}
+                  onChange={(event) =>
+                    handleFollowerSharing(event.target.checked)
+                  }
+                  className="mt-0.5 size-4 shrink-0 accent-primary"
+                />
+                <span className="flex flex-col gap-1">
+                  <span className="text-sm font-medium text-foreground">
+                    {t("followerLabel")}
+                  </span>
+                  <span className="text-xs text-muted">
+                    {t("followerHint")}
+                  </span>
+                </span>
+              </label>
             )}
 
             {/* Súhrn opačným smerom (docs §2.3) — ponúka sa len tej strane,

@@ -67,6 +67,8 @@
     "summaryLabel": "Show them a summary of my work",
     "summaryHint": "They'll see only how this player's minutes split across focus areas — no drill codes and no notes. Turn it off any time.",
     "summaryOwnerHint": "If they choose to share back, a summary of their work shows at the bottom of your analytics.",
+    "followerLabel": "Also show my summary to the player's parent",
+    "followerHint": "Whoever follows this player in the other coach's app sees the same summary — focus areas and minutes only. Off unless you turn it on, and you can turn it off again any time.",
     "revokeButton": "Unlink"
   },
   "errors": {

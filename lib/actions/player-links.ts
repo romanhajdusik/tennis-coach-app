@@ -137,6 +137,39 @@ export async function setCardLinkSummary(linkId: string, enabled: boolean) {
   revalidatePath("/players");
 }
 
+/**
+ * Ten istý súhrn, ale pre SLEDUJÚCEHO druhej karty — rodiča, manažéra alebo
+ * hráča (docs §2.3b). Prepína ho vlastník dát, teda opačná strana než pri
+ * `setCardLinkSummary`; sú to dva nezávislé súhlasy, lebo súhlas s kolegom nie
+ * je súhlas s rodičom.
+ *
+ * Zapnúť je zápis, vypnúť nie — z rovnakého dôvodu ako vyššie.
+ */
+export async function setCardLinkFollowerSharing(
+  linkId: string,
+  enabled: boolean,
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (enabled && (await requireWriteAccess(supabase, user.id))) {
+    return;
+  }
+
+  await supabase.rpc("set_link_follower_sharing", {
+    p_link_id: linkId,
+    p_enabled: enabled,
+  });
+
+  revalidatePath("/players");
+}
+
 export type ClaimCardLinkState = { error?: string } | undefined;
 
 /**

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getDisciplineConfig } from "@/lib/discipline";
+import { getDisciplineConfig, type DisciplineId } from "@/lib/discipline";
 import {
   ageStrokeFactor,
   aggregateCategoryShares,
@@ -126,6 +126,45 @@ export async function getParentCategoryMinuteShares(
     .eq("status", "played");
 
   return aggregateCategoryShares(drills ?? []);
+}
+
+/**
+ * Súhrn DRUHEJ disciplíny pre sledujúceho — podiely zameraní a nič iné
+ * (docs §2.3b). `null` = nie je čo kresliť.
+ *
+ * **Jediné miesto v celej rodičovskej vrstve, ktoré nečíta kópie.** Sú to dáta
+ * cudzieho trénera, takže tu kópia byť nesmie: po zrušení prepojenia alebo
+ * súhlasu majú zmiznúť, kým zmyslom `parent_session_records` je opak — prežiť
+ * koniec spolupráce. Vydáva ich agregujúca funkcia, takže sledujúci nedostane
+ * prístup k jedinému riadku a kódy cvičení ani poznámky sa k nemu nemajú ako
+ * dostať.
+ *
+ * Hráč sa nezadáva: vyplýva z jediného aktívneho pripojenia volajúceho, ktoré
+ * si funkcia nájde sama.
+ */
+export async function getFollowerLinkedShares(
+  supabase: SupabaseServerClient,
+  start: Date,
+  end: Date,
+): Promise<{ discipline: DisciplineId; shares: CategoryShareStat[] } | null> {
+  const { data } = await supabase.rpc("follower_linked_category_minutes", {
+    p_start: start.toISOString(),
+    p_end: end.toISOString(),
+  });
+
+  if (!data || data.length === 0) {
+    return null;
+  }
+
+  // Disciplína je vo všetkých riadkoch rovnaká (funkcia podľa nej zoskupuje).
+  // Vracia sa ako `text`, tak sa zúži na známu hodnotu — neznámu radšej
+  // zahodíme, než by sme podľa nej hľadali konfiguráciu.
+  const discipline = data[0].discipline;
+  if (discipline !== "tennis" && discipline !== "fitness") {
+    return null;
+  }
+
+  return { discipline, shares: aggregateCategoryShares(data) };
 }
 
 // Ročník aktívne pripojeného hráča daného rodiča/hráča/manažéra. Číta sa

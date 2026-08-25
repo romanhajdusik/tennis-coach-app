@@ -9,10 +9,15 @@ import {
   type PeriodRangeType,
 } from "@/lib/actions/analytics";
 import {
+  getFollowerLinkedShares,
   getParentCategoryAnalytics,
   getParentCategoryMinuteShares,
 } from "@/lib/actions/parent-data";
-import { getDisciplineConfig, showsStrokes } from "@/lib/discipline";
+import {
+  disciplineConfig,
+  getDisciplineConfig,
+  showsStrokes,
+} from "@/lib/discipline";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -102,6 +107,11 @@ export default async function ParentAnalyticsPage({
   const categoryShares = connection
     ? await getParentCategoryMinuteShares(supabase, user.id, start, end)
     : [];
+  // Jediné čísla na tejto stránke, ktoré nejdú z kópií — súhrn druhej
+  // disciplíny, a to len keď ho jej tréner pustil (docs §2.3b).
+  const linked = connection
+    ? await getFollowerLinkedShares(supabase, start, end)
+    : null;
   const previousYearValue = getPreviousYearValue(range, value);
 
   const periodQuery = (r: PeriodRangeType, v: string) =>
@@ -237,6 +247,27 @@ export default async function ParentAnalyticsPage({
               groups={discipline.analytics.groupedCategories[category]}
               showStrokes={await showsStrokes(category)}
             />
+          )}
+
+          {/* Príprava v druhej disciplíne — DOLE a s vlastnou stovkou, presne
+              ako u trénera. Sú to živé dáta cudzieho trénera, nie kópia:
+              po zrušení prepojenia alebo súhlasu blok zmizne. */}
+          {linked && (
+            <div className="flex flex-col gap-2">
+              <CategoryShareChart
+                shares={linked.shares}
+                currentCategory={null}
+                config={disciplineConfig(linked.discipline)}
+                heading={t("linkedShareHeading", {
+                  discipline: disciplineConfig(linked.discipline).label,
+                })}
+              />
+              <p className="px-1 text-xs text-muted">
+                {t("linkedShareNote", {
+                  discipline: disciplineConfig(linked.discipline).label,
+                })}
+              </p>
+            </div>
           )}
         </>
       )}
