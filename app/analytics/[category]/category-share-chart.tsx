@@ -161,9 +161,12 @@ export function CategoryShareChart({
 
   return (
     <div className="viz-root flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 ">
-      <h2 className="text-sm font-medium text-muted ">
-        {t("generalShareHeading")}
-      </h2>
+      {/* `title`, nie natvrdo preklad: koláč kreslí aj prehľad DRUHEJ
+          disciplíny (dole na stránke), ktorý má vlastný nadpis. Do 2026-08-24
+          tu bol preklad napevno a nebolo to vidieť — kondička sa kreslí ako
+          stĺpce, takže cudzí blok cez koláč prvýkrát prešiel až so súhrnom
+          opačným smerom. */}
+      <h2 className="text-sm font-medium text-muted ">{title}</h2>
       <ResponsiveContainer width="100%" height={240}>
         <PieChart>
           <Pie
