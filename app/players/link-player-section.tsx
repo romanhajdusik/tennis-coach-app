@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useOptimistic, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
   claimCardLink,
   generateCardLinkCode,
   revokeCardLink,
+  setCardLinkSummary,
   type ClaimCardLinkState,
 } from "@/lib/actions/player-links";
 
@@ -14,6 +15,7 @@ export type CardLink = {
   status: string;
   link_code: string;
   source_discipline: string;
+  target_shares_summary: boolean;
 } | null;
 
 /**
@@ -42,6 +44,9 @@ export function LinkPlayerSection({
     ClaimCardLinkState,
     FormData
   >(claimCardLink, undefined);
+  const [sharesSummary, setSharesSummary] = useOptimistic(
+    link?.target_shares_summary ?? false,
+  );
 
   function handleGenerate() {
     startTransition(async () => {
@@ -61,6 +66,19 @@ export function LinkPlayerSection({
     navigator.clipboard.writeText(link.link_code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  /**
+   * Zaškrtnutie musí byť vidieť HNEĎ. Bez optimistického stavu drží políčko
+   * hodnotu z databázy, takže sa po kliknutí na sekundu vráti späť (kým dobehne
+   * akcia a prekreslenie) — vyzerá to, že prepínač nefunguje.
+   */
+  function handleSummary(enabled: boolean) {
+    if (!link) return;
+    startTransition(async () => {
+      setSharesSummary(enabled);
+      await setCardLinkSummary(link.id, enabled);
+    });
   }
 
   const isActive = link?.status === "active";
@@ -152,6 +170,36 @@ export function LinkPlayerSection({
         {isActive && (
           <div className="flex flex-col gap-2">
             <p className="text-sm text-emerald-400">✓ {t("activeStatus")}</p>
+
+            {/* Vydávajúci sa o súhrne inak nemá ako dozvedieť — prepínač je na
+                druhej strane a blok v analytike sa mu objaví, až keď ho niekto
+                zapne. */}
+            {role === "owner" && (
+              <p className="text-xs text-muted">{t("summaryOwnerHint")}</p>
+            )}
+
+            {/* Súhrn opačným smerom (docs §2.3) — ponúka sa len tej strane,
+                ktorá kód ZADALA, lebo rozhoduje o vlastných dátach. Vedome je
+                to prepínač na už bežiacom prepojení, nie druhý kód: totožnosť
+                kariet je overená a druhý riadok by z jednosmerného pohľadu
+                spravil obojsmerný plný detail. */}
+            {link && role === "viewer" && (
+              <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-border bg-input p-3">
+                <input
+                  type="checkbox"
+                  checked={sharesSummary}
+                  onChange={(event) => handleSummary(event.target.checked)}
+                  className="mt-0.5 size-4 shrink-0 accent-primary"
+                />
+                <span className="flex flex-col gap-1">
+                  <span className="text-sm font-medium text-foreground">
+                    {t("summaryLabel")}
+                  </span>
+                  <span className="text-xs text-muted">{t("summaryHint")}</span>
+                </span>
+              </label>
+            )}
+
             <button
               type="button"
               onClick={handleRevoke}

@@ -100,7 +100,7 @@ export default async function PlayersPage() {
     ? await supabase
         .from("player_links")
         .select(
-          "id, source_player_id, target_player_id, status, link_code, source_discipline",
+          "id, source_player_id, target_player_id, status, link_code, source_discipline, target_shares_summary",
         )
         .in("status", ["pending", "active"])
     : { data: null };

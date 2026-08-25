@@ -105,6 +105,38 @@ export async function revokeCardLink(linkId: string) {
   revalidatePath("/calendar");
 }
 
+/**
+ * Súhrn opačným smerom: vydávajúci uvidí, ako sa práca druhej strany delí medzi
+ * zamerania — a nič viac (docs §2.3). Prepnúť ho smie len tá strana, ktorej dáta
+ * to sú, čo stráži RPC; sem to chodí od nej.
+ *
+ * **Zapnúť je zápis, vypnúť nie.** `requireWriteAccess` preto platí len na
+ * zapnutie: odobrať raz daný súhlas musí ísť aj po vypršaní skúšobnej doby,
+ * inak by tréner ostal zdieľať niečo, čo už nevie zastaviť. Rovnaká výnimka a
+ * z rovnakého dôvodu ako pri `disconnectGoogleCalendar`.
+ */
+export async function setCardLinkSummary(linkId: string, enabled: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (enabled && (await requireWriteAccess(supabase, user.id))) {
+    return;
+  }
+
+  await supabase.rpc("set_link_summary_sharing", {
+    p_link_id: linkId,
+    p_enabled: enabled,
+  });
+
+  revalidatePath("/players");
+}
+
 export type ClaimCardLinkState = { error?: string } | undefined;
 
 /**
@@ -116,6 +148,7 @@ const CLAIM_ERROR_KEYS: Record<string, string> = {
   same_player: "linkSamePlayer",
   not_your_player: "linkNotYourPlayer",
   not_supported_in_organization: "linkNotInOrganization",
+  already_linked: "linkAlreadyLinked",
 };
 
 export async function claimCardLink(

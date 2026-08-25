@@ -64,6 +64,9 @@
     "claimButton": "Link",
     "claimPending": "Linking...",
     "activeStatus": "Linked",
+    "summaryLabel": "Show them a summary of my work",
+    "summaryHint": "They'll see only how this player's minutes split across focus areas — no drill codes and no notes. Turn it off any time.",
+    "summaryOwnerHint": "If they choose to share back, a summary of their work shows at the bottom of your analytics.",
     "revokeButton": "Unlink"
   },
   "errors": {
@@ -76,6 +79,7 @@
     "linkSameDiscipline": "That code is from a coach of the same discipline. Links connect a player's tennis card with their fitness card.",
     "linkSamePlayer": "That code belongs to this player's own card.",
     "linkNotYourPlayer": "You can only link your own player.",
-    "linkNotInOrganization": "In a federation, players are assigned by the head coach — no code is needed."
+    "linkNotInOrganization": "In a federation, players are assigned by the head coach — no code is needed.",
+    "linkAlreadyLinked": "These two cards are already linked the other way round. To share back, the coach who entered your code turns on the summary on that link."
   }
 }

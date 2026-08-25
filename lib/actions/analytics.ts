@@ -567,6 +567,11 @@ async function analysedDiscipline(category: string): Promise<DisciplineId> {
  * mimo federácie je druhá disciplína INÁ KARTA (prepojenie kódom), vo
  * federácii tá istá karta s druhým priradením. RLS vydá jedno aj druhé.
  *
+ * **Tretia cesta je súhrn OPAČNÝM smerom** (docs §2.3): vydávajúca strana na
+ * cudzie tréningy prístup nemá vôbec a čísla dostane hotové z agregujúcej
+ * funkcie. Preto sa tu graf plní z dvoch rôznych zdrojov — nie sú zameniteľné a
+ * ani nemajú byť: tam vidieť detail, späť len súčty.
+ *
  * `null` = nie je čo kresliť (žiadne prepojenie alebo v období nič), a vtedy
  * sa blok nevykreslí vôbec — prázdny graf by len zaberal miesto.
  */
@@ -595,7 +600,35 @@ export async function getLinkedDisciplineShares(
     other,
   );
 
-  return shares.length > 0 ? { discipline: other, shares } : null;
+  if (shares.length > 0) {
+    return { discipline: other, shares };
+  }
+
+  // Opačný smer (docs §2.3): kto kód VYDAL, dostane naspäť súhrn — ale len
+  // vtedy, keď mu druhá strana prepla súhlas. Skúša sa až tu, lebo vo federácii
+  // sa cudzia disciplína číta cestou vyššie a tam by RPC aj tak nič nevrátilo.
+  //
+  // Podmienka je konfiguračná, nie „ak je to kondička": súhrn smie prísť len
+  // vydávajúcej strane a to isté sa pýta aj funkcia v databáze
+  // (`source_coach_id = auth.uid()`).
+  if ((await getDisciplineConfig()).cardLink !== "owner") {
+    return null;
+  }
+
+  const { data: summary } = await supabase.rpc(
+    "linked_player_category_minutes",
+    {
+      p_player_id: player.id,
+      p_start: start.toISOString(),
+      p_end: end.toISOString(),
+    },
+  );
+
+  if (!summary || summary.length === 0) {
+    return null;
+  }
+
+  return { discipline: other, shares: aggregateCategoryShares(summary) };
 }
 
 export async function getCategoryAnalytics(
