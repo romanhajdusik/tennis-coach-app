@@ -455,7 +455,7 @@ Toto nie je voliteľné: účet je zároveň administrátorom celej firmy.
 | Neurobiť | Prečo |
 |---|---|
 | Presúvať appku na `app.plawsports.com` | Org kontext ide výhradne z hostname `<slug>.plaw.win` a auth cookies sú host-only. Presun = presunúť každú org subdoménu (Vercel + CNAME + `organizations.slug`), **odhlásiť všetkých** a **rozbiť PWA ikonu na trénerovom telefóne**. Má zmysel jedine spolu so spustením druhého športu, keď sa routing aj tak mení. |
-| Presmerovať `plaw.online` na hlavnú doménu | Nie je to parkovaná doména, ale **nasadený rozcestník**; `/federacie` a `/navod` žijú výhradne tam (`CANONICAL_ORIGINS` v `proxy.ts`). Redirect by zmazal hotovú funkciu. |
+| Presmerovať `plaw.online` na hlavnú doménu | Nie je to parkovaná doména, ale **nasadený rozcestník**; `/federacie` žije výhradne tam (`CANONICAL_ORIGINS` v `proxy.ts`). Redirect by zmazal hotovú funkciu. |
 | Aktivovať mail na športových doménach | Každá aktivovaná doména je ďalšia zóna na údržbu (MX, SPF, DKIM, DMARC). Alias doména sa pridá za desať minút v deň, keď ten šport pôjde von. |
 | Robiť zo športových domén weby | Landing má 9 jazykov; 4 športy × 9 = 36 obsahových plôch, ktoré si navzájom kanibalizujú vo vyhľadávaní. |
 | Meniť neskôr primárnu doménu | Viď §3 — mení sa tým adresa každého používateľa. |

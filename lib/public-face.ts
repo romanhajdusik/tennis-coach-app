@@ -49,3 +49,23 @@ export function isPublicFaceHost(host: string | null | undefined) {
 export function isParentFaceHost(host: string | null | undefined) {
   return PARENT_FACE_HOSTS.has(normalizeHost(host));
 }
+
+const APP_HOSTS = new Set(["plaw.win", "www.plaw.win"]);
+
+/**
+ * Ktorej z našich verejných adries tento hostiteľ JE — vstup pre kanonizáciu
+ * v `proxy.ts` (každá verejná stránka má práve jednu adresu).
+ *
+ * `null` znamená „žiadna z nich": org subdoména (tá nie je domovom žiadnej
+ * verejnej stránky, takže sa z nej kanonizuje preč) a rovnako aj localhost,
+ * LAN adresa či `*.vercel.app`. Tie sa **nekanonizujú vôbec** — inak by sa
+ * lokálny vývoj a preview nasadenie pri otvorení návodu presmerovali na
+ * produkciu a stránka by sa nedala pozrieť tam, kde sa práve robí.
+ */
+export function faceOriginOf(host: string | null | undefined) {
+  const hostname = normalizeHost(host);
+  if (PUBLIC_ONLY_HOSTS.has(hostname)) return PUBLIC_ORIGIN;
+  if (PARENT_FACE_HOSTS.has(hostname)) return PARENT_ORIGIN;
+  if (APP_HOSTS.has(hostname)) return APP_ORIGIN;
+  return null;
+}

@@ -31,7 +31,7 @@ const PARENT = "plaw.click";
 // v `proxy.ts`; keď tam niečo pribudne, patrí to aj sem.
 const CANONICAL = [
   ["/", APP], // trénerský landing
-  ["/navod", PUBLIC],
+  ["/navod", APP],
   ["/federacie", PUBLIC],
   ["/navod-hrac", PARENT],
   ["/cennik-hrac", PARENT],

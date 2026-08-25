@@ -6,25 +6,22 @@ import {
   PARENT_ORIGIN,
   PUBLIC_ONLY_HOSTS,
   PUBLIC_ORIGIN,
+  faceOriginOf,
   isParentFaceHost,
-  isPublicFaceHost,
   normalizeHost,
 } from "@/lib/public-face";
 
-// plaw.online je samostatná verejná tvár projektu — ukazuje LEN rozcestník (/),
-// návody a stránku pre federácie. Appka (login, dashboard, rodičovská časť,
-// API) žije na plaw.win. Keďže je to jeden a ten istý Vercel projekt,
-// rozdelenie robíme podľa hostname: na plaw.online povolíme len verejné cesty
-// a všetko ostatné presmerujeme na rovnakú cestu na plaw.win.
+// plaw.online je samostatná verejná tvár projektu. Appka (login, dashboard,
+// rodičovská časť, API) žije na plaw.win. Keďže je to jeden a ten istý Vercel
+// projekt, rozdelenie robíme podľa hostname: na plaw.online povolíme len
+// verejné cesty a všetko ostatné presmerujeme na rovnakú cestu na plaw.win.
 // (Zoznam hostiteľov je v `lib/public-face.ts` — pozná ho aj `app/page.tsx`,
 // ktorý podľa neho vykreslí rozcestník namiesto consumer landingu.)
-const PUBLIC_PATHS = new Set([
-  "/",
-  "/navod",
-  "/navod-hrac",
-  "/cennik-hrac",
-  "/federacie",
-]);
+//
+// Od kanonizácie (2026-08-24) sú to len DVE cesty: rozcestník a stránka pre
+// federácie. Návody a cenník pre sledujúceho tu boli tiež, ale patria svojmu
+// publiku — `CANONICAL_ORIGINS` nižšie ich odchytí ešte pred týmto zoznamom.
+const PUBLIC_PATHS = new Set(["/", "/federacie"]);
 
 // plaw.click hovorí k druhej strane appky (hráč, rodič, manažér), takže na nej
 // nie je celý verejný web — len jej landing na `/` a dve stránky, na ktoré
@@ -40,22 +37,17 @@ const PARENT_FACE_PATHS = new Set(["/", "/navod-hrac", "/cennik-hrac"]);
 // vyhľadávačov by si tá istá stránka konkurovala sama so sebou a každý by
 // zdieľal inú verziu odkazu.
 //
-// Domovom je vždy doména PUBLIKA tej stránky: návody a cenník pre sledujúceho
-// patria na plaw.click (tú adresu dáva tréner rodičovi do ruky), trénerský
-// návod a stránka pre federácie na rozcestník. Kto príde inde, dostane 307.
+// Domovom je vždy doména PUBLIKA tej stránky: trénerský návod patrí k trénerovi
+// (na produktovú doménu, kde je aj landing a registrácia), návod a cenník pre
+// sledujúceho na plaw.click (tú adresu dáva tréner rodičovi do ruky) a stránka
+// pre federácie na rozcestník, ktorému inak ostáva len rozcestovanie. Kto príde
+// inde, dostane 307.
 const CANONICAL_ORIGINS = new Map([
-  ["/navod", PUBLIC_ORIGIN],
+  ["/navod", APP_ORIGIN],
   ["/federacie", PUBLIC_ORIGIN],
   ["/navod-hrac", PARENT_ORIGIN],
   ["/cennik-hrac", PARENT_ORIGIN],
 ]);
-
-/** Ktorej verejnej tvári patrí tento hostiteľ (`null` = produktová doména). */
-function faceOriginOf(host: string) {
-  if (isPublicFaceHost(host)) return PUBLIC_ORIGIN;
-  if (isParentFaceHost(host)) return PARENT_ORIGIN;
-  return null;
-}
 const LOGIN_PATH = "/login";
 
 // Prihlásený účet BEZ členstva je typicky čerstvo pozvaný tréner — potrebuje
@@ -109,11 +101,13 @@ export async function proxy(request: NextRequest) {
   // vykresliť hostiteľ, ktorému nepatrí. Len GET: presmerovanie server action
   // na iný host by poslalo telo požiadavky inam.
   const canonical = CANONICAL_ORIGINS.get(request.nextUrl.pathname);
-  if (
-    canonical &&
-    request.method === "GET" &&
-    faceOriginOf(host) !== canonical
-  ) {
+  const face = faceOriginOf(host);
+  // Kanonizuje sa len na hostiteľoch, ktoré v produkcii vlastníme (tri verejné
+  // domény + org subdomény). Na localhoste, LAN adrese a `*.vercel.app` sa
+  // stránka vykreslí tak, ako je — inak by lokálny vývoj otvoril návod a skončil
+  // na produkcii.
+  const ours = face !== null || orgSlugFromHost(host) !== null;
+  if (canonical && request.method === "GET" && ours && face !== canonical) {
     const target = new URL(
       request.nextUrl.pathname + request.nextUrl.search,
       canonical,
@@ -155,7 +149,6 @@ export async function proxy(request: NextRequest) {
   if (orgSlug) {
     return handleOrgRequest(request, orgSlug);
   }
-
 
   // plaw.win, *.vercel.app, localhost — samostatný (1:1) produkt.
   const { response } = await updateSession(request);
