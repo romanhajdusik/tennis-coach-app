@@ -280,6 +280,17 @@ async function main() {
       "je pri ňom napísané, že sa nepočíta do čísel nad ním",
       /not part of the numbers above/i.test(summaryText),
     );
+
+    // Druhý súhlas (docs §2.3b) sa ponúka VLASTNÍKOVI dát, teda tu — na
+    // tenisovej strane by nemal čo pustiť ďalej.
+    const ownerPlayers = await request("/players", {
+      host: APP_HOST,
+      cookies: fitnessCookies,
+    });
+    check(
+      "vlastník dát má prepínač na súhrn pre sledujúceho",
+      /show my summary to the player's parent/i.test(textOf(ownerPlayers.body)),
+    );
   } finally {
     await db.from("player_links").delete().eq("link_code", "FITSUM01");
   }

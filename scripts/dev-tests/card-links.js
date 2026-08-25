@@ -505,6 +505,115 @@ async function main() {
       p_enabled: true,
     });
 
+    // Sledujúci (migrácia `20260824100000`, docs §2.3b). Vezie sa na tom istom
+    // prepojení, ale je to DRUHÝ, nezávislý súhlas a dáva ho opačná strana:
+    // vlastník dát. Preto sa tu overuje hlavne to, že ho cieľová strana
+    // prepnúť NEVIE — inak by tenisový tréner rozdával prácu kolegu.
+    section("10b) Súhrn pre sledujúceho druhej karty");
+    const asParent = await signIn("parent-test@test.local");
+    const followerPeriod = {
+      p_start: new Date(Date.UTC(2020, 0, 1)).toISOString(),
+      p_end: new Date(Date.UTC(2100, 0, 1)).toISOString(),
+    };
+
+    const followerBefore = await asParent.rpc(
+      "follower_linked_category_minutes",
+      followerPeriod,
+    );
+    check(
+      "bez súhlasu vlastníka sledujúci nevidí nič",
+      (followerBefore.data ?? []).length === 0,
+      `riadkov: ${(followerBefore.data ?? []).length}`,
+    );
+
+    const targetToggles = await asTennis.rpc("set_link_follower_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    check(
+      "cieľová strana cudziu prácu rodičovi nepustí",
+      targetToggles.error !== null &&
+        /not_your_link/.test(targetToggles.error.message),
+      targetToggles.error?.message,
+    );
+
+    const parentToggles = await asParent.rpc("set_link_follower_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    check(
+      "sledujúci si súhlas sám nezapne",
+      parentToggles.error !== null &&
+        /not_your_link/.test(parentToggles.error.message),
+      parentToggles.error?.message,
+    );
+
+    const ownerOptIn = await asFitness.rpc("set_link_follower_sharing", {
+      p_link_id: link.id,
+      p_enabled: true,
+    });
+    check(
+      "vlastník dát súhlas zapne",
+      !ownerOptIn.error,
+      ownerOptIn.error?.message,
+    );
+
+    const followerAfter = await asParent.rpc(
+      "follower_linked_category_minutes",
+      followerPeriod,
+    );
+    const followerRows = followerAfter.data ?? [];
+    check(
+      "sledujúci dostane súhrn druhej disciplíny",
+      followerRows.some(
+        (row) => row.category === "STRENGTH" && row.duration_minutes === 30,
+      ),
+      JSON.stringify(followerRows),
+    );
+    check(
+      "so súhrnom prišla aj disciplína (sledujúci player_links nečíta)",
+      followerRows.every((row) => row.discipline === "fitness"),
+      JSON.stringify(followerRows),
+    );
+    check(
+      "súhrn nenesie kódy cvičení ani poznámky",
+      followerRows.every(
+        (row) =>
+          Object.keys(row).join(",") === "discipline,category,duration_minutes",
+      ),
+      Object.keys(followerRows[0] ?? {}).join(","),
+    );
+
+    const parentSessions = await asParent
+      .from("sessions")
+      .select("id")
+      .eq("player_id", fitnessPlayer.id);
+    check(
+      "sledujúcemu sa tým neotvorili cudzie tréningy",
+      (parentSessions.data ?? []).length === 0,
+      `riadkov: ${(parentSessions.data ?? []).length}`,
+    );
+
+    const parentDrills = await asParent
+      .from("session_drills")
+      .select("id")
+      .eq("session_id", fitnessSession.id);
+    check(
+      "ani cudzie cvičenia",
+      (parentDrills.data ?? []).length === 0,
+      `riadkov: ${(parentDrills.data ?? []).length}`,
+    );
+
+    const outsiderFollower = await asOutsider.rpc(
+      "follower_linked_category_minutes",
+      followerPeriod,
+    );
+    check(
+      "účet bez pripojenia súhrn nedostane",
+      (outsiderFollower.data ?? []).length === 0,
+      `riadkov: ${(outsiderFollower.data ?? []).length}`,
+    );
+
     section("11) Po zrušení prístup zmizne (rozdiel oproti rodičovi)");
     const revoked = await asTennis.rpc("revoke_player_link", {
       p_link_id: link.id,
@@ -545,6 +654,21 @@ async function main() {
       "po zrušení zhasne aj súhrn opačným smerom",
       (summaryAfterRevoke.data ?? []).length === 0,
       `riadkov: ${(summaryAfterRevoke.data ?? []).length}`,
+    );
+
+    // Sledujúci nie je výnimka: jeho súhrn visí na tom istom prepojení, takže
+    // zaniká s ním. Toto je celý rozdiel oproti kópiám, ktoré mu ostávajú.
+    const followerAfterRevoke = await asParent.rpc(
+      "follower_linked_category_minutes",
+      {
+        p_start: new Date(Date.UTC(2020, 0, 1)).toISOString(),
+        p_end: new Date(Date.UTC(2100, 0, 1)).toISOString(),
+      },
+    );
+    check(
+      "po zrušení zhasne aj súhrn sledujúceho",
+      (followerAfterRevoke.data ?? []).length === 0,
+      `riadkov: ${(followerAfterRevoke.data ?? []).length}`,
     );
   } finally {
     // Upratuje sa podľa DÁT, nie podľa zapamätaných id: keď scenár spadne skôr,
