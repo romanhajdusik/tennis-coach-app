@@ -8,8 +8,12 @@ import { LandingLanguageSwitcher } from "@/components/landing-language-switcher"
 // istú jazykovú vrstvu ako landing (LANDING_LOCALE, 6 jazykov), nie appkové
 // next-intl. Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
 // landing, pozri app/page.tsx). Farby: antuková tmavá téma ako appka.
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLandingLocale();
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const locale = await getLandingLocale((await searchParams).lang);
   const t = await loadNavodMessages(locale);
   return {
     title: t.metaTitle,
@@ -18,8 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function NavodPage() {
-  const locale = await getLandingLocale();
+export default async function NavodPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const locale = await getLandingLocale((await searchParams).lang);
   const t = await loadNavodMessages(locale);
 
   return (

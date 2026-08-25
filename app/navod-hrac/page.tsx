@@ -7,8 +7,12 @@ import { LandingLanguageSwitcher } from "@/components/landing-language-switcher"
 // Krátky verejný návod pre pripojeného hráča/rodiča/manažéra (druhá strana
 // appky). Rovnaká jazyková vrstva (LANDING_LOCALE, 6 jazykov) aj antuková
 // téma ako trénerský návod (/navod). Zámerne noindex.
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLandingLocale();
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const locale = await getLandingLocale((await searchParams).lang);
   const t = await loadNavodHracMessages(locale);
   return {
     title: t.metaTitle,
@@ -17,8 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function NavodHracPage() {
-  const locale = await getLandingLocale();
+export default async function NavodHracPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const locale = await getLandingLocale((await searchParams).lang);
   const t = await loadNavodHracMessages(locale);
 
   return (

@@ -3,9 +3,11 @@ import { updateSession } from "@/lib/supabase/middleware";
 import { orgSlugFromHost, resolveOrgBySlug } from "@/lib/org/resolve";
 import {
   APP_ORIGIN,
+  PARENT_ORIGIN,
   PUBLIC_ONLY_HOSTS,
   PUBLIC_ORIGIN,
   isParentFaceHost,
+  isPublicFaceHost,
   normalizeHost,
 } from "@/lib/public-face";
 
@@ -30,10 +32,30 @@ const PUBLIC_PATHS = new Set([
 // kto sem prišiel, prišiel sa pozerať, nie trénovať.
 const PARENT_FACE_PATHS = new Set(["/", "/navod-hrac", "/cennik-hrac"]);
 
-// Stránka pre federácie je marketing, nie produkt — patrí výhradne na verejnú
-// tvár. Na plaw.win sa preto presmeruje sem, aby mala jedinú adresu (opak
-// pravidla nižšie, ktoré appkové cesty posiela z plaw.online na plaw.win).
-const PUBLIC_ONLY_PATHS = new Set(["/federacie"]);
+// KAŽDÁ VEREJNÁ STRÁNKA MÁ PRÁVE JEDNU ADRESU (od 2026-08-24).
+//
+// Dovtedy odpovedali `/navod-hrac` a `/cennik-hrac` na TROCH hostiteľoch naraz
+// (plaw.win, plaw.online aj plaw.click) a `/navod` na dvoch — jedna stránka,
+// tri adresy. Kým je web `noindex`, nikomu to neškodí; pri spustení do
+// vyhľadávačov by si tá istá stránka konkurovala sama so sebou a každý by
+// zdieľal inú verziu odkazu.
+//
+// Domovom je vždy doména PUBLIKA tej stránky: návody a cenník pre sledujúceho
+// patria na plaw.click (tú adresu dáva tréner rodičovi do ruky), trénerský
+// návod a stránka pre federácie na rozcestník. Kto príde inde, dostane 307.
+const CANONICAL_ORIGINS = new Map([
+  ["/navod", PUBLIC_ORIGIN],
+  ["/federacie", PUBLIC_ORIGIN],
+  ["/navod-hrac", PARENT_ORIGIN],
+  ["/cennik-hrac", PARENT_ORIGIN],
+]);
+
+/** Ktorej verejnej tvári patrí tento hostiteľ (`null` = produktová doména). */
+function faceOriginOf(host: string) {
+  if (isPublicFaceHost(host)) return PUBLIC_ORIGIN;
+  if (isParentFaceHost(host)) return PARENT_ORIGIN;
+  return null;
+}
 const LOGIN_PATH = "/login";
 
 // Prihlásený účet BEZ členstva je typicky čerstvo pozvaný tréner — potrebuje
@@ -83,6 +105,29 @@ function clearAuthCookies(request: NextRequest, response: NextResponse) {
 export async function proxy(request: NextRequest) {
   const host = normalizeHost(request.headers.get("host"));
 
+  // Kanonizácia ide PRED rozdelením podľa hostiteľa — inak by si stránku stihol
+  // vykresliť hostiteľ, ktorému nepatrí. Len GET: presmerovanie server action
+  // na iný host by poslalo telo požiadavky inam.
+  const canonical = CANONICAL_ORIGINS.get(request.nextUrl.pathname);
+  if (
+    canonical &&
+    request.method === "GET" &&
+    faceOriginOf(host) !== canonical
+  ) {
+    const target = new URL(
+      request.nextUrl.pathname + request.nextUrl.search,
+      canonical,
+    );
+    // Jazyk musí ísť s návštevníkom: cookie `LANDING_LOCALE` je viazaná na
+    // doménu, takže by sa mu pri skoku stratil a slovenský návod by sa zmenil
+    // na anglický. Číta ho `getLandingLocale` na druhej strane.
+    const locale = request.cookies.get("LANDING_LOCALE")?.value;
+    if (locale && !target.searchParams.has("lang")) {
+      target.searchParams.set("lang", locale);
+    }
+    return NextResponse.redirect(target, 307);
+  }
+
   if (PUBLIC_ONLY_HOSTS.has(host)) {
     const { pathname, search } = request.nextUrl;
     // Verejné stránky nepotrebujú Supabase session (sú bez prihlásenia).
@@ -103,14 +148,6 @@ export async function proxy(request: NextRequest) {
       return NextResponse.next();
     }
     return NextResponse.redirect(new URL(pathname + search, APP_ORIGIN), 307);
-  }
-
-  // Marketingové cesty patria na plaw.online — na produktovej doméne (aj na
-  // org subdoménach) sa tam presmerujú, nech nevzniknú dve adresy tej istej
-  // stránky. Len GET: presmerovanie server action na iný host by poslalo telo.
-  const { pathname: path, search: query } = request.nextUrl;
-  if (PUBLIC_ONLY_PATHS.has(path) && request.method === "GET") {
-    return NextResponse.redirect(new URL(path + query, PUBLIC_ORIGIN), 307);
   }
 
   // <slug>.plaw.win = federačná (B2B) subdoména organizácie (§5.2).

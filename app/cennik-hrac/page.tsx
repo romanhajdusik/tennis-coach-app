@@ -24,8 +24,12 @@ import {
 // sedieť s týmto poľom, inak stránka sľubuje niečo iné, než appka robí.
 const WITHOUT_SUBSCRIPTION = [true, true, true, false, false];
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLandingLocale();
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const locale = await getLandingLocale((await searchParams).lang);
   const t = await loadCennikHracMessages(locale);
   return {
     title: t.metaTitle,
@@ -34,8 +38,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function CennikHracPage() {
-  const locale = await getLandingLocale();
+export default async function CennikHracPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const locale = await getLandingLocale((await searchParams).lang);
   const t = await loadCennikHracMessages(locale);
 
   const yearly = formatEur(locale, FOLLOWER_PRICE.yearly);

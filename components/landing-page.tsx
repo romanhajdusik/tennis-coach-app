@@ -40,7 +40,21 @@ const FEATURE_ICONS = [
 // (showcaseCaptions).
 const SHOWCASE = ["calendar", "session", "analytics"] as const;
 
-export async function getLandingLocale() {
+/**
+ * Jazyk verejného webu. Prednosť má `override` — jazyk pripojený k adrese
+ * (`?lang=sk`), ktorý do presmerovania dopisuje `proxy.ts`.
+ *
+ * **Prečo to je:** cookie `LANDING_LOCALE` je viazaná na doménu, kým verejné
+ * stránky majú od 2026-08-24 každá svojho hostiteľa. Bez prenosu by slovenský
+ * návštevník rozcestníka klikol na návod pre hráča a dostal ho po anglicky —
+ * jazyk by sa mu ticho stratil pri skoku na druhú doménu. Cookie sa tým
+ * neprepisuje: kto si jazyk na cieľovej doméne prepne, prepíše si ho normálne
+ * prepínačom.
+ */
+export async function getLandingLocale(override?: string) {
+  if (isValidLandingLocale(override)) {
+    return override;
+  }
   const cookieStore = await cookies();
   const cookieLocale = cookieStore.get("LANDING_LOCALE")?.value;
   return isValidLandingLocale(cookieLocale) ? cookieLocale : defaultLandingLocale;
