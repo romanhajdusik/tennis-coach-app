@@ -390,6 +390,47 @@ súhrn opačným smerom je prvý cudzí blok, ktorý sa kreslí koláčom.
 Overuje `card-links.js` §10 (15 scenárov), `security-boundaries.js` §4, `fitness.js` §6
 (že v ňom naozaj nie sú kódy ani poznámky) a `browser-coach.js` §11 (samotné zaškrtnutie).
 
+### 2.3b SLEDUJÚCI VIDÍ SÚHRN DRUHEJ DISCIPLÍNY (rozhodnuté a postavené 2026-08-24)
+
+**Otázka používateľa:** uvidí rodič v platenej verzii aj kondičný graf?
+
+**Dovtedy nie, a bránili tomu tri nezávislé vrstvy:** (1) rodič číta KÓPIE a trigger
+`sync_session_to_parent` kopíruje podľa `player_connections.player_id`, kým kondičné
+tréningy sedia na inej karte — kópia teda nikdy nevznikla a `parent_session_records` nemá
+ani stĺpec disciplíny; (2) cross-read je viazaný na `target_coach_id`, čiže výhradne
+trénerská vec; (3) `one_active_connection_per_parent` — sledujúci má najviac jedno aktívne
+pripojenie, takže druhý kód by mu ten prvý ZRUŠIL, nie pridal.
+
+**Rozhodnutie používateľa: áno, ale „nič viac ako súhrnný graf so zameraniami".** To
+zúženie je dôvod, prečo je riešenie lacné — pri širšom rozsahu (druhé pripojenie, kópie,
+prerobenie `/parent`) by to bola úplne iná práca.
+
+**Model — ten istý vzor ako §2.3a, len súhlas dáva druhá strana:**
+
+- Vezie sa na **existujúcom prepojení kariet**: to už hovorí „sú to tie isté deti", čo je
+  práve tá chýbajúca informácia. `one_active_connection_per_parent` sa preto nemusí
+  uvoľňovať a `/parent` ostáva na jednom pripojenom hráčovi.
+- **Súhlas dáva VLASTNÍK DÁT** (`source_coach_id`) cez nový príznak
+  `player_links.source_shares_with_follower`. Je **nezávislý** od `target_shares_summary`:
+  že svoju prácu ukazujem kolegovi, neznamená, že ju chcem posielať aj rodičovi.
+- Čísla vydáva `follower_linked_category_minutes` — opäť agregát, nie riadky. Hráča si
+  volajúci **nevyberá**, funkcia si ho nájde z jeho jediného aktívneho pripojenia, takže
+  nie je čo podvrhnúť. Disciplínu vracia ako stĺpec, lebo sledujúci `player_links` čítať
+  nesmie a inak by appka nevedela, ktorou konfiguráciou graf popísať.
+- **Žiadne kópie** — jediné miesto rodičovskej vrstvy, ktoré ich nemá. Sú to dáta cudzieho
+  trénera, takže po zrušení prepojenia alebo súhlasu majú zmiznúť; zvyšok tej vrstvy má
+  presne opačný zmysel (kópia prežije koniec spolupráce).
+
+**Dva dôsledky, ktoré treba poznať:** (1) **bez prepojenia trénerov sledujúci nič neuvidí**
+— k tej karte inak niet cesty; (2) blok žije v analytike, takže spadne za **platenú** časť
+rodičovského modelu (§8.3), čo bol zámer.
+
+**Čo sa NEMENÍ:** `plaw.click` naďalej menuje tenis. Súhrn je podmienený (prepojenie +
+súhlas kondičného trénera), takže plošný sľub „uvidíš aj kondíciu" by bol nepravdivý.
+
+Overuje `card-links.js` §10b (10 scenárov), nová sada `http-parent.js` (prvá, ktorá vôbec
+vykresľuje rodičovskú stránku) a `fitness.js` §6.
+
 ## 3. Záťaž z hodiniek: SÚBOR OD HRÁČA (prepracované 2026-08-11)
 
 > **Zmena oproti pôvodnému zneniu (2026-07-20).** Pôvodne sa počítalo s **OAuth
