@@ -15,14 +15,22 @@ import {
 //
 // Ktoré riadky tabuľky platia aj BEZ predplatného. Poradie sedí s
 // `compareRows` v prekladoch a s modelom v `docs/cennik-navrh.md` §8.3:
-// zoznam tréningov (s filtrom na mesiac), detail a uchovanie histórie sú
-// dostupné vždy, KALENDÁR a ANALYTIKA sú za platbou. Zadarmo teda ostáva
-// odpoveď na otázku „čo dieťa trénovalo", za platbu ide pohodlie a prehľad.
+// zoznam tréningov (s filtrom na mesiac), detail a história za posledných
+// 6 mesiacov sú dostupné vždy; HISTÓRIA AŽ 24 MESIACOV, KALENDÁR a ANALYTIKA
+// sú za platbou. Zadarmo teda ostáva odpoveď na otázku „čo dieťa trénovalo",
+// za platbu ide pohodlie, prehľad a dlhšia história.
+//
+// **Hĺbka histórie je od 2026-08-27 druhá os paywallu** (rozhodnuté pri GDPR
+// mape rolí): staršie kópie sa MAŽÚ, neskrývajú, a upgrade ich nevráti. Preto
+// je to samostatný riadok a nie fajka pri „uchovaní histórie" — to by dnes
+// bol nepravdivý sľub. Odôvodnenie je v `docs/gdpr-mapa-roli.md` §6.
 //
 // **Appka to zatiaľ nevynucuje** — stráže na `app/parent/calendar` a
-// `app/parent/analytics/**` sa stavajú so Stripe. Keď sa budú stavať, musia
-// sedieť s týmto poľom, inak stránka sľubuje niečo iné, než appka robí.
-const WITHOUT_SUBSCRIPTION = [true, true, true, false, false];
+// `app/parent/analytics/**` sa stavajú so Stripe, mazanie starších kópií tiež
+// (najstaršie dáta sú z júla 2026, prvý záznam vypadne z okna okolo januára
+// 2027). Keď sa budú stavať, musia sedieť s týmto poľom, inak stránka sľubuje
+// niečo iné, než appka robí.
+const WITHOUT_SUBSCRIPTION = [true, true, true, false, false, false];
 
 export async function generateMetadata({
   searchParams,

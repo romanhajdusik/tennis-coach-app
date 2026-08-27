@@ -15,13 +15,14 @@
   "trialNote": "14 days to try it out, then it's paid.",
   "vat": "Prices include VAT.",
   "compareTitle": "What you get",
-  "compareSubtitle": "Without a subscription you still get the answer to “what did my child practise”. What you pay for is the convenience and the overview.",
+  "compareSubtitle": "Without a subscription you still get the answer to “what did my child practise”. What you pay for is the convenience, the overview and a longer history.",
   "compareWithoutSub": "No subscription",
   "comparePaid": "Subscribed",
   "compareRows": [
     "Practice list with a month filter",
     "Practice detail — drills, time, notes",
-    "Your history is kept",
+    "History for the last 6 months",
+    "History for up to 24 months",
     "Calendar — weekly and monthly view",
     "Analytics — breakdowns, percentages, comparison over time"
   ],

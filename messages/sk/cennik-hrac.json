@@ -15,13 +15,14 @@
   "trialNote": "14 dní na skúšku, potom sa platí.",
   "vat": "Ceny sú vrátane DPH.",
   "compareTitle": "Čo dostaneš",
-  "compareSubtitle": "Aj bez predplatného dostaneš odpoveď na otázku, čo dieťa trénovalo. Za platbu ide pohodlie a prehľad.",
+  "compareSubtitle": "Aj bez predplatného dostaneš odpoveď na otázku, čo dieťa trénovalo. Za platbu ide pohodlie, prehľad a dlhšia história.",
   "compareWithoutSub": "Bez predplatného",
   "comparePaid": "S predplatným",
   "compareRows": [
     "Zoznam tréningov s filtrom na mesiac",
     "Detail tréningu — cvičenia, čas, poznámky",
-    "Uchovanie histórie",
+    "História za posledných 6 mesiacov",
+    "História až 24 mesiacov",
     "Kalendár — týždenný aj mesačný pohľad",
     "Analytika — rozbory, percentá, porovnanie období"
   ],

@@ -14,8 +14,14 @@ vie ustrážiť:
 
 - **`profiles.player_limit`** — koľko hráčov smie mať tréner **naraz aktívnych**.
   Jediné číslo, jediná stráž (`requirePlayerSlot` v `lib/subscription.ts`).
-- **Archivovaní hráči sa nepočítajú.** História nič nestojí a nikdy sa nemaže —
-  to je silný predajný argument, nie technický detail.
+- **Archivovaní hráči sa nepočítajú.** História nič nestojí — to je silný
+  predajný argument, nie technický detail.
+  - **„Nikdy sa nemaže" ale od 2026-08-27 NEPLATÍ** (rozhodnuté pri GDPR mape
+    rolí, viď [gdpr-mapa-roli.md](gdpr-mapa-roli.md) §6): záznamy hráča sa mažú
+    **rok po jeho poslednom tréningu**, po výzve trénerovi s možnosťou exportu.
+    Argument sa tým nestráca, len dostane hranicu — **„história sa nemaže, kým
+    s hráčom pracuješ"** je pravdivé a dôveryhodnejšie než „nikdy", ktorému aj
+    tak nikto neverí. Federácií sa to netýka, tie majú vlastnú lehotu v zmluve.
 - **`subscription_status`** — po skončení predplatného účet **ďalej číta**, len
   prestane zapisovať. Zákazník nikdy nepríde o svoju prácu.
   **Upresnené 2026-08-18: čítanie už nebude úplné.** Trénerovi bez
@@ -235,11 +241,29 @@ Toto je najdôležitejšia veta celej sekcie. Celá appka dnes stojí na pravidl
 paywallu sa naňho teda nedá použiť: buď mu zastavíme čítanie, alebo neplatí
 nič. Znamená to postaviť **druhý druh stráže**, ktorý appka zatiaľ nemá.
 
-**Ako to spraviť, aby to nebola krádež:** dáta rodičovi **ostávajú** (kópie
-v `parent_session_records` sa nemažú nikdy, ani po zrušení prepojenia). Po
-uplynutí predplatného sa mu **pozastaví prístup**, nie zmažú záznamy — a to mu
-tá obrazovka musí povedať doslova: *„Tvoje záznamy tu sú, predplatným ich
-znova sprístupníš."* Rovnaká slušnosť, akú má trénerská vetva.
+**PREPÍSANÉ 2026-08-27 (rozhodol user pri GDPR mape rolí) — pôvodný model
+„dáta ostávajú, len sa pozastaví prístup" UŽ NEPLATÍ.** Držať kópie, ktoré
+rodič nevidí, a odomykať mu ich za peniaze je zlé dvakrát: právne (uchovávame
+bez dôvodu, viď [gdpr-mapa-roli.md](gdpr-mapa-roli.md) §6) aj ľudsky („máme
+záznamy o tvojom dieťati, odomkneme ti ich za poplatok").
+
+**Nový model: platí sa za HĹBKU histórie a staršie záznamy sa naozaj mažú.**
+
+- Bez predplatného vidí sledujúci **posledných 6 mesiacov**, s predplatným
+  **24 mesiacov**. Okno je klzavé, počíta sa od dnešného dňa.
+- Po skončení platby má **30 dní odklad**, počas ktorých sa nemení nič; potom sa
+  okno stiahne na 6 mesiacov a to, čo je za ním, sa zmaže.
+- **Upgrade staršie mesiace nevráti** — musí to byť napísané dopredu, inak je to
+  prvá sťažnosť. (Neskôr sa dá dorobiť opätovné skopírovanie od trénera, funkcia
+  na to už existuje z claimu — ale len dovtedy, kým tréner tie tréningy má.)
+- Pred mazaním ide **upozornenie mailom** s možnosťou exportu.
+- **Trénerových dát sa to netýka vôbec** — maže sa výhradne kópia v
+  `parent_session_records`, nikdy zdroj.
+
+**Prečo 6 a nie 12** (user, z trénerskej praxe): polrok je na hranici, ale
+postačuje na odpoveď „čo dieťa robilo naposledy", a to aj pre nového trénera.
+Kto pol roka netrénuje, nie je používateľ tejto appky, takže vyprázdnenie
+záznamu nikoho reálneho nepostihne.
 
 **FINÁLNY MODEL (používateľ, 2026-08-16 a 2026-08-17, po troch upresneniach):
 rodič vidí ZOZNAM tréningov a ich detail vždy; KALENDÁR a ANALYTIKA sú za
@@ -250,7 +274,7 @@ platbou.**
 | Zoznam tréningov (od najnovšieho) | ✅ | ✅ |
 | Filter zoznamu na mesiac | ✅ | ✅ |
 | Detail tréningu (cvičenia, čas, poznámky) | ✅ | ✅ |
-| Uchovanie histórie | ✅ | ✅ |
+| **Hĺbka histórie** | **6 mesiacov** | **24 mesiacov** |
 | **Kalendár** (týždenný aj mesačný pohľad) | ❌ | ✅ |
 | **Analytika** (rozbory, %, odhad úderov, porovnanie období) | ❌ | ✅ |
 

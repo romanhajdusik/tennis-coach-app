@@ -67,7 +67,10 @@ znamená to ukončenie trénerskej spolupráce v tejto podobe; napíšte mi a do
 **Kto sa k údajom dostane**
 
 - **Ja ako tréner.**
-- **Vy**, ak vám odovzdám prístupový kód — potom v aplikácii vidíte, čo dieťa trénovalo.
+- **Vy**, ak vám odovzdám prístupový kód — potom v aplikácii vidíte, čo dieťa
+  trénovalo. Aplikácia ukazuje **posledných 6 mesiacov** (s predplatným 24
+  mesiacov); staršie záznamy sa v nej priebežne mažú. Mojej vlastnej
+  dokumentácie sa to netýka.
 - **Klub alebo zväz**, ak dieťa trénuje pod jeho hlavičkou; vtedy je vlastníkom
   dokumentácie organizácia a vidí ju aj jej šéftréner.
 - **Iný tréner dieťaťa** (napríklad kondičný) — **iba vtedy, ak to výslovne zapnem**,
@@ -151,7 +154,9 @@ we will agree on how to proceed.
 **Who can see the data**
 
 - **I, as the coach.**
-- **You**, if I give you an access code — you then see in the app what your child trained.
+- **You**, if I give you an access code — you then see in the app what your child
+  trained. The app shows the **last 6 months** (24 months with a subscription);
+  older entries are deleted there over time. This does not affect my own records.
 - **The club or federation**, if your child trains under it; in that case the
   organisation owns the records and its head coach can see them.
 - **Another of your child's coaches** (for example a fitness coach) — **only if

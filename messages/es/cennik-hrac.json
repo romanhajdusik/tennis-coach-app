@@ -15,13 +15,14 @@
   "trialNote": "14 días de prueba y después se paga.",
   "vat": "Precios con IVA incluido.",
   "compareTitle": "Qué obtienes",
-  "compareSubtitle": "Sin suscripción sigues teniendo la respuesta a qué ha entrenado tu hijo. Lo que se paga es la comodidad y la visión de conjunto.",
+  "compareSubtitle": "Sin suscripción sigues teniendo la respuesta a qué ha entrenado tu hijo. Lo que se paga es la comodidad, la visión de conjunto y un historial más largo.",
   "compareWithoutSub": "Sin suscripción",
   "comparePaid": "Con suscripción",
   "compareRows": [
     "Lista de entrenamientos con filtro por mes",
     "Detalle del entrenamiento — ejercicios, tiempo, notas",
-    "Se conserva el historial",
+    "Historial de los últimos 6 meses",
+    "Historial de hasta 24 meses",
     "Calendario — vista semanal y mensual",
     "Analítica — desgloses, porcentajes, comparación de periodos"
   ],

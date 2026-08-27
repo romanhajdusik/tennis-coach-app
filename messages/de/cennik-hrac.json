@@ -15,13 +15,14 @@
   "trialNote": "14 Tage zum Testen, danach kostenpflichtig.",
   "vat": "Preise inkl. MwSt.",
   "compareTitle": "Was du bekommst",
-  "compareSubtitle": "Auch ohne Abo bekommst du die Antwort auf die Frage, was dein Kind trainiert hat. Bezahlt werden Komfort und Überblick.",
+  "compareSubtitle": "Auch ohne Abo bekommst du die Antwort auf die Frage, was dein Kind trainiert hat. Bezahlt werden Komfort, Überblick und eine längere Historie.",
   "compareWithoutSub": "Ohne Abo",
   "comparePaid": "Mit Abo",
   "compareRows": [
     "Trainingsliste mit Monatsfilter",
     "Trainingsdetails — Übungen, Zeit, Notizen",
-    "Die Historie bleibt erhalten",
+    "Historie der letzten 6 Monate",
+    "Historie bis zu 24 Monate",
     "Kalender — Wochen- und Monatsansicht",
     "Analysen — Auswertungen, Prozente, Vergleich von Zeiträumen"
   ],

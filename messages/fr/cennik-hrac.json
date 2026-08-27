@@ -15,13 +15,14 @@
   "trialNote": "14 jours d'essai, ensuite c'est payant.",
   "vat": "Prix TTC.",
   "compareTitle": "Ce que tu obtiens",
-  "compareSubtitle": "Même sans abonnement, tu as la réponse à la question « qu'a travaillé mon enfant ». Ce que tu paies, c'est le confort et la vue d'ensemble.",
+  "compareSubtitle": "Même sans abonnement, tu as la réponse à la question « qu'a travaillé mon enfant ». Ce que tu paies, c'est le confort, la vue d'ensemble et un historique plus long.",
   "compareWithoutSub": "Sans abonnement",
   "comparePaid": "Avec abonnement",
   "compareRows": [
     "Liste des séances avec filtre par mois",
     "Détail de la séance — exercices, durée, notes",
-    "L'historique est conservé",
+    "Historique des 6 derniers mois",
+    "Historique jusqu'à 24 mois",
     "Calendrier — vue semaine et mois",
     "Analyses — répartitions, pourcentages, comparaison des périodes"
   ],

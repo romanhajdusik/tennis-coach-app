@@ -190,9 +190,9 @@ ju predbehne žiadosť o výmaz.
 | Okruh | Návrh | Odôvodnenie |
 |---|---|---|
 | Tréningové dáta počas aktívneho vzťahu | po celý čas trvania | to je samotná služba |
-| Archivovaný hráč u samostatného trénera | **3 roky** od archivácie, potom výzva trénerovi a zmazanie | športová história má hodnotu naprieč sezónami, ale „naveky" neobstojí |
-| Hráči organizácie | podľa pokynu organizácie v zmluve, **predvolene 3 roky** od ukončenia členstva hráča | prevádzkovateľom je zväz, lehota je jeho rozhodnutie |
-| Rodičovské kópie | **3 roky** od zrušenia prepojenia | zosúladené s archívom, inak kópia prežije originál |
+| Hráč u samostatného trénera | **1 rok od posledného tréningu** — potom výzva trénerovi s možnosťou exportu a zmazanie (**potvrdené 2026-08-27**) | Kotví sa na poslednom tréningu, nie na archivácii: predajná veta „história sa nemaže, kým s hráčom pracuješ" tým ostáva pravdivá, návrat hráča hodiny sám reštartuje a upratú sa aj hráči, ktorí ostali formálne aktívni, ale netrénujú. **Export vo výzve je podstatný** — rok je kratší než premlčacia doba, počas ktorej sa dá tréner žalovať, a denník je jeho vlastný dôkaz |
+| Hráči organizácie | podľa pokynu organizácie v zmluve, **predvolene 3 roky** od ukončenia členstva hráča | **Jednoročná lehota sa na federácie NEVZŤAHUJE** — prevádzkovateľom je zväz, vedie dokumentáciu o celej mládežníckej základni a lehota je jeho rozhodnutie |
+| Rodičovské kópie (sledujúci) | **klzavé okno od dnešného dňa: 6 mesiacov bez predplatného, 24 mesiacov s ním.** Po skončení platby 30 dní odklad, potom sa okno stiahne | **Rozhodnuté 2026-08-27.** Staršie záznamy sa **mažú, neskrývajú** — skryté dáta by sme držali bez dôvodu a odomykanie za peniaze je zlý model. Upgrade staršie mesiace **nevráti**. Okno sa počíta od dneška zámerne: kto pol roka netrénuje, nie je používateľ tejto appky. Trénerových dát sa to netýka |
 | Účet bez prihlásenia | **24 mesiacov** neaktivity → e-mail s upozornením → zmazanie | štandardná a obhájiteľná lehota |
 | Účtovné doklady (Stripe, faktúry zväzom) | **10 rokov** | zákon o účtovníctve, prebíja právo na výmaz |
 | Prevádzkové logy (Vercel, Supabase) | podľa nastavenia poskytovateľa, **cieľ do 30 dní** | treba overiť skutočný stav |

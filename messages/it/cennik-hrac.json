@@ -15,13 +15,14 @@
   "trialNote": "14 giorni di prova, poi si paga.",
   "vat": "Prezzi IVA inclusa.",
   "compareTitle": "Cosa ottieni",
-  "compareSubtitle": "Anche senza abbonamento hai la risposta alla domanda: cosa ha allenato mio figlio. Quello che paghi è la comodità e la visione d'insieme.",
+  "compareSubtitle": "Anche senza abbonamento hai la risposta alla domanda: cosa ha allenato mio figlio. Quello che paghi è la comodità, la visione d'insieme e uno storico più lungo.",
   "compareWithoutSub": "Senza abbonamento",
   "comparePaid": "Con abbonamento",
   "compareRows": [
     "Elenco degli allenamenti con filtro per mese",
     "Dettaglio dell'allenamento — esercizi, tempo, note",
-    "Lo storico resta",
+    "Storico degli ultimi 6 mesi",
+    "Storico fino a 24 mesi",
     "Calendario — vista settimanale e mensile",
     "Analisi — ripartizioni, percentuali, confronto tra periodi"
   ],
