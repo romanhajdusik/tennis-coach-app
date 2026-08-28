@@ -17,7 +17,7 @@
 
 | Účastník | Kto to je | Má účet v appke? |
 |---|---|---|
-| **P.L.A.W s.r.o.** | prevádzkovateľ služby (obchodné meno, IČO a sídlo treba doplniť) | — |
+| **P.L.A.W s.r.o.** | prevádzkovateľ služby — **spoločnosť sa k 2026-08-28 zakladá**, obchodné meno, IČO, sídlo a zápis v OR sa doplnia po zápise | — |
 | **Samostatný tréner** | platiaci zákazník, sám si zakladá hráčov | áno (`role = coach`) |
 | **Organizácia** (zväz/klub/akadémia) | B2B zákazník, platí za sedadlá mimo appky | — (má subdoménu) |
 | **Šéftréner** | člen organizácie, read-only dohľad nad celou organizáciou | áno (`role = director`) |
@@ -86,8 +86,8 @@ ale právne vytvára stav, v ktorom tu ležia údaje o dieťati bez prevádzkova
 ktorý by za ne vedel odpovedať: pôvodný tréner už nemusí existovať a jeho pokyny
 nemajú kam doznieť.
 
-**Návrh na rozhodnutie (odporúčam): P.L.A.W s.r.o. je prevádzkovateľom
-rodičovských kópií od okamihu ich vzniku.**
+**ROZHODNUTÉ 2026-08-28: P.L.A.W s.r.o. je prevádzkovateľom rodičovských kópií
+od okamihu ich vzniku.**
 
 | | |
 |---|---|
@@ -96,9 +96,10 @@ rodičovských kópií od okamihu ich vzniku.**
 | Podmienka zákonnosti | tréner dáta vydá **vedome** (vygeneruje a odovzdá kód) a sledujúci je pri zadaní kódu **informovaný**, že mu vzniká vlastná kópia, ktorá ostane aj po skončení spolupráce |
 | Čo tým vzniká nám | povinnosť vedieť kópie na požiadanie **zmazať a vydať** — dnes k nim appka nemá ani jednu cestu (iba `service_role`, žiadne UI) |
 
-**Alternatíva, ktorú neodporúčam:** ponechať prevádzkovateľstvo trénerovi. Je to
-formálne čistejšie, ale po zmazaní jeho účtu neexistuje nikto, kto by práva
-dotknutej osoby vykonal — a to je horší stav než zodpovednosť prevziať.
+**Zvažovaná a ZAMIETNUTÁ alternatíva:** ponechať prevádzkovateľstvo trénerovi. Je
+to formálne čistejšie, ale po zmazaní jeho účtu neexistuje nikto, kto by práva
+dotknutej osoby vykonal — a to je horší stav než zodpovednosť prevziať. **Neotváraj
+to znova bez nového dôvodu.**
 
 **Zmeny, ktoré z odporúčaného variantu plynú (malé, ale povinné):**
 
@@ -126,10 +127,23 @@ Dieťa si vie **samo založiť účet** na `/parent/login`. Súhlas ako právny 
 nepoužívame (základom je zmluva), takže veková hranica z čl. 8 sa neuplatní
 priamo — ale zmluva s maloletým má vlastný limit v Občianskom zákonníku.
 
-**Návrh: v podmienkach určiť dolnú hranicu pre vlastný sledujúci účet (odporúčam
-16 rokov, zhodne so slovenskou hranicou podľa čl. 8) a mladšie dieťa nechať
-sledovať iba cez účet rodiča.** Vek overovať nad rámec vyhlásenia nebudeme —
-nerobí sa to ani inde a viedlo by to k zberu ďalších údajov.
+**ROZHODNUTÉ 2026-08-28: vlastný sledujúci účet je od 16 rokov, mladšie dieťa
+sleduje iba cez účet rodiča.** Vek sa overovať nebude nad rámec vyhlásenia pri
+registrácii — nerobí sa to ani inde a overovanie by znamenalo zbierať ďalšie
+údaje, teda spôsobiť väčší problém, než rieši.
+
+**Pozor pri ďalšom čítaní: 16 tu NIE JE hranica z čl. 8** (tá platí len pri
+súhlase a službe ponúkanej priamo dieťaťu — ani jedno tu neplatí). Sú to dva
+iné dôvody:
+
+1. **Skutočný problém je zmluvná spôsobilosť, nie ochrana údajov.** Maloletý
+   smie uzavrieť len zmluvu primeranú jeho veku (§ 9 Občianskeho zákonníka).
+   Bezplatný účet na čítanie obstojí, **opakovaný platobný záväzok 36 €/rok
+   u pätnásťročného nie** — rodič ho môže napadnúť ako neplatný. **Preto musí
+   byť hranica v podmienkach skôr, než sa zapne Stripe, nie potom.**
+2. **16 je strop celej EÚ** (štáty si smeli zvoliť 13–16; SR má 16, DK/SE/BE 13,
+   FR/CZ 15). Verejný web beží v deviatich jazykoch, takže vyššie číslo znamená
+   „nad limitom každej krajiny naraz" a netreba riešiť, kde je aký.
 
 ### 5.3 Osobitná kategória údajov (čl. 9) je na dosah, dnes tam ešte nie sme
 
@@ -247,7 +261,8 @@ voľba, nie prekážka.
 2. **Región Vercel projektu** a či sú funkcie viazané na EU.
 3. **Máš odklikané DPA** u Supabase, Vercelu, Googlu a Resendu?
 4. **Je Resend na produkcii reálne zapnutý** ako SMTP, alebo maily stále chodia vstavaným mailerom Supabase?
-5. **Obchodné meno, IČO a sídlo s.r.o.** do dokumentov — a či už existuje.
-6. **Potvrdenie §4** — preberáme prevádzkovateľstvo rodičovských kópií?
-7. **Potvrdenie lehôt v §6.**
+5. ~~Obchodné meno, IČO a sídlo s.r.o.~~ — **spoločnosť sa zakladá (stav 2026-08-28).** Do zápisu ostávajú vo všetkých textoch hranaté zátvorky. **Zásady sa nedajú zverejniť skôr, než firma existuje** — prevádzkovateľ musí byť identifikovateľný, inak je informačná povinnosť nesplnená.
+   - **Ale povinnosť tým nečaká.** Appka beží naostro a používatelia v nej sú, takže prevádzkovateľom je dovtedy **fyzická osoba, ktorá ju prevádzkuje**. Prakticky to nič nemení (rozsah je malý, registrácia na pozvánku), ale znamená to, že **zápis firmy je na kritickej ceste k verejnému spusteniu** — nie naopak.
+6. ~~Potvrdenie §4~~ — **POTVRDENÉ 2026-08-28**, prevádzkovateľstvo kópií preberáme.
+7. ~~Potvrdenie lehôt v §6~~ — **POTVRDENÉ 2026-08-27** (rodič 6/24, tréner rok od posledného tréningu).
 8. **Rozhodnutie o záťaži z hodiniek** (§5.3) — osobitná kategória so súhlasom, alebo len odvodené číslo?

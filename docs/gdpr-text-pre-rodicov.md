@@ -74,7 +74,8 @@ znamená to ukončenie trénerskej spolupráce v tejto podobe; napíšte mi a do
 - **Klub alebo zväz**, ak dieťa trénuje pod jeho hlavičkou; vtedy je vlastníkom
   dokumentácie organizácia a vidí ju aj jej šéftréner.
 - **Iný tréner dieťaťa** (napríklad kondičný) — **iba vtedy, ak to výslovne zapnem**,
-  a aj vtedy vidí len prehľad, na čom sme pracovali, nie moje poznámky.
+  a aj vtedy vidí len prehľad, na čom sme pracovali, nie moje poznámky. Ten istý
+  prehľad vtedy môže vidieť aj ten, kto sleduje dieťa u toho druhého trénera.
 - **Poskytovateľ aplikácie** v rozsahu potrebnom na jej prevádzku.
 
 Údaje nikomu nepredávam, neposielam na reklamu a nepoužívajú sa na automatické
@@ -161,7 +162,8 @@ we will agree on how to proceed.
   organisation owns the records and its head coach can see them.
 - **Another of your child's coaches** (for example a fitness coach) — **only if
   I explicitly enable it**, and even then they see an overview of what we worked
-  on, not my notes.
+  on, not my notes. The same overview may then also be visible to whoever follows
+  the child through that other coach.
 - **The application provider**, to the extent needed to run the service.
 
 The data is never sold, never used for advertising, and never used for automated
