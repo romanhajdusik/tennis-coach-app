@@ -16,12 +16,16 @@ vie ustrážiť:
   Jediné číslo, jediná stráž (`requirePlayerSlot` v `lib/subscription.ts`).
 - **Archivovaní hráči sa nepočítajú.** História nič nestojí — to je silný
   predajný argument, nie technický detail.
-  - **„Nikdy sa nemaže" ale od 2026-08-27 NEPLATÍ** (rozhodnuté pri GDPR mape
-    rolí, viď [gdpr-mapa-roli.md](gdpr-mapa-roli.md) §6): záznamy hráča sa mažú
-    **rok po jeho poslednom tréningu**, po výzve trénerovi s možnosťou exportu.
-    Argument sa tým nestráca, len dostane hranicu — **„história sa nemaže, kým
-    s hráčom pracuješ"** je pravdivé a dôveryhodnejšie než „nikdy", ktorému aj
-    tak nikto neverí. Federácií sa to netýka, tie majú vlastnú lehotu v zmluve.
+  - **„Nikdy sa nemaže" NEPLATÍ** (rozhodnuté pri GDPR mape rolí, viď
+    [gdpr-mapa-roli.md](gdpr-mapa-roli.md) §6). Platia dve lehoty a rozhoduje tá,
+    ktorá nastane skôr: **jednotlivý tréning žije najviac 4 roky** (2026-08-28)
+    a **záznamy hráča ako celok zmiznú rok po jeho poslednom tréningu**
+    (2026-08-27, po výzve s možnosťou exportu).
+  - **Argument sa tým nestráca, len dostane hranicu:** „históriu držíme 4 roky
+    dozadu" je pravdivé a dôveryhodnejšie než „nikdy", ktorému aj tak nikto
+    neverí. **Pozor pri písaní textov: nesmie sa vrátiť ani formulácia „história
+    sa nemaže, kým s hráčom pracuješ"** — so štvorročným stropom je nepravdivá aj
+    pri aktívnom hráčovi. Federácií sa to netýka, tie majú vlastnú lehotu v zmluve.
 - **`subscription_status`** — po skončení predplatného účet **ďalej číta**, len
   prestane zapisovať. Zákazník nikdy nepríde o svoju prácu.
   **Upresnené 2026-08-18: čítanie už nebude úplné.** Trénerovi bez

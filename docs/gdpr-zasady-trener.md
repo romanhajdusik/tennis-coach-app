@@ -107,16 +107,24 @@ designated by the European Union for that purpose.
 |---|---|
 | Your account and its contents | as long as you have it — deleting the account removes everything |
 | An account not signed into for 24 months | we send a warning and then delete it |
-| **A player's records** | **one year after their last practice** — we warn you in advance and offer a download |
+| **An individual practice** | **at most 4 years** from the date of the practice |
+| **A player's records as a whole** | **one year after their last practice** — we warn you in advance and offer a download |
 | Google Calendar access | until you disconnect it or delete your account |
 | Invoices and accounting records | 10 years (required by law) |
 | Operational logs | short-term, per our providers' settings |
 
-**About that one year for players:** as long as you work with a player, their
-history is not deleted — the clock runs from the last recorded practice, so
-a player's return resets it. One year after the last practice we send you a warning
-with the option to download the records, and then we delete them. We do this
-because data about children should not be kept longer than it is needed for.
+**Two rules apply to practice records, and whichever comes first wins:**
+
+- **An individual practice lives for at most 4 years.** Older entries are removed
+  even for a player you still work with. We do not warn you about this separately —
+  it would mean an alert about every ageing session — but you can ask us for
+  a copy of your records at any time.
+- **A player's records disappear one year after their last practice.** The clock
+  runs from the last recorded session, so a player's return resets it. Before we
+  delete them we send you a warning with the option to download them.
+
+We do this because data about children should not be kept longer than it is needed
+for.
 
 ### 7. What is your responsibility
 
@@ -274,16 +282,23 @@ určila.
 |---|---|
 | Tvoj účet a jeho obsah | kým ho máš — po zmazaní účtu odchádza všetko |
 | Účet, do ktorého sa 24 mesiacov neprihlásiš | pošleme upozornenie a potom ho zmažeme |
-| **Záznamy o hráčovi** | **rok od jeho posledného tréningu** — vopred ťa upozorníme a ponúkneme stiahnutie |
+| **Jednotlivý tréning** | **najviac 4 roky** od dátumu tréningu |
+| **Záznamy o hráčovi ako celok** | **rok od jeho posledného tréningu** — vopred ťa upozorníme a ponúkneme stiahnutie |
 | Prístup k Google Kalendáru | do odpojenia alebo zmazania účtu |
 | Faktúry a účtovné doklady | 10 rokov (ukladá to zákon) |
 | Prevádzkové záznamy | krátkodobo, podľa nastavenia poskytovateľov |
 
-**K tomu roku pri hráčoch:** kým s hráčom pracuješ, jeho história sa nemaže — čas
-sa počíta od posledného zapísaného tréningu, takže návrat hráča ho reštartuje. Rok
-po poslednom tréningu ti pošleme upozornenie s možnosťou stiahnuť si záznamy
-a potom ich zmažeme. Robíme to preto, že údaje o deťoch sa nemajú držať dlhšie, než
-na čo sú potrebné.
+**Na tréningové záznamy platia dve pravidlá a rozhoduje to, ktoré nastane skôr:**
+
+- **Jednotlivý tréning žije najviac 4 roky.** Staršie sa odstránia aj pri hráčovi,
+  s ktorým naďalej pracuješ. Na toto ťa osobitne neupozorňujeme — bolo by to
+  hlásenie o každom starnúcom tréningu — ale svoje záznamy si od nás vieš
+  kedykoľvek vypýtať.
+- **Záznamy o hráčovi zmiznú rok po jeho poslednom tréningu.** Čas sa počíta od
+  posledného zapísaného tréningu, takže návrat hráča ho reštartuje. Pred zmazaním
+  ti pošleme upozornenie s možnosťou stiahnuť si ich.
+
+Robíme to preto, že údaje o deťoch sa nemajú držať dlhšie, než na čo sú potrebné.
 
 ### 7. Čo je zodpovednosť tvoja
 
