@@ -139,8 +139,8 @@ dostupnosť**. Občas potrebujeme odstávku na údržbu; ak bude plánovaná
 a dlhšia, dáme vedieť dopredu.
 
 **Funkcie sa môžu meniť.** Pridávame nové a zriedka niektorú odoberáme. **Ak by
-sme mali odobrať funkciu, za ktorú platíš**, oznámime to vopred a budeš môcť
-predplatné ukončiť s vrátením pomernej časti.
+sme mali odobrať podstatnú funkciu, za ktorú platíš**, oznámime to vopred a budeš
+môcť predplatné ukončiť s vrátením pomernej časti.
 
 ## 10. Zodpovednosť za škodu
 
@@ -155,8 +155,8 @@ alebo že si prístup zdieľal s niekým, s kým si nemal.
 podľa zásad ochrany údajov.
 
 Ak by nám vznikla povinnosť nahradiť škodu, **je obmedzená sumou, ktorú si nám
-zaplatil za posledných 12 mesiacov**. Toto obmedzenie neplatí pri úmysle, hrubej
-nedbanlivosti a pri škode na zdraví — tam ho zákon nepripúšťa.
+zaplatil za posledných 12 mesiacov, najmenej však 500 €**. Toto obmedzenie neplatí
+pri úmysle, hrubej nedbanlivosti a pri škode na zdraví — tam ho zákon nepripúšťa.
 
 ## 11. Ukončenie
 
@@ -211,24 +211,75 @@ sporov online.
    cvičení ostávajú; analytika a zápis sú za platbou. **Appka to dnes ešte
    nevynucuje** (zastavuje len zápis), takže od zverejnenia podmienok je to
    sľub, ktorý treba doviesť do kódu.
-2. **§6 — odstúpenie do 14 dní.** Toto **nie je moje rozhodnutie, ale zákon** pre
-   spotrebiteľov. Rozhodnutie je len v tom, či pri objednávke budeš pýtať to
-   výslovné potvrdenie o okamžitom začatí služby. **Odporúčam áno** — inak by
-   niekto mohol appku 13 dní používať a peniaze žiadať späť celé.
-   Pozor: **tréner na živnosť je podnikateľ a toto právo nemá** — ale rozlíšiť
-   ich musí objednávkový formulár, inak sa v spore predpokladá spotrebiteľ.
-3. **§10 — strop náhrady škody na 12 mesiacov platieb.** Bežné a obhájiteľné.
-   Voči spotrebiteľovi môže byť takáto klauzula napadnuteľná ako neprijateľná
-   podmienka; výnimky pri úmysle, hrubej nedbanlivosti a škode na zdraví sú tam
-   práve preto.
-4. **§11 — nevraciame pomernú časť pri zrušení z tvojej strany.** Bežná prax.
-   Ak by si chcel byť ústretovejší, je to miesto, kde sa to mení.
-5. **§11 — trojmesačný predstih pri ukončení služby z našej strany.** Zvolil som
-   tri mesiace, aby si tréner stihol dokončiť sezónu. Kratšie by bolo tvrdé,
-   dlhšie zbytočne zväzuje.
-6. **§12 — 30 dní na zmenu podmienok.** Štandard.
-7. **§9 — vrátenie pomernej časti pri odobratí platenej funkcie.** Toto je sľub
-   navyše, ktorý dávať nemusíš. Nechal som ho tam, lebo je lacný a buduje dôveru.
+2. **§6 — odstúpenie do 14 dní** je zákon, nie voľba. Voľby sú dve a **obe user
+   2026-08-29 schválil v princípe, ale realizáciu odložil na Stripe** (sú to polia
+   v objednávkovom formulári, ktorý ešte neexistuje):
+   - **pýtať výslovné potvrdenie, že služba má bežať hneď** — bez neho môže niekto
+     appku 13 dní používať a žiadať späť **celé** peniaze; s ním zaplatí pomernú
+     časť za to, čo využil;
+   - **rozlišovať podnikateľa od spotrebiteľa** (pole na IČO) — tréner na živnosť
+     právo na odstúpenie nemá, ale **ak sa ho nespýtaš, v spore sa predpokladá
+     spotrebiteľ**.
+   - Riziko je pritom malé, lebo **14-dňová skúšobná doba bez karty** odoberá
+     motiváciu to zneužívať — kto dva týždne skúšal zadarmo, kupuje vedome.
+   - **PRI STAVBE STRIPE NA TO NEZABUDNI**, je to dôvod, prečo je to tu zapísané.
+3. ~~§10 — strop na 12 mesiacov platieb.~~ **ROZHODNUTÉ 2026-08-29: „12 mesiacov
+   platieb, najmenej však 500 €"** — rovnako ako v podmienkach pre sledujúceho.
+   - **Prečo spodná hranica:** tréner nemusí byť podnikateľ, a pri hladinách
+     49,90 / 92,90 / 179,90 € ročne by holý strop podľa platieb vyšiel na
+     **50 až 299 €**. Voči spotrebiteľovi to súd môže vyhodnotiť ako vylúčenie
+     zodpovednosti, nie jej obmedzenie, a klauzulu zrušiť **celú** — teda by si
+     ostal bez ochrany úplne.
+   - **Pri dnešných cenách sa spodná hranica uplatní vždy** (aj najdrahší tréner
+     sa dostane len na 299 €), takže vzorec je zatiaľ ozdoba. **Nechal sa
+     zámerne** — keď ceny raz vzrastú alebo pribudne vyššia hladina, strop
+     porastie s nimi a nebude sa to musieť prepisovať.
+   - Výnimky pri úmysle, hrubej nedbanlivosti a škode na zdraví tam **musia** byť.
+   - **Pozor pri čítaní:** strop chráni pred **zmluvnými** nárokmi („prišiel som
+     o dáta", „nefungovalo to"). **Nároky z GDPR neobmedzí** — tie vyplývajú zo
+     zákona a dotknutá osoba môže žalovať sprostredkovateľa aj priamo.
+4. ~~§11 — nevraciame pomernú časť pri zrušení z tvojej strany.~~ **POTVRDENÉ
+   2026-08-29, ostáva tak.** Zvažované a zamietnuté: vracať pomernú časť pri
+   ročnej platbe (oslabilo by to zmysel ročnej zľavy) a ponúkať prechod na
+   mesačnú (komplikuje Stripe aj účtovníctvo).
+   - **Princíp, ktorý tým dokument drží: vraciame, keď meníme podmienky my
+     (§9, §12) — nevraciame, keď si to rozmyslí zákazník.** Dá sa to povedať
+     jednou vetou a neznie to nespravodlivo.
+   - **Pri ročnej platbe to bude občas bolieť** (kto zaplatí 49,90 € v januári
+     a skončí v marci, príde o ~42 €) a niekto pôjde reklamovať platbu do banky.
+     Rieš to individuálne — **nemusieť vrátiť neznamená nesmieť vrátiť**, kým to
+     nie je sľúbené v podmienkach.
+5. ~~§11 — trojmesačný predstih pri ukončení služby z našej strany.~~ **POTVRDENÉ
+   2026-08-29: ostávajú TRI mesiace**, hoci som odporúčal dva.
+   - **Je to jediné zo siedmich rozhodnutí, kde cena leží na NAŠEJ strane** —
+     zaväzuje nás bežať ešte tri mesiace po tom, ako sa rozhodneme skončiť,
+     prakticky bez nového príjmu. Bolo to zvážené a prijaté vedome.
+   - Dôvod za dlhším predstihom: tréner zveruje appke sezónu práce a prvá otázka
+     voči mladej firme je „čo ak to zajtra vypnú". Tri mesiace sú odpoveď, ktorú
+     čítajú aj federácie.
+   - **Veta „pri ukončení z našej strany vrátime nevyčerpané predplatné" bola
+     navrhnutá a na výslovnú žiadosť usera ZAMIETNUTÁ** (2026-08-29). V oboch
+     dokumentoch teda nie je.
+   - **POZOR, DÔLEŽITÉ PRE BUDÚCE ČÍTANIE: povinnosť tým NEZANIKLA.** Ak sa
+     služba ukončí, nevyčerpaná časť predplatného sa vracia **zo zákona** bez
+     ohľadu na to, čo je v podmienkach napísané. Vynechaním sa to len nespomína.
+     **Nečítaj to ako „nevraciame"** — to by bolo nesprávne a v spore neobstojí.
+6. ~~§12 — 30 dní na zmenu podmienok.~~ **POTVRDENÉ 2026-08-29.** Štandard, ktorý
+   nikto nespochybní; 14 dní by voči spotrebiteľom bolo tesné, 60 by ťa zdržiavalo.
+   - **Veta o vrátení pomernej časti pri nesúhlase so zmenou tam MUSÍ ostať** —
+     na rozdiel od tej vypustenej v §11 nie je len konštatovaním. **Bez možnosti
+     odísť s peniazmi je celá klauzula o jednostrannej zmene podmienok voči
+     spotrebiteľovi neplatná**, čiže by sa podmienky nedali meniť vôbec.
+7. ~~§9 — vrátenie pomernej časti pri odobratí platenej funkcie.~~ **ZÚŽENÉ
+   2026-08-29 na „PODSTATNÚ funkciu"** (aj v podmienkach pre sledujúceho).
+   - **Dôvod nie je kozmetický.** Pôvodné „funkciu" bolo bez ohraničenia, takže
+     spúšťačom bola akákoľvek zmena, ktorá niečo uberie — **napríklad obmedzenie
+     histórie na 4 roky spravené 2026-08-28**. Platiaci zákazník by mohol tvrdiť,
+     že mu bola odobratá funkcia, a pýtať peniaze späť.
+   - **Hranica:** odobratie analytiky celej = podstatná funkcia, vraciame.
+     Skrátenie uchovávania zo 4 rokov na 3 = nie je podstatná funkcia.
+   - Zamietnuté bolo aj vypustenie celej vety — zákazník by ostal chránený cez
+     §12 a všeobecnú ochranu spotrebiteľa, ale dokument by pôsobil menej férovo.
 
 ### Čo treba doplniť
 
