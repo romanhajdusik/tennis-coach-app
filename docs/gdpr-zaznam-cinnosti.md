@@ -44,19 +44,24 @@ záťaže z hodiniek a pri prvých federáciách**.*
 | **Lehota** | počas trvania účtu; účtovné doklady 10 rokov podľa zákona o účtovníctve |
 | **Poznámka** | do `profiles` appka nezapisuje vôbec, zápis patrí `service_role` — tým je vylúčené, aby si účet sám prepísal stav predplatného |
 
-### A3 — Trvalé kópie tréningov pre sledujúceho
+### A3 — Kópie tréningov pre sledujúceho
 
-> **Podmienené rozhodnutím v [mape rolí §4](gdpr-mapa-roli.md).** Ak sa
-> prevádzkovateľstvo kópií neprevezme, tento bod sa presunie do Časti B.
+> **POTVRDENÉ 2026-08-28 ([mapa rolí §4](gdpr-mapa-roli.md)): prevádzkovateľom
+> kópií sme my**, takže tento bod patrí do Časti A a nie do Časti B. Zvažovaná
+> alternatíva (ponechať prevádzkovateľstvo trénerovi) bola zamietnutá — po zmazaní
+> jeho účtu by práva dotknutej osoby nemal kto vykonať.
+>
+> **Slovo „trvalé" z názvu vypadlo 2026-08-29** — od zavedenia okna 6/24 mesiacov
+> už kópie trvalé nie sú.
 
 | | |
 |---|---|
-| **Účel** | poskytnúť rodičovi/manažérovi/hráčovi trvalý záznam o tréningu, ktorý prežije zrušenie prepojenia aj zánik trénerovho účtu |
+| **Účel** | poskytnúť rodičovi/manažérovi/hráčovi záznam o tréningu, ktorý prežije zrušenie prepojenia aj zánik trénerovho účtu — **v rozsahu okna uvedeného nižšie** (od 2026-08-27 už nie „trvalý") |
 | **Právny základ** | čl. 6 ods. 1 písm. b — zmluva so sledujúcim |
 | **Dotknuté osoby** | **deti (hráči)**, sledujúci |
 | **Kategórie údajov** | `parent_session_records` (stav, plánovaný a skutočný čas, **poznámky trénera**), `parent_session_drill_records` (zameranie, charakter, kód cvičenia, trvanie, stav) |
 | **Príjemcovia** | Supabase, Vercel |
-| **Lehota** | 3 roky od zrušenia prepojenia (návrh) |
+| **Lehota** | **klzavé okno počítané od dnešného dňa: 6 mesiacov bez predplatného, 24 mesiacov s ním** (potvrdené 2026-08-27). Po skončení platby 30 dní odklad, potom sa okno stiahne. Staršie kópie sa **mažú, neskrývajú**, a upgrade ich nevráti |
 | **Osobitosť** | zapisuje výhradne `security definer` trigger, appka nikdy priamo; DELETE sa zámerne nepropaguje |
 
 ### A4 — Transakčné e-maily
@@ -118,7 +123,7 @@ nad rámec anonymizovaných agregátov. Ďalší sprostredkovatelia sú v Časti
 | **Dotknuté osoby** | hráči organizácie (maloletí), tréneri-zamestnanci |
 | **Kategórie údajov** | ako B1 + členstvo, rola, disciplína, priradenia hráčov, pozvánky |
 | **Osobitosť** | org riadky **nemá právo zmazať nikto z appky** (DELETE nemá policy) — mazanie je vyhradené `service_role`, teda výmaz sa vykonáva na pokyn organizácie |
-| **Lehota** | podľa zmluvy s organizáciou |
+| **Lehota** | podľa zmluvy s organizáciou, **predvolene 2 roky od skončenia členstva hráča** (potvrdené 2026-08-29). **Trénerské lehoty sa tu neuplatňujú** |
 
 ### B3 — Prepojenia a zdieľanie (kódy)
 
@@ -147,15 +152,15 @@ nad rámec anonymizovaných agregátov. Ďalší sprostredkovatelia sú v Časti
 |---|---|---|---|---|
 | `auth.users` | e-mail, hash hesla, IP, metadáta registrácie | používateľ | P.L.A.W | do zmazania účtu |
 | `profiles` | meno, e-mail, rola, stav predplatného, limit hráčov | používateľ | P.L.A.W | do zmazania účtu |
-| `players` | **meno dieťaťa**, dátum a rok narodenia, aktívnosť | hráč | tréner / organizácia | 3 roky od archivácie |
-| `sessions` | čas, stav, disciplína, **voľné poznámky**, id google udalosti | hráč | tréner / organizácia | ako `players` |
+| `players` | **meno dieťaťa**, dátum a rok narodenia, aktívnosť | hráč | tréner / organizácia | tréner: **rok od posledného tréningu** · organizácia: **predvolene 2 roky** od skončenia členstva |
+| `sessions` | čas, stav, disciplína, **voľné poznámky**, id google udalosti | hráč | tréner / organizácia | ako `players`, a navyše **jednotlivý tréning najviac 4 roky** |
 | `session_drills` | zameranie, charakter, kód, trvanie, stav | hráč | tréner / organizácia | ako `sessions` |
 | `metrics_and_tests` | výsledky testov, poznámky — **potenciálne údaje o zdraví** | hráč | tréner / organizácia | rozhodnúť pri prvom použití |
 | `drill_codes` | metodika trénera (nie osobný údaj, ale know-how) | — | tréner / organizácia | do zmazania |
 | `google_calendar_connections` | **OAuth tokeny v čitateľnej podobe** | tréner | P.L.A.W | do odpojenia |
-| `player_connections` | prepojovací kód, id sledujúceho, rola | sledujúci, hráč | tréner | do odvolania + 3 roky |
-| `parent_session_records` | kópia tréningu vrátane poznámok | hráč, sledujúci | *podľa mapy §4* | 3 roky od zrušenia |
-| `parent_session_drill_records` | kópia cvičení | hráč | *podľa mapy §4* | ako vyššie |
+| `player_connections` | prepojovací kód, id sledujúceho, rola | sledujúci, hráč | tréner | do zrušenia prepojenia; **lehota po zrušení nerozhodnutá** — zosúladiť s oknom sledujúceho alebo viazať na zmazanie jeho účtu |
+| `parent_session_records` | kópia tréningu vrátane poznámok | hráč, sledujúci | **P.L.A.W** (potvrdené 2026-08-28) | klzavé okno **6 / 24 mesiacov** (viď A3) |
+| `parent_session_drill_records` | kópia cvičení | hráč | **P.L.A.W** | ako vyššie |
 | `organizations` | názov, slug, typ, šport, sedadlá | — (právnická osoba) | P.L.A.W | trvanie zmluvy |
 | `organization_members` | id používateľa, rola, disciplína, pozývací kód | tréner | organizácia + P.L.A.W | do ukončenia členstva |
 | `player_assignments` | priradenie hráč × tréner × disciplína | hráč, tréner | organizácia | do ukončenia členstva |

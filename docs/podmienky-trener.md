@@ -1,7 +1,10 @@
 # Podmienky používania — tréner (`plaw.win`)
 
-> **Stav: NÁVRH NA SCHVÁLENIE, 2026-08-28.** Slovenské znenie na posúdenie;
-> **anglické záväzné sa napíše po schválení**, ako pri zásadách.
+> **Stav: SLOVENSKÉ ZNENIE SCHVÁLENÉ 2026-08-29**, vrátane všetkých siedmich
+> obchodných rozhodnutí (prechádzali sa po jednom, výsledky sú v poznámkach).
+> Súbor obsahuje obe znenia: **anglické je ZÁVÄZNÉ**, slovenské je preklad —
+> preto je angličtina prvá. Držať ich spolu je zámer, aby bolo pri každej úprave
+> vidieť, či sa nerozišli.
 >
 > **Toto nie sú zásady ochrany údajov.** Tie hovoria, čo robíme s údajmi
 > ([gdpr-zasady-trener.md](gdpr-zasady-trener.md)). Podmienky hovoria, čo si
@@ -14,6 +17,206 @@
 > **Nezverejňuje sa** posledná časť „Poznámky k návrhu".
 
 ---
+
+---
+
+# ENGLISH (BINDING VERSION)
+
+## Terms of Use — for coaches
+
+### 1. Who we are and what these terms cover
+
+The P.L.A.W application is operated by **[P.L.A.W s.r.o., company ID, registered
+office, commercial register entry]** ("we"). These terms govern the use of the
+application by a coach ("you").
+
+By registering and using the application you agree to them. If you do not agree,
+do not use the application.
+
+How we handle personal data is set out separately in the
+**[Privacy Policy](link)**. It is part of this relationship just as these terms are.
+
+### 2. What the service is and is not
+
+P.L.A.W is a tool for **planning, recording and reviewing training sessions**. It
+helps you keep documentation and shows you how you split the time with a player.
+
+**What it is not:**
+
+- **It is not a medical or diagnostic service.** It gives no advice on health,
+  load or injuries and does not replace a doctor or a physiotherapist.
+- **It is not a coaching method.** What you train and how is your decision. The
+  application only records what you entered and calculates overviews from it.
+- **It is not an indestructible archive.** We do back the data up, but do not
+  treat the app as the single and only archive of your work.
+
+### 3. Your account
+
+The account is **personal**. Do not pass your login details on, and you are
+responsible for everything that happens under your account. If you suspect someone
+else has access to it, write to us.
+
+Use **truthful details** when registering — a name and an email address where we
+can reach you.
+
+**Registration is currently by invitation.** Without a valid code no account is
+created.
+
+**An account is either independent or belongs to an organisation.** If you join a
+club, federation or academy, the players and their documentation belong to that
+organisation. Anyone doing both needs two separate accounts — that is by design,
+not a limitation: your employer's data and your own players should not mix.
+
+### 4. Trial, subscription and plans
+
+**The trial period is 14 days** and requires no payment card.
+
+**Plans differ in how many players you may have active at the same time.**
+Archived players do not count towards your plan. Current prices are on the pricing
+page and include VAT.
+
+**What happens when a subscription ends:**
+
+- **You do not lose your work.** You keep seeing the list of practices, their
+  detail, the history and the calendar.
+- **Writing stops** — you cannot add new practices or records.
+- **Analytics is part of the subscription.**
+- **You can still edit your own drill codes** without a subscription, so that the
+  app is ready when you come back.
+
+**If you move to a plan below the number of players you have active**, writing
+stops until you bring yourself back under the limit. **We never archive anyone for
+you** — deciding which child you stop working with is not ours to make.
+
+### 5. Payments
+
+The subscription is paid in advance for the chosen period. **Payments are handled
+by a payment provider** — your payment details never reach us.
+
+**If you are an organisation**, coach seats are invoiced outside the application
+under a separate agreement.
+
+### 6. Withdrawal from the contract
+
+If you are a **consumer**, you have a statutory right to withdraw from a distance
+contract **within 14 days** without giving a reason.
+
+If you want the service to run immediately and not wait for that period to pass,
+you confirm this expressly when ordering — **and your right of withdrawal then
+lapses once the service has been fully provided**; if you withdraw while it is
+running, you pay a proportionate amount for what you have used.
+
+**If you are in business** (self-employed or a company) and order the service for
+that business, this right does not apply to you.
+
+### 7. Your responsibility for other people's data
+
+This is the most important part of these terms and it is not a formality.
+
+**The player data you enter into the application is in your hands, not ours.** You
+decide whom you add, what you note about them and to whom you issue an access
+code. Three commitments follow from that:
+
+1. **Inform the parents** that you keep a record of their child. We have prepared
+   a ready-made text for you — you only need to hand it over.
+2. **Do not record health data without the parent's consent.** This includes notes
+   about injuries and fatigue, not only measurements.
+3. **Share with care.** An access code for a parent and a link with a second coach
+   are carried out without any further checks — the decision is yours.
+
+The details are in the [Privacy Policy](link), section "What is your
+responsibility".
+
+**If you breach this responsibility** — for example by adding a child you have no
+agreement with the parent about — the consequences are yours. We will help with
+what is within our power, but you are the controller of that data.
+
+### 8. What you must not do
+
+- Access other people's accounts, or attempt to.
+- Circumvent the plan limits or the payment guards.
+- Download data automatically beyond ordinary use.
+- Use the application for anything unlawful.
+- Transfer or sell your account to someone else.
+
+For a serious or repeated breach we may restrict or close the account. Unless it is
+necessary for security reasons, we will contact you first.
+
+### 9. Availability and changes
+
+We do our best to keep the application running, but **we do not promise one
+hundred per cent availability**. Occasionally we need downtime for maintenance; if
+it is planned and longer, we will say so in advance.
+
+**Features may change.** We add new ones and rarely remove one. **If we were to
+remove a material feature you pay for**, we will announce it in advance and you
+will be able to end your subscription with a proportionate refund.
+
+### 10. Liability
+
+We provide the application with professional care, but as a tool — **the training
+decisions are yours**.
+
+**We are not liable** for the decisions you make on the basis of the overviews, for
+injuries or for sporting results, nor for damage caused by entering data
+incorrectly or by sharing access with someone you should not have.
+
+**We are liable** for the service working as described and for the security of the
+data under the Privacy Policy.
+
+If an obligation to compensate damage arose on our side, **it is limited to the
+amount you paid us over the last 12 months, but no less than 500 €**. This
+limitation does not apply in cases of intent, gross negligence or damage to health
+— there the law does not allow it.
+
+### 11. Termination
+
+**You:** you may close your account at any time. The subscription runs to the end
+of the paid period and is not refunded pro rata (except in the case in section 9).
+
+**We:** we may end the relationship for a breach of these terms, or with **three
+months' notice** if we were to stop providing the service.
+
+**What happens to the data:** before closing your account you can ask us for it and
+we will provide it in a readable format within one month. After closing it is
+deleted within the periods set out in the Privacy Policy. **Parents and players to
+whom you issued an access code keep their copies** — their relationship is with us,
+not with you, and your departure does not take their history away.
+
+**How long records live while you use the service:** an individual practice for at
+most 4 years, a player's records as a whole for one year after their last practice.
+The details are in the Privacy Policy.
+
+### 12. Changes to these terms
+
+If we change these terms, we will tell you **at least 30 days in advance** by email
+or in the application. If you do not agree with the change, you may end the
+relationship before it takes effect and receive a proportionate refund of your
+subscription.
+
+Minor corrections that change neither your rights nor your obligations are made
+without notice.
+
+### 13. Governing law
+
+The relationship is governed by **the law of the Slovak Republic** and disputes
+belong to Slovak courts. If you are a consumer, you do not thereby lose the
+protection given to you by the law of your country of residence.
+
+If you are a consumer, you may also try to resolve a dispute out of court through
+**[the alternative dispute resolution body — to be added]** or through the European
+Commission's online dispute resolution platform.
+
+### 14. Contact
+
+**[support@plawsports.com]**
+
+**These terms are effective from [date].**
+
+---
+---
+
+# SLOVENSKY (PREKLAD)
 
 ## 1. Kto sme a čoho sa tieto podmienky týkajú
 

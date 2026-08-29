@@ -1,8 +1,10 @@
 # Podmienky používania — sledujúci (`plaw.click`)
 
-> **Stav: NÁVRH NA SCHVÁLENIE, 2026-08-28.** Pre rodiča, manažéra a hráča, ktorý
-> sleduje vlastné tréningy. Slovenské znenie na posúdenie; **anglické záväzné sa
-> napíše po schválení**.
+> **Stav: NÁVRH, 2026-08-29.** Pre rodiča, manažéra a hráča, ktorý sleduje vlastné
+> tréningy. Súbor obsahuje obe znenia: **anglické je ZÁVÄZNÉ**, slovenské je
+> preklad — preto je angličtina prvá. Obchodné rozhodnutia sú prevzaté
+> z trénerských podmienok, kde sa prechádzali po jednom
+> ([podmienky-trener.md](podmienky-trener.md), poznámky).
 >
 > **Kľúčový rozdiel oproti trénerským podmienkam: sledujúci je VŽDY spotrebiteľ.**
 > Rodič nie je podnikateľ, takže tu platí spotrebiteľská ochrana v plnom rozsahu
@@ -14,6 +16,191 @@
 > **Nezverejňuje sa** posledná časť „Poznámky k návrhu".
 
 ---
+
+---
+
+# ENGLISH (BINDING VERSION)
+
+## Terms of Use — for parents, managers and players
+
+### 1. Who we are and what these terms cover
+
+The P.L.A.W application is operated by **[P.L.A.W s.r.o., company ID, registered
+office, commercial register entry]** ("we"). These terms govern the use of the
+application by whoever follows a player's training — a parent, a manager or the
+player themselves ("you").
+
+How we handle personal data is set out separately in the
+**[Privacy Policy](link)**.
+
+### 2. What the service is and is not
+
+P.L.A.W shows you **what the player trained**: when, for how long, which drills and
+with what focus, together with the coach's notes.
+
+**What it is not:**
+
+- **It is not a medical or diagnostic service.** It gives no advice on health or
+  load and does not replace a doctor.
+- **It is not an assessment of the training or of the coach.** We show what the
+  coach recorded — we add nothing and judge nothing.
+- **The content is written by the coach, not by us.** They are responsible for
+  what is in the notes and whether it is correct. See section 8.
+
+**Your account is read-only.** You cannot change or delete anything in the coach's
+application, and the coach does not see your account — only that the connection is
+active.
+
+### 3. Account and age
+
+The account is **personal** and you must not pass your login details on.
+
+**You can create your own account from the age of 16.** If the player is younger,
+a parent or legal guardian follows them through their own account and sees exactly
+the same practices. We do not verify age — we rely on what you state when
+registering.
+
+### 4. How the connection works
+
+The access code is issued to you by **the coach**. Entering the code creates the
+connection, and **your own copy** of the player's training records appears in your
+account.
+
+**You can have one active connection at a time.** A new code replaces the previous
+one; the records you have already received stay with you.
+
+**The connection is ended by the coach.** After that no new records are added and
+the existing ones remain yours. If you no longer want to receive new records, tell
+the coach — or close your account, which deletes everything at once (section 12).
+
+### 5. What you get without and with a subscription
+
+**Without a subscription:** the list of practices with a month filter and the
+detail of each practice — that is, the answer to what the player trained. **You see
+the last 6 months.**
+
+**With a subscription:** the calendar, the analytics and **24 months of history**
+on top of that.
+
+**Read this before you pay:**
+
+- Records older than your window are **deleted**. They are not hidden — they cease
+  to exist.
+- **If you subscribe later, the older months do not come back.**
+- If your subscription ends, you keep the full view for another **30 days**; then
+  the window narrows to 6 months and what falls outside it is deleted.
+- **Before anything is deleted we send you a warning** so that you can save what
+  you want to keep.
+
+Current prices are on the pricing page and include VAT.
+
+### 6. Payments
+
+The subscription is paid in advance for the chosen period. **Payments are handled
+by a payment provider** — your payment details never reach us.
+
+### 7. Withdrawal within 14 days
+
+**You have a statutory right to withdraw from the contract within 14 days** without
+giving a reason.
+
+If you want the paid features to work immediately and not wait for that period to
+pass, you confirm this expressly when ordering. **Your right of withdrawal then
+lapses once the service has been fully provided**; if you withdraw while it is
+running, you pay a proportionate amount for what you have used.
+
+To withdraw, an email to **[support@plawsports.com]** is enough.
+
+### 8. The coach is responsible for the content
+
+Practices, notes and assessments are written by the coach. **We do not check or
+judge them** — we are only the place where you see them.
+
+**If something in a record is wrong** — a mistaken note, a wrong date, the wrong
+player — have it corrected through the coach; only they can change their own
+record. **Write to us as well** and we will correct the copy in your account. If
+you prefer, write only to us and we will contact the coach for you.
+
+**If you have a dispute with the coach** about the content or the course of the
+training, that is a matter between the two of you. We are glad to help with
+anything technical, but deciding your relationship is not ours to do.
+
+### 9. What you must not do
+
+- Access other people's accounts, or attempt to.
+- Use an access code that was not issued to you.
+- Download data automatically beyond ordinary use.
+- Publish the coach's notes without their knowledge — it is their professional work.
+- Transfer or sell your account to someone else.
+
+For a serious or repeated breach we may restrict or close the account. Unless it is
+necessary for security reasons, we will contact you first.
+
+### 10. Availability and changes
+
+We do our best to keep the application running, but **we do not promise one hundred
+per cent availability**. Longer planned downtime will be announced in advance.
+
+**Features may change.** If we were to remove a **material** feature you pay for,
+we will announce it in advance and you will be able to end your subscription with
+a proportionate refund.
+
+### 11. Liability
+
+We provide the application with professional care.
+
+**We are not liable** for the content recorded by the coach, for their training
+decisions, for injuries or for the player's sporting results.
+
+**We are liable** for the service working as described and for the security of the
+data under the Privacy Policy. We do not exclude our liability for damage we cause
+by breaching our obligations.
+
+If an obligation to compensate damage arose on our side, **it is limited to the
+amount you paid us over the last 12 months, but no less than 500 €**. This
+limitation **does not apply** in cases of intent, gross negligence or damage to
+health — there the law does not allow it.
+
+### 12. Termination
+
+**You:** you may close your account at any time and you may choose not to renew the
+subscription at any time. The paid period runs to its end.
+
+**We:** we may end the relationship for a breach of these terms, or with **three
+months' notice** if we were to stop providing the service.
+
+**What happens to the data:** closing your account also deletes the copies of the
+records in it. Before closing you can ask us for them and we will provide them in a
+readable format within one month. **This does not affect the coach's own
+documentation** — that is theirs.
+
+### 13. Changes to these terms
+
+If we change these terms, we will tell you **at least 30 days in advance** by email
+or in the application. If you do not agree with the change, you may end the
+relationship before it takes effect and receive a proportionate refund of your
+subscription.
+
+### 14. Governing law and dispute resolution
+
+The relationship is governed by **the law of the Slovak Republic**. As a consumer
+**you do not lose the protection given to you by the law of your country of
+residence**.
+
+You may also try to resolve a dispute out of court through **[the alternative
+dispute resolution body — to be added]** or through the European Commission's online
+dispute resolution platform.
+
+### 15. Contact
+
+**[support@plawsports.com]**
+
+**These terms are effective from [date].**
+
+---
+---
+
+# SLOVENSKY (PREKLAD)
 
 ## 1. Kto sme a čoho sa tieto podmienky týkajú
 

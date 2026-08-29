@@ -89,9 +89,10 @@ dieťaťa a jeho čas — nič viac.
 
 **Ako dlho ich držím**
 
-Kým trvá naša spolupráca, a potom najviac **[3 roky]**, aby sa dala pozrieť
-staršia príprava. Potom ich zmažem. Kedykoľvek ma môžete požiadať o skoršie
-zmazanie.
+Kým trvá naša spolupráca — a s dvomi hranicami. **Jednotlivý tréning si nechávam
+najviac 4 roky**, aby sa dala pozrieť aj staršia príprava. **Ak dieťa prestane
+trénovať, celý záznam zmažem rok po jeho poslednom tréningu.** Kedykoľvek ma
+môžete požiadať aj o skoršie zmazanie.
 
 **Aké máte práva**
 
@@ -177,9 +178,10 @@ child's name and its time is added there — nothing more.
 
 **How long I keep it**
 
-For as long as we work together, and then for at most **[3 years]**, so that
-earlier preparation can still be reviewed. After that I delete it. You can ask me
-to delete it sooner at any time.
+For as long as we work together — with two limits. **I keep an individual practice
+for at most 4 years**, so that earlier preparation can still be reviewed. **If the
+child stops training, I delete the whole record one year after their last
+practice.** You can also ask me to delete it sooner at any time.
 
 **Your rights**
 
@@ -210,7 +212,11 @@ Personal Data Protection of the Slovak Republic, Hraničná 12, 820 07 Bratislav
 ## 4. Čo z toho ešte treba spraviť
 
 1. **Doplniť údaje s.r.o.** na obe miesta v hranatých zátvorkách.
-2. **Potvrdiť lehotu** (návrh 3 roky, viď [mapa rolí §6](gdpr-mapa-roli.md)).
+2. ~~Potvrdiť lehotu (návrh 3 roky).~~ **HOTOVÉ — text prepísaný 2026-08-29 na
+   platné lehoty:** jednotlivý tréning najviac 4 roky, celý záznam hráča rok po
+   poslednom tréningu ([mapa rolí §6](gdpr-mapa-roli.md)). **Pozor pri ďalších
+   zmenách lehôt: tento text sa musí meniť tiež** — je to jediný dokument, ktorý
+   rodič naozaj dostane do ruky, a najľahšie sa naň zabudne.
 3. **Zverejniť ako stránku**, aby mal tréner čo poslať odkazom — najlepšie na
    `plaw.click`, kde už rodičovská landing je.
 4. **Doplniť odkaz do trénerského návodu** (`/navod`) s vetou, že text má rodičom
