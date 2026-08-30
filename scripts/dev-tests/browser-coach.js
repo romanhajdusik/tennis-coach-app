@@ -186,20 +186,19 @@ async function rescheduleScenario(page, base, db, coach, player) {
 }
 
 /**
- * Zrušenie naplánovaného tréningu s väzbou na Google Kalendár.
+ * Zrušenie naplánovaného tréningu.
  *
- * Lokálne nie je pripojený žiadny kalendár, takže sa neoveruje samotné
- * zmazanie udalosti (to by chcelo Google API), ale to podstatnejšie
- * pravidlo: **kalendár nesmie zrušenie zablokovať**. Tréning má preto
- * podvrhnutú väzbu `google_event_id` — appka sa ju pokúsi upratať, zistí,
- * že kalendár pripojený nie je, a zrušenie musí prejsť tak či tak.
- * A keďže je udalosť „stále v kalendári", väzba sa nesmie zahodiť.
+ * Overuje sa hlavne rozdiel medzi režimami: samostatný tréner tréning
+ * ZMAŽE, vo federácii ostáva organizácii ako `cancelled` — a otázka
+ * v dialógu musí sľubovať presne to, čo sa naozaj stane.
+ *
+ * Pôvodne scenár testoval aj väzbu na Google Kalendár; integrácia bola
+ * 2026-08-29 odstránená (migrácia `20260829090000`), takže tá časť odpadla.
  */
 async function cancelScenario(page, base, db, coach, player, isOrg) {
   const plannedAt = new Date();
   plannedAt.setDate(plannedAt.getDate() + 61);
   plannedAt.setHours(8, 0, 0, 0);
-  const FAKE_EVENT = "fake-google-event-" + Date.now();
   let sessionId = null;
 
   try {
@@ -211,7 +210,6 @@ async function cancelScenario(page, base, db, coach, player, isOrg) {
         player_id: player.id,
         status: "planned",
         planned_data: { date: plannedAt.toISOString(), duration_minutes: 90 },
-        google_event_id: FAKE_EVENT,
       })
       .select("id")
       .single();
@@ -234,11 +232,6 @@ async function cancelScenario(page, base, db, coach, player, isOrg) {
         ? /stays in the organisation's records/i.test(question)
         : /permanently deleted/i.test(question),
     );
-    check(
-      "otázka spomína aj udalosť v kalendári",
-      /Google Calendar/i.test(question),
-    );
-
     await page
       .getByRole("button", {
         name: isOrg ? "Yes, cancel it" : "Yes, cancel and delete",
@@ -248,7 +241,7 @@ async function cancelScenario(page, base, db, coach, player, isOrg) {
 
     const { data: after } = await db
       .from("sessions")
-      .select("status, google_event_id")
+      .select("status")
       .eq("id", sessionId)
       .maybeSingle();
 
@@ -257,11 +250,6 @@ async function cancelScenario(page, base, db, coach, player, isOrg) {
         "tréning ostal organizácii ako zrušený",
         after?.status === "cancelled",
         after?.status ?? "riadok zmizol",
-      );
-      check(
-        "väzba na kalendár ostala (udalosť sa nezmazala)",
-        after?.google_event_id === FAKE_EVENT,
-        String(after?.google_event_id),
       );
     } else {
       check("tréning sa zmazal natrvalo", after === null);
@@ -347,7 +335,7 @@ async function copyScenario(page, base, db, coach, player, otherPlayer) {
 
     const { data: copies } = await db
       .from("sessions")
-      .select("id, status, notes, planned_data, actual_data, google_event_id")
+      .select("id, status, notes, planned_data, actual_data")
       .eq("player_id", otherPlayer.id)
       .eq("coach_id", coach.id)
       .filter("planned_data->>date", "eq", plannedAt.toISOString());
@@ -364,11 +352,6 @@ async function copyScenario(page, base, db, coach, player, otherPlayer) {
       );
       check("reálny čas sa preniesol", Boolean(copy.actual_data?.date));
       check("poznámka sa preniesla", copy.notes === NOTES, String(copy.notes));
-      check(
-        "kópia nemá vlastnú udalosť v kalendári",
-        copy.google_event_id === null,
-        String(copy.google_event_id),
-      );
 
       const { data: copiedDrills } = await db
         .from("session_drills")

@@ -5,11 +5,6 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireWriteAccess } from "@/lib/subscription";
-import {
-  removeSessionFromGoogleCalendar,
-  rescheduleSessionInGoogleCalendar,
-  syncSessionToGoogleCalendar,
-} from "@/lib/google/calendar";
 import { getActivePlayers, getSelectedPlayer } from "@/lib/players/selected";
 import { getOrgContext } from "@/lib/org/context";
 import { getDiscipline } from "@/lib/discipline";
@@ -26,7 +21,6 @@ export async function createSession(
   const durationMinutes =
     Number(formData.get("duration_minutes")) || DEFAULT_SESSION_DURATION_MINUTES;
   const t = await getTranslations("Sessions.errors");
-  const tSessions = await getTranslations("Sessions");
 
   if (!date) {
     return { error: t("missingDate") };
@@ -77,37 +71,15 @@ export async function createSession(
     return { error: t("createFailed") };
   }
 
-  const start = new Date(date);
-  const end = new Date(start.getTime() + durationMinutes * 60_000);
-  const { googleEventId, collision } = await syncSessionToGoogleCalendar(
-    supabase,
-    user.id,
-    tSessions("calendarEventTitle", { name: activePlayer.name }),
-    start.toISOString(),
-    end.toISOString(),
-  );
-
-  if (googleEventId) {
-    await supabase
-      .from("sessions")
-      .update({ google_event_id: googleEventId })
-      .eq("id", session.id);
-  }
-
-  redirect(
-    collision
-      ? `/sessions/${session.id}?calendarWarning=collision`
-      : `/sessions/${session.id}`,
-  );
+  redirect(`/sessions/${session.id}`);
 }
 
 type PlannedData = { date?: string; duration_minutes?: number };
 
 // Presun naplánovaného tréningu na iný čas (prípadne inú dĺžku). Cvičenia sa
 // nedotýka — v tom je celý zmysel: bez tejto akcie musel tréner tréning zrušiť
-// a založiť nanovo, čím prišiel o rozpísané cvičenia (`on delete cascade`),
-// vo federačnom režime po ňom ostal riadok `cancelled` a v Google Kalendári
-// osirotená udalosť.
+// a založiť nanovo, čím prišiel o rozpísané cvičenia (`on delete cascade`) a vo
+// federačnom režime po ňom ostal riadok `cancelled`.
 export async function updateSessionPlan(
   sessionId: string,
   _prevState: SessionFormState,
@@ -117,7 +89,6 @@ export async function updateSessionPlan(
   const durationMinutes =
     Number(formData.get("duration_minutes")) || DEFAULT_SESSION_DURATION_MINUTES;
   const t = await getTranslations("Sessions.errors");
-  const tSessions = await getTranslations("Sessions");
 
   if (!date) {
     return { error: t("missingDate") };
@@ -139,7 +110,7 @@ export async function updateSessionPlan(
 
   const { data: session } = await supabase
     .from("sessions")
-    .select("id, status, planned_data, google_event_id, players(name)")
+    .select("id, status, planned_data")
     .eq("id", sessionId)
     .maybeSingle();
 
@@ -169,40 +140,11 @@ export async function updateSessionPlan(
     return { error: t("rescheduleFailed") };
   }
 
-  // Kalendár až po zápise do DB (rovnaké poradie ako pri zakladaní): appka je
-  // zdroj pravdy a zlyhanie Googlu nesmie presun zhodiť.
-  const playerName =
-    (session.players as { name: string } | null)?.name ?? "";
-  const start = new Date(date);
-  const end = new Date(start.getTime() + durationMinutes * 60_000);
-  const { googleEventId, collision } = await rescheduleSessionInGoogleCalendar(
-    supabase,
-    user.id,
-    session.google_event_id,
-    tSessions("calendarEventTitle", { name: playerName }),
-    start.toISOString(),
-    end.toISOString(),
-  );
-
-  // Väzba sa prepisuje len keď sa naozaj zmenila (pôvodná udalosť zmizla
-  // z kalendára, alebo pribudla až teraz). `null` znamená „kalendár nie je
-  // pripojený alebo zlyhal" — vtedy sa doterajšia väzba nesmie zahodiť.
-  if (googleEventId && googleEventId !== session.google_event_id) {
-    await supabase
-      .from("sessions")
-      .update({ google_event_id: googleEventId })
-      .eq("id", sessionId);
-  }
-
   revalidatePath(`/sessions/${sessionId}`);
   revalidatePath("/sessions");
   revalidatePath("/calendar");
 
-  redirect(
-    collision
-      ? `/sessions/${sessionId}?calendarWarning=collision`
-      : `/sessions/${sessionId}`,
-  );
+  redirect(`/sessions/${sessionId}`);
 }
 
 /** Kópia má aj úspešný stav — pri cudzom hráčovi sa nedá presmerovať na ňu. */
@@ -370,8 +312,6 @@ export async function copySessionToPlayer(
       planned_data: source.planned_data,
       actual_data: source.actual_data,
       notes: source.notes,
-      // Zámerne bez google_event_id: tréner je na jednom tréningu, druhá
-      // udalosť v tom istom čase by mu kalendár len zaplnila.
     })
     .select("id")
     .single();
@@ -503,14 +443,6 @@ export async function deleteSession(sessionId: string) {
     return;
   }
 
-  // Väzba na kalendár sa musí prečítať PRED zmenou — po zmazaní riadku by sa
-  // už nedalo zistiť, ktorú udalosť odstrániť.
-  const { data: session } = await supabase
-    .from("sessions")
-    .select("google_event_id")
-    .eq("id", sessionId)
-    .maybeSingle();
-
   // V org režime tréner dáta nemaže — dáta vlastní federácia (§5.4/§5.7).
   // Naplánovaný tréning sa preto len ZRUŠÍ (status = 'cancelled'), aby
   // organizácii ostal úplný záznam. RLS mazanie org riadkov aj tak zamietne,
@@ -518,37 +450,18 @@ export async function deleteSession(sessionId: string) {
   // že sa zrušil.
   const org = await getOrgContext();
 
-  const { count } = org
-    ? await supabase
-        .from("sessions")
-        .update({ status: "cancelled" }, { count: "exact" })
-        .eq("id", sessionId)
-        .eq("coach_id", user.id)
-    : await supabase
-        .from("sessions")
-        .delete({ count: "exact" })
-        .eq("id", sessionId)
-        .eq("coach_id", user.id);
-
-  // Kalendár sa upratuje až po úspešnej zmene v DB: keby ju RLS zamietla,
-  // tréning by v appke ostal, ale z kalendára by zmizol.
-  if (count && session?.google_event_id) {
-    const removed = await removeSessionFromGoogleCalendar(
-      supabase,
-      user.id,
-      session.google_event_id,
-    );
-    // Väzbu zahadzujeme len keď je udalosť preukázateľne preč. Pri
-    // nepripojenom kalendári alebo výpadku Googlu ostáva — udalosť tam
-    // stále je a je na čo ukazovať. V samostatnom režime už riadok
-    // neexistuje, takže sa to týka len organizácie.
-    if (removed && org) {
-      await supabase
-        .from("sessions")
-        .update({ google_event_id: null })
-        .eq("id", sessionId)
-        .eq("coach_id", user.id);
-    }
+  if (org) {
+    await supabase
+      .from("sessions")
+      .update({ status: "cancelled" })
+      .eq("id", sessionId)
+      .eq("coach_id", user.id);
+  } else {
+    await supabase
+      .from("sessions")
+      .delete()
+      .eq("id", sessionId)
+      .eq("coach_id", user.id);
   }
 
   revalidatePath("/sessions");

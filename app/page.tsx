@@ -38,7 +38,6 @@ function navLinks(defaultCategory: string) {
       href: `/analytics/${encodeURIComponent(defaultCategory)}`,
       labelKey: "analytics",
     },
-    { href: "/settings", labelKey: "settings" },
   ] as const;
 }
 
@@ -263,12 +262,6 @@ export default async function Home() {
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
           >
             {t("analytics")}
-          </Link>
-          <Link
-            href="/settings"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
-          >
-            {t("settings")}
           </Link>
         </div>
         <form action={logout.bind(null, "/login")}>

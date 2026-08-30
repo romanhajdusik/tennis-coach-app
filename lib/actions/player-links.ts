@@ -112,8 +112,7 @@ export async function revokeCardLink(linkId: string) {
  *
  * **Zapnúť je zápis, vypnúť nie.** `requireWriteAccess` preto platí len na
  * zapnutie: odobrať raz daný súhlas musí ísť aj po vypršaní skúšobnej doby,
- * inak by tréner ostal zdieľať niečo, čo už nevie zastaviť. Rovnaká výnimka a
- * z rovnakého dôvodu ako pri `disconnectGoogleCalendar`.
+ * inak by tréner ostal zdieľať niečo, čo už nevie zastaviť.
  */
 export async function setCardLinkSummary(linkId: string, enabled: boolean) {
   const supabase = await createClient();

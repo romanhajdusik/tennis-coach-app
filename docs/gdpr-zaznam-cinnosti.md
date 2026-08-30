@@ -134,15 +134,11 @@ nad rámec anonymizovaných agregátov. Ďalší sprostredkovatelia sú v Časti
 | **Kategórie údajov** | `player_connections` (kód, stav, rola pripojeného), `player_links` (prepojenie kariet, príznaky `target_shares_summary`, `source_shares_with_follower`) |
 | **Osobitosť** | prepojenie kariet je **sprístupnenie údajov o dieťati inému prevádzkovateľovi** — základ pre to musí mať vydávajúci tréner |
 
-### B4 — Zápis tréningu do Google Kalendára trénera
-
-| | |
-|---|---|
-| **Prevádzkovateľ** | tréner |
-| **Kategórie spracúvania** | vytvorenie, úprava a zmazanie udalosti; kontrola kolízií |
-| **Kategórie údajov** | **meno hráča v názve udalosti**, čas začiatku a konca |
-| **Príjemca** | Google — na účte trénera. Pri súkromnom účte Google **nekoná ako náš sprostredkovateľ**, ale ako samostatný prevádzkovateľ podľa vlastných podmienok |
-| **Uložené u nás** | `google_calendar_connections`: prístupový a obnovovací token, platnosť, id kalendára |
+> **B4 — Zápis tréningu do Google Kalendára — ČINNOSŤ ZRUŠENÁ 2026-08-29.**
+> Bola to jediná činnosť, pri ktorej meno dieťaťa opúšťalo naše systémy. Integrácia
+> bola odstránená celá (migrácia `20260829090000`) po zistení, že ju na produkcii
+> nemal pripojenú ani jeden tréner. **Riadok tu ostáva zámerne** — záznam
+> o činnostiach má ukazovať aj to, čo sa spracúvať prestalo, a kedy.
 
 ---
 
@@ -157,7 +153,6 @@ nad rámec anonymizovaných agregátov. Ďalší sprostredkovatelia sú v Časti
 | `session_drills` | zameranie, charakter, kód, trvanie, stav | hráč | tréner / organizácia | ako `sessions` |
 | `metrics_and_tests` | výsledky testov, poznámky — **potenciálne údaje o zdraví** | hráč | tréner / organizácia | rozhodnúť pri prvom použití |
 | `drill_codes` | metodika trénera (nie osobný údaj, ale know-how) | — | tréner / organizácia | do zmazania |
-| `google_calendar_connections` | **OAuth tokeny v čitateľnej podobe** | tréner | P.L.A.W | do odpojenia |
 | `player_connections` | prepojovací kód, id sledujúceho, rola | sledujúci, hráč | tréner | do zrušenia prepojenia; **lehota po zrušení nerozhodnutá** — zosúladiť s oknom sledujúceho alebo viazať na zmazanie jeho účtu |
 | `parent_session_records` | kópia tréningu vrátane poznámok | hráč, sledujúci | **P.L.A.W** (potvrdené 2026-08-28) | klzavé okno **6 / 24 mesiacov** (viď A3) |
 | `parent_session_drill_records` | kópia cvičení | hráč | **P.L.A.W** | ako vyššie |
@@ -183,7 +178,6 @@ nad rámec anonymizovaných agregátov. Ďalší sprostredkovatelia sú v Časti
 | **Vercel** | hosting, edge, logy | sprostredkovateľ | **EÚ — Frankfurt `fra1`** pre `tennis-coach-app` aj `plaw-fitness` (overené 2026-08-26) | DPA je súčasťou obchodných podmienok |
 | **Resend** | transakčné e-maily | sprostredkovateľ | *doplniť* | *doplniť* |
 | **Google (Workspace)** | firemná pošta | sprostredkovateľ | EU/US | *doplniť* |
-| **Google (Calendar API)** | zápis udalostí na účte trénera | **samostatný prevádzkovateľ** | US | neaplikuje sa |
 | **Websupport** | domény a DNS | k osobným údajom sa nedostáva | SK | — |
 | **Stripe** (fáza 3) | platby | sprostredkovateľ + vlastný prevádzkovateľ pre platobné údaje | IE/US | pri napojení |
 
@@ -200,7 +194,6 @@ v zmluve pre federácie patrí na viditeľné miesto.
   a `proxy.ts` beží ako edge middleware **globálne** (nastaviť sa to nedá) — číta
   hlavičky a cookies, nič neukladá. Opierame sa preto o štandardné zmluvné doložky
   a rámec EU–US DPF.
-- **Google Calendar** — meno hráča odchádza na účet trénera u Googlu (Časť B4).
 - **Resend** — e-mailová adresa a obsah transakčného mailu.
 - **Stripe** (fáza 3) — platobné údaje trénera, nie údaje o hráčoch.
 
@@ -231,7 +224,6 @@ stavu, ktorý bol dvakrát overený útokom proti živej databáze.
 
 - Heslá spravuje Supabase Auth (nikdy sa u nás neobjavia v čitateľnej podobe).
 - Všade `getUser()`, nikde `getSession()` — token sa overuje serverom.
-- Google OAuth chránený state cookie (CSRF).
 - Auth cookies sú **per-doménu**, nie zdieľané naprieč subdoménami.
 
 **Sieťová vrstva**
@@ -248,10 +240,11 @@ stavu, ktorý bol dvakrát overený útokom proti živej databáze.
 
 **Známe a vedome prijaté riziko**
 
-- **F4:** tréner si vie cez anon kľúč prečítať **vlastný** Google token. Cudzí nie.
-  Oprava vyžaduje `service_role`, čo dnes vymieňa malé riziko za väčšie; rieši sa
-  spolu so Stripe. *Pre GDPR to nie je porušenie — je to prijaté a odôvodnené
-  reziduálne riziko, a presne takto sa má zapísať.*
+- **F4 — ZANIKOL 2026-08-29.** Šlo o to, že tréner si vedel cez anon kľúč prečítať
+  **vlastný** Google token (cudzí nie). Oprava mala prísť so Stripe cez
+  `service_role`; namiesto toho **zanikol predmet nálezu** — integrácia
+  s kalendárom bola odstránená a **appka odteraz nedrží žiadne cudzie
+  prihlasovacie údaje.** Otvorený bezpečnostný nález teda nemáme žiadny.
 
 **Otvorené riziko, ktoré nie je porušením GDPR, ale patrí sem**
 
@@ -279,7 +272,6 @@ stavu, ktorý bol dvakrát overený útokom proti živej databáze.
 | `plaw_selected_player` | vybraný hráč (httpOnly) | 1 rok | nevyhnutná |
 | `NEXT_TIMEZONE` | časové pásmo návštevníka | 1 rok | nevyhnutná |
 | `LANDING_LOCALE` | jazyk verejného webu | 1 rok | nevyhnutná |
-| `google_oauth_state` | ochrana pred CSRF pri pripájaní kalendára | 10 minút | nevyhnutná |
 
 **Žiadna analytika, žiadny marketingový ani sledovací skript** — overené na
 závislostiach aj na kóde. **Z toho plynie, že súhlas s cookies (a teda ani cookie

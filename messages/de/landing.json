@@ -18,7 +18,7 @@
   "features": [
     {
       "title": "Trainingsplanung",
-      "description": "Plane ein Training in Sekunden, inklusive Dauer und Schwerpunkt. Mit verbundenem Google Kalender wird der Termin automatisch eingetragen."
+      "description": "Plane ein Training in Sekunden, inklusive Dauer und Schwerpunkt. Es erscheint sofort im Kalender der App."
     },
     {
       "title": "Erfassung und Review",

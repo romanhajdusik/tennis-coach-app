@@ -36,7 +36,7 @@ projekt sa tým nijako nedotkne.
 Next ju vloží do balíka **pri builde**, takže po zmene tejto premennej treba
 projekt **redeploynúť** — nestačí ju prepísať v nastaveniach.
 
-**Google Calendar zatiaľ vynechaj** (`GOOGLE_*` premenné nepridávaj). Pripojenie
+**Google Calendar neexistuje** (integrácia zrušená 2026-08-29), takže ho neriešiš —  pôvodná poznámka znela: *Google Calendar zatiaľ vynechaj* (`GOOGLE_*` premenné nepridávaj). Pripojenie
 kalendára by aj tak zlyhalo, kým sa `https://fitness.plawsports.com/api/google/callback`
 nepridá medzi *Authorized redirect URIs* v Google Cloud Console. Bez tých
 premenných sa tlačidlo v `/settings` len nepodarí použiť — nič iné sa nerozbije.

@@ -61,10 +61,6 @@ keep active, and your drill codes.
 **Automatically on every visit:** IP address, browser type and the time of the
 request. This serves operation and abuse detection.
 
-**If you connect Google Calendar:** an access token and a refresh token for your
-calendar. We use them solely to create and remove practice events and to check for
-clashes. You can disconnect at any time in Settings, and they are deleted then.
-
 **What we do not process at all:** your payment details never pass through our
 systems (the payment provider handles them), we do not collect location data, and
 the app contains no advertising or tracking tool.
@@ -93,7 +89,6 @@ These providers help us, each with access only to what they need:
 - **Supabase** — database and sign-in (Frankfurt, EU)
 - **Vercel** — running the application (Frankfurt, EU)
 - **Resend** — sending registration and password-reset emails
-- **Google** — only if you connect Google Calendar yourself
 
 Vercel and Resend are US companies, so part of the processing may take place
 outside the EU; we have in place with them the standard contractual clauses
@@ -109,7 +104,6 @@ designated by the European Union for that purpose.
 | An account not signed into for 24 months | we send a warning and then delete it |
 | **An individual practice** | **at most 4 years** from the date of the practice |
 | **A player's records as a whole** | **one year after their last practice** — we warn you in advance and offer a download |
-| Google Calendar access | until you disconnect it or delete your account |
 | Invoices and accounting records | 10 years (required by law) |
 | Operational logs | short-term, per our providers' settings |
 
@@ -148,11 +142,6 @@ notice as a separate, optional paragraph.
 a second coach are your decisions, and the app carries them out without further
 checks. Before you issue a code, make sure the parent expects it.
 
-**And one practical note about the calendar:** if you connect Google Calendar, the
-event title written there **includes the player's name**. If that is your private
-Google account, the child's name ends up in a service we do not operate. Consider
-this especially for a calendar you share with other people.
-
 **When a parent asks you something, you are not on your own.** If they request
 access to what you hold about the child, a correction or deletion, write to us and
 we will help you handle it — including where the app itself does not allow it (for
@@ -178,8 +167,7 @@ Personal Data Protection of the Slovak Republic, Hraničná 12, 820 07 Bratislav
 ### 9. Cookies
 
 The application uses **only strictly necessary cookies**: sign-in, the selected
-player, the time zone, the language of the public site, and a one-time protection
-when connecting Google Calendar.
+player, the time zone and the language of the public site.
 
 **We have no analytics and no advertising or tracking scripts.** That is why we do
 not ask you for cookie consent and show no cookie banner — there is nothing to
@@ -237,10 +225,6 @@ aktívnych, tvoje kódy cvičení.
 **Automaticky pri každej návšteve:** IP adresa, typ prehliadača a čas požiadavky.
 Slúži to na prevádzku a na odhalenie zneužitia.
 
-**Ak si pripojíš Google Kalendár:** prístupový a obnovovací token k tvojmu
-kalendáru. Používame ich výhradne na zakladanie a rušenie udalostí o tréningoch
-a na kontrolu kolízií. Odpojiť ich vieš kedykoľvek v Nastaveniach a vtedy sa zmažú.
-
 **Čo nespracúvame vôbec:** tvoje platobné údaje neprechádzajú našimi systémami
 (rieši ich platobná brána), nezbierame polohu a nemáme v aplikácii žiadny reklamný
 ani sledovací nástroj.
@@ -268,7 +252,6 @@ Pomáhajú nám títo poskytovatelia a každý má prístup len k tomu, čo potr
 - **Supabase** — databáza a prihlasovanie (Frankfurt, EÚ)
 - **Vercel** — prevádzka aplikácie (Frankfurt, EÚ)
 - **Resend** — odosielanie e-mailov o registrácii a obnove hesla
-- **Google** — iba ak si sám pripojíš Google Kalendár
 
 Vercel aj Resend sú americké spoločnosti, takže časť spracúvania môže prebehnúť
 mimo EÚ; máme s nimi uzavreté štandardné zmluvné doložky, ktoré na to Európska únia
@@ -284,7 +267,6 @@ určila.
 | Účet, do ktorého sa 24 mesiacov neprihlásiš | pošleme upozornenie a potom ho zmažeme |
 | **Jednotlivý tréning** | **najviac 4 roky** od dátumu tréningu |
 | **Záznamy o hráčovi ako celok** | **rok od jeho posledného tréningu** — vopred ťa upozorníme a ponúkneme stiahnutie |
-| Prístup k Google Kalendáru | do odpojenia alebo zmazania účtu |
 | Faktúry a účtovné doklady | 10 rokov (ukladá to zákon) |
 | Prevádzkové záznamy | krátkodobo, podľa nastavenia poskytovateľov |
 
@@ -321,11 +303,6 @@ voliteľný odsek.
 trénerom sú tvoje rozhodnutia a aplikácia ich vykoná bez ďalšieho overovania. Než
 kód vydáš, over si, že s tým rodič počíta.
 
-**A jedna praktická vec ku kalendáru:** ak si pripojíš Google Kalendár, do udalosti
-sa zapíše názov tréningu **spolu s menom hráča**. Ak je to tvoj súkromný účet
-Google, meno dieťaťa sa tým dostane do služby, ktorú neprevádzkujeme my. Zváž to
-najmä pri kalendári, ktorý zdieľaš s ďalšími ľuďmi.
-
 **Keď sa ťa rodič na niečo opýta, nie si na to sám.** Ak si vyžiada prístup k tomu,
 čo o dieťati vedieš, opravu alebo zmazanie, napíš nám a pomôžeme ti to vybaviť — aj
 tam, kde to aplikácia sama nedovolí (napríklad pri už uzavretom tréningu).
@@ -350,8 +327,7 @@ ochranu osobných údajov Slovenskej republiky, Hraničná 12, 820 07 Bratislava
 ### 9. Cookies
 
 Aplikácia používa **len technicky nevyhnutné cookies**: prihlásenie, vybraný hráč,
-časové pásmo, jazyk verejného webu a jednorazová ochrana pri pripájaní Google
-Kalendára.
+časové pásmo a jazyk verejného webu.
 
 **Nemáme žiadnu analytiku ani reklamné a sledovacie skripty.** Preto od teba
 nepýtame súhlas s cookies a nezobrazujeme lištu — nie je na čo.
@@ -379,7 +355,12 @@ a nerobíme to.
 5. **Overiť DPA u Supabase, Vercelu a Resendu** (§5) — veta o štandardných
    zmluvných doložkách musí byť pravdivá, inak ju treba prepísať.
 6. **Dátum účinnosti** (§10).
-7. **Sľuby, ktoré appka ešte nevie splniť:** zmazanie účtu (§6, §8), export údajov
+7. **Google Kalendár bol z týchto zásad ODSTRÁNENÝ 2026-08-29** spolu s celou
+   integráciou (migrácia `20260829090000`). Zmizli tým: tokeny z §3, Google zo
+   zoznamu poskytovateľov v §5, riadok lehoty v §6, celá praktická poznámka
+   o mene dieťaťa v kalendári v §7 a cookie `google_oauth_state` z §9.
+   **Nevracaj nič z toho späť bez toho, aby sa vrátila aj integrácia.**
+8. **Sľuby, ktoré appka ešte nevie splniť:** zmazanie účtu (§6, §8), export údajov
    (§8) a upozornenie pred mazaním záznamov hráča (§6) zatiaľ v aplikácii
    neexistujú. **Buď vzniknú pred zverejnením, alebo sa musia dať vybaviť ručne cez
    podporu** — ale sľúbené byť musia, lebo sú to práva zo zákona.

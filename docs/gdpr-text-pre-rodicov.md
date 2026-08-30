@@ -84,8 +84,7 @@ vyhodnocovanie ani na profilovanie dieťaťa.
 **Kde sú uložené**
 
 V databáze prevádzkovanej v **Nemecku (Frankfurt), teda v Európskej únii**.
-Ak mám pripojený vlastný Google Kalendár, dostane sa doň názov tréningu s menom
-dieťaťa a jeho čas — nič viac.
+Nikam inam sa neodosielajú.
 
 **Ako dlho ich držím**
 
@@ -173,8 +172,7 @@ decision-making or profiling of your child.
 **Where it is stored**
 
 In a database operated in **Germany (Frankfurt), i.e. within the European Union**.
-If I have my own Google Calendar connected, the session title containing your
-child's name and its time is added there — nothing more.
+It is not sent anywhere else.
 
 **How long I keep it**
 

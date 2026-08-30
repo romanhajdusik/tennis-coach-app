@@ -75,36 +75,6 @@ export type Database = {
           },
         ]
       }
-      google_calendar_connections: {
-        Row: {
-          access_token: string
-          calendar_id: string
-          coach_id: string
-          created_at: string
-          refresh_token: string
-          token_expires_at: string
-          updated_at: string
-        }
-        Insert: {
-          access_token: string
-          calendar_id?: string
-          coach_id: string
-          created_at?: string
-          refresh_token: string
-          token_expires_at: string
-          updated_at?: string
-        }
-        Update: {
-          access_token?: string
-          calendar_id?: string
-          coach_id?: string
-          created_at?: string
-          refresh_token?: string
-          token_expires_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       metrics_and_tests: {
         Row: {
           coach_id: string
@@ -683,7 +653,6 @@ export type Database = {
           coach_id: string
           created_at: string
           discipline: string
-          google_event_id: string | null
           id: string
           notes: string | null
           organization_id: string | null
@@ -697,7 +666,6 @@ export type Database = {
           coach_id: string
           created_at?: string
           discipline?: string
-          google_event_id?: string | null
           id?: string
           notes?: string | null
           organization_id?: string | null
@@ -711,7 +679,6 @@ export type Database = {
           coach_id?: string
           created_at?: string
           discipline?: string
-          google_event_id?: string | null
           id?: string
           notes?: string | null
           organization_id?: string | null

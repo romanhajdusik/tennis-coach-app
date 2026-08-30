@@ -18,7 +18,7 @@
   "features": [
     {
       "title": "Planification des entraînements",
-      "description": "Planifiez un entraînement en quelques secondes, avec durée et thème inclus. Si Google Agenda est connecté, l'événement y est ajouté automatiquement."
+      "description": "Planifiez un entraînement en quelques secondes, avec durée et thème inclus. Il apparaît aussitôt dans le calendrier de l'appli."
     },
     {
       "title": "Suivi et bilan",

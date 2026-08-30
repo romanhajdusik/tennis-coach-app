@@ -178,7 +178,6 @@ async function main() {
       ["drill_codes", asSolo.from("drill_codes").select("id").eq("coach_id", fitness.id)],
       ["player_connections", asSolo.from("player_connections").select("id").eq("coach_id", fitness.id)],
       ["profiles", asSolo.from("profiles").select("id").eq("id", fitness.id)],
-      ["google_calendar_connections", asSolo.from("google_calendar_connections").select("coach_id").eq("coach_id", fitness.id)],
     ];
     for (const [name, query] of forbidden) {
       const { data } = await query;

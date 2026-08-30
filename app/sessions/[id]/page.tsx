@@ -16,13 +16,10 @@ type ActualData = { date?: string };
 
 export default async function SessionDetailPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ calendarWarning?: string }>;
 }) {
   const { id } = await params;
-  const { calendarWarning } = await searchParams;
   const t = await getTranslations("Sessions.detail");
   const tSessions = await getTranslations("Sessions");
   const tCommon = await getTranslations("Common");
@@ -103,12 +100,6 @@ export default async function SessionDetailPage({
           {tCommon("back")}
         </Link>
       </div>
-
-      {calendarWarning === "collision" && (
-        <p className="rounded-lg px-3 py-2 text-sm bg-amber-950 text-amber-400">
-          {t("calendarWarning")}
-        </p>
-      )}
 
       <SessionReviewForm
         sessionId={session.id}

@@ -81,7 +81,6 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 3. **sessions** — tréningy naviazané na hráča
    - `planned_data` (plánovaný čas a zameranie), `actual_data` (reálny čas), `notes`, `status` (`planned` / `completed` / `cancelled` — `cancelled` je v DB kvôli budúcemu použitiu, appka dnes namiesto neho naplánovaný tréning rovno **zmaže**, pozri "Životný cyklus tréningu")
    - `discipline` (`tennis` / `fitness`, default `tennis`) — **štítok disciplíny patrí na TRÉNING**, nie na trénera ani na hráča (pozri sekciu „Disciplína"). Zapisuje ho appka z konfigurácie nasadenia
-   - `google_event_id` (text, nullable) — **pridať už od začiatku**, príprava na kalendárovú synchronizáciu
 4. **metrics_and_tests** — kondičné a technické testy hráča (implementácia vo fáze 2, tabuľku možno vytvoriť vopred)
 5. **session_drills** — cvičenia v rámci tréningu (kategória/zameranie, charakter úderu, kód cvičenia, trvanie)
    - `character` je **nullable od migrácie `20260813090000`** — charakter úderu (offensive/neutral/defensive) je tenisový slovník a disciplína, ktorá ho nezaznamenáva, tam píše NULL. **Pozor: rovnaké uvoľnenie muselo dostať aj `parent_session_drill_records`**, inak by trigger `sync_drill_to_parent` pri prvom takom cvičení spadol a zablokoval zápis celého tréningu
@@ -93,8 +92,6 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
    - Vlastníka určuje dvojica `coach_id` / `organization_id` — práve jeden z nich je vyplnený (`drill_codes_single_owner`). Osobný kód = `coach_id`, federačný štandard = `organization_id` (nastavuje šéftréner, tréner ho len používa)
    - Bez uložených riadkov pre danú kategóriu sa použije predvolený zoznam z `lib/drill-options.ts` (`DRILLS`); po prvom uložení je DB autoritatívna. Tréner tak na `/drill-codes` od začiatku vidí kompletný, hneď použiteľný zoznam — nič nemusí nastavovať, ale môže ktorýkoľvek slot premenovať na vlastnú skratku
    - Editovateľné na `/drill-codes`. Presne tieto kódy sa ponúkajú vo výbere pri zázname cvičenia (`session_drills.drill_code`) a presne podľa nich sa rozpadá Analytika (pozri nižšie) — zmena kódu tu sa neprejaví spätne na už zaznamenaných cvičeniach
-7. **google_calendar_connections** — OAuth tokeny pripojenia trénerovho Google Kalendára (`coach_id` PK, `access_token`, `refresh_token`, `token_expires_at`, `calendar_id`)
-   - Jeden riadok na trénera, spravované cez `/settings` (pripojiť/odpojiť), logika v `lib/google/calendar.ts`
 8. **player_connections** — prepojenie rodiča/manažéra/hráča s hráčom u konkrétneho trénera (`coach_id`, `player_id`, `parent_id` nullable kým nie je zaklaimované, `connect_code`, `status` `pending`/`active`/`revoked`, `connected_role` nullable text — snapshot `profiles.role` z momentu zaklaimovania, pozri nižšie prečo)
    - `CREATE UNIQUE INDEX one_active_connection_per_parent ON player_connections (parent_id) WHERE status = 'active'` — jeden rodič/manažér/hráč = jedno aktívne prepojenie naraz, nový kód automaticky nahradí staré
    - RPC `claim_player_connection(p_code)` (`security definer`) — rodič/manažér/hráč zadá kód, funkcia nájde `pending` riadok, zruší predošlé aktívne prepojenie toho istého používateľa, aktivuje nové a zároveň doň nasnímne `connected_role` (trénerova appka nemá RLS prístup k cudziemu `profiles` riadku, aby si rolu dočítala joinom, preto kópia priamo v RPC — rovnaký princíp ako `parent_session_records`)
@@ -164,7 +161,7 @@ Appka je od 2026-08-13 **engine pre viac disciplín**. Disciplína je to, ČO sa
       - **Bez prepojenia trénerov sledujúci nič neuvidí** (vedome prijaté) a `plaw.click` preto naďalej menuje tenis — plošný sľub by bol nepravdivý.
       - Rodičovské stránky overuje `scripts/dev-tests/http-parent.js` (do 2026-08-24 ich nevykresľovala ani jedna sada).
   - **Kde sa naopak prejaviť MÁ (krok 5):** úplne dole na stránke analytiky je prehľad druhej disciplíny za to isté obdobie (`getLinkedDisciplineShares`) — **s vlastnou stovkou a zámerne oddelený**, aby cudzie minúty neprepísali percentá zameraní nad ním. Bez prepojenia sa nevykreslí. Kreslí ho ten istý `CategoryShareChart`, ktorý na to dostal nepovinné props (`config`, `heading`) a `currentCategory: null` — v cudzích dátach nemá čo zvýrazňovať ani dopĺňať zameranie s nulou. **Rodičovská vrstva ho nedostáva** (číta kópie, nie živé dáta) a pult má namiesto neho vlastný rozpad „kurt vs kondícia".
-- **Čo do v1 kondičky NEJDE:** Google Calendar (chýba redirect URI pre novú doménu) a marketing kondičky.
+- **Čo do v1 kondičky NEJDE:** marketing kondičky.
 
 ## Vybraný hráč (1:1 vs 1:N)
 
@@ -223,7 +220,6 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
 - **Hráči po odchode trénera** (priradení niekomu, kto už nie je aktívnym členom) sa zoskupia pod „No longer in the organization" — z pultu nesmú zmiznúť, kým ich niekto neprevezme. Táto skupina je **vždy rozbalená** a má pri každom hráčovi výber nového trénera; pult je presne to miesto, kde má šéftréner takýchto hráčov vidieť a vyriešiť.
 - **Preradenie hráča inému trénerovi** (od 2026-08-07) je **jediný zápis šéftrénera do hráčskych dát** — a to len do priradenia. Robí ho `security definer` RPC `assign_player_to_coach(p_player_id, p_coach_id)` (migrácia `20260807100000`), nie uvoľnená RLS: policy na UPDATE nevie obmedziť, ktorý stĺpec sa mení (v jednej policy sa nedá porovnať starý a nový riadok), takže „director smie UPDATE na players" by mu otvorilo aj meno a archiváciu. Funkcia si všetko overí sama (volajúci je šéftréner tejto org, hráč do nej patrí, cieľ je jej **aktívny tréner** — šéftrénerovi samému hráča prideliť nejde). Server action `assignPlayer` ([`lib/actions/player-assignment.ts`](lib/actions/player-assignment.ts)) chyby len prekladá; UI je [`app/director/assign-player.tsx`](app/director/assign-player.tsx) v pulte (skupina po odídenom trénerovi) a na `/director/players/[id]` (hocikedy, aj pri rebalansovaní).
   - **Presúva sa priradenie na všetkých riadkoch hráča** (`players`, `sessions`, `session_drills`, `metrics_and_tests`) — RLS trénera je všade `coach_id = auth.uid()`, takže bez toho by nový tréner videl hráča, ale nie jeho históriu. Je to v súlade s modelom (`coach_id` v org režime = priradenie, nie autorstvo), ale znamená to, že sa **nikde neuchováva, kto tréning reálne viedol**; keby to federácia potrebovala, treba samostatný stĺpec, nie zmenu tohto správania.
-  - `sessions.google_event_id` ostáva ukazovať do kalendára pôvodného trénera (pripojenie je per účet) — nový tréner udalosti nezdedí.
 - **Pult je stavaný na laptop/tablet**, nie na telefón (na rozdiel od trénerovej appky, ktorá sa používa na kurte) — stránky majú `max-w-6xl`/`max-w-5xl` a viacstĺpcové rozloženie na `sm`/`lg`/`xl`, na mobile sa poskladajú pod seba. **Mobile-first pravidlo z tejto sekcie nevypadáva** — úzka šírka musí ostať použiteľná a bez horizontálneho scrollu.
 - **Porovnanie hráčov `/director/compare`:** tá istá trojica grafov, akú vidí tréner, vedľa seba pre celú skupinu. **Počet stĺpcov sleduje počet hráčov (až 6)**, ale každý ďalší sa otvorí až od šírky, kde stĺpec neklesne pod ~300 px — pri nej sa koláč aj legenda ešte čítajú (`COLUMN_CLASSES` v tom súbore). **14" notebook (v CSS 1280–1512 px) dostane štyri stĺpce**, 5 od 1600, 6 od 1900; dvaja hráči nikdy nestoja v šiestich stĺpcoch. **Prahy musia byť zapísané rovnakým druhom variantu (`min-[…]`)**: pri miešaní s pomenovanými (`2xl:`) sa CSS pravidlá nezoradia podľa šírky a širší prah prebije užší (1920 px vracalo 4 stĺpce namiesto 5). Dve osi zoskupenia — **podľa trénera** a **podľa ročníka** (`birth_year`), prepínajú sa v URL (`?by=coach|year&group=…`). Dáta ťahá `getPlayersCategoryAnalytics` ([`lib/actions/analytics.ts`](lib/actions/analytics.ts)) — **dvoma dotazmi pre celú skupinu, nie štyrmi na hráča**; pri desiatich hráčoch by inak stránka poslala 40 dotazov. Neprepisuj to na volanie `getPlayerCategoryAnalytics` v cykle.
 
@@ -243,7 +239,6 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
        - **Kópia vzniká pod hráčovým VLASTNÝM trénerom** (`coach_id` = jeho tréner), nie pod tým, kto ju zapísal — inak by ju hráčov tréner vo svojej appke vôbec nevidel (RLS mu vydá len vlastné riadky). Dôsledok: **zapisujúci sa na kópiu nedostane**, takže sa naňu nesmie presmerovať; server action to rieši tak, že si ju najprv skúsi prečítať, a keď nemôže, vráti potvrdenie do formulára („Recorded for X — it is now in Y's app"). Bez toho by klik vyzeral, že sa nič nestalo.
        - Zdrojom smie byť len **vlastný** tréning volajúceho — inak by funkcia bola cestou, ako si skopírovaním prečítať tréning kolegu. Cieľový hráč musí patriť tej istej organizácii a jeho tréner musí byť **aktívny člen** (inak by tréning vznikol pod niekým, kto sa doňho nedostane). Šéftrénerovi funkcia nevydá nič ani nič nezapíše (§5.7).
        - **Kto tréning reálne viedol, sa naďalej nikde neuchováva** (vedome odložené) — vo federácii sa tak k dnešnému „po preradení hráča sa stratí autorstvo" pridáva „skupinový tréning sa javí ako tréning hráčovho trénera". Keď to zväz bude chcieť, patrí na to stĺpec `conducted_by`, nie zmena tohto správania.
-     - **Kópia zámerne nedostáva `google_event_id`** — tréner je na jednom tréningu a druhá udalosť v tom istom čase by mu len zaplnila kalendár.
      - **Poistka proti duplikátu:** ak už cieľový hráč má nezrušený tréning s tým istým plánovaným časom, akcia to odmietne. Bez nej by dvojklik (alebo druhé skopírovanie toho istého tréningu) zdvojnásobil hráčovi odohraný čas v analytike.
      - Vedľajší efekt, ktorý bol dôvodom navyše: hráč, ktorý trénoval v skupine, ale zapísaný bol pri kolegovi, sa v rosteri aj na nástenke „Dnes" tváril ako zanedbaný a šéftrénerovi svietil v „vyžaduje pozornosť".
 2. **Aktualizácia (review):** po tréningu tréner doplní reálny čas a poznámky; jednotlivé cvičenia môže označiť ako **neodohrané** alebo **nahradené** (náhrada sa zaradí v zozname hneď za pôvodným cvičením)
@@ -270,18 +265,31 @@ Kalendár ([`app/calendar/page.tsx`](app/calendar/page.tsx) pre trénera, [`app/
 - **Zameranie-špecifické pravidlá** (`ANALYTICS_FULL_BREAKDOWN_CATEGORIES` v `lib/drill-options.ts`): Forehand, Backhand, Volley a GAME DRILLS zobrazujú vždy úplný rozpad všetkých použitých kódov (žiadne zbaľovanie do "Ostatné") a majú prepínač dizajnu grafu koláč/stĺpce (`app/analytics/[category]/category-charts.tsx`). Return a Serve majú dvojúrovňové skupinové zobrazenie (`ANALYTICS_GROUPED_CATEGORIES`): stĺpcový graf rozdelí kódy podľa prefixu na "Forehand return"/"Backhand return" resp. "1st serve"/"2nd serve", klik na stĺpec zobrazí detail kódov danej skupiny — rovnaké skupiny sa zobrazujú aj pri editácii kódov na `/drill-codes`. POINTS (`ANALYTICS_MATCH_SPLIT_CATEGORIES`) zobrazuje koláčový graf rozdeľujúci odohraný čas na **MATCH** (zápasové body, kódy s prefixom `MATCH`) vs **ostatné cvičenia** — minutáž a percento pre obe, plus celkový čas (`app/analytics/[category]/points-chart.tsx`).
 - **Počet úderov** sa štandardne počíta z charakteru cvičenia (offensive/neutral/defensive), ale Return, Serve a GAME DRILLS majú vlastnú fixnú sadzbu úderov/min (`FIXED_STROKES_PER_MIN_CATEGORIES` v `lib/actions/analytics.ts`), keďže majú inú frekvenciu výmen než hra z dna kurtu.
 
-## Google Calendar (jednosmerne, Fáza 2)
+## Google Kalendár — ODSTRÁNENÝ (2026-08-29)
 
-- Tréner si pripojí svoj Google účet na `/settings` (`app/api/google/auth` → OAuth consent → `app/api/google/callback` uloží tokeny do `google_calendar_connections`)
-- Pri naplánovaní tréningu (`createSession` v `lib/actions/sessions.ts`) appka automaticky vytvorí udalosť v pripojenom Google Kalendári (`lib/google/calendar.ts`, `syncSessionToGoogleCalendar`) a uloží jej ID do `sessions.google_event_id`
-- Plánovanie tréningu má teraz aj pole **plánovaná dĺžka** (60/90/120 min, `planned_data.duration_minutes`) — potrebné na určenie konca kalendárovej udalosti
-- **Kontrola kolízií** pri plánovaní len upozorní (banner na stránke tréningu cez `?calendarWarning=collision`), neblokuje uloženie
-- Ak tréner nemá pripojený kalendár alebo Google API zlyhá, tréning sa vytvorí bez neho — kalendárová synchronizácia nikdy neblokuje základné plánovanie
-- **Vedome prijaté riziko (rozhodnuté 2026-08-09): tréner si vie cez anon kľúč prečítať vlastný Google `access_token`/`refresh_token`.** Policy `google_calendar_connections_all_own` je `coach_id = auth.uid()`, takže cudzí token nikto nevidí — ale skript bežiaci v trénerovom prehliadači (XSS, škodlivé rozšírenie) áno, a získal by prístup k jeho kalendáru. **Opraviť sa to dá jedine serverovým prístupom mimo identity používateľa** (`service_role`): server dnes pracuje pod tokenom prihláseného trénera, takže čokoľvek prečíta server, prečíta aj prehliadač — `security definer` funkcia to nerieši, tú by si volajúci zavolal rovnako. **Appka dnes žiadny `service_role` kľúč nedrží a to je cenná vlastnosť** — zaviesť ho by vymenilo malé riziko (útočník s XSS už aj tak koná ako ten tréner) za veľké (únik env = celá databáza, všetci tréneri a hráči). **Preto sa to odkladá na Stripe (Fáza 3), ktorý ten kľúč bude potrebovať tak či tak** na zápis `subscription_status` z webhooku; vtedy je oprava skoro zadarmo. Postup pri realizácii: všetky štyri miesta, čo na tabuľku siahajú (`lib/google/calendar.ts`, `app/api/google/callback/route.ts`, `lib/actions/google-calendar.ts`, `app/settings/page.tsx`) presunúť do jedného modulu s úzkymi funkciami filtrovanými na `coach_id`, potom `revoke ... from authenticated` + zrušiť policy.
-- **Presun tréningu sa do kalendára premieta** (od 2026-08-11, `rescheduleSessionInGoogleCalendar`): existujúca udalosť sa presunie cez `PATCH`, a keď v Google už nie je (tréner ju tam zmazal) alebo tréning väzbu nemá (kalendár pripojený až po naplánovaní), založí sa nová a `google_event_id` sa prepíše. **`null` z tejto funkcie znamená „kalendár nie je pripojený alebo zlyhal" — vtedy sa doterajšia väzba nesmie prepísať**, inak by tréning o udalosť prišiel pri každom výpadku Googlu. Kontrola kolízií pri presune **musí ignorovať vlastnú udalosť tréningu** (`hasCollision(..., ignoreEventId)`): v kalendári je stále na pôvodnom čase, takže posun o pár minút by sa nahlásil ako kolízia sám so sebou.
-- **Zrušenie tréningu udalosť z kalendára odstráni** (od 2026-08-11, `removeSessionFromGoogleCalendar` volaná z `deleteSession`). Platí v oboch režimoch — v samostatnom sa maže riadok, vo federačnom sa nastavuje `status = 'cancelled'`, ale zrušený tréning nemá v kalendári čo blokovať termín. **Poradie je záväzné: najprv sa prečíta `google_event_id`** (po zmazaní riadku sa už nedá zistiť), **potom sa mení DB a až po úspešnej zmene sa siaha na kalendár** (`count` z DB operácie) — inak by pri zamietnutí RLS tréning v appke ostal, ale z kalendára by zmizol. `404`/`410` z Googlu = udalosť tam už nie je, čo je ten istý výsledok ako úspech. **Väzba `google_event_id` sa v org režime nuluje len keď je udalosť preukázateľne preč**; pri nepripojenom kalendári alebo výpadku Googlu ostáva, lebo udalosť v kalendári stále je.
-- **Potvrdzovacia otázka pri rušení je iná v každom režime** (`Sessions.review.confirmDeleteMessage` vs `confirmCancelMessage`, prepína ich prop `isOrg` z `app/sessions/[id]/page.tsx`) — vo federácii by bolo nepravdivé sľubovať, že sa tréning „natrvalo zmaže".
-- **Obojsmerná synchronizácia (webhooks) je stále neskoršia fáza** — appka o zmenách urobených priamo v Google Kalendári nevie.
+Integrácia s Google Kalendárom **v appke už nie je** a nevracaj ju bez rozhodnutia.
+Zmazané: `lib/google/`, `app/api/google/`, `lib/actions/google-calendar.ts`,
+tabuľka `google_calendar_connections` aj stĺpec `sessions.google_event_id`
+(migrácia `20260829090000`). S ňou odišla aj stránka `/settings` — obsahovala
+výhradne pripojenie kalendára a ostala by prázdna.
+
+**Prečo:** bolo to jediné miesto v celej appke, kde **meno dieťaťa opúšťalo naše
+systémy** — udalosť vznikala v Google účte trénera, kde Google nie je naším
+sprostredkovateľom, ale samostatným prevádzkovateľom. Rozhodlo číslo, nie úvaha:
+na produkcii mala tabuľka **0 riadkov**, funkciu nikto nepoužíval.
+
+**Čo sa tým získalo:** meno hráča neopúšťa EÚ; **nález F4 zanikol nadobro**
+(appka nedrží žiadne cudzie prihlasovacie údaje — dovtedy sa mal riešiť
+`service_role` prístupom pri Stripe); ubudla najporuchovejšia časť projektu.
+
+**Čo sa vedome stratilo:** kontrola kolízií s ostatnými udalosťami trénera
+a pripomienky na telefón. **Appka nemá push notifikácie vôbec**, takže tréner
+odteraz pripomienku nedostane — pri stavbe notifikácií na to pamätaj.
+
+**Ak by sa integrácia niekedy vracala:** okrem kódu potrebuje overenie u Googlu
+(kalendár je „citlivý" rozsah) a k nemu **zverejnené zásady ochrany údajov**.
+To bola pravdepodobne aj príčina tej nuly. A vtedy jej rovno daj prepínač, či má
+byť v názve udalosti meno, iniciály alebo len „Training".
 
 ## Registrácia na pozvánku a promo kódy (od 2026-08-16)
 
@@ -397,7 +405,7 @@ Rozhodnuté ceny sú v [`docs/cennik-navrh.md`](docs/cennik-navrh.md); na webe i
 - [x] Lokálny vývoj, bez deploya
 
 ### Fáza 2 — Kalendár a testy (aktuálna)
-- [x] Google Calendar: jednosmerne (app → kalendár) + kontrola kolízií pri plánovaní
+- [x] ~~Google Calendar: jednosmerne + kontrola kolízií~~ — **integrácia 2026-08-29 ODSTRÁNENÁ**, viď sekciu „Google Kalendár — ODSTRÁNENÝ".
 - [ ] Neskôr obojsmerná synchronizácia (webhooks, obnova kanálov, riešenie konfliktov — zdroj pravdy je aplikácia)
 - [ ] ~~Modul kondičných a technických testov (metrics_and_tests)~~ — **odložené na neurčito (2026-08-11)**. Návrh je pripravený (jeden riadok = jeden test, katalóg v konfiguračnej vrstve, **bez migrácie** — tabuľka aj dvojrežimová RLS existujú od `20260803091000`), ale používateľ určil ako podstatne dôležitejšiu **záťaž z hodiniek** (viď „Nápady na neskôr")
 
@@ -411,7 +419,7 @@ Rozhodnuté ceny sú v [`docs/cennik-navrh.md`](docs/cennik-navrh.md); na webe i
 - [x] Cenová hladina podľa počtu hráčov (`profiles.player_limit`, migrácia `20260810090000`) — appka limit vynucuje a zobrazuje, predaj vyššej hladiny je zatiaľ `UPDATE`, rovnako ako sedadlá federácie. Postavené **pred** Stripe zámerne, z rovnakého dôvodu ako paywall: obmedzenie je vec appky, platba je vec Stripe
 - [ ] Stripe Checkout + Customer Portal (mesačné/ročné predplatné) — napojenie znamená: Checkout, webhook zapisujúci `subscription_status` **aj `player_limit`** cez `service_role`, tlačidlo „Predplatiť" do `trial-banner.tsx` a napojenie cenníka na pokladňu (dnes obe stránky vedú na registráciu). **Cenník musí odrážať obe osi** — dĺžku predplatného aj počet hráčov; koľko hráčov dostane ktorý plán, je otvorené obchodné rozhodnutie. **Ceny na webe už sú** (viď sekciu „Ceny na verejnom webe") — pri zakladaní `price_…` položiek v Stripe sa musia zhodovať s `lib/landing-pricing.ts` a mení sa to na oboch miestach naraz. **Keď sa bude pridávať `service_role` kľúč, sprav zároveň aj presun Google tokenov mimo dosahu prehliadača** — dovtedy odložené vedome, zdôvodnenie v sekcii Google Calendar. **Týka sa len consumer produktu na `plaw.win`** — federácie sa fakturujú mimo appky (`docs/onboarding-organizacie.md`)
 
-**Dôležité:** Neimplementuj funkcie z neskorších fáz, pokiaľ to nie je výslovne požadované. Architektúru však navrhuj tak, aby ich neskoršie pridanie neprekážalo (napr. `google_event_id` v sessions už teraz).
+**Dôležité:** Neimplementuj funkcie z neskorších fáz, pokiaľ to nie je výslovne požadované. Architektúru však navrhuj tak, aby ich neskoršie pridanie neprekážalo.
 
 ### Nápady na neskôr (nepotvrdené, nezaradené do fázy)
 

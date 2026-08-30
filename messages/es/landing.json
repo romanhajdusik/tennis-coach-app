@@ -18,7 +18,7 @@
   "features": [
     {
       "title": "Planificación de entrenamientos",
-      "description": "Planifica un entrenamiento en segundos, con duración y enfoque incluidos. Si tienes Google Calendar conectado, el evento se añade automáticamente."
+      "description": "Planifica un entrenamiento en segundos, con duración y enfoque incluidos. Aparece enseguida en el calendario de la app."
     },
     {
       "title": "Registro y revisión",

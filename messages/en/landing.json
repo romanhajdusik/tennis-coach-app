@@ -32,7 +32,7 @@
   "features": [
     {
       "title": "Practice planning",
-      "description": "Plan a practice in seconds, including duration and focus. If you've connected Google Calendar, the event gets added automatically."
+      "description": "Plan a practice in seconds, including duration and focus. It shows up in the app's calendar right away."
     },
     {
       "title": "Logging and review",

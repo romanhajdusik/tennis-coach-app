@@ -160,15 +160,23 @@ výslovný súhlas rodiča, ktorý zbiera tréner (príznak na karte hráča), a
 kratšie než zvyšok. Ak by sa to ukázalo ako priveľa, alternatíva je ukladať len
 odvodené číslo bez tepových kriviek — lacnejšie, ale stále údaj o zdraví.
 
-### 5.4 Meno dieťaťa odchádza do Google Kalendára
+### 5.4 Meno dieťaťa už nikam neodchádza — integrácia bola zrušená
 
-`syncSessionToGoogleCalendar` posiela do kalendára názov udalosti, ktorý obsahuje
-**meno hráča** ([sessions.ts:174](../lib/actions/sessions.ts#L174)). Ak si tréner
-pripojí súkromný gmail, meno dieťaťa skončí v spotrebiteľskom účte Googlu, kde
-Google **nie je náš sprostredkovateľ**, ale vlastný prevádzkovateľ. Nie je to naša
-chyba (koná tréner na vlastnom účte), ale musí to byť v texte — a existuje lacná
-náprava: **prepínač, či má názov udalosti obsahovať meno, iniciály, alebo len
-„Training".** Odporúčam ho spraviť, odstráni to problém takmer celý.
+Do 2026-08-29 posielala appka do Google Kalendára trénera názov udalosti **s menom
+hráča**. Bolo to jediné miesto, kde meno dieťaťa opúšťalo naše systémy, a Google
+tam nebol naším sprostredkovateľom, ale samostatným prevádzkovateľom.
+
+**Celá integrácia bola odstránená** (migrácia `20260829090000`). Rozhodlo číslo:
+na produkcii ju nemal pripojenú **ani jeden tréner**, takže odstránením nikto
+o nič neprišiel. Zvažovaná alternatíva — prepínač, či má byť v názve udalosti meno,
+iniciály alebo len „Training" — sa tým stala zbytočnou.
+
+**Získalo sa tým aj niečo, čo GDPR neriešilo: appka odteraz nedrží žiadne cudzie
+prihlasovacie údaje.** Tým zanikol aj bezpečnostný nález F4.
+
+**Ak by sa integrácia niekedy vracala**, tento odsek je dôvod, prečo má hneď
+dostať ten prepínač mena — a prečo bude potrebovať zverejnené zásady ochrany
+údajov (Google bez nich „citlivý" rozsah kalendára neschváli).
 
 ### 5.5 Cross-read medzi disciplínami má súhlas na správnom mieste, ale bez opory
 
@@ -212,7 +220,6 @@ ju predbehne žiadosť o výmaz.
 | Účet bez prihlásenia | **24 mesiacov** neaktivity → e-mail s upozornením → zmazanie | štandardná a obhájiteľná lehota |
 | Účtovné doklady (Stripe, faktúry zväzom) | **10 rokov** | zákon o účtovníctve, prebíja právo na výmaz |
 | Prevádzkové logy (Vercel, Supabase) | podľa nastavenia poskytovateľa, **cieľ do 30 dní** | treba overiť skutočný stav |
-| Google OAuth tokeny | do odpojenia alebo zmazania účtu | |
 | Nepoužité prepojovacie a promo kódy | do expirácie, potom zmazať | dnes ostávajú natrvalo |
 
 ---
@@ -251,7 +258,6 @@ voľba, nie prekážka.
 2. **Export údajov** (prenosnosť) — trénerovi aj sledujúcemu, stačí JSON
 3. **Trvalé zmazanie hráča**, nielen archivácia
 4. Odkazy na dokumenty v pätičkách a potvrdenie pri registrácii
-5. Prepínač mena v názve Google udalosti (§5.4)
 6. Vety pri vydávaní kódov a pri prepínačoch zdieľania (§4, §5.5)
 7. Automatické mazanie po lehote (§6)
 
