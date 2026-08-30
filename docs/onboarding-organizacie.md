@@ -15,6 +15,21 @@ je linknutý cez CLI, `db push` tu nefunguje).
 
 ---
 
+## Krok 0 — podpísaná zmluva o spracúvaní údajov
+
+**Bez podpísanej zmluvy sa organizácia nezakladá.** Sprostredkovateľská zmluva
+podľa čl. 28 GDPR ([gdpr-zmluva-cl28.md](gdpr-zmluva-cl28.md)) musí byť podpísaná
+oboma stranami **skôr, než zväz zapíše prvého hráča** — inak spracúvajú obe strany
+bez právneho podkladu (§1.2 zmluvy).
+
+Do zmluvy sa pred podpisom dopĺňa: kontakt na oznámenie incidentu (príloha A),
+cyklus záloh (§9.5) a počet osôb s prístupom k produkcii (príloha C).
+
+**Výnimka je len testovací tím s vymyslenými menami** — tam sa žiadne osobné údaje
+nespracúvajú.
+
+---
+
 ## Krok 1 — subdoména vo Verceli
 
 Vercel → projekt `tennis-coach-app` → Settings → Domains → **Add**

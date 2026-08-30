@@ -256,9 +256,14 @@ stavu, ktorý bol dvakrát overený útokom proti živej databáze.
 
 **Čo v tejto časti zatiaľ chýba**
 
-- Postup pri incidente (72 h) — neexistuje.
-- Overený stav záloh a vyskúšaná obnova — prod beží na Free pláne, treba zistiť,
-  aké zálohy reálne má.
+- **Postup pri incidente — neexistuje.** Od 2026-08-30 to nie je len chýbajúci
+  papier: zmluva podľa čl. 28 zaväzuje oznámiť incident zväzu **do 48 hodín**
+  (§8.1 v [gdpr-zmluva-cl28.md](gdpr-zmluva-cl28.md)), zväz má potom svojich
+  72 hodín voči úradu. **Bez napísaného postupu je 48 hodín číslo bez obsahu** —
+  toto je najvážnejší otvorený bod pred podpisom prvého zväzu.
+- **Overený stav záloh a vyskúšaná obnova** — prod beží na Free pláne, treba
+  zistiť, aké zálohy reálne má. **Číslo z toho ide priamo do §9.5 zmluvy** (dnes
+  `[X]` dní), takže sa nedá vymyslieť.
 - Šifrovanie tokenov v pokoji (súvisí s F4).
 - Evidencia žiadostí dotknutých osôb.
 

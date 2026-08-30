@@ -9,7 +9,8 @@
 > odchode trénera a že šéftréner vidí prácu svojich ľudí.
 >
 > **Zmluvná časť sem NEPATRÍ.** Sprostredkovateľská zmluva podľa čl. 28 je
-> samostatný dokument (zatiaľ nenapísaný) — tieto zásady sú informácia, nie zmluva.
+> samostatný dokument ([gdpr-zmluva-cl28.md](gdpr-zmluva-cl28.md)) — tieto zásady
+> sú informácia, nie zmluva.
 >
 > **Nezverejňuje sa** posledná časť „Poznámky k návrhu".
 
@@ -347,9 +348,10 @@ o spracúvaní.
      to my.
    - Hodnota ide do **každej zmluvy so zväzom ako východisková**, takže sa mení
      dodatkom, nie úpravou dokumentu. Preto sa rozhodovala pred prvým podpisom.
-7. **§2 a §11 odkazujú na zmluvu o spracúvaní, ktorá zatiaľ neexistuje** (bod 5
-   textového zoznamu). Zásady sa nedajú zverejniť skôr než ona — odkazovali by
-   na nič.
+7. ~~§2 a §11 odkazujú na zmluvu o spracúvaní, ktorá zatiaľ neexistuje.~~
+   **VYRIEŠENÉ 2026-08-30:** zmluva je napísaná
+   ([gdpr-zmluva-cl28.md](gdpr-zmluva-cl28.md)). Zásady sa dajú zverejniť **spolu
+   s ňou**, nie skôr.
 8. **§7 sľubuje vrátenie alebo zmazanie po skončení služby** a §9 pomoc pri
    vybavovaní žiadostí. Oboje je dnes ručná práca; pri jednom-dvoch zväzoch to
    stačí, pri desiatich už nie.
