@@ -28,10 +28,26 @@ Zoznam začne platiť dňom, keď sa objaví prvý skutočný zväz.
   túto lehotu pri chorobe, dovolenke alebo vypnutom telefóne **nesplní** —
   vyplynulo to z [postupu pri incidente](postup-pri-incidente.md) §9.
 
-- [ ] **Hodinová sadzba k §7.3** — v hlavnej zmluve alebo v cenníku.
-  Zmluva sľubuje 2 hodiny pomoci ročne zadarmo a nad to „sadzbu podľa hlavnej
-  zmluvy alebo cenníka". **Ak sadzba nie je nikde, klauzula sa nedá použiť** —
-  a pomoc pri žiadostiach rodičov je dnes celá ručná práca.
+- [x] ~~**Hodinová sadzba k §7.3**~~ — **HOTOVÉ 2026-08-30:** vznikla hlavná
+  zmluva ([zmluva-organizacia.md](zmluva-organizacia.md)) a sadzba **129 EUR bez
+  DPH za hodinu** je v jej prílohe 2. Tá istá zmluva dala obsah šiestim odkazom
+  zmluvy podľa čl. 28, ktoré dovtedy viedli do prázdna.
+
+- [ ] **Schváliť hlavnú zmluvu** — je to zatiaľ **návrh** a podpisuje sa spolu so
+  zmluvou o spracúvaní. Bez nej by zväz podpísal ochranu údajov k neexistujúcej
+  zmluve o službe: bez dohodnutej ceny, sedadiel, výpovede a stropu
+  zodpovednosti, o ktorý sa §11.4 opiera.
+
+- [x] ~~**Cena za sedadlo**~~ — **ROZHODNUTÉ 2026-08-30:** 49 EUR mesačne bez
+  DPH za sedadlo, najmenej tri, pri ročnej platbe vopred zľava **15 % (3–5
+  sedadiel) / 20 % (6–11) / 30 % (12 a viac)**. Fakturácia mesačne alebo ročne,
+  **viazanosť je v oboch prípadoch 12 mesiacov**. Všetko v §3 hlavnej zmluvy.
+
+- [ ] **Rozhodnúť, či cena ide na `/federacie`** — stránka stále hovorí
+  „čoskoro". Zverejnená cena sa ťažšie vyjednáva, nezverejnená odrádza; je to
+  obchodné rozhodnutie, nie technická prekážka. **Ak sa zverejní, číslo musí mať
+  v kóde jediný výskyt** ako trénerské hladiny (`lib/landing-pricing.ts`), inak
+  sa web a zmluva rozídu.
 
 - [ ] **Cyklus záloh do §9.5** — zistiť u Supabase, akú retenciu má produkčný
   projekt na svojom pláne, a nahradiť `[X]` skutočným číslom.
@@ -73,8 +89,10 @@ Zoznam začne platiť dňom, keď sa objaví prvý skutočný zväz.
 
 ## Pri samotnom podpise a onboardingu
 
-- [ ] **Zmluva podpísaná SKÔR, než sa organizácia založí.**
-  Je to Krok 0 v [onboardingu](onboarding-organizacie.md) a §1.2 zmluvy. Bez
+- [ ] **Obe zmluvy podpísané SKÔR, než sa organizácia založí** — hlavná zmluva
+  ([zmluva-organizacia.md](zmluva-organizacia.md)) aj zmluva o spracúvaní
+  ([gdpr-zmluva-cl28.md](gdpr-zmluva-cl28.md)). Je to Krok 0
+  v [onboardingu](onboarding-organizacie.md) a §1.2 zmluvy o spracúvaní. Bez
   podpisu spracúvajú **obe strany bez právneho podkladu**.
 
 - [ ] **Kontakt na oznámenie incidentu** od organizácie do prílohy A — meno,

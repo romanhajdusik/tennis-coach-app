@@ -15,15 +15,22 @@ je linknutý cez CLI, `db push` tu nefunguje).
 
 ---
 
-## Krok 0 — podpísaná zmluva o spracúvaní údajov
+## Krok 0 — podpísané zmluvy
 
-**Bez podpísanej zmluvy sa organizácia nezakladá.** Sprostredkovateľská zmluva
-podľa čl. 28 GDPR ([gdpr-zmluva-cl28.md](gdpr-zmluva-cl28.md)) musí byť podpísaná
-oboma stranami **skôr, než zväz zapíše prvého hráča** — inak spracúvajú obe strany
-bez právneho podkladu (§1.2 zmluvy).
+**Bez podpísaných zmlúv sa organizácia nezakladá.** Podpisujú sa **dve a spolu**:
 
-Do zmluvy sa pred podpisom dopĺňa kontakt na oznámenie incidentu (príloha A),
-cyklus záloh (§9.5) a počet osôb s prístupom k produkcii (príloha C).
+- **hlavná zmluva** o poskytovaní služby ([zmluva-organizacia.md](zmluva-organizacia.md))
+  — sedadlá, cena, trvanie, zodpovednosť;
+- **zmluva o spracúvaní osobných údajov** podľa čl. 28 GDPR
+  ([gdpr-zmluva-cl28.md](gdpr-zmluva-cl28.md)) — čo sa smie robiť s údajmi.
+
+Druhá sa na prvú odvoláva na šiestich miestach, takže samostatne nedáva zmysel.
+Podpísané musia byť **skôr, než zväz zapíše prvého hráča** — inak spracúvajú obe
+strany bez právneho podkladu (§1.2 zmluvy o spracúvaní).
+
+Do zmlúv sa pred podpisom dopĺňa objednávka (príloha 1 hlavnej zmluvy: slug,
+disciplíny, sedadlá, cena, kontakty), kontakt na oznámenie incidentu (príloha A)
+a cyklus záloh s počtom osôb s prístupom (§9.5 a príloha C).
 **Úplný kontrolný zoznam pred prvým zväzom — vrátane prevádzkových vecí ako
 zástupca, Vercel Pro a zmluvy s poddodávateľmi — je v
 [pred-prvym-zvazom.md](pred-prvym-zvazom.md).**

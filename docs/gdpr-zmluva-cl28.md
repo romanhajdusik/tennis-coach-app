@@ -750,8 +750,12 @@ funkcionality, postupom podľa §6.2. Stripe nespracúva údaje hráčov.
    zamestnancom sa mení dokument.
 9. **Údaje s.r.o.** (hlavička) — firma sa zakladá, rovnaká zátvorka ako
    v ostatných textoch.
-10. **Sadzba za hodinu** (§7.3) — musí byť buď v hlavnej zmluve, alebo v cenníku.
-    Ak nie je nikde, klauzula sa nedá použiť.
+10. ~~Sadzba za hodinu (§7.3) — musí byť buď v hlavnej zmluve, alebo v cenníku.~~
+    **VYRIEŠENÉ 2026-08-30:** hlavná zmluva vznikla
+    ([zmluva-organizacia.md](zmluva-organizacia.md)) a sadzba je v jej prílohe 2
+    (**129 EUR bez DPH za hodinu**). Tá istá zmluva dala obsah aj ďalším piatim
+    odkazom, ktoré dovtedy viedli do prázdna — §1.1, §1.3, §1.4, §11.4 (strop
+    zodpovednosti je jej §9.2) a prílohe A.
 11. **Vercel Hobby → Pro** pred prvou platiacou federáciou. Príloha C tvrdí niečo
     o dostupnosti, ktorú Hobby plán nezaručuje.
 

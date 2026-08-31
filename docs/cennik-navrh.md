@@ -382,7 +382,7 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
 | Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, tabuľka „Čo dostaneš" (bez predplatného vs. s predplatným) |
 | Landing na `plaw.click` (od 2026-08-22) | jedno číslo — ročných 36 € + dopočítané centy na deň — a odkaz na `/cennik-hrac`; dlaždice kalendára a analytiky nesú štítok „S predplatným" |
 | `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka bez predplatného vs. s predplatným (päť riadkov podľa §8.3) |
-| `/federacie` | naďalej „čoskoro" — sedadlá sa fakturujú mimo appky |
+| `/federacie` | naďalej „čoskoro" — **cena je od 2026-08-30 rozhodnutá (§11), ale nezverejnená**; sedadlá sa fakturujú mimo appky |
 
 **Čo sa pritom rozhodlo (a nebolo v tomto dokumente):**
 
@@ -409,3 +409,53 @@ sľubuje, že analytika je za platbou. **Appka to ešte nevynucuje** — stráž
 čítanie (`requireViewAccess`, §8.4 bod 1) sa postaví so Stripe. Dovtedy
 stránka opisuje cieľový stav. Rovnako nikde nie je tlačidlo „Predplatiť":
 obe stránky vedú na registráciu, lebo pokladňa neexistuje.
+
+---
+
+## 11. ROZHODNUTÉ — federačné sedadlá (2026-08-30)
+
+Cena vznikla spolu s [hlavnou zmluvou pre organizácie](zmluva-organizacia.md),
+kde je záväzne v §3. **Tu je len zapísaná, aby sa cenové rozhodnutia dali čítať
+na jednom mieste.**
+
+**49 EUR za sedadlo na mesiac, bez DPH.** Najmenej tri sedadlá. Šéftréner
+sedadlo neobsadzuje.
+
+Pri **ročnej platbe vopred** je zľava odstupňovaná podľa počtu sedadiel:
+
+**Všetky sumy nižšie sú bez DPH.**
+
+| Sedadlá | Zľava | Za sedadlo/rok bez DPH | Za sedadlo/mes. bez DPH | Príklad: spolu za rok bez DPH |
+|---|---|---|---|---|
+| 3 – 5 | 15 % | 499,80 € | 41,65 € | 3 sedadlá → **1 499,40 €** |
+| 6 – 11 | 20 % | 470,40 € | 39,20 € | 6 sedadiel → **2 822,40 €** |
+| 12 a viac | 30 % | 411,60 € | 34,30 € | 12 sedadiel → **4 939,20 €** |
+
+Bez zľavy je sedadlo 588 € bez DPH za rok (49 × 12).
+
+**Federačné ceny sa uvádzajú BEZ DPH — a je to zámerný rozdiel oproti
+spotrebiteľským.** Tie sa podľa §6 bodu 1 tohto dokumentu uvádzajú **vrátane DPH**,
+lebo tréner ani rodič si ju neodpočítajú. Zväz je platiteľ, ktorý rozpočtuje
+v sumách bez dane, a cena s DPH by mu pri porovnávaní ponúk prekážala.
+**Nezjednocuj to** — na oboch stranách je to správne inak.
+
+**Prečo odstupňovaná a nie pevných 30 %:** aby bola veta **„až 30 %" pravdivá**.
+Pri pevnej zľave by sa muselo písať „−30 %". Vedľajší efekt sa hodí — väčší zväz
+má dôvod brať viac sedadiel.
+
+**Mesačná fakturácia neznamená mesačnú viazanosť.** Viazanosť je v oboch
+prípadoch 12 mesiacov (§4 zmluvy); mesačná platba je len rozloženie roka na
+splátky. Bez toho by ročná zľava nemala o čo sa oprieť.
+
+**Zľava sa spätne neprepočítava** (§3.4 zmluvy). Zväz, ktorý dokúpi šieste
+sedadlo, dostane vyššie pásmo až od nasledujúceho obdobia — inak by pri každom
+dokupovaní pýtal vrátiť rozdiel za celý rok.
+
+**Spotrebiteľský produkt má pri ročnej platbe −40 %, teda viac.** Nie je to
+nedopatrenie: tréner platí sám za seba a jednu hladinu, kým zväz platí za
+sedadlá a dostáva k tomu riadiaci pult.
+
+**Otvorené: či cena ide na `/federacie`.** Zverejnená cena sa ťažšie vyjednáva,
+nezverejnená odrádza — je to obchodné rozhodnutie. **Ak sa zverejní, číslo musí
+mať v kóde jediný výskyt** ako trénerské hladiny (`lib/landing-pricing.ts`),
+inak sa web a zmluva rozídu.
