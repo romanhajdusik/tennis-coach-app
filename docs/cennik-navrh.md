@@ -382,7 +382,7 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
 | Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, tabuľka „Čo dostaneš" (bez predplatného vs. s predplatným) |
 | Landing na `plaw.click` (od 2026-08-22) | jedno číslo — ročných 36 € + dopočítané centy na deň — a odkaz na `/cennik-hrac`; dlaždice kalendára a analytiky nesú štítok „S predplatným" |
 | `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka bez predplatného vs. s predplatným (päť riadkov podľa §8.3) |
-| `/federacie` | naďalej „čoskoro" — **cena je od 2026-08-30 rozhodnutá (§11), ale nezverejnená**; sedadlá sa fakturujú mimo appky |
+| `/federacie` | **od 2026-08-31 vstupná cena** — „od 49 € za trénera na mesiac", najmenej traja, bez DPH, ročne až −30 %; tabuľka pásiem ani pásmo na dohodu tam nie sú (§11) |
 
 **Čo sa pritom rozhodlo (a nebolo v tomto dokumente):**
 
@@ -455,7 +455,23 @@ dokupovaní pýtal vrátiť rozdiel za celý rok.
 nedopatrenie: tréner platí sám za seba a jednu hladinu, kým zväz platí za
 sedadlá a dostáva k tomu riadiaci pult.
 
-**Otvorené: či cena ide na `/federacie`.** Zverejnená cena sa ťažšie vyjednáva,
-nezverejnená odrádza — je to obchodné rozhodnutie. **Ak sa zverejní, číslo musí
-mať v kóde jediný výskyt** ako trénerské hladiny (`lib/landing-pricing.ts`),
-inak sa web a zmluva rozídu.
+**ROZHODNUTÉ 2026-08-31: na `/federacie` ide LEN VSTUPNÁ CENA** — „od 49 € za
+trénera na mesiac, najmenej traja, bez DPH, pri ročnej platbe až −30 %".
+**Tabuľka pásiem sa nezverejňuje** a **pásmo na dohodu pre veľkých tam nebude**
+(rozhodol user; môj návrh na „pre 20+ trénerov individuálna ponuka" zamietnutý).
+
+Prehodnotilo sa to preto, že stránka je od 2026-08-31 **po anglicky a mieri von**
+— zahraničná federácia nemá ako zistiť, či je v tvojom rozpočtovom pásme, a bez
+čísla nespustí ani vnútorné schvaľovanie. Pôvodné „čoskoro" bolo pritom horšie
+než obe možnosti: pri produkte pre organizácie znie ako „ešte nevieme, čo
+robíme".
+
+**Zostáva vedomá diera: nad pásmom „12 a viac" už nič nie je.** Zväz s 12
+a zväz s 50 trénermi platí za sedadlo rovnako, takže veľký zákazník nemá dôvod
+rásť ďalej a **pri veľkom obchode nie je kam ustúpiť** bez porušenia zverejnenej
+ceny. User to vie a nechal to tak.
+
+**Číslo 49 € žije ako text v `messages/{en,sk}/federacie.json`**, teda na dvoch
+miestach — na rozdiel od trénerských hladín, ktoré majú jediný výskyt
+v `lib/landing-pricing.ts`. Pri dvoch jazykoch to je únosné; **ak pribudne
+tretí, presuň číslo do `lib/landing-pricing.ts`**.

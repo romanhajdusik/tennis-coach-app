@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { loadFederacieMessages } from "@/lib/landing-locale";
+import { getLandingLocale } from "@/components/landing-page";
+import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
+import { loadFederacieMessages, rozcestnikLocale } from "@/lib/landing-locale";
 import {
   ChartBarIcon,
   ClipboardCheckIcon,
@@ -12,19 +14,22 @@ import {
 
 /**
  * Verejná stránka o federačnom (B2B) režime — informačná, **bez prihlásenia
- * a bez výzvy na akciu**: organizácia sa nezakladá samoobslužne, robí sa to
+ * a bez registračného tlačidla**: organizácia sa nezakladá samoobslužne, robí sa to
  * ručne (docs/onboarding-organizacie.md), takže tlačidlo „registrovať" by
  * viedlo do prázdna.
  *
  * Žije **len na plaw.online** (verejná tvár) — `proxy.ts` ju tam púšťa cez
  * PUBLIC_PATHS a na plaw.win ju presmeruje sem, aby mala jedinú adresu.
  *
- * Je zámerne **len po slovensky** (prví B2B zákazníci sú slovenské zväzy
- * a kluby), preto nemá prepínač jazykov ako landing a návody. Zvyšok vzhľadu
- * je zhodný s nimi — antuková tmavá téma cez tokeny.
+ * Je **SK/EN a predvolene po ANGLICKY** (od 2026-08-31) — federačný produkt sa
+ * ponúka aj mimo Slovenska. Dva jazyky, nie deväť ako landing: kto má v cookie
+ * iný jazyk, dostane angličtinu. Do 2026-08-31 bola stránka len slovenská
+ * s odôvodnením, že prvými B2B zákazníkmi sú slovenské zväzy — **bol to
+ * predpoklad, nie rozhodnutie.** Zvyšok vzhľadu je zhodný s landingom
+ * a návodmi — antuková tmavá téma cez tokeny.
  */
-// Poradie sedí s `features` v messages/sk/federacie.json — každá dlaždica má
-// vlastnú ikonu, žiadna sa neopakuje.
+// Poradie sedí s `features` v messages/{en,sk}/federacie.json — každá dlaždica
+// má vlastnú ikonu, žiadna sa neopakuje.
 const FEATURE_ICONS = [
   ClipboardCheckIcon,
   ChartBarIcon,
@@ -34,8 +39,17 @@ const FEATURE_ICONS = [
   DeviceMobileIcon,
 ];
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await loadFederacieMessages();
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  // `?lang=` dopisuje proxy pri kanonickom presmerovaní — cookie je viazaná na
+  // doménu, takže bez neho by návštevník z plaw.win dostal iný jazyk.
+  const locale = rozcestnikLocale(
+    await getLandingLocale((await searchParams).lang),
+  );
+  const t = await loadFederacieMessages(locale);
   return {
     title: t.metaTitle,
     description: t.metaDescription,
@@ -44,8 +58,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function FederaciePage() {
-  const t = await loadFederacieMessages();
+export default async function FederaciePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const locale = rozcestnikLocale(
+    await getLandingLocale((await searchParams).lang),
+  );
+  const t = await loadFederacieMessages(locale);
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -67,12 +88,18 @@ export default async function FederaciePage() {
               className="block h-7 w-auto"
             />
           </Link>
-          <Link
-            href="/"
-            className="text-sm font-medium text-muted transition-colors hover:text-foreground"
-          >
-            {t.backToHome}
-          </Link>
+          <div className="flex items-center gap-3">
+            <LandingLanguageSwitcher
+              currentLocale={locale}
+              locales={["en", "sk"]}
+            />
+            <Link
+              href="/"
+              className="text-sm font-medium text-muted transition-colors hover:text-foreground"
+            >
+              {t.backToHome}
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -174,6 +201,19 @@ export default async function FederaciePage() {
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted">
             {t.pricingText}
+          </p>
+          {/* Jediná výzva na akciu na celej stránke a je zámerne len e-mail:
+              organizácia sa nezakladá samoobslužne, takže tlačidlo „registrovať"
+              by viedlo do prázdna. Adresa je `office@` (obchod), nie `support@`
+              — ten patrí k zmluvám a k podpore existujúceho zákazníka. */}
+          <p className="mx-auto mt-4 max-w-md text-sm text-muted">
+            {t.pricingContact}{" "}
+            <a
+              href="mailto:office@plawsports.com"
+              className="font-medium text-foreground underline"
+            >
+              office@plawsports.com
+            </a>
           </p>
         </div>
       </section>

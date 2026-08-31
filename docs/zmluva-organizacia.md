@@ -695,11 +695,13 @@ organizácia a táto sadzba ich nepokrýva.
 
 9. ~~Cena za sedadlo — jediné nerozhodnuté číslo.~~ **ROZHODNUTÉ 2026-08-30:**
    49 EUR mesačne bez DPH, ročná zľava 15/25/30 % podľa sedadiel (§3).
-   **Otvorené ostáva, či a kedy to ide na `/federacie`** — dnes tam stále stojí
-   „čoskoro" ([cennik-navrh.md](cennik-navrh.md) §8). Je to obchodné rozhodnutie,
-   nie dôsledok tejto zmluvy: zverejnená cena sa ťažšie vyjednáva, nezverejnená
-   odrádza. **Ak sa zverejní, číslo musí mať jediný výskyt v kóde** ako trénerské
-   hladiny (`lib/landing-pricing.ts`), inak sa web a zmluva rozídu.
+   **Na `/federacie` ide od 2026-08-31 len VSTUPNÁ cena** („od 49 € za trénera
+   na mesiac, najmenej traja, bez DPH, ročne až −30 %"). **Tabuľka pásiem z §3.3
+   sa nezverejňuje** a **pásmo na dohodu pre veľkých neexistuje** — zväz s 12
+   a zväz s 50 trénermi má rovnakú cenu za sedadlo, takže pri veľkom obchode
+   nie je kam ustúpiť bez porušenia zverejnenej ceny. User to vie a nechal to
+   tak; ak sa to raz bude meniť, patrí to sem do §3.3 aj do
+   [cennik-navrh.md](cennik-navrh.md) §11.
 10. **Údaje s.r.o.** (hlavička) — rovnaká zátvorka ako vo všetkých textoch.
 11. **Slug, disciplíny, počet sedadiel a kontakty** sa vypĺňajú per zväz.
 

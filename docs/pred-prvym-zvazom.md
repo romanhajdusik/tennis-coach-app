@@ -43,11 +43,12 @@ Zoznam začne platiť dňom, keď sa objaví prvý skutočný zväz.
   sedadiel) / 20 % (6–11) / 30 % (12 a viac)**. Fakturácia mesačne alebo ročne,
   **viazanosť je v oboch prípadoch 12 mesiacov**. Všetko v §3 hlavnej zmluvy.
 
-- [ ] **Rozhodnúť, či cena ide na `/federacie`** — stránka stále hovorí
-  „čoskoro". Zverejnená cena sa ťažšie vyjednáva, nezverejnená odrádza; je to
-  obchodné rozhodnutie, nie technická prekážka. **Ak sa zverejní, číslo musí mať
-  v kóde jediný výskyt** ako trénerské hladiny (`lib/landing-pricing.ts`), inak
-  sa web a zmluva rozídu.
+- [x] ~~**Rozhodnúť, či cena ide na `/federacie`**~~ — **ROZHODNUTÉ 2026-08-31:
+  ide, ale len vstupná cena.** Stránka ukazuje „od 49 € za trénera na mesiac,
+  najmenej traja, bez DPH, ročne až −30 %". Tabuľka pásiem sa nezverejňuje
+  a pásmo na dohodu pre veľkých tam nebude. Prehodnotilo sa to preto, že stránka
+  je odteraz **po anglicky a mieri von** — a pôvodné „čoskoro" znelo pri produkte
+  pre organizácie ako „ešte nevieme, čo robíme".
 
 - [ ] **Cyklus záloh do §9.5** — zistiť u Supabase, akú retenciu má produkčný
   projekt na svojom pláne, a nahradiť `[X]` skutočným číslom.

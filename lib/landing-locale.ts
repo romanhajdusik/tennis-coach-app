@@ -262,11 +262,22 @@ export type FederacieMessages = {
   pricingBadge: string;
   pricingTitle: string;
   pricingText: string;
+  pricingContact: string;
   footerTagline: string;
 };
 
-export async function loadFederacieMessages(): Promise<FederacieMessages> {
-  const messages = await import("../messages/sk/federacie.json");
+/**
+ * Stránka pre federácie je **SK/EN, predvolene po ANGLICKY** (rozhodnuté
+ * 2026-08-31). Do vtedy bola len slovenská a v CLAUDE.md k tomu stálo, že
+ * prvými B2B zákazníkmi sú slovenské zväzy — **to bol nepodložený predpoklad,
+ * nie rozhodnutie**. Federačný produkt sa má ponúkať aj mimo Slovenska. Dva
+ * jazyky, nie deväť, rovnako ako rozcestník: kto má v cookie iný jazyk,
+ * dostane angličtinu (`rozcestnikLocale()`).
+ */
+export async function loadFederacieMessages(
+  locale: RozcestnikLocale,
+): Promise<FederacieMessages> {
+  const messages = await import(`../messages/${locale}/federacie.json`);
   return messages.default as FederacieMessages;
 }
 
