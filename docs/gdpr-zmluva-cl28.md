@@ -732,9 +732,13 @@ funkcionality, postupom podľa §6.2. Stripe nespracúva údaje hráčov.
 
 ### Čo treba doplniť pred prvým podpisom
 
-6. **Postup pri incidente neexistuje** (otvorený bod v časti E záznamu). §8.1
-   sľubuje 48 hodín — bez napísaného postupu je to číslo bez obsahu. **Toto je
-   najvážnejší chýbajúci kus.**
+6. ~~Postup pri incidente neexistuje.~~ **NAPÍSANÝ 2026-08-30:**
+   [postup-pri-incidente.md](postup-pri-incidente.md). §8.1 tým prestal byť
+   číslom bez obsahu. **Z postupu ale vypadla nová podmienka: zástupca** —
+   jeden človek 48-hodinovú lehotu pri nedostupnosti nesplní, takže pred prvým
+   zväzom treba druhého človeka s prístupom a s podpísanou mlčanlivosťou (§4
+   a príloha C). Postup zároveň pomenoval, že **rozsah incidentu vieme len
+   odhadnúť** — appka nemá záznam o čítaní.
 7. **§9.5 — cyklus záloh `[X]` dní.** Produkcia beží na Free pláne a **stav záloh
    nie je overený**. Číslo sa nedá vymyslieť, treba ho zistiť u Supabase.
 8. **Príloha C — `[počet]` osôb s prístupom k produkcii.** Dnes jedna; s prvým

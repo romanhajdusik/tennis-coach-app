@@ -114,6 +114,8 @@ npx supabase gen types typescript --local > lib/database.types.ts # po každej m
 
 ### Bezpečnostné pravidlá (povinné)
 
+> **Keď sa niečo stane, postup je v [`docs/postup-pri-incidente.md`](docs/postup-pri-incidente.md).** Zmluva podľa čl. 28 dáva na oznámenie organizácii **48 hodín od zistenia**; tam, kde sme prevádzkovateľ (účty, rodičovské kópie), platí **72 hodín voči Úradu**. **Lehota beží od zistenia, nie od pochopenia** — v lehote stačí prvé, neúplné oznámenie. Appka **nemá záznam o čítaní**, takže rozsah incidentu sa odhaduje z toho, čo bolo možné, nie z toho, čo sa stalo.
+
 - **RLS zapnuté na každej tabuľke.** Základná policy: `coach_id = auth.uid()`
 - **Archív (neaktívny hráč) je read-only na úrovni DB:** RLS policy blokuje UPDATE/DELETE na sessions a metrics, ak hráč má `is_active = false`. UI kontrola nestačí.
 - **Dokončený tréning (`sessions.status = 'completed'`) je tiež read-only na úrovni DB:** RLS blokuje UPDATE/DELETE na `sessions` a `session_drills` (aj INSERT nových cvičení), rovnaký princíp ako archív.
