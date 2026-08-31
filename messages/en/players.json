@@ -39,6 +39,14 @@
     "submit": "Add player",
     "submitPending": "Adding..."
   },
+  "editForm": {
+    "heading": "Edit player",
+    "nameLabel": "Name or nickname",
+    "birthYearLabel": "Year of birth",
+    "hint": "Use this to fix a wrong name or year of birth.",
+    "submit": "Save changes",
+    "submitPending": "Saving..."
+  },
   "share": {
     "heading": "Share access",
     "description": "Generate a code and send it to the player, parent, or manager (SMS, WhatsApp...). They enter it once in their own app and will see this player's practices and analytics.",
@@ -82,6 +90,7 @@
     "linkSamePlayer": "That code belongs to this player's own card.",
     "linkNotYourPlayer": "You can only link your own player.",
     "linkNotInOrganization": "In a federation, players are assigned by the head coach — no code is needed.",
-    "linkAlreadyLinked": "These two cards are already linked the other way round. To share back, the coach who entered your code turns on the summary on that link."
+    "linkAlreadyLinked": "These two cards are already linked the other way round. To share back, the coach who entered your code turns on the summary on that link.",
+    "updateFailed": "Failed to save the changes."
   }
 }

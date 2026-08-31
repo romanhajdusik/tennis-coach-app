@@ -27,6 +27,23 @@ async function ownPlayerScope(userId: string) {
     : { column: "coach_id" as const, value: userId };
 }
 
+/**
+ * Rok narodenia je nepovinný, ale keď je vyplnený, musí dávať zmysel. Zdieľajú
+ * to zakladanie aj oprava — inak by sa dala kontrola cez opravu obísť.
+ */
+function parseBirthYear(
+  raw: string | undefined,
+): { ok: true; value: number | null } | { ok: false } {
+  if (!raw) return { ok: true, value: null };
+
+  const parsed = Number.parseInt(raw, 10);
+  const currentYear = new Date().getFullYear();
+  if (!Number.isInteger(parsed) || parsed < 1900 || parsed > currentYear) {
+    return { ok: false };
+  }
+  return { ok: true, value: parsed };
+}
+
 export async function createPlayer(
   _prevState: PlayerFormState,
   formData: FormData,
@@ -39,15 +56,11 @@ export async function createPlayer(
     return { error: t("missingName") };
   }
 
-  let birthYear: number | null = null;
-  if (birthYearRaw) {
-    const parsed = Number.parseInt(birthYearRaw, 10);
-    const currentYear = new Date().getFullYear();
-    if (!Number.isInteger(parsed) || parsed < 1900 || parsed > currentYear) {
-      return { error: t("invalidBirthYear") };
-    }
-    birthYear = parsed;
+  const parsedYear = parseBirthYear(birthYearRaw);
+  if (!parsedYear.ok) {
+    return { error: t("invalidBirthYear") };
   }
+  const birthYear = parsedYear.value;
 
   const supabase = await createClient();
   const {
@@ -85,6 +98,80 @@ export async function createPlayer(
 
   if (error) {
     return { error: t("createFailed") };
+  }
+
+  revalidatePath("/players");
+}
+
+/**
+ * Oprava karty hráča — meno a rok narodenia.
+ *
+ * Do 2026-08-30 sa karta v appke upraviť nedala vôbec (boli tu len `create`,
+ * `deactivate`, `activate`), takže **preklep v mene dieťaťa neopravil ani
+ * tréner**. Databáza to pritom dovoľovala (`players_personal_all` je `FOR ALL`
+ * a na `is_active` sa nepýta) — prekážka bola len v rozhraní, a pritom je
+ * oprava nesprávneho údaja právo dotknutej osoby (čl. 16 GDPR).
+ *
+ * **Obsah dokončeného tréningu sa takto opraviť NEDÁ a nemá** — jeho nemennosť
+ * je bezpečnostný sľub (príloha C zmluvy podľa čl. 28 aj oba audity). Tá cesta
+ * vedie cez podporu, nie cez tlačidlo „odomknúť".
+ */
+export async function updatePlayer(
+  playerId: string,
+  _prevState: PlayerFormState,
+  formData: FormData,
+): Promise<PlayerFormState> {
+  const name = (formData.get("name") as string)?.trim();
+  const birthYearRaw = (formData.get("birth_year") as string)?.trim();
+  const t = await getTranslations("Players.errors");
+
+  if (!name) {
+    return { error: t("missingName") };
+  }
+
+  const parsedYear = parseBirthYear(birthYearRaw);
+  if (!parsedYear.ok) {
+    return { error: t("invalidBirthYear") };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
+  //
+  // **Nad cenovou hladinou sa oprava povoľuje** — rovnaká výnimka ako pri
+  // archivácii a z rovnakého dôvodu: prekročenie hladiny je stav, do ktorého
+  // trénera dostaneme my (znížením hladiny), a opravu mena dieťaťa ním blokovať
+  // nemá čo. Pridať hráča sa tým nedá, takže hladinu to neobchádza.
+  const blocked = await requireWriteAccess(supabase, user.id, {
+    allowOverPlayerLimit: true,
+  });
+  if (blocked) {
+    return { error: (await getTranslations("Common"))(blocked) };
+  }
+
+  const scope = await ownPlayerScope(user.id);
+
+  // `select` je tu kvôli odpovedi, nie kvôli dátam: keď RLS zápis zamietne,
+  // PostgREST nevráti chybu, len nula riadkov — bez tejto kontroly by klik
+  // vyzeral ako úspech. Vo federácii sa to stane trénerovi, ktorý hráča má
+  // prideleného, ale nie je autorom riadku (`players_org_coach_update` sa pýta
+  // `coach_id = auth.uid()`).
+  const { data, error } = await supabase
+    .from("players")
+    .update({ name, birth_year: parsedYear.value })
+    .eq("id", playerId)
+    .eq(scope.column, scope.value)
+    .select("id");
+
+  if (error || !data?.length) {
+    return { error: t("updateFailed") };
   }
 
   revalidatePath("/players");

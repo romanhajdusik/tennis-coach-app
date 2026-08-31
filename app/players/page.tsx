@@ -22,6 +22,7 @@ import {
 } from "@/components/roster-status";
 import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { AddPlayerForm } from "./add-player-form";
+import { EditPlayerForm } from "./edit-player-form";
 import { SharePlayerSection } from "./share-player-section";
 import { LinkPlayerSection } from "./link-player-section";
 
@@ -247,6 +248,12 @@ export default async function PlayersPage() {
                     </div>
                   </div>
 
+                  <EditPlayerForm
+                    playerId={player.id}
+                    name={player.name}
+                    birthYear={player.birth_year}
+                  />
+
                   {!org && (
                     <SharePlayerSection
                       playerId={player.id}
@@ -301,29 +308,40 @@ export default async function PlayersPage() {
             {archivedPlayers.map((player) => (
               <li
                 key={player.id}
-                className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 "
+                className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 "
               >
-                <div className="min-w-0">
-                  <p className="truncate font-medium text-foreground ">
-                    {player.name}
-                  </p>
-                  {player.birth_year && (
-                    <p className="text-sm text-muted ">{player.birth_year}</p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-foreground ">
+                      {player.name}
+                    </p>
+                    {player.birth_year && (
+                      <p className="text-sm text-muted ">{player.birth_year}</p>
+                    )}
+                  </div>
+                  {/* Pri vyčerpanej hladine sa tlačidlo nevykreslí — server by
+                      vrátenie z archívu aj tak odmietol (`requirePlayerSlot`)
+                      a mlčky, takže by klik vyzeral ako pokazená appka. */}
+                  {!limitState?.reached && (
+                    <form action={activatePlayer.bind(null, player.id)}>
+                      <button
+                        type="submit"
+                        className="flex-none rounded-lg border border-border px-3 py-1.5 text-sm font-medium "
+                      >
+                        {t("activate")}
+                      </button>
+                    </form>
                   )}
                 </div>
-                {/* Pri vyčerpanej hladine sa tlačidlo nevykreslí — server by
-                    vrátenie z archívu aj tak odmietol (`requirePlayerSlot`)
-                    a mlčky, takže by klik vyzeral ako pokazená appka. */}
-                {!limitState?.reached && (
-                  <form action={activatePlayer.bind(null, player.id)}>
-                    <button
-                      type="submit"
-                      className="flex-none rounded-lg border border-border px-3 py-1.5 text-sm font-medium "
-                    >
-                      {t("activate")}
-                    </button>
-                  </form>
-                )}
+
+                {/* Opraviť sa musí dať aj archivovaného hráča: archív je
+                    read-only na tréningoch a testoch, nie na karte, a rodič
+                    môže o opravu požiadať aj po skončení spolupráce. */}
+                <EditPlayerForm
+                  playerId={player.id}
+                  name={player.name}
+                  birthYear={player.birth_year}
+                />
               </li>
             ))}
           </ul>
