@@ -62,6 +62,7 @@
     "noNotes": "No notes.",
     "actualDateLabel": "Actual date and time",
     "notesLabel": "Notes",
+    "notesHealthHint": "Details of an injury or illness are health data.",
     "saveNotes": "Save notes",
     "savingNotes": "Saving...",
     "completeButton": "Complete practice",

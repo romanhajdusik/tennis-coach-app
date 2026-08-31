@@ -140,6 +140,24 @@ export function RegisterForm({ promoRequired }: { promoRequired: boolean }) {
             className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
           />
         </div>
+        {/* Vyhlásenie o veku NIE JE súhlas so spracúvaním (ten nepotrebujeme,
+            spracúvame zo zmluvy) — je to podmienka zmluvnej spôsobilosti: účet
+            je zmluva a maloletý ju sám uzavrieť nemôže. 16 je strop, ktorý si
+            členský štát smie určiť, takže jedno číslo pokrýva celú EÚ.
+            Zaškrtnutie v prehliadači je len pripomienka, rozhoduje kontrola
+            v `register()`. */}
+        <div className="flex items-start gap-2">
+          <input
+            id="age_confirmed"
+            name="age_confirmed"
+            type="checkbox"
+            required
+            className="mt-0.5 size-4 shrink-0 accent-primary"
+          />
+          <label htmlFor="age_confirmed" className="text-sm text-muted ">
+            {t("ageConfirmLabel")}
+          </label>
+        </div>
         {state?.error && (
           <p className="text-sm text-red-400">{state.error}</p>
         )}

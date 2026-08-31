@@ -68,6 +68,13 @@ export async function register(
     return { error: t("invalidRole") };
   }
 
+  // Vek sa overuje na serveri, nie len atribútom `required` vo formulári —
+  // ten sa dá obísť a registrácia je verejná cesta. Nie je to súhlas so
+  // spracúvaním (ten nepotrebujeme), ale podmienka zmluvnej spôsobilosti.
+  if (formData.get("age_confirmed") !== "on") {
+    return { error: t("ageNotConfirmed") };
+  }
+
   if (password.length < 8) {
     return { error: t("passwordTooShort") };
   }

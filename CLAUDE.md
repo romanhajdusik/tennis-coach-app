@@ -242,6 +242,7 @@ Tréner sa do federácie pridá **sám, pozývacím kódom** — šéftréner mu
      - **Poistka proti duplikátu:** ak už cieľový hráč má nezrušený tréning s tým istým plánovaným časom, akcia to odmietne. Bez nej by dvojklik (alebo druhé skopírovanie toho istého tréningu) zdvojnásobil hráčovi odohraný čas v analytike.
      - Vedľajší efekt, ktorý bol dôvodom navyše: hráč, ktorý trénoval v skupine, ale zapísaný bol pri kolegovi, sa v rosteri aj na nástenke „Dnes" tváril ako zanedbaný a šéftrénerovi svietil v „vyžaduje pozornosť".
 2. **Aktualizácia (review):** po tréningu tréner doplní reálny čas a poznámky; jednotlivé cvičenia môže označiť ako **neodohrané** alebo **nahradené** (náhrada sa zaradí v zozname hneď za pôvodným cvičením)
+   - Pod poľom poznámok je od 2026-08-30 jednovetové **upozornenie** (`Sessions.review.notesHealthHint`): voľný text zvádza napísať zranenie či chorobu, čo je **údaj o zdraví**. Je to holé konštatovanie, **nie zákaz ani inštrukcia** — zakázať sa to nedá (bez toho by poznámka stratila zmysel) a poučiť trénerov je podľa zmluvy čl. 28 vec organizácie, nie naša
 3. **Archivácia (completed):** uzamknutie záznamu (vynútené aj cez RLS) — od tohto bodu už nejde tréning ani zrušiť, ani cvičenia preusporiadať
 
 ## Kalendár
@@ -303,6 +304,7 @@ Dovtedy sa registrácia dala len zapnúť alebo vypnúť (`REGISTRATION_ENABLED`
 - `promo_code_is_valid()` vracia **len áno/nie** a smie ju volať aj `anon` (registrácia je z definície bez prihlásenia) — cez ňu sa nedá zistiť, čo kód dáva ani koľko použití mu ostáva.
 - **Na org subdoméne `/register` presmeruje na `/join`** (`proxy.ts`) — do federácie sa vstupuje pozývacím kódom od šéftrénera, nie samoobsluhou.
 - **Potvrdzovanie mailu pri registrácii** (dashboard) si vyžiadalo obrazovku „skontroluj si mail" v `register-form.tsx`: pri zapnutom potvrdzovaní Supabase nevydá session a bez tej obrazovky by to vyzeralo, že odoslanie formulára nespravilo nič. `app/auth/confirm/route.ts` prijíma aj typ `signup`.
+- **Vyhlásenie o veku 16 (od 2026-08-30)** — registračný formulár má povinné zaškrtnutie „I am at least 16 years old" a **overuje ho server** (`register()` v `lib/actions/auth.ts`), nie len atribút `required`. **Nie je to súhlas so spracúvaním** — ten nepotrebujeme, spracúvame zo zmluvy; je to podmienka **zmluvnej spôsobilosti**: účet je zmluva a maloletý ju sám uzavrieť nemôže. 16 je strop, ktorý si členský štát smie určiť, takže jedno číslo pokrýva celú EÚ naraz. Platí preň tá istá medzera ako pre kód — cez verejný Supabase endpoint sa účet dá založiť mimo formulára.
 - Overuje `scripts/dev-tests/promo-codes.js` (20 kontrol).
 
 ## Obnova zabudnutého hesla (od 2026-08-16)

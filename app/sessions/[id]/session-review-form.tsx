@@ -109,6 +109,11 @@ export function SessionReviewForm({
           >
             {t("notesLabel")}
           </label>
+          {/* Voľné pole, do ktorého tréner prirodzene napíše aj zranenie či
+              chorobu — a to je údaj o zdraví. Veta to len konštatuje:
+              zakázať sa to nedá (poznámka by stratila zmysel) a poučiť
+              trénera je podľa zmluvy čl. 28 vec organizácie, nie naša. */}
+          <p className="text-xs text-muted ">{t("notesHealthHint")}</p>
           <textarea
             id="notes"
             name="notes"
