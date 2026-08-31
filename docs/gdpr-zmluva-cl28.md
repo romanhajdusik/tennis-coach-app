@@ -732,6 +732,11 @@ funkcionality, postupom podľa §6.2. Stripe nespracúva údaje hráčov.
 
 ### Čo treba doplniť pred prvým podpisom
 
+> **Celý zoznam vrátane prevádzkových vecí je v
+> [pred-prvym-zvazom.md](pred-prvym-zvazom.md)** — tam je jedno miesto, kde sa
+> odškrtáva. Body nižšie ostávajú tu preto, že vysvetľujú, prečo v texte zmluvy
+> stojí zátvorka.
+
 6. ~~Postup pri incidente neexistuje.~~ **NAPÍSANÝ 2026-08-30:**
    [postup-pri-incidente.md](postup-pri-incidente.md). §8.1 tým prestal byť
    číslom bez obsahu. **Z postupu ale vypadla nová podmienka: zástupca** —

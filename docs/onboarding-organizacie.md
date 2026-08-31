@@ -22,8 +22,11 @@ podľa čl. 28 GDPR ([gdpr-zmluva-cl28.md](gdpr-zmluva-cl28.md)) musí byť podp
 oboma stranami **skôr, než zväz zapíše prvého hráča** — inak spracúvajú obe strany
 bez právneho podkladu (§1.2 zmluvy).
 
-Do zmluvy sa pred podpisom dopĺňa: kontakt na oznámenie incidentu (príloha A),
+Do zmluvy sa pred podpisom dopĺňa kontakt na oznámenie incidentu (príloha A),
 cyklus záloh (§9.5) a počet osôb s prístupom k produkcii (príloha C).
+**Úplný kontrolný zoznam pred prvým zväzom — vrátane prevádzkových vecí ako
+zástupca, Vercel Pro a zmluvy s poddodávateľmi — je v
+[pred-prvym-zvazom.md](pred-prvym-zvazom.md).**
 
 **Výnimka je len testovací tím s vymyslenými menami** — tam sa žiadne osobné údaje
 nespracúvajú.
