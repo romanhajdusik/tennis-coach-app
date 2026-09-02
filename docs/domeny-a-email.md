@@ -514,21 +514,62 @@ stránku, ktorá ho má osloviť.
 
 ## 10. Kontrolný zoznam
 
-- [ ] Workspace založený, `plawsports.com` overená
-- [ ] MX `smtp.google.com` (priorita 1), staré Websupport MX zmazané
-- [ ] SPF `v=spf1 include:_spf.google.com ~all`
-- [ ] DKIM vygenerovaný **a zapnutý** (`Spustiť overovanie`)
-- [ ] DMARC `p=none` + adresa na reporty
+- [x] Workspace založený, `plawsports.com` overená
+- [x] MX `smtp.google.com` (priorita 1), staré Websupport MX zmazané
+- [x] SPF `v=spf1 include:_spf.google.com ~all`
+- [x] DKIM vygenerovaný **a zapnutý** (`Spustiť overovanie`)
+- [x] DMARC `p=none` + adresa na reporty
 - [x] Skúšobný mail tam aj späť, v hlavičkách `dkim=pass` a `spf=pass`
 - [x] Skúška aliasu naostro: mail na `info@` dostal štítok, odpoveď odišla z `info@` (2026-08-12)
 - [x] Aliasy `info@`, `office@`, `support@`, `billing@` (hotové 2026-08-12) + „Odosielať e-maily ako" + filtre v Gmaile
 - [x] Alias doména `plawtennis.com` (MX, SPF, DKIM, DMARC — hotové 2026-08-12)
-- [ ] `plaw.win` a `plaw.online`: parkovanie pošty (null MX + `v=spf1 -all` + DMARC `p=reject`)
-- [ ] `A`/`CNAME` na `plaw.win` a `plaw.online` **nedotknuté**
+- [x] `plaw.win` a `plaw.online`: parkovanie pošty (bez MX + `v=spf1 -all` + DMARC `p=reject`)
+- [x] `A`/`CNAME` na `plaw.win` a `plaw.online` **nedotknuté**
 - [x] `plawtennis.com` + `plaw-tennis.com` (aj `www`) → 307 redirect vo Verceli (2026-08-12; cieľ je **`www.plaw.win`**, nie apex — ušetrí to jeden skok navyše, lebo `plaw.win` sám presmerúva na `www`). Overené zvonku: všetky štyri hostnames vracajú `307 → https://www.plaw.win/`
 - [x] `plaw.click` **ŽIVÁ (2026-08-22)**, Krok 9c. Hlavná je `www.plaw.click` (Production), apex naň ide `308` — teda rovnaký vzor ako `plaw.win` a `plaw.online`, nie apex-first, ako navrhoval runbook. `A @` = `216.198.79.1`, `CNAME www` = `044898b4a673cb8d.vercel-dns-017.com`, websupportové parkovacie `A`/`AAAA` na `@`, `www` aj `*` zmazané. Overené cez `dns.google` (apex `AAAA` už nevracia nič) aj v prehliadači
 - [x] `plaw.click`: pošta zaparkovaná (2026-08-22) — bez `MX`, `v=spf1 -all`, `_dmarc` = `v=DMARC1; p=reject;`, websupportové zvyšky zmazané, `A`/`CNAME` na Vercel nedotknuté. Overené cez `dns.google` vrátane kontroly, že web ďalej beží
-- [ ] Zaparkované domény: null MX + `v=spf1 -all` + DMARC `p=reject`
+- [x] Zaparkované domény **HOTOVÉ (2026-09-02)**: `plawpadel.com`, `plawpickleball.com`, `plawbadminton.com` — bez MX, `v=spf1 -all`, `_dmarc` = `v=DMARC1; p=reject;`. Websupportové `mail`/`webmail`/`smtp`/`www` sa vedome nechali — ochranu robí SPF a DMARC, a `p=reject` platí aj pre subdomény
 - [x] Dvojfaktorové overenie a záložné kódy (2026-08-12; záchranný mail + telefón sa dali nastaviť až cez Admin konzolu → Users → Security → Recovery information, cez `myaccount.google.com` to nový účet odmietal s „We couldn't verify it's you")
-- [ ] O ~2 týždne: DMARC na `p=quarantine`, potom `p=reject`
-- [ ] Kontaktná adresa doplnená na `/federacie` a na landing
+- [x] DMARC na `p=reject` **HOTOVÉ (2026-09-01)** v oboch poštových zónach — `plawsports.com` aj `plawtennis.com`. Na alias doménu sa ľahko zabudne, posiela sa aj z nej
+- [x] Kontaktné adresy **HOTOVÉ (2026-09-01)**: `office@` pod cenou na `/federacie`, `info@` v pätičke consumer landingu, landingu pre sledujúceho aj rozcestníka. Adresa sa zámerne neprekladá — nie je to text, takže nepribudol kľúč do deviatich jazykov
+
+---
+
+## 11. Uzavreté (2026-09-02)
+
+**Runbook je hotový celý.** Stav overený nie z konzoly, ale dotazmi priamo na
+autoritatívne nameservery Websupportu (`ns1`/`ns2`/`ns3`) — konzola vie tvrdiť
+„uložené" aj keď sa zápis do zóny nedostal, viď pascu nižšie.
+
+| Doména | MX | SPF | DMARC |
+|---|---|---|---|
+| `plawsports.com` | Google | `include:_spf.google.com ~all` | `p=reject` |
+| `plawtennis.com` | Google | `include:_spf.google.com ~all` | `p=reject` |
+| `plaw.win` | žiadne | `v=spf1 -all` | `p=reject` |
+| `plaw.online` | žiadne | `v=spf1 -all` | `p=reject` |
+| `plaw.click` | žiadne | `v=spf1 -all` | `p=reject` |
+| `plaw-tennis.com` | žiadne | `v=spf1 -all` | `p=reject` |
+| `plawpadel.com` | žiadne | `v=spf1 -all` | `p=reject` |
+| `plawpickleball.com` | žiadne | `v=spf1 -all` | `p=reject` |
+| `plawbadminton.com` | žiadne | `v=spf1 -all` | `p=reject` |
+
+> **PASCA, ktorá sa chytila pri poslednej doméne: Websupport vie uloženie
+> „prijať" a nezapísať.** Pri `_dmarc.plawbadminton.com` najprv vyskočil
+> `Request failed with status code 503`, potom sa formulár tváril, že prešiel —
+> a všetky tri nameservery pritom ďalej vracali starú hodnotu. **Neveriť
+> konzole; overovať dotazom na `ns1/ns2/ns3.websupport.sk`.** Keď sa všetky tri
+> zhodujú na starej hodnote, nejde o replikáciu, ale o nezapísanú zmenu. Pomohlo
+> jednoducho uložiť znova.
+
+**Čo z toho ostáva do budúcna:**
+
+- **Odosielacia subdoména je živá.** Appkové maily posiela **Resend**
+  z `mail.plawsports.com` (overené 2026-09-01 na maile o obnove hesla:
+  odosielateľ `noreply@mail.plawsports.com`, obálka `send.mail.plawsports.com`,
+  podpis `mail.plawsports.com`). **Jej záznamy nesedia na
+  `mail.plawsports.com`, ale na jeho deťoch** — `resend._domainkey.mail…`
+  a `send.mail…`; dotaz na rodiča vráti prázdno a vyzerá to, že nie je nič
+  nastavené.
+- **S `p=reject` je zle nastavená odosielacia subdoména ODMIETNUTÁ, nie
+  v spame.** Pri ďalšej integrácii, ktorá bude posielať v mene domény, to over
+  skôr, než cez ňu pôjde ostrý mail.
