@@ -110,8 +110,17 @@ export async function PublicFaceHome() {
         </div>
       </section>
 
+      {/* `info@` je všeobecná adresa; `/federacie` má obchodnú `office@`.
+          Samotná adresa sa neprekladá, takže nepribudol kľúč do prekladov. */}
       <footer className="mt-auto w-full max-w-4xl px-4 py-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
+        <span className="mx-2">·</span>
+        <a
+          href="mailto:info@plawsports.com"
+          className="underline transition-colors hover:text-foreground"
+        >
+          info@plawsports.com
+        </a>
       </footer>
     </div>
   );

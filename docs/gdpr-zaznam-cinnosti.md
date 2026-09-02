@@ -72,7 +72,7 @@ záťaže z hodiniek a pri prvých federáciách**.*
 | **Právny základ** | čl. 6 ods. 1 písm. b |
 | **Dotknuté osoby** | všetci držitelia účtu |
 | **Kategórie údajov** | e-mail, meno, jednorazový odkaz |
-| **Príjemcovia** | Resend (odosielacia subdoména `mail.plawsports.com`) — *overiť, či je custom SMTP na produkcii zapnutý; ak nie, je príjemcom vstavaný mailer Supabase* |
+| **Príjemcovia** | **Resend** — odosielacia subdoména `mail.plawsports.com`. **Overené naostro 2026-09-01** na maile o obnove hesla: odosielateľ `noreply@mail.plawsports.com`, obálka `send.mail.plawsports.com`, podpis `mail.plawsports.com`. Vstavaný mailer Supabase sa teda nepoužíva. |
 | **Lehota** | podľa logov poskytovateľa, cieľ do 30 dní |
 
 ### A5 — Prevádzka, bezpečnosť a logy

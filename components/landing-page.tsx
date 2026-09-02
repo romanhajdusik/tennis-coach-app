@@ -297,8 +297,18 @@ export async function LandingPage() {
         </div>
       </section>
 
+      {/* `info@` je všeobecná adresa; `/federacie` má obchodnú `office@`.
+          Samotná adresa sa neprekladá, takže nepribudol kľúč do deviatich
+          jazykov — nie je čo rozísť. */}
       <footer className="w-full max-w-5xl px-4 py-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
+        <span className="mx-2">·</span>
+        <a
+          href="mailto:info@plawsports.com"
+          className="underline transition-colors hover:text-foreground"
+        >
+          info@plawsports.com
+        </a>
       </footer>
     </div>
   );
