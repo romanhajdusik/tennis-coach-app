@@ -29,7 +29,14 @@
     "browseByMonth": "Browse by month",
     "showRecent": "Back to recent",
     "noSessionsInMonth": "No practices in this month.",
-    "listTruncated": "Only the {count} most recent practices are shown — use the month filter to look further back."
+    "listTruncated": "Only the {count} most recent practices are shown — use the month filter to look further back.",
+    "disconnectHeading": "Stop following",
+    "disconnectText": "You will stop receiving new practices. Everything recorded so far stays in your account — nothing is deleted. To start again you will need a new code from the coach.",
+    "disconnectButton": "Stop following",
+    "disconnectConfirm": "Are you sure? New practices will stop arriving.",
+    "disconnectConfirmYes": "Yes, stop",
+    "disconnectCancel": "Cancel",
+    "disconnectPending": "Stopping..."
   },
   "calendar": {
     "back": "Back",

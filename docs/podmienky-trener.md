@@ -204,8 +204,7 @@ belong to Slovak courts. If you are a consumer, you do not thereby lose the
 protection given to you by the law of your country of residence.
 
 If you are a consumer, you may also try to resolve a dispute out of court through
-**[the alternative dispute resolution body — to be added]** or through the European
-Commission's online dispute resolution platform.
+**[the alternative dispute resolution body — to be added]**.
 
 ### 14. Contact
 
@@ -394,8 +393,7 @@ Ak si spotrebiteľ, nestrácaš tým ochranu, ktorú ti dávajú predpisy krajin
 bydliska.
 
 Ak si spotrebiteľ, môžeš spor riešiť aj mimosúdne cez **[orgán alternatívneho
-riešenia sporov — doplniť]** alebo cez platformu Európskej komisie pre riešenie
-sporov online.
+riešenia sporov — doplniť]**.
 
 ## 14. Kontakt
 
@@ -490,6 +488,12 @@ sporov online.
 9. **Orgán alternatívneho riešenia sporov** (§13) — pri predaji spotrebiteľom je
    povinné ho uviesť. Zvyčajne Slovenská obchodná inšpekcia; **over pred
    zverejnením**.
+   - **Odkaz na platformu Európskej komisie pre riešenie sporov online bol
+     2026-09-02 z oboch dokumentov ODSTRÁNENÝ.** Platforma **skončila
+     20. 7. 2025** (nariadenie (EÚ) 2024/3228 zrušilo pôvodné nariadenie o ODR)
+     — odkazovať spotrebiteľa na neexistujúcu službu je horšie než neuviesť nič.
+     **Nevracaj ho.** Povinnosť uviesť orgán alternatívneho riešenia sporov tým
+     nezaniká, tá platí ďalej.
 10. **Odkazy na zásady** (§1, §7) a **na text pre rodičov** (§7) — stránky musia
     najprv vzniknúť.
 11. **Dátum účinnosti** (§14).

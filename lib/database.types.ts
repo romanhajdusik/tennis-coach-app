@@ -782,6 +782,7 @@ export type Database = {
       promo_code_is_valid: { Args: { p_code: string }; Returns: boolean }
       reads_linked_player: { Args: { p_player_id: string }; Returns: boolean }
       reads_linked_session: { Args: { p_session_id: string }; Returns: boolean }
+      revoke_my_connection: { Args: never; Returns: undefined }
       revoke_player_link: { Args: { p_link_id: string }; Returns: undefined }
       set_link_follower_sharing: {
         Args: { p_enabled: boolean; p_link_id: string }

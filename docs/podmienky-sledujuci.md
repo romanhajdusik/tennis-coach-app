@@ -69,9 +69,10 @@ account.
 **You can have one active connection at a time.** A new code replaces the previous
 one; the records you have already received stay with you.
 
-**The connection is ended by the coach.** After that no new records are added and
-the existing ones remain yours. If you no longer want to receive new records, tell
-the coach — or close your account, which deletes everything at once (section 12).
+**The connection can be ended by either side — by you or by the coach.** After
+that no new records are added and **everything you have already received stays
+yours**; ending the connection deletes nothing. To start receiving records again
+you will need a new code from the coach.
 
 ### 5. What you get without and with a subscription
 
@@ -130,7 +131,6 @@ anything technical, but deciding your relationship is not ours to do.
 - Access other people's accounts, or attempt to.
 - Use an access code that was not issued to you.
 - Download data automatically beyond ordinary use.
-- Publish the coach's notes without their knowledge — it is their professional work.
 - Transfer or sell your account to someone else.
 
 For a serious or repeated breach we may restrict or close the account. Unless it is
@@ -188,8 +188,7 @@ The relationship is governed by **the law of the Slovak Republic**. As a consume
 residence**.
 
 You may also try to resolve a dispute out of court through **[the alternative
-dispute resolution body — to be added]** or through the European Commission's online
-dispute resolution platform.
+dispute resolution body — to be added]**.
 
 ### 15. Contact
 
@@ -244,9 +243,10 @@ Prístupový kód ti vydá **tréner**. Zadaním kódu vznikne prepojenie a v tv
 **Naraz môžeš mať jedno aktívne prepojenie.** Nový kód nahradí to predošlé;
 záznamy, ktoré si už dostal, ti pritom ostávajú.
 
-**Prepojenie ruší tréner.** Po zrušení prestanú pribúdať nové záznamy, doterajšie
-ti ostávajú. Ak nechceš dostávať ďalšie, povedz to trénerovi — alebo si zrušte
-účet, čím sa zmaže všetko naraz (§12).
+**Prepojenie môže zrušiť ktorákoľvek strana — ty aj tréner.** Po zrušení
+prestanú pribúdať nové záznamy a **všetko, čo si dovtedy dostal, ti ostáva**;
+zrušením sa nič nemaže. Ak budeš chcieť záznamy dostávať znova, vypýtaš si od
+trénera nový kód.
 
 ## 5. Čo máš bez predplatného a čo s ním
 
@@ -302,7 +302,6 @@ nepatrí.
 - Pristupovať k cudzím účtom alebo sa o to pokúšať.
 - Používať prístupový kód, ktorý nebol vydaný tebe.
 - Sťahovať dáta automatizovane nad rámec bežného používania.
-- Zverejňovať poznámky trénera bez jeho vedomia — je to jeho odborná práca.
 - Odovzdať alebo predať svoj účet niekomu inému.
 
 Pri závažnom alebo opakovanom porušení môžeme účet obmedziť alebo zrušiť. Ak to
@@ -357,8 +356,7 @@ Vzťah sa riadi **právom Slovenskej republiky**. Ako spotrebiteľ **nestrácaš
 ochranu, ktorú ti dávajú predpisy krajiny tvojho bydliska**.
 
 Spor sa môžeš pokúsiť vyriešiť aj mimosúdne cez **[orgán alternatívneho riešenia
-sporov — doplniť]** alebo cez platformu Európskej komisie pre riešenie sporov
-online.
+sporov — doplniť]**.
 
 ## 15. Kontakt
 
@@ -391,10 +389,14 @@ online.
 3. **§8 je celý navyše** — trénerské podmienky ho nemajú, lebo tréner obsah píše.
    Sledujúci ho len číta a musí vedieť, na koho sa obrátiť. Zároveň to chráni
    teba: spory o to, „čo tréner napísal", nie sú tvoje spory.
-4. **§9 zákaz zverejňovania poznámok trénera** — nie je to GDPR, je to ochrana
-   trénerovej odbornej práce. Bez tejto vety by rodič mohol jeho metodiku
-   rozposlať konkurencii. **Zváž, či to chceš vynucovať** — vymôcť sa to nedá,
-   ale ako pravidlo to má zmysel povedať.
+4. ~~§9 zákaz zverejňovania poznámok trénera.~~ **VYPUSTENÉ 2026-09-02 na
+   pokyn usera**, hoci som odporúčal nechať. Dôvod pre vypustenie: pravidlo sa
+   nedá vynútiť, predlžuje text a rodičovi — človeku, ktorý chce len vidieť, čo
+   jeho dieťa trénuje — môže znieť nepriateľsky.
+   - **Cena, ktorá je tým prijatá:** keď niekto raz rozpošle metodiku trénera
+     ďalej, podmienky sa toho nechytia. Nebolo to opomenutie.
+   - **Nevracaj to späť bez rozhodnutia.** V trénerských podmienkach taká veta
+     nikdy nebola (tréner obsah píše), takže sa dokumenty tým nerozchádzajú.
 
 ### Čo som prevzal z trénerských podmienok bez zmeny
 
@@ -408,6 +410,12 @@ online.
 6. **Údaje s.r.o.** (§1) — firma sa zakladá.
 7. **Orgán alternatívneho riešenia sporov** (§14) — pri spotrebiteľoch povinné.
    Zvyčajne Slovenská obchodná inšpekcia; **over pred zverejnením**.
+   - **Odkaz na platformu Európskej komisie pre riešenie sporov online bol
+     2026-09-02 z oboch dokumentov ODSTRÁNENÝ.** Platforma **skončila
+     20. 7. 2025** (nariadenie (EÚ) 2024/3228 zrušilo pôvodné nariadenie o ODR)
+     — odkazovať spotrebiteľa na neexistujúcu službu je horšie než neuviesť nič.
+     **Nevracaj ho.** Povinnosť uviesť orgán alternatívneho riešenia sporov tým
+     nezaniká, tá platí ďalej.
 8. **Odkaz na zásady** (§1) — stránka musí najprv vzniknúť.
 9. **Dátum účinnosti** (§15).
 
@@ -415,10 +423,13 @@ online.
 
 10. **§5** — okno 6/24 mesiacov, mazanie starších záznamov aj upozornenie pred
     ním. Nič z toho neexistuje; prvý záznam vypadne z okna okolo januára 2027.
-11. **§4 je už preformulovaný na pravdivý stav** — overené v kóde, `revokeConnection`
-    filtruje na `coach_id`, takže **prepojenie dnes zruší len tréner**. Nie je to
-    porušenie ničoho (sledujúci sa vie odpojiť zmazaním účtu), ale je to
-    **nepohodlné**: kto chce prestať dostávať nové záznamy a zároveň si nechať
-    doterajšie, dnes nemá ako. **Dorobiť by sa to dalo lacno** — povoliť zrušenie
-    aj podľa `parent_id`. Ak sa to spraví, §4 sa vráti k pôvodnému zneniu.
+11. ~~§4 — prepojenie zruší len tréner.~~ **DOROBENÉ 2026-09-02.** Sledujúci si
+    prepojenie zruší sám (`revoke_my_connection`, migrácia `20260902090000`,
+    sekcia na konci `/parent`), takže §4 je vrátený k silnejšiemu zneniu
+    „zrušiť môže ktorákoľvek strana".
+    - **Funkcia nemá parameter** — sledujúci má naraz jedno aktívne prepojenie,
+      takže si ho nevyberá a nemôže ukázať na cudzí riadok.
+    - **Ide cez `security definer` RPC, nie cez UPDATE policy** — tá nevie
+      obmedziť, ktorý stĺpec sa mení, a otvorila by aj `player_id` a `coach_id`.
+    - **Kópie sa nemažú**, presne ako pri zrušení zo strany trénera.
 12. **§12** — zrušenie účtu a export. Zatiaľ ručne cez podporu.

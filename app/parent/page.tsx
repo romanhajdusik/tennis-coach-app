@@ -12,6 +12,7 @@ import {
   todayIn,
 } from "@/lib/calendar-window";
 import { ConnectForm } from "./connect-form";
+import { DisconnectSection } from "./disconnect-section";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -276,6 +277,8 @@ export default async function ParentDashboardPage({
               </p>
             ) : null}
           </section>
+
+          <DisconnectSection />
         </>
       )}
     </div>

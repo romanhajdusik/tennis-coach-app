@@ -91,6 +91,38 @@ export async function revokeConnection(connectionId: string) {
   revalidatePath("/players");
 }
 
+/**
+ * Sledujúci si zruší VLASTNÉ prepojenie (od 2026-09-02).
+ *
+ * Dovtedy to vedel len tréner (`revokeConnection` filtruje na `coach_id`),
+ * takže kto chcel prestať dostávať nové záznamy, musel si zmazať celý účet — a
+ * prišiel tým aj o doterajšie kópie. Podmienky pre sledujúceho §4 to popisovali
+ * pravdivo, ale bolo to nepohodlné a lacné na opravu.
+ *
+ * **Bez `requireWriteAccess`, zámerne.** Odobrať raz dané zdieľanie musí ísť
+ * vždy — rovnaká výnimka ako pri vypnutí súhrnu na prepojení kariet. Sledujúci
+ * navyše dnes neplatí nič.
+ *
+ * **Kópie ostávajú.** Zastaví sa len synchronizácia, `parent_session_records`
+ * sa nemažú — presne ako keď prepojenie zruší tréner.
+ */
+export async function revokeMyConnection() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/parent/login");
+  }
+
+  // Funkcia nemá parameter — sledujúci má naraz najviac jedno aktívne
+  // prepojenie, takže si ho nevyberá a nemôže ukázať na cudzí riadok.
+  await supabase.rpc("revoke_my_connection");
+
+  revalidatePath("/parent");
+}
+
 export type ClaimConnectionState = { error?: string } | undefined;
 
 export async function claimConnection(
