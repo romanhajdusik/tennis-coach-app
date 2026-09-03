@@ -37,6 +37,68 @@ const ALLOWED_GRANTS = {
   parent_session_drill_records: ["SELECT"],
 };
 
+// Kontrola z tretieho nálezu (2026-09-02) potrebuje SKUTOČNÝ obsah katalógu,
+// nie odpoveď PostgRESTu: `anon` bez práva EXECUTE aj `anon` s právom, ktorému
+// sa funkcia ubráni sama cez `auth.uid()`, vyzerajú z klienta skoro rovnako.
+// Preto sa `pg_proc` číta priamo — cez `psql` v kontajneri lokálnej Supabase.
+const { execFileSync } = require("node:child_process");
+
+// `has_function_privilege` je správna otázka („smie to `anon` spustiť?"), lebo
+// počíta aj právo zdedené cez PUBLIC — na rozdiel od surového `proacl`, kde by
+// sa PUBLIC grant musel dohľadávať zvlášť.
+//
+// TEN ISTÝ DOTAZ SA DÁ VLOŽIŤ DO PROD SQL EDITORA a je to jediný spôsob, ako
+// stav overiť na produkcii: lokálna inštancia vznikla s inými predvolenými
+// právami Supabase (viď README), takže „lokálne je to v poriadku" o produkcii
+// nehovorí nič.
+const ANON_EXECUTE_SQL = `
+  select p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')'
+  from pg_proc p
+  join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname = 'public'
+    and p.prokind in ('f', 'p')
+    and has_function_privilege('anon', p.oid, 'execute')
+  order by 1
+`;
+
+/** Funkcie v schéme `public`, ktoré dnes smie spustiť neprihlásený. */
+function anonExecutableFunctions() {
+  const containers = execFileSync(
+    "docker",
+    ["ps", "--filter", "name=supabase_db", "--format", "{{.Names}}"],
+    { encoding: "utf8" },
+  )
+    .trim()
+    .split("\n")
+    .filter(Boolean);
+
+  if (containers.length === 0) {
+    throw new Error(
+      "nenašiel sa kontajner `supabase_db_*` — beží `npx supabase start`?",
+    );
+  }
+
+  return execFileSync(
+    "docker",
+    ["exec", containers[0], "psql", "-U", "postgres", "-d", "postgres", "-At", "-c", ANON_EXECUTE_SQL],
+    { encoding: "utf8" },
+  )
+    .trim()
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Jediné dve funkcie, ktoré `anon` spúšťať SMIE (migrácia `20260902100000`).
+ * Pribudnúť sem smie len funkcia, ktorú naozaj volá neprihlásený — a s tým
+ * vedomím, že sa vtedy o ňu opiera celá obrana, lebo `auth.uid()` je NULL.
+ */
+const ANON_MAY_EXECUTE = [
+  "organization_by_slug(p_slug text)",
+  "promo_code_is_valid(p_code text)",
+];
+
 async function main() {
   const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
   const byEmail = (email) => users.users.find((user) => user.email === email);
@@ -238,6 +300,60 @@ async function main() {
     for (const table of ["sessions", "session_drills", "player_links"]) {
       const { data } = await asParent.from(table).select("id").limit(5);
       check(`rodič nečíta ${table}`, (data ?? []).length === 0);
+    }
+
+    section("7) `anon` nespustí ani jednu funkciu navyše (nález 2026-09-02)");
+    // Prečo je táto sekcia zvlášť a prečo číta katalóg: §2 vyššie overuje, že
+    // `anon` z funkcie nič nedostane — lenže to platilo aj VTEDY, keď na ňu
+    // EXECUTE mal, pretože si ho každá funkcia odmietla sama cez `auth.uid()`.
+    // Nález bol presne v tom rozdiele: obrana bola jednovrstvová a v migrácii
+    // to vyzeralo správne (`revoke … from public` explicitný `anon` grant
+    // neodoberá). Prvá funkcia, ktorá na `auth.uid()` zabudne, by bola
+    // volateľná z internetu. Preto sa tu porovnáva ZOZNAM, nie správanie
+    // jednej funkcie — nová funkcia s predvoleným grantom v ňom vyskočí sama.
+    const anonExecutable = anonExecutableFunctions();
+    const navyse = anonExecutable.filter((fn) => !ANON_MAY_EXECUTE.includes(fn));
+    check(
+      "žiadna funkcia navyše nad dvoma zámernými výnimkami",
+      navyse.length === 0,
+      navyse.length ? `navyše: ${navyse.join(", ")}` : `celkom: ${anonExecutable.length}`,
+    );
+
+    const chybajuce = ANON_MAY_EXECUTE.filter((fn) => !anonExecutable.includes(fn));
+    check(
+      "obe zámerné výnimky `anon` naozaj má",
+      chybajuce.length === 0,
+      chybajuce.join(", "),
+    );
+
+    // Druhá strana toho istého: výnimky musia ostať FUNKČNÉ. Keby ich cyklus
+    // v migrácii zobral a nevrátil, padli by naraz všetky org subdomény
+    // (`proxy.ts`) a registrácia s kódom — a to je horšia porucha než nález.
+    const orgBySlug = await anon.rpc("organization_by_slug", { p_slug: "todaytest" });
+    check(
+      "neprihlásený prečíta organizáciu podľa slugu (org subdomény žijú)",
+      orgBySlug.error === null && (orgBySlug.data ?? []).length === 1,
+      orgBySlug.error?.message,
+    );
+
+    const promoValid = await anon.rpc("promo_code_is_valid", { p_code: "NEEXISTUJE" });
+    check(
+      "neprihlásený overí promo kód (registrácia žije)",
+      promoValid.error === null && promoValid.data === false,
+      promoValid.error?.message,
+    );
+
+    // A nakoniec dôkaz, že odteraz zamieta GRANT, nie telo funkcie: pri
+    // odobratom EXECUTE vráti PostgREST 42501 („permission denied for
+    // function"). Keby sa grant vrátil, funkcia by sa ubránila sama a chyba by
+    // bola `not_authenticated` — sada by to chytila práve na tomto rozdiele.
+    for (const fn of ["revoke_my_connection", "org_players_for_copy"]) {
+      const call = await anon.rpc(fn);
+      check(
+        `anon dostane 42501 na ${fn} (zamieta grant, nie telo funkcie)`,
+        call.error?.code === "42501",
+        `${call.error?.code ?? "bez chyby"}: ${call.error?.message ?? ""}`,
+      );
     }
   } finally {
     for (const fn of cleanup.reverse()) await fn();

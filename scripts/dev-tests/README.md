@@ -38,7 +38,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `card-links.js` | **Prepojenie kariet hráča naprieč disciplínami** — vydanie a zaklaimovanie kódu, cross-read je len na čítanie, cudzia karta sa nedostane medzi hráčov, po zrušení prístup zmizne, a oba **súhrny** — opačným smerom (§10) aj pre sledujúceho (§10b): súhlas prepína vždy len tá strana, ktorej dáta to sú, súčty sedia a tréningy ani cvičenia sa neotvoria. Nepotrebuje dev server |
 | `promo-codes.js` | **Registrácia na pozvánku** — kódy nesmie nikto čítať ani meniť, vymyslený kód v metadátach nedá nič, hromadný kód sa vyčerpá a viac nepustí, rok vs. doživotne, kód sa míňa len trénerovi, na org subdoméne vedie `/register` na `/join` |
 | `password-reset.js` | **Obnova zabudnutého hesla** — stránky a odkazy na oboch prihláseniach, neplatný a už použitý odkaz, `?next` na cudziu adresu, a celý reťazec mail → overenie → formulár presne ako v appke (vrátane toho, že odkaz v maili naozaj vedie na `/auth/confirm`, nie na východziu adresu) |
-| `security-boundaries.js` | **Hranice medzi tromi režimami** (audit 2026-08-15) — najmenšie potrebné granty, neprihlásený proti tabuľkám aj RPC, prepojenie nesiaha na federačného hráča, čitateľ sa nedostane za hranicu čítania, org tréner mimo svojej org, rodič bez živých dát. Nepotrebuje dev server |
+| `security-boundaries.js` | **Hranice medzi tromi režimami** (audit 2026-08-15) — najmenšie potrebné granty, neprihlásený proti tabuľkám aj RPC, prepojenie nesiaha na federačného hráča, čitateľ sa nedostane za hranicu čítania, org tréner mimo svojej org, rodič bez živých dát, a §7 — **zoznam funkcií, ktoré smie spustiť `anon`** (nález 2026-09-02). Nepotrebuje dev server, ale POTREBUJE bežiaci kontajner `supabase_db_*`: §7 číta `pg_proc` cez `docker exec psql`, lebo z klienta sa nedá rozlíšiť „`anon` na to nemá právo" od „funkcia sa ubránila sama cez `auth.uid()`" |
 
 ```bash
 node scripts/dev-tests/http-coach.js      # a ostatné rovnako
@@ -160,6 +160,35 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   migrácie** — zámerne. Nález z auditu 2026-08-15 vznikol práve tým, že
   `grant select` v migrácii nič neodobral a tabuľka mala plné DML z default
   privileges schémy. Keby sa to zopakovalo, chytia to jej prvé tri kontroly.
+
+## Granty over aj proti PRODUKCII
+
+**Lokálne sady o produkčných grantoch nehovoria nič.** Lokálna inštancia
+vznikla s inými predvolenými právami Supabase — ukázalo sa to už trikrát
+(`20260809091000` pri tabuľkách, `20260815120000` pri PUBLIC EXECUTE a
+2026-09-02 pri `anon` EXECUTE na funkciách, kde lokál mal poriadok a produkcia
+27 funkcií navyše). Sada teda chytí, keď sa granty pokazia v migráciách; nechytí,
+čo už na produkcii je.
+
+Preto po každom zásahu do grantov spusti **ten istý dotaz aj v prod SQL editore**
+— je to presne to, čo číta `security-boundaries.js` §7:
+
+```sql
+select p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')'
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public'
+  and p.prokind in ('f', 'p')
+  and has_function_privilege('anon', p.oid, 'execute')
+order by 1;
+```
+
+Správna odpoveď sú **práve dva riadky**: `organization_by_slug` (volá ju `proxy.ts`
+pred prihlásením) a `promo_code_is_valid` (registrácia je bez prihlásenia).
+Čokoľvek ďalšie je nález — a keď to je nová funkcia, ktorá si `anon` vypýtala
+predvolenými právami schémy, v migrácii to bude vyzerať správne.
+
+Rovnaký postup pre tabuľky používa `information_schema.role_table_grants`.
 
 ## Účty
 
