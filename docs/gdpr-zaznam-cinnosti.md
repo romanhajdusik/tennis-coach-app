@@ -246,13 +246,15 @@ stavu, ktorý bol dvakrát overený útokom proti živej databáze.
   s kalendárom bola odstránená a **appka odteraz nedrží žiadne cudzie
   prihlasovacie údaje.** Otvorený bezpečnostný nález teda nemáme žiadny.
 
-**Otvorené riziko, ktoré nie je porušením GDPR, ale patrí sem**
+**Riziko, ktoré tu bolo otvorené — UZAVRETÉ**
 
-- **Oba projekty bežia na Vercel Hobby pláne** (tím `romi`, zistené 2026-08-26).
-  Hobby je podľa podmienok Vercelu určený na **nekomerčné použitie**, pričom
-  služba sa už speňažuje. Riziko je dvojaké: pozastavenie účtu a s ním výpadok
-  dostupnosti, ktorá je súčasťou bezpečnosti podľa čl. 32. **Pred prvou platiacou
-  federáciou preto patrí projekt na Pro.**
+- ~~**Oba projekty bežia na Vercel Hobby pláne**~~ (osobný účet `romi88`, zistené
+  2026-08-26). Hobby je podľa podmienok Vercelu určený na **nekomerčné
+  použitie**, pričom služba sa už speňažuje; riziko bolo dvojaké — pozastavenie
+  účtu a s ním výpadok dostupnosti, ktorá je súčasťou bezpečnosti podľa čl. 32.
+  **VYRIEŠENÉ 2026-09-06: účet `romi88` je na Pro**, čo pokrýva oba projekty —
+  Pro sa kupuje na účet, nie na projekt, a `tennis-coach-app` aj `plaw-fitness`
+  sú pod ním. **Táto časť nemá otvorené riziko.**
 
 **Čo v tejto časti zatiaľ chýba**
 

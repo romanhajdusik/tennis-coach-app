@@ -756,8 +756,10 @@ funkcionality, postupom podľa §6.2. Stripe nespracúva údaje hráčov.
     (**129 EUR bez DPH za hodinu**). Tá istá zmluva dala obsah aj ďalším piatim
     odkazom, ktoré dovtedy viedli do prázdna — §1.1, §1.3, §1.4, §11.4 (strop
     zodpovednosti je jej §9.2) a prílohe A.
-11. **Vercel Hobby → Pro** pred prvou platiacou federáciou. Príloha C tvrdí niečo
-    o dostupnosti, ktorú Hobby plán nezaručuje.
+11. ~~**Vercel Hobby → Pro** pred prvou platiacou federáciou. Príloha C tvrdí
+    niečo o dostupnosti, ktorú Hobby plán nezaručuje.~~ **VYRIEŠENÉ 2026-09-06:**
+    osobný účet `romi88` je na Pro, teda oba projekty. Príloha C sa už neopiera
+    o plán, ktorý komerčné použitie nepripúšťa.
 
 ### Väzby, ktoré sa ľahko rozídu
 

@@ -62,12 +62,13 @@ Zoznam začne platiť dňom, keď sa objaví prvý skutočný zväz.
 
 ## Prevádzka — spraviť pred podpisom, netreba naň čakať
 
-- [ ] **Vercel Hobby → Pro** na oboch projektoch (`tennis-coach-app`
-  aj `plaw-fitness`, tím `romi`).
-  Hobby je podľa podmienok Vercelu na **nekomerčné použitie** a služba sa už
-  speňažuje. Riziko je dvojaké: pozastavenie účtu a s ním výpadok dostupnosti,
-  ktorá je **súčasťou bezpečnosti podľa čl. 32**. Je to otvorené riziko
-  zapísané v [zázname](gdpr-zaznam-cinnosti.md) časti E.
+- [x] ~~**Vercel Hobby → Pro**~~ — **HOTOVÉ 2026-09-06.** Osobný účet `romi88`
+  je na Pro a **oba projekty sú pod ním** (`tennis-coach-app` na `www.plaw.win`
+  a `plaw-fitness` na `fitness.plawsports.com`) — Pro sa kupuje na účet, nie na
+  projekt, takže jedno predplatné kryje oba. Hobby bol podľa podmienok Vercelu na
+  **nekomerčné použitie**, pričom služba sa už speňažuje; riziko pozastavenia
+  účtu a s ním výpadku dostupnosti podľa čl. 32 tým **zaniklo**. Zápis v
+  [zázname](gdpr-zaznam-cinnosti.md) časti E je zosúladený.
 
 - [ ] **Odkliknúť a overiť zmluvy o spracúvaní u poddodávateľov** — **Supabase**
   a **Resend** (v zázname, časť D, majú pri „DPA odklikané?" stále *doplniť*).
