@@ -270,7 +270,7 @@ voľba, nie prekážka.
 3. **Máš odklikané DPA** u Supabase, Vercelu, Googlu a Resendu?
 4. **Je Resend na produkcii reálne zapnutý** ako SMTP, alebo maily stále chodia vstavaným mailerom Supabase?
 5. ~~Obchodné meno, IČO a sídlo s.r.o.~~ — **spoločnosť sa zakladá (stav 2026-08-28).** Do zápisu ostávajú vo všetkých textoch hranaté zátvorky. **Zásady sa nedajú zverejniť skôr, než firma existuje** — prevádzkovateľ musí byť identifikovateľný, inak je informačná povinnosť nesplnená.
-   - **Ale povinnosť tým nečaká.** Appka beží naostro a používatelia v nej sú, takže prevádzkovateľom je dovtedy **fyzická osoba, ktorá ju prevádzkuje**. Prakticky to nič nemení (rozsah je malý, registrácia na pozvánku), ale znamená to, že **zápis firmy je na kritickej ceste k verejnému spusteniu** — nie naopak.
+   - **Ale povinnosť tým nečaká.** Appka je nasadená a účty v nej sú, takže prevádzkovateľom je dovtedy **fyzická osoba, ktorá ju prevádzkuje**. Dnes sú v produkcii výhradne vymyslené záznamy a testeri — **skutočné osoby ani deti v nej nie sú** (potvrdené 2026-09-06) — takže prakticky to nič nemení. Znamená to ale, že **zápis firmy je na kritickej ceste k verejnému spusteniu** — nie naopak.
 6. ~~Potvrdenie §4~~ — **POTVRDENÉ 2026-08-28**, prevádzkovateľstvo kópií preberáme.
 7. ~~Potvrdenie lehôt v §6~~ — **POTVRDENÉ**: rodič 6/24 mesiacov (2026-08-27), tréner rok od posledného tréningu (2026-08-27) a strop 4 roky na jednotlivý tréning (2026-08-28).
 8. **Rozhodnutie o záťaži z hodiniek** (§5.3) — osobitná kategória so súhlasom, alebo len odvodené číslo?

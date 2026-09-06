@@ -8,8 +8,16 @@ troch dokumentov.
 **Písanie je hotové.** Všetko nižšie je overovanie, doplnenie čísel a nastavenie
 účtov — žiadny bod nie je „napísať text".
 
-Dnes nič nehorí: v org režime je len **testovací tím s vymyslenými menami**.
-Zoznam začne platiť dňom, keď sa objaví prvý skutočný zväz.
+Dnes nič nehorí: **v celej produkcii nie sú skutočné osoby ani deti** — ani
+v samostatnom, ani v org režime. Sú tam vymyslené záznamy a testeri, appku nikto
+nepoužíva ako kúpený produkt (potvrdené 2026-09-06). Zoznam začne platiť dňom,
+keď sa objaví prvý skutočný zväz.
+
+**Pozor, sú to dve rôzne hranice a tá druhá môže prísť skôr.** Tento zoznam rieši
+**prvý zväz**. Prvé **skutočné dieťa** v appke — hoci ho zadá len tréner
+v samostatnom režime — blokujú tri veci: zverejnené zásady a podmienky dostupné
+z appky (dnes vedome odložené), **schválené anglické znenie podmienok pre trénera**
+(záväzné je EN, schválená je len SK) a zálohy s jednou skúškou obnovy.
 
 ---
 
@@ -17,8 +25,13 @@ Zoznam začne platiť dňom, keď sa objaví prvý skutočný zväz.
 
 - [ ] **Zapísaná s.r.o.**
   Kým firma neexistuje, prevádzkovateľom aj sprostredkovateľom je **fyzická
-  osoba, ktorá ručí celým majetkom** — a appka pritom beží naostro so
-  skutočnými deťmi. Po zápise sa vypĺňajú hranaté zátvorky v hlavičke
+  osoba, ktorá ručí celým majetkom**. Dnes to nikoho neohrozuje: v produkcii
+  **nie sú skutočné osoby ani deti** — len vymyslené záznamy a testeri
+  (potvrdené 2026-09-06). Naliehavým sa to stane pri prvom skutočnom človeku,
+  a to z dvoch strán naraz — ručenie prestane byť teoretické a **zásady musia
+  uviesť prevádzkovateľa menom a kontaktnou adresou**, čo bez firmy znamená
+  tvoje meno a tvoju adresu na verejnej stránke. Po zápise sa vypĺňajú hranaté
+  zátvorky v hlavičke
   [zmluvy](gdpr-zmluva-cl28.md), v §1 všetkých troch zásad a v oboch
   podmienkach.
 
