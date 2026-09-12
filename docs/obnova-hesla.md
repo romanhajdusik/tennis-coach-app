@@ -147,6 +147,50 @@ prihlásiť a heslo potom vráti späť.
 
 ---
 
+## 3a. Účet, ktorému mail doraziť NEMÔŽE (pasca, chytila nás 2026-09-06)
+
+Celá cesta vyššie stojí na tom, že adresa účtu poštu prijíma. **Adresy na
+`plaw.win` a `plaw.online` ju neprijímajú** — obe domény majú vedome
+parkovanú poštu (bez MX, `v=spf1 -all`, DMARC `p=reject`, viď
+[domeny-a-email.md](domeny-a-email.md) §1). Web na nich beží, pošta nie.
+
+Účet s takou adresou si teda **heslo mailom neobnoví nikdy**. Prejaví sa to
+takto: v appke sa nič nepokazí a používateľ dostane obvyklú vetu „ak taký účet
+existuje, poslali sme odkaz" (bod 1, rozhodnutie č. 1) — a mail medzitým padne.
+**Vidno to jedine v Resende**, v zozname e-mailov ako stav `Bounced`.
+
+Na produkcii to má dnes **štyri účty**: `director@plaw.win`, `coach1@`,
+`coach2@` a `coach3@` — vymyslený testovací tím org režimu. Pri nich to
+nevadí. **Skutočnému trénerovi alebo zväzu takú adresu nezakladaj**, inak sa mu
+prvá zabudnutá heslo zmení na hovor s podporou.
+
+### Ako takému účtu nastaviť heslo
+
+Dashboard to priamo nevie — pri riadku používateľa ponúka len „Send magic link"
+a „Send password recovery", a oboje ide mailom. Postup, ktorý mail nepotrebuje:
+
+1. **Authentication → Users**, nájdi účet a skopíruj jeho **UID**.
+2. V **SQL editore** spusti (heslo si nahraď):
+
+```sql
+update auth.users
+set encrypted_password = extensions.crypt('NoveHeslo123!', extensions.gen_salt('bf')),
+    updated_at = now()
+where id = '<UID účtu>';
+```
+
+Musí napísať `UPDATE 1`. Ak zhodí chybu, že funkcia neexistuje, spusti to isté
+bez predpony `extensions.` — `pgcrypto` býva podľa projektu v inej schéme.
+
+**Overené naostro 2026-09-06** na `director@plaw.win`: po zmene sa účet prihlásil
+na org subdoméne. Obchádza to GoTrue, takže sa tým **nezrušia existujúce session**
+— platí to isté obmedzenie ako v časti 4.
+
+**Trvalejšie riešenie je zmeniť účtu e-mail** na schránku, ktorá poštu prijíma;
+appka na to zatiaľ nemá funkciu (časť 4), robí sa to v dashboarde.
+
+---
+
 ## 4. Čo sa tým NErieši
 
 - **Potvrdzovanie registrácie mailom** ostáva vypnuté (`enable_confirmations`).
