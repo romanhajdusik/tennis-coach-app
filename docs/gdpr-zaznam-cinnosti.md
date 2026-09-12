@@ -9,7 +9,9 @@
 > **Pri každej novej tabuľke alebo integrácii sem pribudne riadok.** To je jediná
 > údržba, ktorú tento dokument potrebuje — a bez nej je bezcenný.
 
-**Prevádzkovateľ:** P.L.A.W s.r.o. — *obchodné meno, IČO, sídlo, e-mail: doplniť*
+**Prevádzkovateľ:** &Go, s.r.o., Vnútorná okružná 178/27, 945 01 Komárno,
+IČO 46571388, e-mail: support@plawsports.com. Aplikácia sa volá **P.L.A.W** —
+značka a obchodné meno sa teda líšia. *(Doplnené 2026-09-07.)*
 **Zodpovedná osoba (DPO):** neurčená. *Posúdenie: čl. 37 ju vyžaduje pri rozsiahlom
 spracúvaní osobitných kategórií alebo pravidelnom systematickom monitorovaní. Pri
 dnešnom rozsahu (desiatky trénerov) povinnosť nevzniká; **prehodnotiť pri nasadení
@@ -17,7 +19,7 @@ záťaže z hodiniek a pri prvých federáciách**.*
 
 ---
 
-## ČASŤ A — činnosti, kde je P.L.A.W s.r.o. PREVÁDZKOVATEĽ (čl. 30 ods. 1)
+## ČASŤ A — činnosti, kde je &Go, s.r.o. PREVÁDZKOVATEĽ (čl. 30 ods. 1)
 
 ### A1 — Účty, prihlasovanie a správa prístupu
 
@@ -98,7 +100,7 @@ záťaže z hodiniek a pri prvých federáciách**.*
 
 ---
 
-## ČASŤ B — činnosti, kde je P.L.A.W s.r.o. SPROSTREDKOVATEĽ (čl. 30 ods. 2)
+## ČASŤ B — činnosti, kde je &Go, s.r.o. SPROSTREDKOVATEĽ (čl. 30 ods. 2)
 
 Spoločné pre celú časť B: **spracúvame výhradne na pokyn prevádzkovateľa**, na
 vlastný účel nič — žiadny profiling, žiadne trénovanie modelov, žiadne štatistiky

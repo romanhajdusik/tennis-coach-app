@@ -27,8 +27,10 @@
 [name, registration number, registered office, register entry, represented by]
 
 **The Provider**
-[P.L.A.W s.r.o., company ID, registered office, commercial register entry,
-represented by], contact **[support@plawsports.com]**
+**&Go, s.r.o.**, Vnútorná okružná 178/27, 945 01 Komárno, Slovak Republic,
+Company ID 46571388, VAT ID SK2023447976, registered in the Commercial Register
+of the District Court Nitra, Section Sro, Insert No. 31170/N,
+represented by Roman Hajdušík, Managing Director, contact **[support@plawsports.com]**
 
 Together "the Parties".
 
@@ -337,7 +339,10 @@ agreement are borne by the Organisation and are not covered by this rate.
 [názov, IČO, sídlo, zápis v registri, zastúpená]
 
 **Poskytovateľ**
-[P.L.A.W s.r.o., IČO, sídlo, zápis v obchodnom registri, zastúpený], kontakt
+**&Go, s.r.o.**, Vnútorná okružná 178/27, 945 01 Komárno, IČO 46571388,
+DIČ 2023447976, IČ DPH SK2023447976, zapísaná v Obchodnom registri
+Okresného súdu Nitra, oddiel Sro, vložka č. 31170/N,
+zastúpená Romanom Hajdušíkom, konateľom, kontakt
 **[support@plawsports.com]**
 
 Spolu „zmluvné strany".

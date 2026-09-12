@@ -25,8 +25,10 @@
 
 ### 1. Who we are and what these terms cover
 
-The P.L.A.W application is operated by **[P.L.A.W s.r.o., company ID, registered
-office, commercial register entry]** ("we"). These terms govern the use of the
+The P.L.A.W application is operated by **&Go, s.r.o.**, Vnútorná okružná 178/27, 945 01
+Komárno, Slovak Republic, Company ID 46571388, VAT ID SK2023447976, registered
+in the Commercial Register of the District Court Nitra, Section Sro,
+Insert No. 31170/N ("we"). These terms govern the use of the
 application by whoever follows a player's training — a parent, a manager or the
 player themselves ("you").
 
@@ -203,7 +205,9 @@ dispute resolution body — to be added]**.
 
 ## 1. Kto sme a čoho sa tieto podmienky týkajú
 
-Aplikáciu P.L.A.W prevádzkuje **[P.L.A.W s.r.o., IČO, sídlo, zapísaná v OR]**
+Aplikáciu P.L.A.W prevádzkuje **&Go, s.r.o.**, Vnútorná okružná 178/27,
+945 01 Komárno, IČO 46571388, DIČ 2023447976, IČ DPH SK2023447976, zapísaná
+v Obchodnom registri Okresného súdu Nitra, oddiel Sro, vložka č. 31170/N
 (ďalej „my"). Tieto podmienky upravujú používanie aplikácie tým, kto sleduje
 tréningy hráča — rodičom, manažérom alebo samotným hráčom (ďalej „ty").
 

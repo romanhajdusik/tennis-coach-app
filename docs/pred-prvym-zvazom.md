@@ -23,17 +23,28 @@ z appky (dnes vedome odložené), **schválené anglické znenie podmienok pre t
 
 ## Na kritickej ceste — bez toho sa nepodpisuje
 
-- [ ] **Zapísaná s.r.o.**
-  Kým firma neexistuje, prevádzkovateľom aj sprostredkovateľom je **fyzická
-  osoba, ktorá ručí celým majetkom**. Dnes to nikoho neohrozuje: v produkcii
-  **nie sú skutočné osoby ani deti** — len vymyslené záznamy a testeri
-  (potvrdené 2026-09-06). Naliehavým sa to stane pri prvom skutočnom človeku,
-  a to z dvoch strán naraz — ručenie prestane byť teoretické a **zásady musia
-  uviesť prevádzkovateľa menom a kontaktnou adresou**, čo bez firmy znamená
-  tvoje meno a tvoju adresu na verejnej stránke. Po zápise sa vypĺňajú hranaté
-  zátvorky v hlavičke
-  [zmluvy](gdpr-zmluva-cl28.md), v §1 všetkých troch zásad a v oboch
-  podmienkach.
+- [x] ~~**Zapísaná s.r.o.**~~ — **HOTOVÉ, potvrdené 2026-09-07.** Prevádzkovateľom
+  aj sprostredkovateľom je **&Go, s.r.o.**, Vnútorná okružná 178/27, 945 01
+  Komárno, IČO 46571388, DIČ 2023447976, IČ DPH SK2023447976. Firma existuje,
+  nezakladá sa — padá tým aj obava, že by do zásad išlo meno a adresa fyzickej
+  osoby, aj to, že by za spracúvanie ručil niekto celým majetkom.
+  **Pozor: značka a spoločnosť sa volajú inak.** Aplikácia je P.L.A.W,
+  prevádzkuje ju &Go, s.r.o. Texty to musia povedať výslovne, inak čitateľ nevie,
+  kto je kto. Spoločnosť je **platiteľ DPH**, takže 49 € za sedadlo bez DPH je na
+  faktúre 58,80 € s DPH — cenník je tak aj písaný (B2B bez DPH, spotrebiteľské
+  s ňou).
+
+- [x] ~~**Vyplniť údaje &Go, s.r.o. do dokumentov.**~~ — **HOTOVÉ 2026-09-07.**
+  Vyplnených **26 miest v jedenástich dokumentoch**, v slovenskom aj anglickom
+  znení: tri zásady, obe podmienky, obe zmluvy, oba texty pre rodičov, mapa rolí
+  a záznam o činnostiach. Rozsah identifikácie sa líši podľa účelu — zásady majú
+  názov, sídlo a IČO (viac čl. 13 nežiada), podmienky a zmluvy navyše DIČ, IČ DPH
+  a zápis v OR (žiada to spotrebiteľské právo), zmluvy aj konateľa.
+  **Zápis: Okresný súd Nitra, oddiel Sro, vložka č. 31170/N; konateľ Roman
+  Hajdušík.**
+  **Zátvorky pre DRUHÚ STRANU ostali zámerne prázdne** — hlavičky oboch zmlúv
+  a text pre rodičov vo verzii pre zväz pýtajú údaje organizácie a vypĺňajú sa až
+  pri konkrétnom podpise.
 
 - [ ] **Zástupca** — druhý človek s prístupom do produkcie a s **podpísanou
   mlčanlivosťou** (§4 zmluvy, príloha C).

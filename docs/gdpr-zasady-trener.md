@@ -23,8 +23,8 @@
 
 ### 1. Who we are
 
-The P.L.A.W application is operated by **[P.L.A.W s.r.o., company ID, registered
-office, commercial register entry]**. You can write to us at
+The P.L.A.W application is operated by **&Go, s.r.o.**, Vnútorná okružná 178/27,
+945 01 Komárno, Slovak Republic, Company ID 46571388. You can write to us at
 **[support@plawsports.com]**.
 
 We have not appointed a Data Protection Officer — at our size the law does not
@@ -190,7 +190,8 @@ enough, and we do not do it.
 
 ### 1. Kto sme
 
-Aplikáciu P.L.A.W prevádzkuje **[P.L.A.W s.r.o., IČO, sídlo, zapísaná v OR]**.
+Aplikáciu P.L.A.W prevádzkuje **&Go, s.r.o.**, Vnútorná okružná 178/27,
+945 01 Komárno, IČO 46571388.
 Napísať nám môžeš na **[support@plawsports.com]**.
 
 Nemáme určenú zodpovednú osobu (DPO) — pri našom rozsahu ju zákon nevyžaduje.

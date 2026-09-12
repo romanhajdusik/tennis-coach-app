@@ -17,7 +17,7 @@
 
 | Účastník | Kto to je | Má účet v appke? |
 |---|---|---|
-| **P.L.A.W s.r.o.** | prevádzkovateľ služby — **spoločnosť sa k 2026-08-28 zakladá**, obchodné meno, IČO, sídlo a zápis v OR sa doplnia po zápise | — |
+| **&Go, s.r.o.** | prevádzkovateľ služby — Vnútorná okružná 178/27, 945 01 Komárno, IČO 46571388, IČ DPH SK2023447976, zapísaná v Obchodnom registri Okresného súdu Nitra, oddiel Sro, vložka č. 31170/N, konateľ Roman Hajdušík (potvrdené 2026-09-07). **Aplikácia sa volá P.L.A.W, spoločnosť &Go, s.r.o. — značka a obchodné meno sa líšia.** | — |
 | **Samostatný tréner** | platiaci zákazník, sám si zakladá hráčov | áno (`role = coach`) |
 | **Organizácia** (zväz/klub/akadémia) | B2B zákazník, platí za sedadlá mimo appky | — (má subdoménu) |
 | **Šéftréner** | člen organizácie, read-only dohľad nad celou organizáciou | áno (`role = director`) |
@@ -35,10 +35,10 @@ a poznámky o ňom zadáva tretia osoba. Z toho plynie väčšina toho, čo je n
 
 | Okruh údajov | Prevádzkovateľ | Sprostredkovateľ | Prečo tak |
 |---|---|---|---|
-| Hráč: meno, rok narodenia, tréningy, cvičenia, poznámky, testy | **tréner** | **P.L.A.W s.r.o.** | Tréner rozhoduje, koho zapíše, čo si o ňom poznačí a ako dlho to drží. My k tomu nedávame žiadny vlastný účel — appka je nástroj. |
-| Prepojenia (rodičovský kód, prepojenie kariet) | **tréner** | **P.L.A.W s.r.o.** | Kód vydáva tréner, my ho len vykonávame. |
-| Účet trénera: e-mail, meno, heslo, rola, predplatné, promo kód | **P.L.A.W s.r.o.** | Supabase, Vercel, Resend | O týchto údajoch rozhodujeme my — tréner ich zveruje nám, aby mohol službu používať. |
-| Prevádzkové logy, bezpečnosť, fakturácia | **P.L.A.W s.r.o.** | Vercel, Supabase, neskôr Stripe | Vlastný účel: prevádzka a ochrana služby. |
+| Hráč: meno, rok narodenia, tréningy, cvičenia, poznámky, testy | **tréner** | **&Go, s.r.o.** | Tréner rozhoduje, koho zapíše, čo si o ňom poznačí a ako dlho to drží. My k tomu nedávame žiadny vlastný účel — appka je nástroj. |
+| Prepojenia (rodičovský kód, prepojenie kariet) | **tréner** | **&Go, s.r.o.** | Kód vydáva tréner, my ho len vykonávame. |
+| Účet trénera: e-mail, meno, heslo, rola, predplatné, promo kód | **&Go, s.r.o.** | Supabase, Vercel, Resend | O týchto údajoch rozhodujeme my — tréner ich zveruje nám, aby mohol službu používať. |
+| Prevádzkové logy, bezpečnosť, fakturácia | **&Go, s.r.o.** | Vercel, Supabase, neskôr Stripe | Vlastný účel: prevádzka a ochrana služby. |
 
 **Dôsledok, ktorý sa musí premietnuť do podmienok:** voči údajom o deťoch nie sme
 prevádzkovateľ. Nesmieme s nimi robiť nič nad rámec pokynov trénera — ani
@@ -52,10 +52,10 @@ všetkými povinnosťami vrátane vlastného právneho základu voči každému 
 
 | Okruh údajov | Prevádzkovateľ | Sprostredkovateľ |
 |---|---|---|
-| Hráči organizácie a celá ich tréningová história | **organizácia** | **P.L.A.W s.r.o.** |
-| Štandardizované kódy cvičení organizácie | **organizácia** | **P.L.A.W s.r.o.** |
-| Členstvo, priradenia hráčov, pozvánky, sedadlá | **organizácia** | **P.L.A.W s.r.o.** |
-| Účty trénerov a šéftrénera (identita, prihlásenie, heslo) | **P.L.A.W s.r.o.** | Supabase, Vercel, Resend |
+| Hráči organizácie a celá ich tréningová história | **organizácia** | **&Go, s.r.o.** |
+| Štandardizované kódy cvičení organizácie | **organizácia** | **&Go, s.r.o.** |
+| Členstvo, priradenia hráčov, pozvánky, sedadlá | **organizácia** | **&Go, s.r.o.** |
+| Účty trénerov a šéftrénera (identita, prihlásenie, heslo) | **&Go, s.r.o.** | Supabase, Vercel, Resend |
 
 Je to priamy dôsledok pravidla, ktoré appka už má zapísané v `CLAUDE.md`: **dáta
 vlastní organizácia, nie tréner** (odchod trénera prácu neodnesie). Zväz je preto
@@ -86,7 +86,7 @@ ale právne vytvára stav, v ktorom tu ležia údaje o dieťati bez prevádzkova
 ktorý by za ne vedel odpovedať: pôvodný tréner už nemusí existovať a jeho pokyny
 nemajú kam doznieť.
 
-**ROZHODNUTÉ 2026-08-28: P.L.A.W s.r.o. je prevádzkovateľom rodičovských kópií
+**ROZHODNUTÉ 2026-08-28: &Go, s.r.o. je prevádzkovateľom rodičovských kópií
 od okamihu ich vzniku.**
 
 | | |

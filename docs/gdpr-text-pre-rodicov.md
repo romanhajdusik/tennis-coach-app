@@ -42,7 +42,8 @@ verzia je nižšie pre trénerov pracujúcich s cudzojazyčnými rodinami.
 
 Tréningovú dokumentáciu vášho dieťaťa vediem ja, **[meno trénera]**, kontakt
 **[e-mail / telefón]**. Používam na to aplikáciu P.L.A.W od spoločnosti
-**[P.L.A.W s.r.o., IČO, sídlo]**, ktorá pre mňa údaje iba technicky uchováva —
+**&Go, s.r.o.**, Vnútorná okružná 178/27,
+945 01 Komárno, IČO 46571388, ktorá pre mňa údaje iba technicky uchováva —
 o tom, čo sa zapíše a ako dlho sa to drží, rozhodujem ja.
 
 **Aké údaje o dieťati vediem**
@@ -129,7 +130,8 @@ osobných údajov Slovenskej republiky, Hraničná 12, 820 07 Bratislava.
 
 I keep your child's training records myself — **[coach name]**, contact
 **[email / phone]**. I use the P.L.A.W application provided by
-**[P.L.A.W s.r.o., company ID, registered office]**, which only stores the data
+**&Go, s.r.o.**, Vnútorná okružná 178/27, 945 01 Komárno,
+Slovak Republic, Company ID 46571388, which only stores the data
 technically on my behalf. What gets recorded, and for how long, is my decision.
 
 **What I record about your child**
