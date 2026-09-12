@@ -1,0 +1,42 @@
+{
+  "zmluva": {
+    "doc": "zmluva-organizacia.md",
+    "pageTitle": "Zmluva so zväzom",
+    "barName": "Zmluva o poskytovaní služby",
+    "chip": "Návrh &middot; neschválené",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W",
+    "h1": "Zmluva o poskytovaní služby",
+    "lede": "Hlavná zmluva pre zväzy, kluby a akadémie — štrnásť paragrafov a dve prílohy. Podpisuje sa <strong>spolu so zmluvou o spracúvaní osobných údajov</strong> podľa čl. 28 GDPR; pri rozpore o údajoch má prednosť tá druhá. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad (§14.2).",
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> sa dopĺňajú až pri konkrétnom podpise — údaje organizácie, počet sedadiel, sumy, dátumy a kontaktné osoby. Zdroj: <code>docs/zmluva-organizacia.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky."
+  },
+  "spracuvanie": {
+    "doc": "gdpr-zmluva-cl28.md",
+    "pageTitle": "Zmluva o spracúvaní údajov",
+    "barName": "Zmluva o spracúvaní osobných údajov",
+    "chip": "Návrh &middot; neschválené",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; čl. 28 GDPR",
+    "h1": "Zmluva o spracúvaní osobných údajov",
+    "lede": "Dvanásť paragrafov a prílohy A, B a C. Podpisuje sa <strong>spolu s hlavnou zmluvou o poskytovaní služby</strong>, a to <strong>skôr, než zväz zapíše do aplikácie prvé dieťa</strong> — inak spracúvajú obe strany bez právneho podkladu (§1.2). Pri rozpore o údajoch má prednosť tento dokument. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad (§12.2).",
+    "footer": "Prílohy sú vecná časť: <strong>A</strong> hovorí, čo sa spracúva, <strong>B</strong> kto ďalší k tomu má prístup, <strong>C</strong> ako je to zabezpečené. Obsah B a C je prevzatý zo záznamu o činnostiach (časti D a E) — pri zmene sa musia zmeniť obe miesta. Miesta vyznačené <span class=\"ph\">takto</span> sa dopĺňajú až pri konkrétnom podpise. Zdroj: <code>docs/gdpr-zmluva-cl28.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky."
+  },
+  "podmienky-trener": {
+    "doc": "podmienky-trener.md",
+    "pageTitle": "Podmienky pre trénera",
+    "barName": "Podmienky používania — tréner",
+    "chip": "Angličtina neschválená",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; plaw.win",
+    "h1": "Podmienky používania pre trénera",
+    "lede": "Štrnásť bodov o tom, čo si s trénerom navzájom sľubujete — služba, platba, ukončenie, zodpovednosť. <strong>Nepodpisujú sa, odklikávajú sa</strong> pri registrácii. Nie sú to zásady ochrany údajov; tie sú samostatný dokument. <strong>Slovenské znenie si schválil 29. augusta 2026, ale záväzná je angličtina a tá schválená nie je</strong> (§13) — preklad nie je znenie, v spore sa použije anglický text.",
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> ešte čakajú na doplnenie — najmä orgán alternatívneho riešenia sporov a dátum účinnosti. Zdroj: <code>docs/podmienky-trener.md</code>. Interná časť „Poznámky k návrhu\" — vrátane obchodných rozhodnutí, ktoré bolo treba predpokladať — nie je súčasťou tejto stránky."
+  },
+  "podmienky-sledujuci": {
+    "doc": "podmienky-sledujuci.md",
+    "pageTitle": "Podmienky pre sledujúceho",
+    "barName": "Podmienky používania — sledujúci",
+    "chip": "Návrh &middot; neschválené",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; plaw.click",
+    "h1": "Podmienky pre rodiča, manažéra a hráča",
+    "lede": "Pätnásť bodov pre toho, kto tréningy iba sleduje. <strong>Kľúčový rozdiel oproti trénerským podmienkam: sledujúci je vždy spotrebiteľ</strong> — platí tu ochrana v plnom rozsahu a klauzuly, ktoré u trénera obstoja, by tu boli napadnuteľné. Ochrana údajov je samostatný dokument. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad (§14).",
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> ešte čakajú na doplnenie — orgán alternatívneho riešenia sporov, odkaz na zásady a dátum účinnosti. Zdroj: <code>docs/podmienky-sledujuci.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky."
+  }
+}

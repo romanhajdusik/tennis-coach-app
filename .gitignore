@@ -15,6 +15,8 @@
 # výstupy lokálnych overovacích skriptov (scripts/dev-tests)
 /scripts/dev-tests/screenshots
 /scripts/dev-tests/expect.json
+# postavené čitateľské stránky zmlúv (scripts/doc-pages)
+/scripts/doc-pages/build
 
 # next.js
 /.next/
