@@ -197,6 +197,12 @@ Stav kódu (overený):
 - Rodičovské kópie sa nemažú zámerne.
 - Export údajov nie je nikde.
 - V cenníku je „**história nič nestojí a nikdy sa nemaže**" uvedené ako **predajný argument**.
+  - **Text cenníka opravený 2026-09-13** (commit `027e171`): prvá odrážka
+    „Dobré vedieť" na `/cennik-hrac` už vo všetkých deviatich jazykoch hovorí,
+    že záznamy za oknom histórie sa **mažú** a predplatným sa **nevrátia**.
+    Nález ostáva zapísaný tak, ako bol pri audite — uzatvára sa len tá jeho
+    časť, ktorá bola o texte cenníka. **Zmazanie účtu, výmaz na žiadosť ani
+    export v appke naďalej nie sú.**
 
 To je priamy stret s čl. 17 a so zásadou minimalizácie uchovávania. Neznamená to,
 že sa argument musí zrušiť — znamená to, že „nikdy" musí dostať hranicu a výmaz na
