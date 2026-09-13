@@ -28,7 +28,7 @@
   ],
   "notesTitle": "Good to know",
   "notes": [
-    "Records keep arriving even when you're not subscribed — nothing is deleted, and a subscription makes them visible again.",
+    "Records keep arriving even when you're not subscribed — but practices older than your history window are deleted, not hidden, and subscribing later won't bring those months back. You get an email before anything is removed.",
     "One subscription covers one player. Following two children needs two accounts for now.",
     "You need a connect code from the coach — without it there is nothing to follow.",
     "The first 14 days are a trial; after that it's paid — same as for coaches."
