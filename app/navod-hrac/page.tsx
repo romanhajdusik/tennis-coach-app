@@ -1,19 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getLandingLocale } from "@/components/landing-page";
 import { loadNavodHracMessages } from "@/lib/landing-locale";
-import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
 
 // Krátky verejný návod pre pripojeného hráča/rodiča/manažéra (druhá strana
-// appky). Rovnaká jazyková vrstva (LANDING_LOCALE, 6 jazykov) aj antuková
-// téma ako trénerský návod (/navod). Zámerne noindex.
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}): Promise<Metadata> {
-  const locale = await getLandingLocale((await searchParams).lang);
-  const t = await loadNavodHracMessages(locale);
+// appky). Tá istá textová vrstva aj antuková téma ako trénerský návod
+// (/navod). Zámerne noindex.
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await loadNavodHracMessages();
   return {
     title: t.metaTitle,
     description: t.metaDescription,
@@ -21,13 +14,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function NavodHracPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}) {
-  const locale = await getLandingLocale((await searchParams).lang);
-  const t = await loadNavodHracMessages(locale);
+export default async function NavodHracPage() {
+  const t = await loadNavodHracMessages();
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -49,7 +37,6 @@ export default async function NavodHracPage({
             />
           </Link>
           <div className="flex items-center gap-3">
-            <LandingLanguageSwitcher currentLocale={locale} />
             <Link
               href="/"
               className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"

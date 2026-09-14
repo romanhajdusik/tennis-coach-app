@@ -112,13 +112,10 @@ export async function proxy(request: NextRequest) {
       request.nextUrl.pathname + request.nextUrl.search,
       canonical,
     );
-    // Jazyk musí ísť s návštevníkom: cookie `LANDING_LOCALE` je viazaná na
-    // doménu, takže by sa mu pri skoku stratil a slovenský návod by sa zmenil
-    // na anglický. Číta ho `getLandingLocale` na druhej strane.
-    const locale = request.cookies.get("LANDING_LOCALE")?.value;
-    if (locale && !target.searchParams.has("lang")) {
-      target.searchParams.set("lang", locale);
-    }
+    // Jazyk sa tu kedysi prenášal v `?lang=`, lebo cookie `LANDING_LOCALE` je
+    // viazaná na doménu a pri skoku medzi verejnými doménami by sa stratil.
+    // Od 2026-09-14 je verejný web jednojazyčný (anglický), takže nie je čo
+    // prenášať — viď lib/landing-locale.ts.
     return NextResponse.redirect(target, 307);
   }
 

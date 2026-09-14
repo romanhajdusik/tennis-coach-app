@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
-import { LandingPage, getLandingLocale } from "@/components/landing-page";
+import { LandingPage } from "@/components/landing-page";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
 import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
@@ -14,7 +14,6 @@ import {
   loadLandingHracMessages,
   loadLandingMessages,
   loadRozcestnikMessages,
-  rozcestnikLocale,
 } from "@/lib/landing-locale";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
@@ -45,7 +44,7 @@ function navLinks(defaultCategory: string) {
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
 // zámerne zatiaľ mimo vyhľadávačov aj na vlastnej doméne (pred verejným
 // spustením) — až pri ostrom launchi zmeniť na index:true. Landing page má
-// vlastnú jazykovú vrstvu (SK/EN/DE/ES, lib/landing-locale.ts), nie
+// vlastnú textovú vrstvu (lib/landing-locale.ts, messages/en), nie appkový
 // next-intl "Landing" namespace — metadata preto čítajú z rovnakého zdroja.
 export async function generateMetadata(): Promise<Metadata> {
   // Na subdoméne organizácie je to jej pracovný nástroj, nie marketing —
@@ -60,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
   // platí pre sledujúceho tenistu aj kondičného hráča.
   const host = (await headers()).get("host");
   if (isParentFaceHost(host)) {
-    const t = await loadLandingHracMessages(await getLandingLocale());
+    const t = await loadLandingHracMessages();
     return {
       title: t.metaTitle,
       description: t.metaDescription,
@@ -71,9 +70,7 @@ export async function generateMetadata(): Promise<Metadata> {
   // Verejná tvár (plaw.online) má na `/` rozcestník, nie consumer landing —
   // metadata musia sedieť s tým, čo sa naozaj vykreslí.
   if (isPublicFaceHost(host)) {
-    const t = await loadRozcestnikMessages(
-      rozcestnikLocale(await getLandingLocale()),
-    );
+    const t = await loadRozcestnikMessages();
     return {
       title: t.metaTitle,
       description: t.metaDescription,
@@ -94,8 +91,7 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 
-  const locale = await getLandingLocale();
-  const t = await loadLandingMessages(locale);
+  const t = await loadLandingMessages();
   return {
     title: t.heroTitle,
     description: t.heroSubtitle,

@@ -1,8 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getLandingLocale } from "@/components/landing-page";
-import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
-import { loadFederacieMessages, rozcestnikLocale } from "@/lib/landing-locale";
+import { loadFederacieMessages } from "@/lib/landing-locale";
 import {
   ChartBarIcon,
   ClipboardCheckIcon,
@@ -39,17 +37,8 @@ const FEATURE_ICONS = [
   DeviceMobileIcon,
 ];
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}): Promise<Metadata> {
-  // `?lang=` dopisuje proxy pri kanonickom presmerovaní — cookie je viazaná na
-  // doménu, takže bez neho by návštevník z plaw.win dostal iný jazyk.
-  const locale = rozcestnikLocale(
-    await getLandingLocale((await searchParams).lang),
-  );
-  const t = await loadFederacieMessages(locale);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await loadFederacieMessages();
   return {
     title: t.metaTitle,
     description: t.metaDescription,
@@ -58,15 +47,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function FederaciePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}) {
-  const locale = rozcestnikLocale(
-    await getLandingLocale((await searchParams).lang),
-  );
-  const t = await loadFederacieMessages(locale);
+export default async function FederaciePage() {
+  const t = await loadFederacieMessages();
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -89,10 +71,6 @@ export default async function FederaciePage({
             />
           </Link>
           <div className="flex items-center gap-3">
-            <LandingLanguageSwitcher
-              currentLocale={locale}
-              locales={["en", "sk"]}
-            />
             <Link
               href="/"
               className="text-sm font-medium text-muted transition-colors hover:text-foreground"

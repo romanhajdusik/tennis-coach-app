@@ -1,11 +1,5 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
-import {
-  defaultLandingLocale,
-  isValidLandingLocale,
-  loadLandingMessages,
-} from "@/lib/landing-locale";
-import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
+import { loadLandingMessages } from "@/lib/landing-locale";
 import { LandingPricing } from "@/components/landing-pricing";
 import {
   COACH_TIERS,
@@ -32,48 +26,23 @@ const FEATURE_ICONS = [
 
 // Reálne mobilné screenshoty appky (v poradí plán → záznam → analýza).
 //
-// **Vždy anglické, vo všetkých deviatich jazykoch** (zjednotené 2026-08-22,
-// rovnako ako na `components/landing-hrac.tsx`). Slovenská sada existovala do
-// toho dňa a bola zmazaná: vznikla pred prechodom appky na EN-only
-// (2026-07-28), takže ukazovala UI, ktoré v produkte už neexistuje. Popisky
-// pod zábermi preložené ostávajú: tie sú súčasťou webu, nie appky
-// (showcaseCaptions).
+// Anglické, ako appka aj celý web. Slovenská sada existovala do 2026-08-22 a
+// bola zmazaná: vznikla pred prechodom appky na EN-only (2026-07-28), takže
+// ukazovala UI, ktoré v produkte už neexistuje.
 const SHOWCASE = ["calendar", "session", "analytics"] as const;
 
-/**
- * Jazyk verejného webu. Prednosť má `override` — jazyk pripojený k adrese
- * (`?lang=sk`), ktorý do presmerovania dopisuje `proxy.ts`.
- *
- * **Prečo to je:** cookie `LANDING_LOCALE` je viazaná na doménu, kým verejné
- * stránky majú od 2026-08-24 každá svojho hostiteľa. Bez prenosu by slovenský
- * návštevník rozcestníka klikol na návod pre hráča a dostal ho po anglicky —
- * jazyk by sa mu ticho stratil pri skoku na druhú doménu. Cookie sa tým
- * neprepisuje: kto si jazyk na cieľovej doméne prepne, prepíše si ho normálne
- * prepínačom.
- */
-export async function getLandingLocale(override?: string) {
-  if (isValidLandingLocale(override)) {
-    return override;
-  }
-  const cookieStore = await cookies();
-  const cookieLocale = cookieStore.get("LANDING_LOCALE")?.value;
-  return isValidLandingLocale(cookieLocale) ? cookieLocale : defaultLandingLocale;
-}
-
 export async function LandingPage() {
-  const locale = await getLandingLocale();
-  const t = await loadLandingMessages(locale);
-  // Ceny formátuje server podľa jazyka (6,90 € vs €6.90) — v prehliadači sa
-  // prepína len obdobie. Počet hráčov je preložený reťazec, lebo pluralita
-  // („3 hráči" vs „6 hráčov") je vec jazyka, nie čísla.
+  const t = await loadLandingMessages();
+  // Ceny formátuje server, v prehliadači sa prepína len obdobie. Počet hráčov
+  // je reťazec z textov, nie číslo — vetu o pluralite nesie text stránky.
   const tiers = COACH_TIERS.map((tier, index) => ({
     players: t.pricingPlayerCounts[index],
-    monthly: formatEur(locale, tier.monthly),
-    yearly: formatEur(locale, tier.yearly),
-    yearlyPerMonth: formatEur(locale, tier.yearly / 12),
-    monthlyYearTotal: formatEur(locale, tier.monthly * 12),
-    centsMonthly: centsPerPlayerDay(locale, tier.monthly * 12, tier.players),
-    centsYearly: centsPerPlayerDay(locale, tier.yearly, tier.players),
+    monthly: formatEur(tier.monthly),
+    yearly: formatEur(tier.yearly),
+    yearlyPerMonth: formatEur(tier.yearly / 12),
+    monthlyYearTotal: formatEur(tier.monthly * 12),
+    centsMonthly: centsPerPlayerDay(tier.monthly * 12, tier.players),
+    centsYearly: centsPerPlayerDay(tier.yearly, tier.players),
     featured: tier.featured === true,
   }));
 
@@ -99,7 +68,6 @@ export async function LandingPage() {
             />
           </span>
           <div className="flex items-center gap-3">
-            <LandingLanguageSwitcher currentLocale={locale} />
             <Link
               href="/login"
               className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"

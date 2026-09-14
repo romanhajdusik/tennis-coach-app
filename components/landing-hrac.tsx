@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { getLandingLocale } from "@/components/landing-page";
-import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
 import { loadLandingHracMessages } from "@/lib/landing-locale";
 import { APP_ORIGIN } from "@/lib/public-face";
 import {
@@ -55,23 +53,19 @@ const PAID_FEATURES = [false, false, true, true, false, false];
  * trénerskej landing** — sledujúci vidí tie isté obrazovky, len bez tlačidiel
  * na zápis.
  *
- * Zámerne LEN anglická sada, vo všetkých deviatich jazykoch — rovnako ako na
- * trénerskej landing (zjednotené 2026-08-22): appka je od 2026-07-28 výhradne
- * anglická (`i18n/request.ts`), takže slovenské zábery ukazovali UI, ktoré
- * v produkte už neexistuje, a boli zmazané. Popisky pod zábermi preložené
- * sú — tie sú súčasťou webu, nie appky.
+ * Anglické, ako appka aj celý web: slovenská sada existovala do 2026-08-22 a
+ * bola zmazaná, lebo vznikla pred prechodom appky na EN-only (2026-07-28)
+ * a ukazovala UI, ktoré v produkte už neexistuje.
  */
 const SHOWCASE = ["calendar", "session", "analytics"] as const;
 
 export async function LandingHrac() {
-  const locale = await getLandingLocale();
-  const t = await loadLandingHracMessages(locale);
+  const t = await loadLandingHracMessages();
 
-  // Cenu formátuje server podľa jazyka (36,00 € vs €36.00) a centy na deň sa
-  // dopočítavajú z nej — nikdy sa neopisujú z dokumentu, inak by pri zmene
-  // ceny ostalo v texte staré číslo.
-  const yearly = formatEur(locale, FOLLOWER_PRICE.yearly);
-  const cents = centsPerPlayerDay(locale, FOLLOWER_PRICE.yearly, 1);
+  // Centy na deň sa dopočítavajú z ceny — nikdy sa neopisujú z dokumentu, inak
+  // by pri zmene ceny ostalo v texte staré číslo.
+  const yearly = formatEur(FOLLOWER_PRICE.yearly);
+  const cents = centsPerPlayerDay(FOLLOWER_PRICE.yearly, 1);
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -93,7 +87,6 @@ export async function LandingHrac() {
               className="block h-7 w-auto"
             />
           </span>
-          <LandingLanguageSwitcher currentLocale={locale} />
         </div>
       </header>
 

@@ -1,39 +1,38 @@
-// Landing page má vlastnú, samostatnú jazykovú vrstvu (SK/EN/DE/ES/RU/FR/ZH/IT/JA),
-// oddelenú od appky (i18n/request.ts, len SK/EN). Appka ako celok sa
-// neprekladá do týchto ďalších jazykov — len táto verejná marketingová
-// stránka a návody, preto vlastný cookie a vlastný loader mimo next-intl.
-// Poradie v prepínači jazykov (landing + návody). EN je prvé a je to
-// predvolený jazyk (defaultLandingLocale nižšie). SK je zámerne posledné.
-export const LANDING_LOCALES = [
-  "en",
-  "de",
-  "es",
-  "ru",
-  "fr",
-  "zh",
-  "it",
-  "ja",
-  "sk",
-] as const;
-export type LandingLocale = (typeof LANDING_LOCALES)[number];
-export const defaultLandingLocale: LandingLocale = "en";
+// Verejný web (landing, oba návody, cenník pre sledujúceho, stránka pre
+// federácie, rozcestník) má vlastné message súbory MIMO next-intl — appka ide
+// cez `i18n/request.ts`, tieto stránky nie. Ostalo to tak aj po zjednotení
+// jazyka: sú to marketingové texty, ktoré sa menia inak než produktové.
+//
+// **JAZYK JE OD 2026-09-14 VÝHRADNE ANGLICKÝ A PREPÍNAČ NEEXISTUJE** (rozhodol
+// user). Dovtedy tu bolo deväť jazykov (EN/DE/ES/RU/FR/ZH/IT/JA/SK), cookie
+// `LANDING_LOCALE`, prepínač v hlavičke každej verejnej stránky a prenos jazyka
+// v adrese (`?lang=`) medzi doménami. Padlo to celé a dôvody si drž:
+//   1. **Appka hovorí len anglicky.** Deväťjazyčný web sľuboval lokalizovaný
+//      produkt, ktorý neexistuje — nemecký landing viedol do anglickej appky.
+//   2. **Web je `noindex`**, takže tie jazyky neprinášali ani návštevnosť
+//      z vyhľadávačov, čo bol jediný dôvod mať ich pripravené vopred.
+//   3. **Nedali sa skontrolovať.** Jedna nepravdivá veta o mazaní rodičovských
+//      kópií sedela 2026-09-13 vo všetkých deviatich súboroch naraz a v `ja`,
+//      `zh` a `ru` ju nemal kto prečítať.
+// Slovenskému rodičovi stránku preloží človek, nie appka (rozhodol user).
+//
+// Slovenčina ostáva **interným** jazykom projektu (CLAUDE.md, `docs/`,
+// komentáre, commit messages), nie jazykom produktu. Posledné znenie
+// slovenských verejných textov je v `docs/verejny-web-sk-archiv.md` — je to
+// archív, nie preklad, a neudržiava sa.
+//
+// **Keby jazyky raz pribúdali, vracajú sa SEM** (loader + parameter), nie
+// vetvením po jednotlivých stránkach.
 
-export function isValidLandingLocale(
-  value: string | undefined,
-): value is LandingLocale {
-  return !!value && (LANDING_LOCALES as readonly string[]).includes(value);
-}
-
-export async function loadLandingMessages(locale: LandingLocale) {
-  const messages = await import(`../messages/${locale}/landing.json`);
+export async function loadLandingMessages() {
+  const messages = await import("../messages/en/landing.json");
   return messages.default as {
     eyebrow: string;
     heroTitle: string;
     heroSubtitle: string;
     /**
-     * Tri heslá v hero (nadpis + veta). Majú ich len SK a EN — ostatné jazyky
-     * vykreslia pôvodný hero s `heroTitle`/`heroSubtitle`. `heroTitle` ostáva
-     * v každom jazyku, lebo z neho vychádza aj titulok stránky.
+     * Tri heslá v hero (nadpis + veta). Nepovinné: bez nich komponent vykreslí
+     * hero s `heroTitle`/`heroSubtitle`, ktorý nesie aj titulok stránky.
      */
     heroPoints?: { title: string; text: string }[];
     ctaPrimary: string;
@@ -76,9 +75,8 @@ export async function loadLandingMessages(locale: LandingLocale) {
   };
 }
 
-// Návod (stránka /navod) používa tú istú jazykovú vrstvu ako landing page
-// (LANDING_LOCALE, 9 jazykov), nie appkové next-intl SK/EN — je to verejná
-// časť webu plaw.online popri landingu.
+// Návod (stránka /navod) berie texty odtiaľto ako landing, nie z appkového
+// next-intl — je to verejná časť webu popri landingu.
 export type NavodMessages = {
   metaTitle: string;
   metaDescription: string;
@@ -101,19 +99,15 @@ export type NavodMessages = {
   pricingLinkCta?: string;
 };
 
-export async function loadNavodMessages(
-  locale: LandingLocale,
-): Promise<NavodMessages> {
-  const messages = await import(`../messages/${locale}/navod.json`);
+export async function loadNavodMessages(): Promise<NavodMessages> {
+  const messages = await import("../messages/en/navod.json");
   return messages.default as NavodMessages;
 }
 
 // Krátky návod pre pripojeného hráča/rodiča/manažéra (/navod-hrac) — rovnaká
-// štruktúra aj jazyková vrstva ako trénerský návod.
-export async function loadNavodHracMessages(
-  locale: LandingLocale,
-): Promise<NavodMessages> {
-  const messages = await import(`../messages/${locale}/navod-hrac.json`);
+// štruktúra ako trénerský návod.
+export async function loadNavodHracMessages(): Promise<NavodMessages> {
+  const messages = await import("../messages/en/navod-hrac.json");
   return messages.default as NavodMessages;
 }
 
@@ -156,10 +150,8 @@ export type CennikHracMessages = {
   crossLinkCta: string;
 };
 
-export async function loadCennikHracMessages(
-  locale: LandingLocale,
-): Promise<CennikHracMessages> {
-  const messages = await import(`../messages/${locale}/cennik-hrac.json`);
+export async function loadCennikHracMessages(): Promise<CennikHracMessages> {
+  const messages = await import("../messages/en/cennik-hrac.json");
   return messages.default as CennikHracMessages;
 }
 
@@ -234,17 +226,14 @@ export type LandingHracMessages = {
   footerTagline: string;
 };
 
-export async function loadLandingHracMessages(
-  locale: LandingLocale,
-): Promise<LandingHracMessages> {
-  const messages = await import(`../messages/${locale}/landing-hrac.json`);
+export async function loadLandingHracMessages(): Promise<LandingHracMessages> {
+  const messages = await import("../messages/en/landing-hrac.json");
   return messages.default as LandingHracMessages;
 }
 
-// Stránka pre federácie/kluby/akadémie (/federacie) je zámerne LEN po slovensky
-// — prvými B2B zákazníkmi sú slovenské zväzy a kluby a obchod sa vedie po
-// slovensky. Preto nemá `locale` parameter ani prepínač jazykov; keby raz
-// pribudol ďalší jazyk, stačí sem doplniť parameter ako pri návodoch.
+// Stránka pre federácie/kluby/akadémie (/federacie) — informačná, bez
+// prihlásenia a bez registračného tlačidla; organizácia sa nezakladá
+// samoobslužne (docs/onboarding-organizacie.md).
 export type FederacieMessages = {
   metaTitle: string;
   metaDescription: string;
@@ -267,17 +256,14 @@ export type FederacieMessages = {
 };
 
 /**
- * Stránka pre federácie je **SK/EN, predvolene po ANGLICKY** (rozhodnuté
- * 2026-08-31). Do vtedy bola len slovenská a v CLAUDE.md k tomu stálo, že
- * prvými B2B zákazníkmi sú slovenské zväzy — **to bol nepodložený predpoklad,
- * nie rozhodnutie**. Federačný produkt sa má ponúkať aj mimo Slovenska. Dva
- * jazyky, nie deväť, rovnako ako rozcestník: kto má v cookie iný jazyk,
- * dostane angličtinu (`rozcestnikLocale()`).
+ * Stránka je po anglicky ako celý verejný web. Cestu sem má za sebou: do
+ * 2026-08-31 bola LEN slovenská (s odôvodnením, že prvými B2B zákazníkmi sú
+ * slovenské zväzy — **nepodložený predpoklad, nie rozhodnutie usera**), potom
+ * SK/EN, a od 2026-09-14 je jednojazyčná ako ostatné stránky. Federačný produkt
+ * sa ponúka aj mimo Slovenska a obchodná korešpondencia nie je vec stránky.
  */
-export async function loadFederacieMessages(
-  locale: RozcestnikLocale,
-): Promise<FederacieMessages> {
-  const messages = await import(`../messages/${locale}/federacie.json`);
+export async function loadFederacieMessages(): Promise<FederacieMessages> {
+  const messages = await import("../messages/en/federacie.json");
   return messages.default as FederacieMessages;
 }
 
@@ -285,14 +271,7 @@ export async function loadFederacieMessages(
 // plaw.win, sledujúci (hráč, rodič, manažér) na plaw.click a federačná
 // stránka. Tretie dvere pribudli 2026-08-22 spolu s doménou plaw.click:
 // dovtedy viedli prvé dvere „tréner, hráč, rodič, manažér" všetkých na
-// trénerský marketing, čo pre sledujúceho nikdy nesedelo. Je len **SK/EN**, nie 9-jazyčný ako landing:
-// za jednými dverami je slovenská stránka pre federácie a rozcestník je len
-// pár viet. Kto má v cookie iný jazyk, dostane angličtinu.
-export type RozcestnikLocale = "sk" | "en";
-
-export function rozcestnikLocale(locale: LandingLocale): RozcestnikLocale {
-  return locale === "sk" ? "sk" : "en";
-}
+// trénerský marketing, čo pre sledujúceho nikdy nesedelo.
 
 export type RozcestnikMessages = {
   metaTitle: string;
@@ -314,9 +293,7 @@ export type RozcestnikMessages = {
   footerTagline: string;
 };
 
-export async function loadRozcestnikMessages(
-  locale: RozcestnikLocale,
-): Promise<RozcestnikMessages> {
-  const messages = await import(`../messages/${locale}/rozcestnik.json`);
+export async function loadRozcestnikMessages(): Promise<RozcestnikMessages> {
+  const messages = await import("../messages/en/rozcestnik.json");
   return messages.default as RozcestnikMessages;
 }

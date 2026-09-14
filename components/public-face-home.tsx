@@ -1,10 +1,5 @@
 import Link from "next/link";
-import { getLandingLocale } from "@/components/landing-page";
-import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
-import {
-  loadRozcestnikMessages,
-  rozcestnikLocale,
-} from "@/lib/landing-locale";
+import { loadRozcestnikMessages } from "@/lib/landing-locale";
 import { EyeIcon, GlobeIcon, UsersIcon } from "@/components/landing-icons";
 import { PARENT_ORIGIN } from "@/lib/public-face";
 
@@ -16,15 +11,9 @@ import { PARENT_ORIGIN } from "@/lib/public-face";
  * Dôvod: plaw.online je jediné miesto, kde stoja obe ponuky vedľa seba ako
  * rovnocenné. Predtým tu bol ten istý landing ako na plaw.win, takže na
  * federačnú stránku neviedol odkaz odnikiaľ.
- *
- * Je len **SK/EN** (rozhodnuté 2026-08-07) — za federačnými dverami je
- * slovenská stránka a rozcestník je pár viet. Prepínač preto ponúka dva jazyky,
- * nie deväť ako landing; kto má v cookie iný jazyk, dostane angličtinu.
  */
 export async function PublicFaceHome() {
-  const landingLocale = await getLandingLocale();
-  const locale = rozcestnikLocale(landingLocale);
-  const t = await loadRozcestnikMessages(locale);
+  const t = await loadRozcestnikMessages();
 
   return (
     <div className="relative flex min-h-dvh w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -34,15 +23,6 @@ export async function PublicFaceHome() {
       >
         <div className="absolute left-1/2 top-[-180px] h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
       </div>
-
-      <header className="w-full max-w-4xl px-4 py-4 sm:px-6">
-        <div className="flex justify-end">
-          <LandingLanguageSwitcher
-            currentLocale={locale}
-            locales={["en", "sk"]}
-          />
-        </div>
-      </header>
 
       <section className="flex w-full max-w-2xl flex-col items-center gap-5 px-4 pb-10 pt-6 text-center sm:px-6 sm:pb-14 sm:pt-10">
         <span className="rounded-2xl border border-border bg-[#eef0f0] p-3 shadow-sm">

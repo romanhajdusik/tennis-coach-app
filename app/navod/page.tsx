@@ -1,20 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getLandingLocale } from "@/components/landing-page";
 import { loadNavodMessages } from "@/lib/landing-locale";
-import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
 
-// Návod je verejná stránka (súčasť plaw.online popri landingu) — používa tú
-// istú jazykovú vrstvu ako landing (LANDING_LOCALE, 6 jazykov), nie appkové
-// next-intl. Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
+// Návod je verejná stránka — texty berie z tej istej vrstvy ako landing
+// (messages/en, mimo appkového next-intl). Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
 // landing, pozri app/page.tsx). Farby: antuková tmavá téma ako appka.
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}): Promise<Metadata> {
-  const locale = await getLandingLocale((await searchParams).lang);
-  const t = await loadNavodMessages(locale);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await loadNavodMessages();
   return {
     title: t.metaTitle,
     description: t.metaDescription,
@@ -22,13 +14,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function NavodPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}) {
-  const locale = await getLandingLocale((await searchParams).lang);
-  const t = await loadNavodMessages(locale);
+export default async function NavodPage() {
+  const t = await loadNavodMessages();
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -51,7 +38,6 @@ export default async function NavodPage({
             />
           </Link>
           <div className="flex items-center gap-3">
-            <LandingLanguageSwitcher currentLocale={locale} />
             <Link
               href="/"
               className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"

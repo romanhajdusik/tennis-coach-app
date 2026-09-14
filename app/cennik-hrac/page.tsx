@@ -1,8 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getLandingLocale } from "@/components/landing-page";
 import { loadCennikHracMessages } from "@/lib/landing-locale";
-import { LandingLanguageSwitcher } from "@/components/landing-language-switcher";
 import { CompareMark } from "@/components/compare-mark";
 import {
   FOLLOWER_PRICE,
@@ -32,13 +30,8 @@ import {
 // niečo iné, než appka robí.
 const WITHOUT_SUBSCRIPTION = [true, true, true, false, false, false];
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}): Promise<Metadata> {
-  const locale = await getLandingLocale((await searchParams).lang);
-  const t = await loadCennikHracMessages(locale);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await loadCennikHracMessages();
   return {
     title: t.metaTitle,
     description: t.metaDescription,
@@ -46,18 +39,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function CennikHracPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}) {
-  const locale = await getLandingLocale((await searchParams).lang);
-  const t = await loadCennikHracMessages(locale);
+export default async function CennikHracPage() {
+  const t = await loadCennikHracMessages();
 
-  const yearly = formatEur(locale, FOLLOWER_PRICE.yearly);
-  const monthly = formatEur(locale, FOLLOWER_PRICE.monthly);
-  const monthlyYearTotal = formatEur(locale, FOLLOWER_PRICE.monthly * 12);
-  const cents = centsPerPlayerDay(locale, FOLLOWER_PRICE.yearly, 1);
+  const yearly = formatEur(FOLLOWER_PRICE.yearly);
+  const monthly = formatEur(FOLLOWER_PRICE.monthly);
+  const monthlyYearTotal = formatEur(FOLLOWER_PRICE.monthly * 12);
+  const cents = centsPerPlayerDay(FOLLOWER_PRICE.yearly, 1);
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -79,7 +67,6 @@ export default async function CennikHracPage({
             />
           </Link>
           <div className="flex items-center gap-3">
-            <LandingLanguageSwitcher currentLocale={locale} />
             <Link
               href="/"
               className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"

@@ -1,9 +1,7 @@
-import type { LandingLocale } from "@/lib/landing-locale";
-
 // Ceny verejného webu na JEDNOM mieste. Rozhodnuté sú v `docs/cennik-navrh.md`
 // (§3 trénerské hladiny, §8.2 hráč/rodič/manažér) — keď sa menia, mení sa
-// TENTO súbor a Stripe, nie deväť prekladov. Preklady nesú len text okolo
-// čísel (štítky, pluralita, meny sa formátujú podľa jazyka).
+// TENTO súbor a Stripe, nikdy nie text stránky. Ten nesie len slová okolo
+// čísel; sumy sa doň dostávajú odtiaľto už naformátované.
 //
 // POZOR: appka sama tieto čísla nikde nevynucuje — stráže čítajú
 // `profiles.player_limit` a `subscription_status` (lib/subscription.ts).
@@ -31,8 +29,10 @@ export const COACH_TIERS: readonly CoachTier[] = [
 // na deň", ktorá je na tejto stránke hlavným argumentom (docs §8.2).
 export const FOLLOWER_PRICE = { monthly: 5.9, yearly: 36 } as const;
 
-export function formatEur(locale: LandingLocale, amount: number) {
-  return new Intl.NumberFormat(locale, {
+// Verejný web je jednojazyčný (viď lib/landing-locale.ts), takže je formát
+// pevne anglický — „€6.90", nie „6,90 €".
+export function formatEur(amount: number) {
+  return new Intl.NumberFormat("en", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 2,
@@ -40,8 +40,8 @@ export function formatEur(locale: LandingLocale, amount: number) {
   }).format(amount);
 }
 
-function formatDecimal(locale: LandingLocale, value: number) {
-  return new Intl.NumberFormat(locale, {
+function formatDecimal(value: number) {
+  return new Intl.NumberFormat("en", {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   }).format(value);
@@ -52,10 +52,6 @@ function formatDecimal(locale: LandingLocale, value: number) {
  * z dokumentu. Inak by pri zmene ceny ostalo v texte staré číslo a nikto by
  * si toho nevšimol (je to najdrobnejší údaj na celej stránke).
  */
-export function centsPerPlayerDay(
-  locale: LandingLocale,
-  annualTotal: number,
-  players: number,
-) {
-  return formatDecimal(locale, (annualTotal / 365 / players) * 100);
+export function centsPerPlayerDay(annualTotal: number, players: number) {
+  return formatDecimal((annualTotal / 365 / players) * 100);
 }

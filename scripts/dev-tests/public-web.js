@@ -10,9 +10,10 @@
 // 1. **Každá verejná stránka odpovedá 200 práve na JEDNOM hostiteľovi.**
 //    Dovtedy odpovedali návody a cenník na dvoch–troch naraz; pri spustení do
 //    vyhľadávačov by si tá istá stránka konkurovala sama so sebou.
-// 2. **Jazyk prežije skok na druhú doménu.** Cookie `LANDING_LOCALE` je viazaná
-//    na doménu, takže bez prenosu v adrese by slovenský návštevník dostal po
-//    presmerovaní anglickú stránku — a vyzeralo by to ako chyba prekladu.
+// 2. **Verejný web je jednojazyčný (anglický).** Od 2026-09-14 tu nie je
+//    prepínač, cookie `LANDING_LOCALE` ani prenos jazyka v adrese (`?lang=`) —
+//    sada to overuje zo strany správania, aby sa tá vrstva nevrátila po
+//    kúskoch. Dôvody sú v `lib/landing-locale.ts`.
 // 3. **Appkové cesty na marketingových doménach neexistujú.** Login ani appka
 //    sa na plaw.online/plaw.click vykresliť nesmú, inak by vznikli dve adresy
 //    toho istého produktu a session by sa tvorila na nesprávnej doméne.
@@ -95,36 +96,42 @@ async function main() {
     !/federation|federácie/i.test(parentHome),
   );
 
-  section("3) Jazyk prežije skok na druhú doménu");
-  const carried = await request("/navod-hrac", {
+  section("3) Verejný web je jednojazyčný (anglický)");
+  // Cookie po starom prepínači môže návštevníkovi v prehliadači ešte ležať —
+  // stránka ju musí ignorovať, nie sa podľa nej prepnúť.
+  const withCookie = await request("/navod-hrac", {
     host: PUBLIC,
     cookies: "LANDING_LOCALE=sk",
   });
   check(
-    "k presmerovaniu sa pripojí jazyk z cookie",
-    (carried.headers.location ?? "").includes("lang=sk"),
-    carried.headers.location,
+    "do presmerovania sa jazyk nedopisuje ani s cookie",
+    !(withCookie.headers.location ?? "").includes("lang="),
+    withCookie.headers.location,
   );
 
-  const withLang = await request("/navod-hrac?lang=sk", { host: PARENT });
+  const ignoredCookie = await request("/navod-hrac", {
+    host: PARENT,
+    cookies: "LANDING_LOCALE=sk",
+  });
   check(
-    "cieľová stránka sa ním naozaj vykreslí",
-    /Návod/.test(textOf(withLang.body)),
-    textOf(withLang.body).slice(0, 120),
+    "cookie LANDING_LOCALE stránku nepreloží",
+    /Guide/.test(textOf(ignoredCookie.body)),
+    textOf(ignoredCookie.body).slice(0, 120),
   );
 
-  const withoutLang = await request("/navod-hrac", { host: PARENT });
+  const ignoredLang = await request("/navod-hrac?lang=sk", { host: PARENT });
   check(
-    "bez neho ostáva predvolená angličtina",
-    /Guide/.test(textOf(withoutLang.body)),
-    textOf(withoutLang.body).slice(0, 120),
+    "?lang= v adrese stránku nepreloží",
+    /Guide/.test(textOf(ignoredLang.body)),
+    textOf(ignoredLang.body).slice(0, 120),
   );
 
-  const noCookie = await request("/navod-hrac", { host: PUBLIC });
+  // Prepínač vykresľoval kódy jazykov ako tlačidlá (`>DE<`, `>JA<`) — keby sa
+  // vrátil, spadne práve táto kontrola.
+  const parentGuide = await request("/navod-hrac", { host: PARENT });
   check(
-    "bez cookie sa do adresy nič nedopisuje",
-    !(noCookie.headers.location ?? "").includes("lang="),
-    noCookie.headers.location,
+    "prepínač jazykov na stránke nie je",
+    !/>DE<|>JA<|>SK</.test(parentGuide.body),
   );
 
   section("4) Appka na marketingových doménach nežije");
