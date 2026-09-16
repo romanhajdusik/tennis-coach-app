@@ -87,8 +87,9 @@ nevstupuje samoobslužne. Účet teda vzniká na hlavnej adrese a k organizácii
 pripojí až potom.
 
 Vo formulári musí ostať **rola `Coach`** — je predvolená, len ju nesmie
-zmeniť. S inou rolou ho `/` pošle na `/parent` skôr, než sa appka opýta na
-členstvo, a k pultu sa nedostane.
+zmeniť. Účet s inou rolou sa do organizácie nedostane: SQL nižšie aj pozývací
+kód skončia chybou `coach_account_required`. Rolu si účet sám nezmení —
+opravíš ju `update public.profiles set role = 'coach' where email = '…';`.
 
 **Na `plaw.win` po registrácii nič nezakladá** — hráč založený tam je osobný
 a SQL nižšie potom spadne na `has_personal_data`.

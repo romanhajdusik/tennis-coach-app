@@ -90,6 +90,29 @@ async function main() {
   check("kód sa vygeneroval: " + code, !!code, teamText.slice(0, 250));
   await director.screenshot({ path: `${SCREENSHOT_DIR}/team.png`, fullPage: true });
 
+  // Do organizácie vstupuje len trénerský účet (migrácia 20260916090000).
+  // Rodič dostane na /join vysvetlenie a kód ostane voľný pre trénera nižšie.
+  section("2b) Rodičovský účet kód neuplatní");
+  const parentContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const parent = await parentContext.newPage();
+  await browserLogin(parent, "parent-test@test.local", BASE);
+  await parent.goto(`${BASE}/join`);
+  await parent.waitForTimeout(1500);
+  check("rodič bez členstva vidí /join", parent.url().endsWith("/join"), parent.url());
+  await parent.fill('input[name="code"]', code);
+  await parent.click('button[type="submit"]');
+  await parent.waitForTimeout(2000);
+  const parentText = await browserText(parent);
+  check(
+    "rodič dostane vysvetlenie, prečo sa nepripojí",
+    /parent, manager or player account, so it cannot join/.test(parentText),
+    parentText.slice(0, 250),
+  );
+  await parentContext.close();
+  await director.goto(`${BASE}/director/team`);
+  await director.waitForTimeout(1500);
+  check("kód po pokuse rodiča stále čaká na trénera", (await browserText(director)).includes(code));
+
   section("3) Pozvaný tréner zadá kód");
   const coachContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const coach = await coachContext.newPage();

@@ -18,8 +18,9 @@ function generateInviteCode() {
 
 /**
  * Pripojenie pozvaného trénera k organizácii. Celú kontrolu robí RPC
- * `claim_organization_invite` (kód musí sedieť, účet nesmie mať osobných
- * hráčov, sedadlo musí byť voľné) — tu chyby len prekladáme.
+ * `claim_organization_invite` (kód musí sedieť, účet musí byť trénerský
+ * a nesmie mať osobných hráčov, sedadlo musí byť voľné) — tu chyby len
+ * prekladáme.
  *
  * Členstvo je dobrovoľné: účet k pozvánke pripojí LEN toto, šéftréner cudzí
  * účet priamym zápisom priradiť nemôže (trigger `enforce_membership_rules`).
@@ -52,6 +53,11 @@ export async function claimOrganizationInvite(
     const reason = error.message ?? "";
     if (reason.includes("has_personal_data")) {
       return { error: t("hasPersonalData") };
+    }
+    // Do organizácie vstupuje len účet zaregistrovaný ako tréner (trigger
+    // `enforce_membership_rules`, migrácia `20260916090000`).
+    if (reason.includes("coach_account_required")) {
+      return { error: t("coachAccountRequired") };
     }
     if (reason.includes("seat_limit_reached")) {
       return { error: t("seatLimitReached") };
@@ -213,6 +219,9 @@ export async function reactivateMember(
     }
     if (reason.includes("has_personal_data")) {
       return { error: t("reactivateHasPersonalData") };
+    }
+    if (reason.includes("coach_account_required")) {
+      return { error: t("reactivateCoachAccountRequired") };
     }
     // Unikátny index `one_active_membership_per_user` — medzitým vstúpil inam.
     if (error.code === "23505") {

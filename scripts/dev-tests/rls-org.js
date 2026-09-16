@@ -95,6 +95,8 @@ async function main() {
     );
   }
 
+  await nonCoachAccounts({ db, org, check });
+
   // Neprihlásený volajúci má `auth.uid()` NULL. Kým to claim nekontroloval,
   // zapísal NULL ako `user_id`: vzniklo aktívne členstvo bez účtu, `invite_code`
   // sa vymazal (pozvánka sa už nedala ani dohľadať) a riadok ZOŽRAL SEDADLO —
@@ -564,6 +566,86 @@ async function main() {
   await db.from("drill_codes").delete().eq("code", "RLS-VOL");
 
   report();
+}
+
+/**
+ * Do organizácie vstupuje len účet zaregistrovaný ako TRÉNER (migrácia
+ * 20260916090000). Dovtedy rolu z registrácie nekontrolovalo nič: rodič
+ * zadal pozývací kód, stal sa členom, obsadil sedadlo — a appka ho potom
+ * posielala do rodičovskej časti.
+ *
+ * Overujú sa obe cesty, ktoré vedú cez trigger `enforce_membership_rules`:
+ * pozývací kód aj administrátorské založenie člena (tak vzniká šéftréner).
+ * Účty aj pozvánky si scenár zakladá sám a v `finally` ich zmaže.
+ */
+async function nonCoachAccounts({ db, org, check }) {
+  const roles = ["parent", "manager", "player"];
+  const userIds = [];
+  const inviteCodes = roles.map((role) => `RLS-${role.toUpperCase()}`);
+
+  try {
+    // Upratanie po prípadnom spadnutom behu — podľa dát, nie podľa id.
+    await db.from("organization_members").delete().in("invite_code", inviteCodes);
+
+    for (const role of roles) {
+      const email = `rls-${role}-join@test.local`;
+      const { data: old } = await db.from("profiles").select("id").eq("email", email);
+      for (const row of old ?? []) await db.auth.admin.deleteUser(row.id);
+
+      const { data: created, error: createError } = await db.auth.admin.createUser({
+        email,
+        password: PASSWORD,
+        email_confirm: true,
+        user_metadata: { full_name: `Test ${role}`, role },
+      });
+      if (createError) throw createError;
+      userIds.push(created.user.id);
+
+      const code = `RLS-${role.toUpperCase()}`;
+      const { data: invite } = await db
+        .from("organization_members")
+        .insert({ organization_id: org.id, role: "coach", status: "invited", invite_code: code })
+        .select("id")
+        .single();
+
+      const account = await signIn(email);
+      const claim = await account.rpc("claim_organization_invite", { p_code: code });
+      check(
+        `účet s rolou ${role} sa pozývacím kódom nepripojí`,
+        /coach_account_required/.test(claim.error?.message ?? ""),
+        claim.error?.message ?? "PRESLO!",
+      );
+
+      const { data: after } = await db
+        .from("organization_members")
+        .select("status, user_id, invite_code")
+        .eq("id", invite.id)
+        .single();
+      check(
+        `pozvánka po pokuse účtu ${role} ostala voľná aj s kódom`,
+        after.status === "invited" && after.user_id === null && after.invite_code === code,
+        JSON.stringify(after),
+      );
+    }
+
+    // Administrátorské založenie (SQL Editor, `auth.uid()` prázdne) — takto
+    // vzniká šéftréner. Ani tadiaľto sa netrénerský účet dnu nedostane.
+    const bootstrap = await db
+      .from("organization_members")
+      .insert({ organization_id: org.id, user_id: userIds[0], role: "director", status: "active" })
+      .select("id");
+    check(
+      "ani administrátor nezaloží šéftrénera na rodičovskom účte",
+      /coach_account_required/.test(bootstrap.error?.message ?? ""),
+      bootstrap.error?.message ?? "PRESLO!",
+    );
+  } finally {
+    await db.from("organization_members").delete().in("invite_code", inviteCodes);
+    for (const id of userIds) {
+      await db.from("organization_members").delete().eq("user_id", id);
+      await db.auth.admin.deleteUser(id);
+    }
+  }
 }
 
 /**

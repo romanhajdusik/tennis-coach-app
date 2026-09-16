@@ -72,6 +72,7 @@
       "reactivateFailed": "Failed to bring the coach back.",
       "reactivateHasPersonalData": "This coach now manages their own players outside the organization, so they cannot be brought back. They need to archive those players first.",
       "reactivateMemberElsewhere": "This coach has meanwhile joined another organization.",
+      "reactivateCoachAccountRequired": "This account is not a coach account, so it cannot be brought back into the organization.",
       "seatLimitReached": "All seats are taken. Free one up first.",
       "deleteFailed": "Failed to delete the coach."
     },
