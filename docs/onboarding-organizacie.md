@@ -80,8 +80,25 @@ returning id, slug, seat_limit;
 
 ## Krok 5 — šéftréner
 
-Šéftréner si najprv **sám vytvorí účet** na `<slug>.plaw.win/register` (appka
-heslá nenastavuje za neho). Potom mu priradíš rolu:
+Šéftréner si najprv **sám vytvorí účet na hlavnej adrese `plaw.win/register`**
+(appka heslá nenastavuje za neho). **Na `<slug>.plaw.win/register` to nejde** —
+`proxy.ts` tam registráciu presmeruje 307 na `/join`, lebo do federácie sa
+nevstupuje samoobslužne. Účet teda vzniká na hlavnej adrese a k organizácii sa
+pripojí až potom.
+
+Vo formulári potrebuje:
+
+- **promo kód od nás** — kým beží registrácia na pozvánku (`REGISTRATION_ENABLED`
+  nie je `"true"`), formulár bez platného kódu nikoho nepustí (viď
+  [Dva kódy na každého trénera](#dva-kódy-na-každého-trénera));
+- **rolu `Coach`** — je predvolená, len ju nesmie zmeniť. S inou rolou ho `/`
+  pošle na `/parent` skôr, než sa appka opýta na členstvo, a k pultu sa
+  nedostane.
+
+**Na `plaw.win` po registrácii nič nezakladá** — hráč založený tam je osobný
+a SQL nižšie potom spadne na `has_personal_data`.
+
+Keď ti pošle e-mail, ktorý použil, priradíš mu rolu:
 
 ```sql
 insert into public.organization_members (organization_id, user_id, role, status)
@@ -96,8 +113,47 @@ Priamy zápis `user_id` je povolený **len tu**: trigger ho zamieta, keď ho rob
 prihlásený používateľ (členstvo je dobrovoľné, §5.7), ale v SQL Editore je
 `auth.uid()` prázdne, takže administrátorský bootstrap prejde.
 
-**Trénerov už nezakladáš** — šéftréner si ich pozve sám kódmi na
-`/director/team`, oni ho zadajú na `/join`. To je celý onboarding trénera.
+Potom sa šéftréner **prihlási na `<slug>.plaw.win`** a pristane rovno na
+`/director`. Je to druhé prihlásenie — cookies sú host-only, takže sa
+prihlásenie z `plaw.win` na subdoménu neprenáša.
+
+**Trénerov už nezakladáš** — šéftréner si ich pozve kódmi na `/director/team`.
+Tréner si účet založí rovnako ako šéftréner, na `plaw.win/register` s promo
+kódom a s rolou `Coach`, potom sa prihlási na subdoméne a pozývací kód zadá na
+`/join`. To je celý onboarding trénera.
+
+### Dva kódy na každého trénera
+
+Kým je registrácia na pozvánku, potrebuje každý federačný tréner **dva rôzne
+kódy**. Povedz to zväzu vopred, inak si ich tréneri pomýlia:
+
+| Kód | Kto ho vydá | Na čo slúži | Kde sa zadáva |
+|---|---|---|---|
+| promo kód | my, SQL podľa [promo-kody.md](promo-kody.md) | založenie účtu | `plaw.win/register` |
+| pozývací kód | šéftréner na `/director/team` | pripojenie k organizácii | `<slug>.plaw.win/join` |
+
+Pre zväz stačí **jeden hromadný promo kód s `max_uses` = počet sedadiel + 1**.
+Tá jednotka navyše je šéftréner: registruje sa s rolou `Coach` a kód sa míňa
+každému takému účtu, teda aj jemu. Ak šéftréner aj trénuje, jeho druhý účet
+obsadí sedadlo, takže je už v počte sedadiel.
+
+```sql
+insert into promo_codes (code, free_days, player_limit, max_uses, note)
+values ('SLUG-2026', 14, 1, 11, 'zväz slug, 10 sedadiel + šéftréner');
+```
+
+**`free_days` a `player_limit` členovi zväzu nič nedávajú** — členstvo prebíja
+predplatné aj cenovú hladinu (`lib/subscription.ts`). Prejavia sa, až keď
+tréner zo zväzu odíde a jeho účet sa stane samostatným. **Odporúčanie: `14`
+a `1`**, teda presne to, čo dá registrácia bez kódu. Kód je tu len vstupenka
+a odchod zo zväzu nemá byť cestou k samostatnej appke zadarmo. Vedľajší účinok:
+po uplynutí tých 14 dní si odobratý tréner osobného hráča nezaloží, takže ho
+šéftréner vie vždy vrátiť späť (inak by návrat zablokovalo
+`has_personal_data`). Hodnotu `0` databáza neprijme — `free_days` musí byť
+kladné alebo prázdne.
+
+**Po otvorení verejnej registrácie (`REGISTRATION_ENABLED=true`) promo kód
+odpadá** a ostáva len pozývací kód od šéftrénera.
 
 ---
 
@@ -127,9 +183,13 @@ zmena (a treba rozhodnúť, či organizáciu prepnúť do read-only, alebo zamkn
 1. `https://<slug>.plaw.win/` → prihlásenie (org subdoména nemá marketingovú landing).
 2. Šéftréner sa prihlási → má pristáť rovno na `/director`.
 3. `/director/team` → sedí počet sedadiel, dá sa vytvoriť pozývací kód.
-4. Tréner s kódom → `/join` → po pripojení vidí trénerskú appku.
+4. Tréner s účtom z `plaw.win/register` sa prihlási na subdoméne → `/join` →
+   zadá pozývací kód → po pripojení vidí trénerskú appku.
 
 ## Pasce (overené, nie teoretické)
+
+- **Na subdoméne organizácie sa účet založiť nedá** — `/register` tam vedie
+  307 na `/join`, a to aj pre šéftrénera. Účet vždy vzniká na `plaw.win/register`.
 
 - **Účet s osobnými hráčmi sa členom stať nemôže** — insert spadne na
   `has_personal_data`. Kto appku používal ako samostatný tréner, potrebuje na
