@@ -706,9 +706,12 @@ async function main() {
     const playersBefore = await activeCount();
 
     // Formulár sa odosiela naozaj — zamietnuť to musí server.
-    await limitPage.fill('input[name="name"]', EXTRA_PLAYER);
+    // `#name` je formulár na PRIDANIE: od 2026-08-30 je na stránke aj skrytý
+    // formulár na úpravu karty hráča s tým istým `name="name"`, a na ten by
+    // `input[name="name"]` trafil ako prvý.
+    await limitPage.fill("input#name", EXTRA_PLAYER);
     await limitPage
-      .locator('form:has(input[name="name"]) button[type="submit"]')
+      .locator("form:has(input#name) button[type=submit]")
       .click();
     await limitPage.waitForTimeout(2500);
 
@@ -729,9 +732,9 @@ async function main() {
     await db.from("profiles").update({ player_limit: 3 }).eq("id", solo.id);
     await limitPage.goto(`${appBase}/players`);
     await limitPage.waitForTimeout(1000);
-    await limitPage.fill('input[name="name"]', EXTRA_PLAYER);
+    await limitPage.fill("input#name", EXTRA_PLAYER);
     await limitPage
-      .locator('form:has(input[name="name"]) button[type="submit"]')
+      .locator("form:has(input#name) button[type=submit]")
       .click();
     await limitPage.waitForTimeout(2500);
 
