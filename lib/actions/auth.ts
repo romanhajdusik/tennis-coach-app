@@ -5,7 +5,13 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requestOrigin } from "@/lib/request-origin";
 
-export type AuthFormState = { error?: string } | undefined;
+/**
+ * `redirectTo` = prihlásenie prešlo a formulár má otvoriť túto cestu ÚPLNÝM
+ * načítaním stránky (viď `login`).
+ */
+export type AuthFormState =
+  | { error?: string; redirectTo?: string }
+  | undefined;
 
 /**
  * Registrácia má o stav navyše: pri zapnutom potvrdzovaní mailu účet vznikne,
@@ -35,7 +41,26 @@ export async function login(
     return { error: t("invalidCredentials") };
   }
 
-  redirect(redirectTo);
+  // Zámerne NIE `redirect()`. Presmerovanie zo server action Next vykreslí
+  // priamo v odpovedi na POST (internou požiadavkou na cieľ), takže prehliadač
+  // na cieľ nikdy nepošle vlastný GET — a stráž členstva v `proxy.ts` beží len
+  // pri GET. Lokálne ide tá interná požiadavka navyše na `localhost:3000`
+  // (`__NEXT_PRIVATE_ORIGIN`), proxy v nej org subdoménu nespozná a tréner bez
+  // členstva skončil na osobnej domovskej stránke namiesto `/join`.
+  // Prihlásenie je hranica, za ktorou sa mení všetko, čo appka vykreslí, takže
+  // úplné načítanie cieľa (formulár volá `window.location.assign`) nič nestojí
+  // a stráž aj org kontext rozhodnú rovnako v každom prostredí.
+  //
+  // Cieľ je väzbový argument z klienta, preto len cesta v rámci appky —
+  // rovnaké pravidlo ako `safeNext` v `app/auth/confirm/route.ts`.
+  const safeTarget =
+    redirectTo.startsWith("/") &&
+    !redirectTo.startsWith("//") &&
+    !redirectTo.includes("\\")
+      ? redirectTo
+      : "/";
+
+  return { redirectTo: safeTarget };
 }
 
 export async function register(

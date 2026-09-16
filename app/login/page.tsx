@@ -1,14 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { login } from "@/lib/actions/auth";
 
 export default function LoginPage() {
   const t = useTranslations("Auth.login");
   const loginAction = login.bind(null, "/");
-  const [state, formAction, pending] = useActionState(loginAction, undefined);
+  const [state, formAction, isSubmitting] = useActionState(loginAction, undefined);
+  // Po prihlásení úplné načítanie cieľa, nie klientská navigácia — dôvod je
+  // pri akcii `login`. Kým sa stránka načíta, tlačidlo ostáva v stave „čaká".
+  const pending = isSubmitting || Boolean(state?.redirectTo);
+
+  useEffect(() => {
+    if (state?.redirectTo) {
+      window.location.assign(state.redirectTo);
+    }
+  }, [state]);
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-4 ">
