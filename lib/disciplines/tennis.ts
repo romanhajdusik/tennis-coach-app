@@ -53,8 +53,8 @@ export const TENNIS_DISCIPLINE: DisciplineConfig = {
     ],
     Serve: ["SR1-DCE", "SR1-ADV", "SR2-DCE", "SR2-ADV"],
     "GAME DRILLS": [
-      "RZH-TRE",
-      "RZH-ZAP",
+      "WUP-PRC",
+      "WUP-MATCH",
       "SR1+1",
       "SR2+1",
       "RET+1",
