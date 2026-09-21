@@ -12,6 +12,10 @@ export const TENNIS_DISCIPLINE: DisciplineConfig = {
 
   domain: "plaw.win",
 
+  // Tenis má na `/` landing (components/landing-page.tsx) s vlastnou úvodnou
+  // fotkou na telefóne, takže samostatnú úvodnú obrazovku nepotrebuje.
+  intro: null,
+
   categories: [
     "Forehand",
     "Backhand",

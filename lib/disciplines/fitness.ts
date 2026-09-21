@@ -17,6 +17,11 @@ export const FITNESS_DISCIPLINE: DisciplineConfig = {
 
   domain: "fitness.plawsports.com",
 
+  // Kondička nemá marketing, ale od 2026-09-21 má úvodnú obrazovku s vlastnou
+  // fotkou (rebrík a dva medicinbaly na kurte, vybral user z vygenerovaných
+  // variantov). Vygenerovaná — výbava ani kurt nemajú značku.
+  intro: { photo: "/hero/fitness-portrait.webp" },
+
   // Posledné dve zamerania majú PEVNÝ názov rovnako ako ostatné — tréner si
   // do nich dá vlastné cvičenia, ale zameranie sa nepremenúva (premenovateľné
   // zameranie by muselo byť dáta, nie konfigurácia).

@@ -151,6 +151,8 @@ DEV_PORT=3001 node scripts/dev-tests/fitness.js
   Krok 4 kondičnej roadmapy, nie súčasť nasadenia.
 - **Kondička vo federácii** (`<slug>.plaw.win`) do v1 nejde — org subdomény sú
   tenisové a `copy_session_to_org_player` disciplínu neprenáša.
-- **Marketing kondičky** neexistuje; `/` vedie rovno na prihlásenie. Keď raz
+- **Marketing kondičky** neexistuje; `/` ukáže od 2026-09-21 len úvodnú
+  obrazovku bez textov (fotka, „Create account", „Sign in" —
+  `components/discipline-intro.tsx`, konfigurácia `intro`). Keď raz
   vznikne, patrí k nemu aj vlastný názov v `manifest.ts` — dnes sa aj kondičná
   appka pridá na plochu ako „P.L.A.W".

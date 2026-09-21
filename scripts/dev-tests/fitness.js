@@ -51,12 +51,30 @@ async function main() {
 
   section("1) Kondičná doména nevykreslí tenisový marketing");
   // Landing je marketing tenisového produktu (názov, screenshoty z kurtu,
-  // cenník) — na kondičnej doméne by bola nepravdivá.
+  // cenník) — na kondičnej doméne by bola nepravdivá. Od 2026-09-21 tu
+  // odhlásený dostane úvodnú obrazovku bez marketingu (konfigurácia `intro`),
+  // dovtedy šiel rovno na prihlásenie.
   const home = await request("/", { host: APP_HOST });
+  const homeText = textOf(home.body);
+  check("odhlásený dostane úvodnú obrazovku", home.status === 200, `status ${home.status}`);
   check(
-    "odhlásený ide rovno na prihlásenie",
-    home.status === 307 && /\/login$/.test(home.headers.location ?? ""),
-    `status ${home.status}, location ${home.headers.location}`,
+    "úvodná fotka je kondičná, nie tenisová loptička",
+    home.body.includes("/hero/fitness-portrait.webp") &&
+      !home.body.includes("/hero/court-portrait.webp"),
+  );
+  check(
+    "hore je adresa kondičky, nie tenisu",
+    homeText.includes("fitness.plawsports.com") && !/(?<![@\w.])plaw\.win/.test(homeText),
+    homeText.slice(0, 120),
+  );
+  check(
+    "vedie na prihlásenie aj registráciu",
+    /href="\/login"/.test(home.body) && /href="\/register"/.test(home.body),
+  );
+  check(
+    "žiadny tenisový marketing (štítok, cenník)",
+    !/For tennis coaches|€/.test(homeText),
+    homeText.slice(0, 200),
   );
 
   const cookies = await authCookies("demo@plaw.win");

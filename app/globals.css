@@ -76,7 +76,9 @@ html[data-app="org"] {
    prekrývala): hore tmavé pod logom, uprostred priehľadné, aby loptička ostala
    jasná, a dole splynie s pozadím stránky, na ktorom sú tlačidlá. Pásma sedia
    s kompozíciou `public/hero/court-portrait.webp` — loptička padne podľa
-   výšky telefónu zhruba do 68–82 % fotky. */
+   výšky telefónu zhruba do 68–82 % fotky. To isté stmavenie má aj úvodná
+   obrazovka kondičky (`components/discipline-intro.tsx`); jej fotka
+   `fitness-portrait.webp` má výbavu v strede, zhruba v 50–75 %. */
 .hero-scrim {
   background: linear-gradient(
     to bottom,

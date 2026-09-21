@@ -50,10 +50,21 @@ export type DisciplineConfig = {
    * Verejná adresa nasadenia. Musí byť konfigurácia, nie natvrdo napísaný
    * reťazec: kondičný tréner na `fitness.plawsports.com` by inak čítal adresu
    * tenisového produktu. Do 2026-09-21 sa vypisovala pod názvom appky na
-   * domovskom rozcestníku; ten nahradila nástenka „Dnes" a spodná lišta, takže
-   * ju dnes appka nikde nezobrazuje.
+   * domovskom rozcestníku; ten nahradila nástenka „Dnes" a spodná lišta.
+   * Odvtedy ju vidno len hore na úvodnej obrazovke (`intro`), teda dnes
+   * výhradne v kondičke.
    */
   domain: string;
+  /**
+   * Úvodná obrazovka pre odhláseného na `/` — fotka, názov appky a dve
+   * tlačidlá, **bez marketingu** (`components/discipline-intro.tsx`). Má ju
+   * nasadenie, ktoré nemá vlastný landing: bez nej by návštevník skončil rovno
+   * na prihlásení. `null` = disciplína má landing (tenis na `plaw.win`), takže
+   * úvodnú obrazovku nepotrebuje. Fotka nesmie ukazovať výbavu inej
+   * disciplíny — kondička do 2026-09-21 úvod nemala a user nechcel, aby
+   * dostala tenisovú loptičku.
+   */
+  intro: { photo: string } | null;
   /** Zamerania cvičení — poradie určuje aj poradie záložiek a farbu v grafe. */
   categories: string[];
   defaultCategory: string;

@@ -6,8 +6,9 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
-import { getDiscipline } from "@/lib/discipline";
+import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { LandingPage } from "@/components/landing-page";
+import { DisciplineIntro } from "@/components/discipline-intro";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
 import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
@@ -127,8 +128,20 @@ export default async function Home() {
     // Landing je marketing TENISOVÉHO produktu (jeho názov, screenshoty
     // z kurtu, cenník). Iná disciplína ju nesmie vykresliť ani omylom —
     // kondičný tréner na `fitness.plawsports.com` sem chodí pracovať,
-    // nie čítať o tenise. Vlastný marketing kondička zatiaľ nemá.
-    if ((await getDiscipline()) !== "tennis") {
+    // nie čítať o tenise. Vlastný marketing kondička nemá, dostane len
+    // úvodnú obrazovku bez sľubov (fotka + prihlásenie), ak ju konfigurácia
+    // disciplíny má; inak ide rovno na prihlásenie ako do 2026-09-21.
+    const config = await getDisciplineConfig();
+    if (config.id !== "tennis") {
+      if (config.intro) {
+        return (
+          <DisciplineIntro
+            photo={config.intro.photo}
+            label={config.label}
+            domain={config.domain}
+          />
+        );
+      }
       redirect("/login");
     }
     return <LandingPage />;

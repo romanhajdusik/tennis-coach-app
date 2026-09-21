@@ -29,7 +29,8 @@ ciest svojho hostiteľa (`PUBLIC_PATHS`, resp. `PARENT_FACE_PATHS`). Bez prvého
 odpovie na troch doménach naraz, bez druhého sa na svojej vlastnej nevykreslí.
 
 **Prečo kondička na `plaw.online`:** nasadenie `fitness.plawsports.com` nemá
-verejnú tvár vôbec — odhlásený návštevník ide rovno na prihlásenie. Kým kondička
+verejnú tvár — odhlásený návštevník dostane len úvodnú obrazovku s fotkou
+a tlačidlami na prihlásenie a registráciu (od 2026-09-21), nijaký text. Kým kondička
 nedostane vlastný marketing, je neutrálna verejná tvár jediné rozumné miesto.
 Keď ten marketing raz vznikne, návod sa presunie za ním.
 
