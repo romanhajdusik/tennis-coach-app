@@ -73,7 +73,7 @@ async function main() {
   );
   check(
     "žiadny tenisový marketing (štítok, cenník)",
-    !/For tennis coaches|€/.test(homeText),
+    !/\bTennis\b|€/.test(homeText),
     homeText.slice(0, 200),
   );
 
