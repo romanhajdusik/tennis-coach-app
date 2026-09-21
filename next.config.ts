@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
   // bez týchto hostnames sa pri lokálnom teste cez ostrú adresu nehydratujú a
   // prepínač ticho nič nerobí. Rovnaká pasca ako pri org subdoménach vyššie.
   allowedDevOrigins: [
-    "10.241.70.191",
+    "10.248.90.191",
     "plaw.win",
     "*.plaw.win",
     "plaw.online",
