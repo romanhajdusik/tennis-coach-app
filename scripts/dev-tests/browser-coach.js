@@ -1,5 +1,6 @@
 // Klikacie scenáre trénerovej appky: ťuk na tréning musí prepnúť hráča,
-// upozornenie musí otvoriť plánovanie, a analytika musí kresliť tri grafy.
+// nástenka nesmie upozorňovať na zanedbaného hráča (to patrí šéftrénerovi),
+// a analytika musí kresliť tri grafy.
 //
 // Vyžaduje dočasný Playwright — viď README.md.
 const fs = require("node:fs");
@@ -554,13 +555,16 @@ async function main() {
     /Active player: Adam Kovac/.test(await browserText(page)),
   );
 
-  section("3) Upozornenie na zanedbaného hráča");
+  section("3) Nástenka trénera neupozorňuje na zanedbaného hráča");
+  // Od 2026-09-21 to patrí len šéftrénerovi (pult); trénerovi ostáva stav
+  // hráča v rosteri (§4). Nina tréning nemá, takže by sa upozornenie ukázalo.
   await page.goto(`${BASE}/`);
-  await page.click('button[aria-label="Schedule a practice for Nina Bakova"]');
-  await page.waitForURL(`${BASE}/sessions`, { timeout: 30000 });
+  await page.waitForSelector("text=Today's schedule", { timeout: 30000 });
   check(
-    "prepne na Ninu a otvorí plánovanie",
-    /Active player: Nina Bakova/.test(await browserText(page)),
+    "žiadne upozornenie ani dlaždica need attention",
+    !/need attention|no practice in the last|without a practice/.test(
+      await browserText(page),
+    ),
   );
 
   section("4) Roster so stavmi");
@@ -572,8 +576,8 @@ async function main() {
   await page.screenshot({ path: `${SCREENSHOT_DIR}/roster.png`, fullPage: true });
 
   section("5) Analytika: tri grafy, generálny prvý");
-  // Krok 3 prepol vybraného hráča na Ninu (tá nemá žiadny tréning), takže sa
-  // musíme vrátiť k hráčovi s dátami — analytika sa viaže na vybraného.
+  // Analytika sa viaže na vybraného hráča — prepni výslovne na Adama (má dáta),
+  // nech výsledok nezávisí od toho, koho vybral predošlý krok.
   await page.goto(`${BASE}/`);
   await page.click('button[aria-label="Switch to Adam Kovac"]');
   await page.waitForTimeout(1500);
@@ -1226,11 +1230,16 @@ async function main() {
     await resetPage.fill('input[name="password_confirm"]', NEW_PASSWORD);
     await resetPage.click('button[type="submit"]');
     await resetPage.waitForTimeout(3000);
+    // Domov od 2026-09-21 e-mail prihláseného nevypisuje (rozcestník nahradila
+    // nástenka), takže účet overujeme podľa jeho hráča v zozname.
+    const afterReset = await browserText(resetPage);
+    await resetPage.goto(`${new URL(resetPage.url()).origin}/players`);
+    await resetPage.waitForTimeout(1500);
     check(
       "po uložení je tréner prihlásený vo svojej appke",
-      /demo@plaw\.win/.test(await browserText(resetPage)) &&
-        !/reset-password/.test(resetPage.url()),
-      `${resetPage.url()} | ${(await browserText(resetPage)).slice(0, 90)}`,
+      /Today's schedule/.test(afterReset) &&
+        /Adam Kováč/.test(await browserText(resetPage)),
+      `${resetPage.url()} | ${afterReset.slice(0, 90)}`,
     );
 
     // Podstata celej funkcie: heslo sa naozaj zmenilo.

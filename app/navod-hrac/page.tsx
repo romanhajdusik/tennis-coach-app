@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { loadNavodHracMessages } from "@/lib/landing-locale";
 
 // Krátky verejný návod pre pripojeného hráča/rodiča/manažéra (druhá strana
-// appky). Tá istá textová vrstva aj antuková téma ako trénerský návod
+// appky). Tá istá textová vrstva aj tmavá téma ako trénerský návod
 // (/navod). Zámerne noindex.
 export async function generateMetadata(): Promise<Metadata> {
   const t = await loadNavodHracMessages();

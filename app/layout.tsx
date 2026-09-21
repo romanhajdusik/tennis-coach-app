@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { BottomNav } from "@/components/bottom-nav";
 import { HomeButton } from "@/components/home-button";
+import { getCoachNav } from "@/lib/coach-nav";
 import { TimezoneDetector } from "@/components/timezone-detector";
 import { TrialBanner } from "@/components/trial-banner";
 import { getOrgContext } from "@/lib/org/context";
@@ -46,6 +48,7 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const discipline = await getDisciplineConfig();
+  const coachNav = await getCoachNav();
 
   return (
     <html
@@ -64,7 +67,13 @@ export default async function RootLayout({
               v poriadku. */}
           <TrialBanner />
             {children}
-            <HomeButton />
+            {/* Trénerovi robí „domov" spodná lišta; ostatným (rodič,
+                šéftréner, odhlásený) ostáva plávajúce tlačidlo. */}
+            {coachNav ? (
+              <BottomNav analyticsHref={coachNav.analyticsHref} />
+            ) : (
+              <HomeButton />
+            )}
             <TimezoneDetector />
           </DisciplineProvider>
         </NextIntlClientProvider>

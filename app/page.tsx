@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
@@ -5,7 +6,7 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
-import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
+import { getDiscipline } from "@/lib/discipline";
 import { LandingPage } from "@/components/landing-page";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
@@ -16,29 +17,11 @@ import {
   loadRozcestnikMessages,
 } from "@/lib/landing-locale";
 import { getOrgContext } from "@/lib/org/context";
-import { getOrgRole } from "@/lib/org/membership";
+import { getOrgMembership, getOrgRole } from "@/lib/org/membership";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import { TodayBoard } from "@/components/today-board";
-
-// Rozcestník federačného trénera — tie isté obrazovky ako v samostatnom
-// režime, len pod dennou nástenkou „Dnes".
-//
-// Odkaz na analytiku nesie zameranie, na ktorom sa otvára, a to je vec
-// disciplíny — vo federácii ju appka pozná až z členstva prihláseného trénera,
-// takže sa zoznam nedá poskladať na úrovni modulu. Kódovanie tu drž:
-// konfigurácia povoľuje aj názvy typu „CORE MUSCLES".
-function navLinks(defaultCategory: string) {
-  return [
-    { href: "/players", labelKey: "players" },
-    { href: "/sessions", labelKey: "sessions" },
-    { href: "/calendar", labelKey: "calendar" },
-    { href: "/drill-codes", labelKey: "drillCodes" },
-    {
-      href: `/analytics/${encodeURIComponent(defaultCategory)}`,
-      labelKey: "analytics",
-    },
-  ] as const;
-}
+import { TagIcon } from "@/components/landing-icons";
+import { LogoutIcon } from "@/components/nav-icons";
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
@@ -157,118 +140,94 @@ export default async function Home() {
     redirect("/director");
   }
 
-  // Denný domov „Dnes" (rozvrh naprieč hráčmi) sa vykreslí vždy, keď má tréner
-  // viac než jedného aktívneho hráča — federačnému (1:N zo svojej podstaty) aj
-  // samostatnému, ktorému to dovolí cenová hladina. S jediným hráčom niet čo
-  // zoraďovať, tam ostáva pôvodný rozcestník nižšie.
+  // Denný domov „Dnes" dostane KAŽDÝ tréner (od 2026-09-21) — aj s jediným
+  // hráčom a aj nový bez hráčov. Dovtedy ho mali len tréneri s 2+ hráčmi a
+  // ostatní videli rozcestník s radom tlačidiel; tie sú odvtedy v spodnej
+  // lište (`components/bottom-nav.tsx`), takže by rozcestník ostal prázdny.
   //
-  // POZOR: mimo org subdomény sa počítajú len OSOBNÍ hráči. RLS sa pýta na
-  // ČLENSTVO, nie na hostname (`current_org_id()` číta `organization_members`),
-  // takže federačnému trénerovi vydá jeho org hráčov aj na `plaw.win` — bez
-  // tohto filtra by sa mu tam nástenka organizácie vykreslila mimo nej.
-  const { count: personalActivePlayers } = org
-    ? { count: 0 }
-    : await supabase
-        .from("players")
-        .select("id", { count: "exact", head: true })
-        .eq("coach_id", user.id)
-        .eq("is_active", true)
-        .is("organization_id", null);
-
-  if (org || (personalActivePlayers ?? 0) > 1) {
-    return (
-      <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
-        <TodayBoard org={org} />
-
-        <PlayerSwitcher />
-
-        <nav className="flex flex-wrap gap-2">
-          {navLinks((await getDisciplineConfig()).defaultCategory).map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-            >
-              {t(link.labelKey)}
-            </Link>
-          ))}
-        </nav>
-
-        <form action={logout.bind(null, "/login")}>
-          <button
-            type="submit"
-            className="rounded-lg border border-border px-4 py-2 text-sm font-medium "
-          >
-            {t("logout")}
-          </button>
-        </form>
-      </div>
-    );
-  }
+  // POZOR — jediná výnimka: člen organizácie MIMO jej subdomény. RLS sa pýta
+  // na ČLENSTVO, nie na hostname (`current_org_id()` číta
+  // `organization_members`), takže nástenka by mu aj na `plaw.win` vykreslila
+  // hráčov organizácie. Osobných hráčov taký účet mať nemôže (buď nezávislý,
+  // alebo zamestnanec), preto dostane len údaj, kto je prihlásený.
+  const showBoard = org !== null || (await getOrgMembership()) === null;
 
   return (
-    <div className="flex min-h-dvh w-full min-w-0 flex-col items-center justify-center gap-6 bg-background px-4 ">
-      <div className="flex flex-col items-center gap-1">
-        <h1 className="text-2xl font-semibold text-foreground ">
-          {t("title")}
-        </h1>
-        <p className="text-xs text-muted ">
-          plan.log.analyze.win
+    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
+      <HomeHeader
+        title={t("title")}
+        drillCodesLabel={t("drillCodes")}
+        logoutLabel={t("logout")}
+      />
+
+      {showBoard ? (
+        <>
+          <TodayBoard org={org} />
+          <PlayerSwitcher
+            heading={t("players")}
+            singlePlaceholder={t("playerPlaceholder")}
+          />
+        </>
+      ) : (
+        <p className="text-sm text-muted">
+          {t("loggedInAs")}{" "}
+          <span className="font-medium text-foreground">{user.email}</span>
         </p>
-        <p className="text-xs text-muted ">
-          {(await getDisciplineConfig()).domain}
-        </p>
-      </div>
-      <div className="flex flex-col items-center gap-3">
-        <p className="text-muted ">
-          {t("loggedInAs")} <span className="font-medium">{user.email}</span>
-        </p>
-        <div className="w-full max-w-md">
-          <PlayerSwitcher />
-        </div>
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            href="/players"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
-          >
-            {t("players")}
-          </Link>
-          <Link
-            href="/sessions"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
-          >
-            {t("sessions")}
-          </Link>
-          <Link
-            href="/calendar"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
-          >
-            {t("calendar")}
-          </Link>
-          <Link
-            href="/drill-codes"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
-          >
-            {t("drillCodes")}
-          </Link>
-          <Link
-            href={`/analytics/${encodeURIComponent(
-              (await getDisciplineConfig()).defaultCategory,
-            )}`}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
-          >
-            {t("analytics")}
-          </Link>
-        </div>
+      )}
+    </div>
+  );
+}
+
+const ICON_ITEM =
+  "group flex w-[70px] flex-col items-center gap-1 text-[11px] font-medium text-foreground";
+const ICON_BUTTON =
+  "flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-muted transition-colors group-hover:text-foreground";
+
+/**
+ * Hlavička domovskej stránky: značka vľavo, kódy cvičení a odhlásenie vpravo.
+ * Oboje žilo do 2026-09-21 v rade tlačidiel pod nástenkou; v spodnej lište
+ * nie sú, lebo tam je miesto na päť najpoužívanejších obrazoviek.
+ */
+function HomeHeader({
+  title,
+  drillCodesLabel,
+  logoutLabel,
+}: {
+  title: string;
+  drillCodesLabel: string;
+  logoutLabel: string;
+}) {
+  // Bodky v „P.L.A.W" nesú primárnu farbu appky (tenis limetková).
+  const letters = title.split(".");
+
+  return (
+    <header className="flex items-center justify-between">
+      <span className="font-sans text-[22px] font-extrabold tracking-tight text-foreground">
+        {letters.map((letter, index) => (
+          <Fragment key={index}>
+            {index > 0 && <span className="text-primary">.</span>}
+            {letter}
+          </Fragment>
+        ))}
+      </span>
+      {/* Popisok pod ikonkou ako v spodnej lište (používateľ, 2026-09-21) —
+          samotná ikonka štítku nehovorí, že ide o kódy cvičení. */}
+      <div className="flex gap-3">
+        <Link href="/drill-codes" className={ICON_ITEM}>
+          <span className={ICON_BUTTON}>
+            <TagIcon className="h-5 w-5" />
+          </span>
+          {drillCodesLabel}
+        </Link>
         <form action={logout.bind(null, "/login")}>
-          <button
-            type="submit"
-            className="rounded-lg border border-border px-4 py-2 text-sm font-medium "
-          >
-            {t("logout")}
+          <button type="submit" className={ICON_ITEM}>
+            <span className={ICON_BUTTON}>
+              <LogoutIcon />
+            </span>
+            {logoutLabel}
           </button>
         </form>
       </div>
-    </div>
+    </header>
   );
 }

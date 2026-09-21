@@ -61,15 +61,16 @@ async function main() {
 
   const cookies = await authCookies("demo@plaw.win");
 
-  section("1b) Pod názvom appky je adresa TOHTO nasadenia");
-  // Adresa bola natvrdo „plaw.win" — kondičný tréner tak čítal adresu
-  // tenisového produktu. Odteraz je vlastnosťou disciplíny.
+  section("1b) Domov a spodná lišta patria TOMUTO nasadeniu");
+  // Do 2026-09-21 sa pod názvom appky vypisovala adresa nasadenia (a bola raz
+  // natvrdo „plaw.win"). Rozcestník nahradila nástenka so spodnou lištou —
+  // disciplína sa odvtedy prejavuje v tom, kam vedie záložka Analytics.
   const loggedInHome = await request("/", { host: APP_HOST, cookies });
   const loggedInText = textOf(loggedInHome.body);
   check(
-    "vypisuje sa fitness.plawsports.com",
-    loggedInText.includes("fitness.plawsports.com"),
-    loggedInText.slice(0, 200),
+    "spodná lišta vedie analytiku na kondičné zameranie",
+    /href="\/analytics\/ENDURANCE"/.test(loggedInHome.body),
+    (loggedInHome.body.match(/href="\/analytics\/[^"]*"/) ?? ["žiadny odkaz"])[0],
   );
   // Lookbehind kvôli tomu, že e-mail prihláseného (demo@plaw.win) tú istú
   // doménu obsahuje legitímne — kontrolujeme vypísanú adresu, nie účet.

@@ -47,9 +47,11 @@ export type DisciplineConfig = {
    */
   label: string;
   /**
-   * Verejná adresa nasadenia — vypisuje sa pod názvom appky. Musí byť
-   * konfigurácia, nie natvrdo napísaný reťazec: kondičný tréner na
-   * `fitness.plawsports.com` by inak čítal adresu tenisového produktu.
+   * Verejná adresa nasadenia. Musí byť konfigurácia, nie natvrdo napísaný
+   * reťazec: kondičný tréner na `fitness.plawsports.com` by inak čítal adresu
+   * tenisového produktu. Do 2026-09-21 sa vypisovala pod názvom appky na
+   * domovskom rozcestníku; ten nahradila nástenka „Dnes" a spodná lišta, takže
+   * ju dnes appka nikde nezobrazuje.
    */
   domain: string;
   /** Zamerania cvičení — poradie určuje aj poradie záložiek a farbu v grafe. */

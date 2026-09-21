@@ -30,7 +30,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča, životný cyklus členstva, skupinový tréning naprieč trénermi |
 | `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, kód uplatní len prihlásený, rodičovi ostáva jeho prístup |
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
-| `browser-coach.js` | Ťuk na tréning prepne hráča, upozornenie, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun a zrušenie naplánovaného tréningu v oboch režimoch, obnova hesla až po prihlásenie novým heslom (§12) |
+| `browser-coach.js` | Ťuk na tréning prepne hráča, nástenka neupozorňuje na zanedbaného hráča, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun a zrušenie naplánovaného tréningu v oboch režimoch, obnova hesla až po prihlásenie novým heslom (§12) |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
 | `fitness.js` | **Kondičné nasadenie** — 10 zameraní, prázdne sloty kódov, chýbajúce pole charakteru, trvanie 60, analytika bez odhadu úderov, žiadna tenisová landing, kondička kód prepojenia VYDÁVA, a §6 — tenisový **súhrn opačným smerom** bez kódov cvičení a poznámok |
 | `public-web.js` | **Smerovanie verejného webu** medzi plaw.win / plaw.online / plaw.click — každá stránka odpovedá 200 práve na jednom hostiteľovi, jazyk prežije skok na druhú doménu a appkové cesty na marketingových doménach nežijú |
@@ -86,7 +86,7 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   `inputValue()` / `evaluateAll(node => node.value)`.
 - **`waitForURL` po prihlásení je vratké** (reťaz redirectov `/` → `/director`).
   Na cieľ choď priamo cez `goto()`; samotné presmerovanie overuje HTTP sada.
-- **Vybraný hráč je stav.** Scenár, ktorý prepne hráča (napr. cez upozornenie),
+- **Vybraný hráč je stav.** Scenár, ktorý prepne hráča (napr. ťukom na tréning),
   ovplyvní všetko ďalšie — analytika sa viaže na vybraného hráča.
 - **RLS sa pýta na členstvo, nie na hostname.** `current_org_id()` číta
   `organization_members`, takže federačnému trénerovi vydá jeho org hráčov aj

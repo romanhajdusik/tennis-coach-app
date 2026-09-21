@@ -481,9 +481,6 @@ async function main() {
   const expectations = {
     activePlayers: created.length,
     sessionsToday: dated.filter((s) => dayKey(s.date) === todayKey).length,
-    stillAhead: dated.filter(
-      (s) => dayKey(s.date) === todayKey && s.status === "planned" && s.date > now,
-    ).length,
   };
   fs.writeFileSync(
     path.join(__dirname, "expect.json"),

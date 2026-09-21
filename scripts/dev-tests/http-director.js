@@ -38,6 +38,12 @@ async function main() {
   const panelText = textOf(panel.body);
   check("pult sa načíta", panel.status === 200, "status " + panel.status);
   check("názov organizácie", /Today Test Academy/.test(panelText));
+  // Spodná lišta patrí trénerovi; šéftréner (registrovaný tiež ako tréner)
+  // ju mať nesmie — jeho domov je pult.
+  check(
+    "šéftréner nemá spodnú lištu trénera",
+    !/aria-label="Main navigation"/.test(panel.body),
+  );
   check("6 hráčov v dlaždici", /6 players/.test(panelText), panelText.slice(0, 250));
   check("2 tréneri v dlaždici", /2 coaches/.test(panelText));
   check(

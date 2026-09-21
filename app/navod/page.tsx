@@ -4,7 +4,7 @@ import { loadNavodMessages } from "@/lib/landing-locale";
 
 // Návod je verejná stránka — texty berie z tej istej vrstvy ako landing
 // (messages/en, mimo appkového next-intl). Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
-// landing, pozri app/page.tsx). Farby: antuková tmavá téma ako appka.
+// landing, pozri app/page.tsx). Farby: tmavá téma cez tokeny ako appka.
 export async function generateMetadata(): Promise<Metadata> {
   const t = await loadNavodMessages();
   return {
@@ -19,7 +19,7 @@ export default async function NavodPage() {
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
-      {/* Dekoratívne rozmazané pozadie za hlavičkou (antukový nádych) */}
+      {/* Dekoratívne rozmazané pozadie za hlavičkou (nádych primárnej farby) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] overflow-hidden"

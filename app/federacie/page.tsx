@@ -24,7 +24,7 @@ import {
  * iný jazyk, dostane angličtinu. Do 2026-08-31 bola stránka len slovenská
  * s odôvodnením, že prvými B2B zákazníkmi sú slovenské zväzy — **bol to
  * predpoklad, nie rozhodnutie.** Zvyšok vzhľadu je zhodný s landingom
- * a návodmi — antuková tmavá téma cez tokeny.
+ * a návodmi — tmavá téma cez tokeny.
  */
 // Poradie sedí s `features` v messages/{en,sk}/federacie.json — každá dlaždica
 // má vlastnú ikonu, žiadna sa neopakuje.
@@ -52,7 +52,7 @@ export default async function FederaciePage() {
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
-      {/* Dekoratívne rozmazané pozadie za hlavičkou (antukový nádych) */}
+      {/* Dekoratívne rozmazané pozadie za hlavičkou (nádych primárnej farby) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[480px] overflow-hidden"

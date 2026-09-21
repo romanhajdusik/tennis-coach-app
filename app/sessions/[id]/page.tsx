@@ -118,7 +118,7 @@ export default async function SessionDetailPage({
       )}
 
       <div className="flex flex-col gap-3">
-        <div className="rounded-xl border border-yellow-500 bg-yellow-950/40 p-4">
+        <div className="rounded-xl border border-primary bg-primary/10 p-4">
           <p className="font-medium text-foreground ">
             {planned?.date
               ? format.dateTime(new Date(planned.date), {
@@ -127,11 +127,11 @@ export default async function SessionDetailPage({
                 })
               : tSessions("noDate")}
           </p>
-          <p className="mt-1 text-sm text-yellow-200">
+          <p className="mt-1 text-sm text-muted">
             {t.rich("totalDuration", {
               minutes: totalMinutes,
               b: (chunks) => (
-                <span className="text-2xl font-bold text-yellow-300">
+                <span className="text-2xl font-bold text-primary">
                   {chunks}
                 </span>
               ),

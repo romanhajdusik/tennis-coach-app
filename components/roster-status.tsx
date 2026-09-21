@@ -10,7 +10,7 @@ import {
  * Spoločné zobrazenie stavu hráča v rosteri — používa ho obrazovka „Dnes"
  * aj `/players`, aby tie isté dni znamenali všade tú istú farbu a text.
  *
- * Stavové farby sú zámerne mimo brandovej antukovej palety (rovnaká konvencia
+ * Stavové farby sú zámerne mimo primárnej farby appky (rovnaká konvencia
  * ako naplánovaný/dokončený tréning v kalendári).
  */
 export const ATTENTION_DOT_CLASSES: Record<AttentionLevel, string> = {

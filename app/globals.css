@@ -1,22 +1,24 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Jednotná tmavá téma — tmavosivé pozadie + antuková (tehlová) primárna farba.
+   Jednotná tmavá téma. Tenis (predvolený) má od 2026-09-21 zelenočierne
+   pozadie a limetkovú farbu tenisovej loptičky — podľa návrhu od testerov;
+   dovtedy tmavosivú a antukovú (#a24236).
    Appka má zámerne len jeden vzhľad, žiadny svetlý režim (color-scheme: dark).
    Odtiene sa menia na jednom mieste tu, komponenty používajú sémantické triedy
    (bg-background, bg-surface, bg-primary, text-foreground, text-muted, ...).
 --------------------------------------------------------------------------- */
 @theme {
-  --color-background: #1e1e21; /* pozadie stránky (tmavosivá) */
-  --color-surface: #27262b; /* karty, panely, vyvýšené plochy */
-  --color-input: #191819; /* vnorené polia (inputy) */
-  --color-border: #3a383f; /* orámovania, oddeľovače */
-  --color-foreground: #ededee; /* primárny text */
-  --color-muted: #a3a2aa; /* sekundárny/tlmený text */
+  --color-background: #0e1411; /* pozadie stránky (zelenočierna) */
+  --color-surface: #171e1a; /* karty, panely, vyvýšené plochy */
+  --color-input: #0b100d; /* vnorené polia (inputy) */
+  --color-border: #2b3530; /* orámovania, oddeľovače */
+  --color-foreground: #eef1ec; /* primárny text */
+  --color-muted: #9ba59e; /* sekundárny/tlmený text */
 
-  --color-primary: #a24236; /* antuková tehlová — tlačidlá, aktívne prvky */
-  --color-primary-hover: #b64e40; /* hover stav primárnej */
-  --color-primary-foreground: #fdeee9; /* text na primárnej ploche */
+  --color-primary: #d3ee6c; /* limetková tenisová loptička — tlačidlá, aktívne prvky */
+  --color-primary-hover: #def58a; /* hover stav primárnej */
+  --color-primary-foreground: #152010; /* text na primárnej ploche */
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -29,12 +31,15 @@
 /* ---------------------------------------------------------------------------
    Farba tlačidiel rozlišuje TRI appky postavené nad tým istým kódom, aby
    používateľ s dvoma z nich na telefóne hneď videl, v ktorej práve je:
-   tenis = antuková (predvolená vyššie), kondička = tyrkysová,
+   tenis = limetková (predvolená vyššie), kondička = tyrkysová,
    federačná subdoména = svetlomodrá.
 
-   Mení sa vždy CELÁ trojica tokenov: antuka je tmavá a nesie svetlý text,
-   kým tyrkysová a svetlomodrá sú svetlé a potrebujú tmavý — samotná zmena
-   `--color-primary` by spravila text na tlačidle nečitateľným.
+   Mení sa vždy CELÁ trojica tokenov — samotná zmena `--color-primary` by
+   spravila text na tlačidle nečitateľným (svetlá farba potrebuje tmavý text).
+
+   Zelenočierne pozadie patrí len tenisu. Kondička a federácia si nechávajú
+   tmavosivé plochy, s ktorými vznikli (spoločný blok nižšie) — nový vzhľad
+   dostal zatiaľ len tenis.
 
    Odtiene sú overené na kontrast (WCAG): text na ploche ≥ 4.5:1 a plocha
    voči pozadiu stránky ≥ 3:1. Pri zmene odtieňa to prepočítaj, needi od oka.
@@ -44,6 +49,16 @@
    až z hostname pri každej požiadavke — preto to nemôže byť len konfigurácia
    disciplíny.
 --------------------------------------------------------------------------- */
+html[data-app="fitness"],
+html[data-app="org"] {
+  --color-background: #1e1e21;
+  --color-surface: #27262b;
+  --color-input: #191819;
+  --color-border: #3a383f;
+  --color-foreground: #ededee;
+  --color-muted: #a3a2aa;
+}
+
 html[data-app="fitness"] {
   --color-primary: #20a99b;
   --color-primary-hover: #2bb3a3;
@@ -56,6 +71,42 @@ html[data-app="org"] {
   --color-primary-foreground: #0a1b28;
 }
 
+/* Stmavenie úvodnej fotky na landingu (telefón, `components/landing-page.tsx`).
+   Leží presne na fotke, ktorá končí nad tlačidlami (inak by ich loptička
+   prekrývala): hore tmavé pod logom, uprostred priehľadné, aby loptička ostala
+   jasná, a dole splynie s pozadím stránky, na ktorom sú tlačidlá. Pásma sedia
+   s kompozíciou `public/hero/court-portrait.webp` — loptička padne podľa
+   výšky telefónu zhruba do 68–82 % fotky. */
+.hero-scrim {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-background) 88%, transparent) 0%,
+    color-mix(in srgb, var(--color-background) 45%, transparent) 38%,
+    transparent 58%,
+    transparent 84%,
+    var(--color-background) 100%
+  );
+}
+
+/* Spodná lišta trénerovej appky (`components/bottom-nav.tsx`). Jedna výška
+   pre lištu aj medzeru, ktorú lišta kreslí na konci stránky, aby neprekryla
+   posledný riadok obsahu. */
+:root {
+  --bottom-nav-h: calc(5.625rem + env(safe-area-inset-bottom));
+}
+.bottom-nav {
+  height: var(--bottom-nav-h);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav-spacer {
+  height: var(--bottom-nav-h);
+}
+/* Stránky trénera majú koreň `min-h-dvh`. S lištou by bola každá, aj krátka,
+   o jej výšku dlhšia než obrazovka a dala by sa zbytočne posúvať. */
+body:has(.bottom-nav) .min-h-dvh {
+  min-height: calc(100dvh - var(--bottom-nav-h));
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);
@@ -65,9 +116,12 @@ body {
 /* Paleta pre dátové vizualizácie (Recharts grafy v analytike) — jeden zdroj
    pravdy pre všetky grafové komponenty (CategoryCharts, CategoryShareChart).
    Appka je vždy tmavá, takže jedna sada hodnôt (dark). --surface zodpovedá
-   farbe karty, aby oddeľovacie okraje výsekov splynuli s pozadím karty. */
+   farbe karty, aby oddeľovacie okraje výsekov splynuli s pozadím karty —
+   berie sa z tokenu, lebo tenis má iné plochy než kondička a federácia.
+   Farebné série sú overené na kontrast (≥ 3:1) voči obom kartám; šedá
+   `--series-other` je pod tým zámerne (zbytok, nemá sa presadiť). */
 .viz-root {
-  --surface: #27262b;
+  --surface: var(--color-surface);
   --series-1: #3987e5;
   --series-2: #199e70;
   --series-3: #c98500;

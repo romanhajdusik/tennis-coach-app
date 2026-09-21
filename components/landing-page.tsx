@@ -48,7 +48,7 @@ export async function LandingPage() {
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
-      {/* Dekoratívne rozmazané pozadie za hero sekciou (antukový nádych) */}
+      {/* Dekoratívne rozmazané pozadie za hero sekciou (nádych primárnej farby) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px] overflow-hidden"
@@ -57,7 +57,9 @@ export async function LandingPage() {
         <div className="absolute right-[-120px] top-[80px] h-[320px] w-[320px] rounded-full bg-primary/10 blur-3xl" />
       </div>
 
-      <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-md">
+      {/* Na telefóne pruh s logom nie je (používateľ, 2026-09-21) — úvodná
+          fotka nižšie ide až po horný okraj a značku nesie nápis na nej. */}
+      <header className="sticky top-0 z-40 hidden w-full border-b border-border/70 bg-background/80 backdrop-blur-md md:block">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
           <span className="rounded-md bg-[#eef0f0] p-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -78,8 +80,67 @@ export async function LandingPage() {
         </div>
       </header>
 
-      <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-16 pt-16 text-center sm:px-6 sm:pb-24 sm:pt-24">
-        <span className="rounded-2xl border border-border bg-[#eef0f0] p-3 shadow-sm">
+      {/* Úvodná fotka — len na telefóne (návrh testerov, 2026-09-21). Na
+          širšej obrazovke ostáva pôvodný úvod s logom a tlačidlami nižšie.
+          Fotka je vygenerovaná (loptička ani kurt nemajú značku) a
+          stmavuje ju `.hero-scrim` v globals.css tam, kde je text. */}
+      <section className="relative isolate flex min-h-svh w-full flex-col items-center justify-between overflow-hidden px-4 pb-10 pt-20 text-center md:hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/hero/court-portrait.webp"
+          alt=""
+          aria-hidden
+          fetchPriority="high"
+          width={1080}
+          height={1910}
+          className="absolute inset-x-0 top-0 -z-20 h-[86%] w-full object-cover object-bottom"
+        />
+        <div aria-hidden className="hero-scrim absolute inset-x-0 top-0 -z-10 h-[86%]" />
+
+        <div className="flex flex-col items-center gap-4">
+          <p className="mr-[-0.25em] text-5xl font-light tracking-[0.25em] text-foreground">
+            P.L.A.W
+          </p>
+          <span aria-hidden className="h-px w-24 bg-foreground/40" />
+          <p className="mr-[-0.4em] text-xs font-medium uppercase tracking-[0.4em] text-foreground/85">
+            Plan · Log · Analyze · Win
+          </p>
+          <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-background/50 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/40 backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            {t.eyebrow}
+          </span>
+        </div>
+
+        <div className="flex w-full max-w-sm flex-col gap-3">
+          <Link
+            href="/register"
+            className="flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary-hover"
+          >
+            {t.ctaPrimary}
+            <svg
+              aria-hidden
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </Link>
+          <Link
+            href="/login"
+            className="rounded-full border border-foreground/25 bg-background/50 px-5 py-3.5 text-base font-medium text-foreground backdrop-blur-sm transition hover:bg-surface"
+          >
+            {t.ctaSecondary}
+          </Link>
+        </div>
+      </section>
+
+      <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-16 pt-12 text-center sm:px-6 sm:pb-24 md:pt-24">
+        <span className="hidden rounded-2xl border border-border bg-[#eef0f0] p-3 shadow-sm md:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/plaw-logo.webp"
@@ -87,7 +148,7 @@ export async function LandingPage() {
             className="block h-auto w-full max-w-[260px] sm:max-w-[340px]"
           />
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/30">
+        <span className="hidden items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/30 md:inline-flex">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {t.eyebrow}
         </span>
@@ -122,7 +183,8 @@ export async function LandingPage() {
             </p>
           </>
         )}
-        <div className="flex flex-wrap justify-center gap-3 pt-2">
+        {/* Na telefóne sú tieto tlačidlá už na úvodnej fotke vyššie. */}
+        <div className="hidden flex-wrap justify-center gap-3 pt-2 md:flex">
           <Link
             href="/register"
             className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary-hover"

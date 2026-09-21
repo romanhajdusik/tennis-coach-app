@@ -202,31 +202,3 @@ export async function getRosterOverview(
     attentionCount: entries.filter((entry) => entry.attention !== "ok").length,
   };
 }
-
-/**
- * Zameranie tréningu = kategórie jeho cvičení v poradí, ako ich tréner zadal
- * (napr. „Forehand · Serve"). Prázdne pole = tréning zatiaľ bez cvičení.
- */
-export async function getSessionFocus(
-  supabase: SupabaseServerClient,
-  sessionIds: string[],
-): Promise<Map<string, string[]>> {
-  const focus = new Map<string, string[]>();
-  if (sessionIds.length === 0) return focus;
-
-  const { data } = await supabase
-    .from("session_drills")
-    .select("session_id, category, sort_order")
-    .in("session_id", sessionIds)
-    .order("sort_order", { ascending: true });
-
-  for (const drill of data ?? []) {
-    const categories = focus.get(drill.session_id) ?? [];
-    if (!categories.includes(drill.category)) {
-      categories.push(drill.category);
-    }
-    focus.set(drill.session_id, categories);
-  }
-
-  return focus;
-}
