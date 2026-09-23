@@ -11,6 +11,7 @@
 // vidieť, čo presne sa z nich publikuje.
 const fs = require('fs');
 const path = require('path');
+const split = require('./split');
 
 const HERE = __dirname;
 const ROOT = path.resolve(HERE, '..', '..');
@@ -127,14 +128,7 @@ function toc(arr, prefix) {
 
 function build(key, cfg, css, script) {
   const lines = fs.readFileSync(path.join(ROOT, 'docs', cfg.doc), 'utf8').split('\n');
-  const idxEN = lines.findIndex(l => l.startsWith('# ENGLISH'));
-  const idxSK = lines.findIndex(l => l.startsWith('# SLOVENSKY'));
-  const idxNotes = lines.findIndex(l => l.startsWith('## Poznámky k návrhu'));
-  if (idxEN < 0 || idxSK < 0) throw new Error(cfg.doc + ': chýba hranica ENGLISH/SLOVENSKY');
-  if (idxNotes < 0) throw new Error(cfg.doc + ': nenašla sa časť „Poznámky k návrhu" — over, či sa nepremenovala, inak by sa zverejnila');
-
-  const enLines = lines.slice(idxEN + 1, idxSK);
-  const skLines = lines.slice(idxSK + 1, idxNotes);
+  const { enLines, skLines } = split(lines, cfg);
 
   const html = [
     '<title>' + cfg.pageTitle + '</title>',

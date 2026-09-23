@@ -3,40 +3,110 @@
     "doc": "zmluva-organizacia.md",
     "pageTitle": "Zmluva so zväzom",
     "barName": "Zmluva o poskytovaní služby",
-    "chip": "Návrh &middot; neschválené",
+    "chip": "Schválené &middot; obe znenia",
     "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W",
     "h1": "Zmluva o poskytovaní služby",
     "lede": "Hlavná zmluva pre zväzy, kluby a akadémie — štrnásť paragrafov a dve prílohy. Podpisuje sa <strong>spolu so zmluvou o spracúvaní osobných údajov</strong> podľa čl. 28 GDPR; pri rozpore o údajoch má prednosť tá druhá. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad (§14.2).",
-    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> sa dopĺňajú až pri konkrétnom podpise — údaje organizácie, počet sedadiel, sumy, dátumy a kontaktné osoby. Zdroj: <code>docs/zmluva-organizacia.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky."
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> sa dopĺňajú až pri konkrétnom podpise — údaje organizácie, počet sedadiel, sumy, dátumy a kontaktné osoby. Zdroj: <code>docs/zmluva-organizacia.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This document contains **both versions of the same contract** — the main service agreement for federations, clubs and academies. The **English version is binding**; the Slovak version is a translation. **Both wordings were approved on 23 September 2026.** Approval covers the wording; each contract is still signed separately, with the blanks filled in for the particular organisation. It is signed together with the data processing agreement under Article 28 GDPR; where the two differ about personal data, that one prevails.",
+    "docxStatusSk": "dokument obsahuje obe znenia tej istej zmluvy — záväzné je anglické, slovenské je preklad; obe znenia sú schválené 23. septembra 2026 (podpis je samostatný krok)."
   },
   "spracuvanie": {
     "doc": "gdpr-zmluva-cl28.md",
     "pageTitle": "Zmluva o spracúvaní údajov",
     "barName": "Zmluva o spracúvaní osobných údajov",
-    "chip": "Návrh &middot; neschválené",
+    "chip": "Schválené &middot; obe znenia",
     "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; čl. 28 GDPR",
     "h1": "Zmluva o spracúvaní osobných údajov",
     "lede": "Dvanásť paragrafov a prílohy A, B a C. Podpisuje sa <strong>spolu s hlavnou zmluvou o poskytovaní služby</strong>, a to <strong>skôr, než zväz zapíše do aplikácie prvé dieťa</strong> — inak spracúvajú obe strany bez právneho podkladu (§1.2). Pri rozpore o údajoch má prednosť tento dokument. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad (§12.2).",
-    "footer": "Prílohy sú vecná časť: <strong>A</strong> hovorí, čo sa spracúva, <strong>B</strong> kto ďalší k tomu má prístup, <strong>C</strong> ako je to zabezpečené. Obsah B a C je prevzatý zo záznamu o činnostiach (časti D a E) — pri zmene sa musia zmeniť obe miesta. Miesta vyznačené <span class=\"ph\">takto</span> sa dopĺňajú až pri konkrétnom podpise. Zdroj: <code>docs/gdpr-zmluva-cl28.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky."
+    "footer": "Prílohy sú vecná časť: <strong>A</strong> hovorí, čo sa spracúva, <strong>B</strong> kto ďalší k tomu má prístup, <strong>C</strong> ako je to zabezpečené. Obsah B a C je prevzatý zo záznamu o činnostiach (časti D a E) — pri zmene sa musia zmeniť obe miesta. Miesta vyznačené <span class=\"ph\">takto</span> sa dopĺňajú až pri konkrétnom podpise. Zdroj: <code>docs/gdpr-zmluva-cl28.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This document contains **both versions of the same data processing agreement** under Article 28 GDPR, including Annexes A, B and C. The **English version is binding**; the Slovak version is a translation. **Both wordings were approved on 23 September 2026.** What is approved is the wording, not the effective date — the bracketed blanks are filled in when the document is used. It is signed together with the main service agreement, and before the organisation enters the first child into the application.",
+    "docxStatusSk": "dokument obsahuje obe znenia tej istej zmluvy o spracúvaní osobných údajov vrátane príloh A, B a C — záväzné je anglické, slovenské je preklad; obe znenia sú schválené 23. septembra 2026; schválené je znenie, nie účinnosť."
   },
   "podmienky-trener": {
     "doc": "podmienky-trener.md",
     "pageTitle": "Podmienky pre trénera",
     "barName": "Podmienky používania — tréner",
-    "chip": "Angličtina neschválená",
+    "chip": "Schválené &middot; obe znenia",
     "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; plaw.win",
     "h1": "Podmienky používania pre trénera",
-    "lede": "Štrnásť bodov o tom, čo si s trénerom navzájom sľubujete — služba, platba, ukončenie, zodpovednosť. <strong>Nepodpisujú sa, odklikávajú sa</strong> pri registrácii. Nie sú to zásady ochrany údajov; tie sú samostatný dokument. <strong>Slovenské znenie si schválil 29. augusta 2026, ale záväzná je angličtina a tá schválená nie je</strong> (§13) — preklad nie je znenie, v spore sa použije anglický text.",
-    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> ešte čakajú na doplnenie — najmä orgán alternatívneho riešenia sporov a dátum účinnosti. Zdroj: <code>docs/podmienky-trener.md</code>. Interná časť „Poznámky k návrhu\" — vrátane obchodných rozhodnutí, ktoré bolo treba predpokladať — nie je súčasťou tejto stránky."
+    "lede": "Štrnásť bodov o tom, čo si s trénerom navzájom sľubujete — služba, platba, ukončenie, zodpovednosť. <strong>Nepodpisujú sa, odklikávajú sa</strong> pri registrácii. Nie sú to zásady ochrany údajov; tie sú samostatný dokument. <strong>Obe znenia sú schválené</strong> — slovenské 29. augusta, anglické 22. septembra 2026; <strong>záväzná je angličtina</strong> (§13), preklad nie je znenie. <strong>Schválené je znenie, nie účinnosť</strong> — orgán alternatívneho riešenia sporov a dátum účinnosti sa ešte dopĺňajú.",
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> ešte čakajú na doplnenie — najmä orgán alternatívneho riešenia sporov a dátum účinnosti. Zdroj: <code>docs/podmienky-trener.md</code>. Interná časť „Poznámky k návrhu\" — vrátane obchodných rozhodnutí, ktoré bolo treba predpokladať — nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This document contains **both versions of the same terms**. The **English version is binding**; the Slovak version is a translation. **Both wordings have been approved** — the Slovak on 29 August and the English on 22 September 2026. **What is approved is the wording, not the effective date:** the alternative dispute resolution body and the effective date are still to be filled in. These are not the privacy policy; that is a separate document.",
+    "docxStatusSk": "dokument obsahuje obe znenia tých istých podmienok — záväzné je anglické, slovenské je preklad; obe znenia sú schválené (slovenské 29. augusta, anglické 22. septembra 2026), otvorené ostávajú len miesta na doplnenie."
   },
   "podmienky-sledujuci": {
     "doc": "podmienky-sledujuci.md",
     "pageTitle": "Podmienky pre sledujúceho",
     "barName": "Podmienky používania — sledujúci",
-    "chip": "Návrh &middot; neschválené",
+    "chip": "Schválené &middot; obe znenia",
     "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; plaw.click",
     "h1": "Podmienky pre rodiča, manažéra a hráča",
     "lede": "Pätnásť bodov pre toho, kto tréningy iba sleduje. <strong>Kľúčový rozdiel oproti trénerským podmienkam: sledujúci je vždy spotrebiteľ</strong> — platí tu ochrana v plnom rozsahu a klauzuly, ktoré u trénera obstoja, by tu boli napadnuteľné. Ochrana údajov je samostatný dokument. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad (§14).",
-    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> ešte čakajú na doplnenie — orgán alternatívneho riešenia sporov, odkaz na zásady a dátum účinnosti. Zdroj: <code>docs/podmienky-sledujuci.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky."
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> ešte čakajú na doplnenie — orgán alternatívneho riešenia sporov, odkaz na zásady a dátum účinnosti. Zdroj: <code>docs/podmienky-sledujuci.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This document contains **both versions of the same terms**, written for a parent, manager or player who only follows the training. The **English version is binding**; the Slovak version is a translation. **Both wordings were approved on 23 September 2026.** What is approved is the wording, not the effective date — the bracketed blanks are filled in when the document is used. The reader is always a consumer, so consumer protection applies in full — clauses that hold up against a coach may not hold up here.",
+    "docxStatusSk": "dokument obsahuje obe znenia tých istých podmienok pre rodiča, manažéra a hráča — záväzné je anglické, slovenské je preklad; obe znenia sú schválené 23. septembra 2026; schválené je znenie, nie účinnosť."
+  },
+  "zasady-trener": {
+    "doc": "gdpr-zasady-trener.md",
+    "pageTitle": "Zásady ochrany údajov — tréner",
+    "barName": "Zásady ochrany osobných údajov — tréner",
+    "chip": "Schválené &middot; obe znenia",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; plaw.win",
+    "h1": "Zásady ochrany osobných údajov pre trénera",
+    "lede": "Pokrývajú dve veci naraz: <strong>čo robíme s údajmi trénera</strong> a <strong>čo je jeho vlastná zodpovednosť</strong> voči deťom, ktoré do aplikácie zapisuje — voči nim je prevádzkovateľom on, nie my. Nie sú to podmienky používania; tie sú samostatný dokument. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad.",
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> sa ešte dopĺňajú. Zdroj: <code>docs/gdpr-zasady-trener.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This document contains **both versions of the same privacy policy**, written for coaches. The **English version is binding**; the Slovak version is a translation. **Both wordings were approved on 23 September 2026.** What is approved is the wording, not the effective date — the bracketed blanks are filled in when the document is used. It covers two things at once: what we do with the coach's data, and what the coach's own responsibility towards the children is — towards them, the coach is the controller, not us.",
+    "docxStatusSk": "dokument obsahuje obe znenia tých istých zásad ochrany údajov pre trénera — záväzné je anglické, slovenské je preklad; obe znenia sú schválené 23. septembra 2026; schválené je znenie, nie účinnosť."
+  },
+  "zasady-sledujuci": {
+    "doc": "gdpr-zasady-sledujuci.md",
+    "pageTitle": "Zásady ochrany údajov — sledujúci",
+    "barName": "Zásady ochrany osobných údajov — sledujúci",
+    "chip": "Schválené &middot; obe znenia",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; plaw.click",
+    "h1": "Zásady ochrany osobných údajov pre rodiča, manažéra a hráča",
+    "lede": "Pre toho, kto sleduje tréningy — rodiča, manažéra aj hráča, ktorý sa pozerá na vlastné. <strong>Nosný predpoklad celého textu:</strong> prevádzkovateľom kópií, ktoré sledujúci vidí, je &amp;Go, s.r.o. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad.",
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> sa ešte dopĺňajú. Zdroj: <code>docs/gdpr-zasady-sledujuci.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This document contains **both versions of the same privacy policy**, written for parents, managers and players who follow the training. The **English version is binding**; the Slovak version is a translation. **Both wordings were approved on 23 September 2026.** What is approved is the wording, not the effective date — the bracketed blanks are filled in when the document is used. The whole text rests on one assumption: that **&Go, s.r.o. is the controller of the copies the follower sees**.",
+    "docxStatusSk": "dokument obsahuje obe znenia tých istých zásad pre sledujúceho — záväzné je anglické, slovenské je preklad; obe znenia sú schválené 23. septembra 2026; schválené je znenie, nie účinnosť."
+  },
+  "zasady-organizacia": {
+    "doc": "gdpr-zasady-organizacia.md",
+    "pageTitle": "Zásady ochrany údajov — organizácia",
+    "barName": "Zásady ochrany osobných údajov — organizácia",
+    "chip": "Schválené &middot; obe znenia",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; plaw.online",
+    "h1": "Zásady ochrany osobných údajov pre organizácie",
+    "lede": "Pre zväzy, kluby a akadémie. <strong>Je to informácia, nie zmluva</strong> — sprostredkovateľská zmluva podľa čl. 28 je samostatný dokument. Hovorí aj to, čo inde nie je: kto vlastní dáta, čo sa stane pri odchode trénera a že šéftréner vidí prácu svojich ľudí. <strong>Záväzné je anglické znenie</strong>, slovenské je preklad.",
+    "footer": "Miesta vyznačené <span class=\"ph\">takto</span> sa ešte dopĺňajú. Zdroj: <code>docs/gdpr-zasady-organizacia.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This document contains **both versions of the same privacy policy**, written for federations, clubs and academies. The **English version is binding**; the Slovak version is a translation. **Both wordings were approved on 23 September 2026.** What is approved is the wording, not the effective date — the bracketed blanks are filled in when the document is used. It is information, **not a contract** — the processing agreement under Article 28 GDPR is a separate document.",
+    "docxStatusSk": "dokument obsahuje obe znenia tých istých zásad pre organizácie — záväzné je anglické, slovenské je preklad; obe znenia sú schválené 23. septembra 2026; schválené je znenie, nie účinnosť."
+  },
+  "text-pre-rodicov": {
+    "doc": "gdpr-text-pre-rodicov.md",
+    "sections": { "sk": "## 2. Slovenská verzia", "en": "## 3. Anglická verzia", "end": "## 4." },
+    "pageTitle": "Informácia pre rodičov — od trénera",
+    "barName": "Informácia pre rodičov — odovzdáva tréner",
+    "chip": "Schválené &middot; obe znenia",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W",
+    "h1": "Informácia o spracúvaní osobných údajov dieťaťa",
+    "lede": "Text, ktorý <strong>tréner odovzdáva rodičovi</strong> skôr, než dieťa zapíše do aplikácie. <strong>Nie je to súhlas a nepodpisuje sa</strong> — je to informácia podľa čl. 13 GDPR. Prevádzkovateľom údajov o dieťati je tréner, nie my; my len dodávame znenie, aby ho nemusel písať sám.",
+    "footer": "Obe znenia sú rovnocenné — rodič dostane to, ktorému rozumie. Zdroj: <code>docs/gdpr-text-pre-rodicov.md</code>. Interná časť o tom, ako sa text používa a čo ešte treba doplniť, nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This is the **text a coach hands to a parent** before entering their child into the application. Both language versions are included and **they are equal** — unlike our contracts, neither is the binding one; the parent is given the version they understand. It is an information notice under Article 13 GDPR, **not a consent form, and it is not signed**. The controller of the child's data is the coach, not us — we only supply the wording. **It was approved on 23 September 2026.** What is approved is the wording — the blanks are filled in by whoever hands the text over.",
+    "docxStatusSk": "je to text, ktorý tréner odovzdáva rodičovi — informácia podľa čl. 13 GDPR, nie súhlas, a nepodpisuje sa; obe znenia sú rovnocenné a obe znenia sú schválené 23. septembra 2026; schválené je znenie, nie účinnosť."
+  },
+  "text-pre-rodicov-zvaz": {
+    "doc": "gdpr-text-pre-rodicov-zvaz.md",
+    "sections": { "sk": "## 2. Slovenská verzia", "en": "## 3. Anglická verzia", "end": "## 4." },
+    "pageTitle": "Informácia pre rodičov — od organizácie",
+    "barName": "Informácia pre rodičov — vydáva organizácia",
+    "chip": "Schválené &middot; obe znenia",
+    "eyebrow": "&amp;Go, s.r.o. &middot; P.L.A.W &middot; federačný režim",
+    "h1": "Informácia o spracúvaní osobných údajov dieťaťa",
+    "lede": "Obdoba textu od trénera, ale pre <strong>klub, zväz alebo akadémiu</strong>. Nie je to preklad „ja\" na „my\": prevádzkovateľom je organizácia, právnym základom je členstvo a <strong>rodič do aplikácie prístup nemá</strong> — federačný režim rodičovskú vrstvu zámerne nemá. <strong>Tento text nevydávame my</strong>, vydáva ho organizácia; my ho dodávame ako podklad.",
+    "footer": "Obe znenia sú rovnocenné. Organizácia si doplní svoje údaje a text si môže upraviť. Zdroj: <code>docs/gdpr-text-pre-rodicov-zvaz.md</code>. Interná časť „Poznámky k návrhu\" nie je súčasťou tejto stránky.",
+    "docxStatusEn": "This is the **text an organisation hands to a parent** in the federation mode. Both language versions are included and **they are equal** — neither is the binding one. **We do not issue this text; the organisation does** — it is the controller, the legal basis is membership, and the parent has no access to the application at all. We only supply the wording as a starting point, and the organisation fills in its own details. **It was approved on 23 September 2026.** What is approved is the wording — the blanks are filled in by whoever hands the text over.",
+    "docxStatusSk": "je to text, ktorý rodičovi vydáva organizácia, nie my — my ho len dodávame ako podklad; obe znenia sú rovnocenné a obe znenia sú schválené 23. septembra 2026; schválené je znenie, nie účinnosť."
   }
 }
