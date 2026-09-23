@@ -1,6 +1,6 @@
 # Zmluva o spracúvaní osobných údajov (čl. 28 GDPR) — organizácia
 
-> **Stav: NÁVRH NA SCHVÁLENIE, 2026-08-30.** Pre zväzy, kluby a akadémie.
+> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — miesta v hranatých zátvorkách sa dopĺňajú až pri konkrétnom použití (údaje druhej strany, orgán alternatívneho riešenia sporov, dátumy). Pre zväzy, kluby a akadémie.
 > **Anglické znenie je ZÁVÄZNÉ**, slovenské je preklad — preto je angličtina prvá.
 >
 > **Toto je zmluva, nie informácia.** Zásady ochrany údajov pre organizácie

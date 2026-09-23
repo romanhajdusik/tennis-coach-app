@@ -15,9 +15,14 @@ keď sa objaví prvý skutočný zväz.
 
 **Pozor, sú to dve rôzne hranice a tá druhá môže prísť skôr.** Tento zoznam rieši
 **prvý zväz**. Prvé **skutočné dieťa** v appke — hoci ho zadá len tréner
-v samostatnom režime — blokujú tri veci: zverejnené zásady a podmienky dostupné
-z appky (dnes vedome odložené), **schválené anglické znenie podmienok pre trénera**
-(záväzné je EN, schválená je len SK) a zálohy s jednou skúškou obnovy.
+v samostatnom režime — blokujú **dve** veci: zverejnené zásady a podmienky
+dostupné z appky (dnes vedome odložené) a zálohy s jednou skúškou obnovy.
+**Tretia odpadla 2026-09-22: anglické znenie podmienok pre trénera je schválené**
+(schválil používateľ; záväzné je EN, slovenské znenie je schválené od 2026-08-29).
+**Od 2026-09-23 sú schválené VŠETKY dokumenty, ktoré idú von** — obe zmluvy,
+oboje podmienky, tri zásady aj oba texty pre rodičov.
+Pozor — schválené je **znenie**, nie účinnosť: orgán alternatívneho riešenia
+sporov, dátumy a údaje druhej strany sa dopĺňajú až pri použití.
 
 ---
 
@@ -57,10 +62,12 @@ z appky (dnes vedome odložené), **schválené anglické znenie podmienok pre t
   DPH za hodinu** je v jej prílohe 2. Tá istá zmluva dala obsah šiestim odkazom
   zmluvy podľa čl. 28, ktoré dovtedy viedli do prázdna.
 
-- [ ] **Schváliť hlavnú zmluvu** — je to zatiaľ **návrh** a podpisuje sa spolu so
-  zmluvou o spracúvaní. Bez nej by zväz podpísal ochranu údajov k neexistujúcej
-  zmluve o službe: bez dohodnutej ceny, sedadiel, výpovede a stropu
-  zodpovednosti, o ktorý sa §11.4 opiera.
+- [x] ~~**Schváliť hlavnú zmluvu**~~ — **SCHVÁLENÉ 2026-09-23** (spolu s ostatnými
+  dokumentmi, schválil používateľ). Podpisuje sa spolu so zmluvou o spracúvaní;
+  bez nej by zväz podpísal ochranu údajov k neexistujúcej zmluve o službe — bez
+  dohodnutej ceny, sedadiel, výpovede a stropu zodpovednosti, o ktorý sa §11.4
+  opiera. **Schválené je znenie, nie podpis:** zátvorky s údajmi organizácie,
+  počtom sedadiel, sumami a dátumami sa dopĺňajú pri každom podpise zvlášť.
 
 - [x] ~~**Cena za sedadlo**~~ — **ROZHODNUTÉ 2026-08-30:** 49 EUR mesačne bez
   DPH za sedadlo, najmenej tri, pri ročnej platbe vopred zľava **15 % (3–5

@@ -1,6 +1,6 @@
 # Informácia pre rodičov — text, ktorý odovzdáva tréner
 
-> **Stav: NÁVRH NA SCHVÁLENIE, 2026-08-25.** Vychádza z [mapy rolí](gdpr-mapa-roli.md)
+> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — miesta v hranatých zátvorkách sa dopĺňajú až pri konkrétnom použití (údaje druhej strany, orgán alternatívneho riešenia sporov, dátumy). Vychádza z [mapy rolí](gdpr-mapa-roli.md)
 > §5.1: prevádzkovateľom údajov o dieťati je **tréner**, nie P.L.A.W. Informačnú
 > povinnosť podľa čl. 13 GDPR má teda tréner — a našou úlohou je dať mu text,
 > ktorý stačí odovzdať. Bez neho stojí zákonnosť celej appky na tom, že si to

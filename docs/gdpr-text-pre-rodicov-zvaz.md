@@ -1,6 +1,6 @@
 # Informácia pre rodičov — verzia pre klub, zväz alebo akadémiu
 
-> **Stav: NÁVRH NA SCHVÁLENIE, 2026-08-29.** Obdoba
+> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — miesta v hranatých zátvorkách sa dopĺňajú až pri konkrétnom použití (údaje druhej strany, orgán alternatívneho riešenia sporov, dátumy). Obdoba
 > [textu pre rodičov](gdpr-text-pre-rodicov.md), ale pre organizačný režim.
 >
 > **Nie je to preklad „ja" na „my".** V organizačnom režime je iný prevádzkovateľ

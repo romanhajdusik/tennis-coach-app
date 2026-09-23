@@ -1,10 +1,18 @@
 # Podmienky používania — tréner (`plaw.win`)
 
-> **Stav: SLOVENSKÉ ZNENIE SCHVÁLENÉ 2026-08-29**, vrátane všetkých siedmich
-> obchodných rozhodnutí (prechádzali sa po jednom, výsledky sú v poznámkach).
-> Súbor obsahuje obe znenia: **anglické je ZÁVÄZNÉ**, slovenské je preklad —
-> preto je angličtina prvá. Držať ich spolu je zámer, aby bolo pri každej úprave
-> vidieť, či sa nerozišli.
+> **Stav: OBE ZNENIA SCHVÁLENÉ — slovenské 2026-08-29, anglické 2026-09-22**
+> (obe schválil používateľ), vrátane všetkých siedmich obchodných rozhodnutí
+> (prechádzali sa po jednom, výsledky sú v poznámkach). Súbor obsahuje obe
+> znenia: **anglické je ZÁVÄZNÉ**, slovenské je preklad — preto je angličtina
+> prvá. Držať ich spolu je zámer, aby bolo pri každej úprave vidieť, či sa
+> nerozišli.
+>
+> **Schválené je ZNENIE, nie účinnosť.** Tri miesta sú stále otvorené a musia sa
+> doplniť pred zverejnením: orgán alternatívneho riešenia sporov (§13), dátum
+> účinnosti (§14, bude to deň spustenia) a veta „registrácia je momentálne na
+> pozvánku" (§3), ktorá po spustení prestane platiť. **Pri ich doplnení sa mení
+> len to, čo je tu vymenované** — ostatný text je odsúhlasený a neprepisuje sa
+> bez nového rozhodnutia.
 >
 > **Toto nie sú zásady ochrany údajov.** Tie hovoria, čo robíme s údajmi
 > ([gdpr-zasady-trener.md](gdpr-zasady-trener.md)). Podmienky hovoria, čo si
@@ -46,7 +54,7 @@ helps you keep documentation and shows you how you split the time with a player.
 **What it is not:**
 
 - **It is not a medical or diagnostic service.** It gives no advice on health,
-  load or injuries and does not replace a doctor or a physiotherapist.
+  physical load or injuries and does not replace a doctor or a physiotherapist.
 - **It is not a coaching method.** What you train and how is your decision. The
   application only records what you entered and calculates overviews from it.
 - **It is not an indestructible archive.** We do back the data up, but do not

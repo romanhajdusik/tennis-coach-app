@@ -1,6 +1,6 @@
 # Zásady ochrany osobných údajov — tréner (`plaw.win`)
 
-> **Stav: NÁVRH NA SCHVÁLENIE, 2026-08-28.** Obsahuje obe znenia.
+> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — miesta v hranatých zátvorkách sa dopĺňajú až pri konkrétnom použití (údaje druhej strany, orgán alternatívneho riešenia sporov, dátumy). Obsahuje obe znenia.
 > **Anglické je ZÁVÄZNÉ**, slovenské je preklad (rozhodnuté 2026-08-25) — preto je
 > angličtina prvá. Držať ich v jednom súbore je zámer: pri každej úprave je hneď
 > vidieť, či sa obe verzie nerozišli.

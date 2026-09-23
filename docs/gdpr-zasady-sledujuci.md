@@ -1,6 +1,6 @@
 # Zásady ochrany osobných údajov — sledujúci (`plaw.click`)
 
-> **Stav: NÁVRH NA SCHVÁLENIE, 2026-08-28.** Pre rodiča, manažéra a hráča, ktorý
+> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — miesta v hranatých zátvorkách sa dopĺňajú až pri konkrétnom použití (údaje druhej strany, orgán alternatívneho riešenia sporov, dátumy). Pre rodiča, manažéra a hráča, ktorý
 > sleduje vlastné tréningy. **Anglické znenie je ZÁVÄZNÉ**, slovenské je preklad.
 >
 > **POZOR — NOSNÝ PREDPOKLAD:** text je napísaný tak, že **prevádzkovateľom

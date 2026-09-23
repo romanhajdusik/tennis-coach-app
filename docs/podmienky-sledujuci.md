@@ -1,6 +1,6 @@
 # Podmienky používania — sledujúci (`plaw.click`)
 
-> **Stav: NÁVRH, 2026-08-29.** Pre rodiča, manažéra a hráča, ktorý sleduje vlastné
+> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — miesta v hranatých zátvorkách sa dopĺňajú až pri konkrétnom použití (údaje druhej strany, orgán alternatívneho riešenia sporov, dátumy). Pre rodiča, manažéra a hráča, ktorý sleduje vlastné
 > tréningy. Súbor obsahuje obe znenia: **anglické je ZÁVÄZNÉ**, slovenské je
 > preklad — preto je angličtina prvá. Obchodné rozhodnutia sú prevzaté
 > z trénerských podmienok, kde sa prechádzali po jednom
@@ -43,7 +43,7 @@ with what focus, together with the coach's notes.
 **What it is not:**
 
 - **It is not a medical or diagnostic service.** It gives no advice on health or
-  load and does not replace a doctor.
+  physical load and does not replace a doctor.
 - **It is not an assessment of the training or of the coach.** We show what the
   coach recorded — we add nothing and judge nothing.
 - **The content is written by the coach, not by us.** They are responsible for
