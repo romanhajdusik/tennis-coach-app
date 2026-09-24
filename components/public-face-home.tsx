@@ -26,7 +26,7 @@ export async function PublicFaceHome() {
       </div>
 
       <section className="flex w-full max-w-2xl flex-col items-center gap-5 px-4 pb-10 pt-6 text-center sm:px-6 sm:pb-14 sm:pt-10">
-        <Wordmark className="text-2xl" />
+        <Wordmark variant="hero" />
         <h1 className="text-3xl font-bold tracking-tight text-balance text-foreground sm:text-4xl">
           {t.title}
         </h1>
