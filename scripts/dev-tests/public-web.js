@@ -36,6 +36,12 @@ const CANONICAL = [
   ["/federacie", PUBLIC],
   ["/navod-hrac", PARENT],
   ["/cennik-hrac", PARENT],
+  // Právne stránky (od 2026-09-24) — každá na doméne svojho publika.
+  ["/podmienky", APP],
+  ["/zasady", APP],
+  ["/podmienky-hrac", PARENT],
+  ["/zasady-hrac", PARENT],
+  ["/zasady-organizacia", PUBLIC],
 ];
 
 const HOSTS = [APP, PUBLIC, PARENT];
@@ -133,6 +139,30 @@ async function main() {
     "prepínač jazykov na stránke nie je",
     !/>DE<|>JA<|>SK</.test(parentGuide.body),
   );
+
+  // Text právnych stránok sa číta zo schválených dokumentov v `docs/` — keby
+  // sa niekedy skopíroval do `messages/`, tieto kontroly to nezachytia, ale
+  // zachytia, keď sa čítanie rozbije a stránka sa vykreslí prázdna.
+  section("5) Právne stránky nesú text schváleného dokumentu");
+  const PRAVNE = [
+    ["/podmienky", APP, "Terms of Use"],
+    ["/zasady", APP, "Privacy Policy"],
+    ["/podmienky-hrac", PARENT, "Terms of Use"],
+    ["/zasady-hrac", PARENT, "Privacy Policy"],
+    ["/zasady-organizacia", PUBLIC, "Privacy Policy"],
+  ];
+  for (const [path, host, nadpis] of PRAVNE) {
+    const res = await request(path, { host });
+    const text = textOf(res.body);
+    check(
+      `${host}${path} má nadpis a prevádzkovateľa`,
+      res.status === 200 && text.includes(nadpis) && text.includes("Go, s.r.o."),
+      `status ${res.status}`,
+    );
+    // Obsah je jediná navigácia v dlhom dokumente; bez neho sa stránka na
+    // telefóne nedá prejsť.
+    check(`${host}${path} má obsah s paragrafmi`, /href="#s1"/.test(res.body));
+  }
 
   section("4) Appka na marketingových doménach nežije");
   for (const host of [PUBLIC, PARENT]) {

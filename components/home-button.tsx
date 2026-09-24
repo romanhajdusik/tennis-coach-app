@@ -17,6 +17,9 @@ const HIDDEN_PATHS = new Set([
   // Právne stránky sú verejné a prekrývalo by ich plávajúce tlačidlo.
   "/podmienky",
   "/zasady",
+  "/podmienky-hrac",
+  "/zasady-hrac",
+  "/zasady-organizacia",
   "/login",
   "/register",
   "/parent",

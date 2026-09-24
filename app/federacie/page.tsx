@@ -192,8 +192,17 @@ export default async function FederaciePage() {
         </div>
       </section>
 
+      {/* Organizácia má vlastné zásady; zmluvy sem nepatria — tie sa podpisujú
+          a dostane ich ako dokument (docs/onboarding-organizacie.md). */}
       <footer className="w-full max-w-5xl px-4 py-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
+        <span className="mx-2">·</span>
+        <Link
+          href="/zasady-organizacia"
+          className="underline transition-colors hover:text-foreground"
+        >
+          Privacy
+        </Link>
       </footer>
     </div>
   );

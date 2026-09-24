@@ -319,8 +319,19 @@ export async function LandingPage() {
       {/* `info@` je všeobecná adresa; `/federacie` má obchodnú `office@`.
           Samotná adresa sa neprekladá, takže nepribudol kľúč do deviatich
           jazykov — nie je čo rozísť. */}
+      {/* Odkazy na podmienky a zásady patria na stránku, kde sa predáva —
+          odtiaľto vedú na znenie pre TRÉNERA (sledujúci má vlastné na
+          plaw.click). Texty sú rovnaké ako v appke, čítajú sa z `docs/`. */}
       <footer className="w-full max-w-5xl px-4 py-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
+        <span className="mx-2">·</span>
+        <Link href="/podmienky" className="underline transition-colors hover:text-foreground">
+          Terms
+        </Link>
+        <span className="mx-2">·</span>
+        <Link href="/zasady" className="underline transition-colors hover:text-foreground">
+          Privacy
+        </Link>
         <span className="mx-2">·</span>
         <a
           href="mailto:info@plawsports.com"

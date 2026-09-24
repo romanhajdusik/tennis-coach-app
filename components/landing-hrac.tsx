@@ -341,8 +341,18 @@ export async function LandingHrac() {
       {/* `info@` je všeobecná adresa; `/federacie` má obchodnú `office@`.
           Samotná adresa sa neprekladá, takže nepribudol kľúč do deviatich
           jazykov — nie je čo rozísť. */}
+      {/* Znenie pre SLEDUJÚCEHO — je iné než trénerské (sledujúci je vždy
+          spotrebiteľ) a býva na tejto doméne, viď `CANONICAL_ORIGINS`. */}
       <footer className="w-full max-w-5xl px-4 pb-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
+        <span className="mx-2">·</span>
+        <Link href="/podmienky-hrac" className="underline transition-colors hover:text-foreground">
+          Terms
+        </Link>
+        <span className="mx-2">·</span>
+        <Link href="/zasady-hrac" className="underline transition-colors hover:text-foreground">
+          Privacy
+        </Link>
         <span className="mx-2">·</span>
         <a
           href="mailto:info@plawsports.com"

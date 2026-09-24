@@ -21,13 +21,19 @@ import {
 // Od kanonizácie (2026-08-24) sú to len DVE cesty: rozcestník a stránka pre
 // federácie. Návody a cenník pre sledujúceho tu boli tiež, ale patria svojmu
 // publiku — `CANONICAL_ORIGINS` nižšie ich odchytí ešte pred týmto zoznamom.
-const PUBLIC_PATHS = new Set(["/", "/federacie"]);
+const PUBLIC_PATHS = new Set(["/", "/federacie", "/zasady-organizacia"]);
 
 // plaw.click hovorí k druhej strane appky (hráč, rodič, manažér), takže na nej
 // nie je celý verejný web — len jej landing na `/` a dve stránky, na ktoré
 // odkazuje. Trénerský marketing (`/navod`, cenník na landingu) sem nepatrí:
 // kto sem prišiel, prišiel sa pozerať, nie trénovať.
-const PARENT_FACE_PATHS = new Set(["/", "/navod-hrac", "/cennik-hrac"]);
+const PARENT_FACE_PATHS = new Set([
+  "/",
+  "/navod-hrac",
+  "/cennik-hrac",
+  "/podmienky-hrac",
+  "/zasady-hrac",
+]);
 
 // KAŽDÁ VEREJNÁ STRÁNKA MÁ PRÁVE JEDNU ADRESU (od 2026-08-24).
 //
@@ -47,6 +53,13 @@ const CANONICAL_ORIGINS = new Map([
   ["/federacie", PUBLIC_ORIGIN],
   ["/navod-hrac", PARENT_ORIGIN],
   ["/cennik-hrac", PARENT_ORIGIN],
+  // Právne stránky (od 2026-09-24) — každá tam, kde je jej publikum: tréner na
+  // produktovej doméne, sledujúci na plaw.click, organizácia pri /federacie.
+  ["/podmienky", APP_ORIGIN],
+  ["/zasady", APP_ORIGIN],
+  ["/podmienky-hrac", PARENT_ORIGIN],
+  ["/zasady-hrac", PARENT_ORIGIN],
+  ["/zasady-organizacia", PUBLIC_ORIGIN],
 ]);
 const LOGIN_PATH = "/login";
 
