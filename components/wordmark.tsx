@@ -33,7 +33,12 @@ export function Wordmark({
       <span
         className={`mr-[-0.25em] font-sans text-4xl font-light tracking-[0.25em] text-foreground sm:text-5xl ${className}`}
       >
-        P.L.A.W
+        {letters.map((letter, index) => (
+          <Fragment key={index}>
+            {index > 0 && <span className="text-primary">.</span>}
+            {letter}
+          </Fragment>
+        ))}
       </span>
     );
   }
