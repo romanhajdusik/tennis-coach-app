@@ -7,6 +7,7 @@ import {
   centsPerPlayerDay,
   formatEur,
 } from "@/lib/landing-pricing";
+import { Wordmark } from "@/components/wordmark";
 
 // Cenník pre hráča, rodiča a manažéra. Zámerne SAMOSTATNÁ stránka, nie sekcia
 // landingu — dôvod je pri type správ v `lib/landing-locale.ts`.
@@ -58,13 +59,8 @@ export default async function CennikHracPage() {
 
       <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
-          <Link href="/" className="rounded-md bg-[#eef0f0] p-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/plaw-logo.webp"
-              alt="P.L.A.W — Plan. Log. Analyze. Win."
-              className="block h-7 w-auto"
-            />
+          <Link href="/" aria-label="P.L.A.W">
+            <Wordmark />
           </Link>
           <div className="flex items-center gap-3">
             <Link

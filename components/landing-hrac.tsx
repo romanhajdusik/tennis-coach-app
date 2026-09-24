@@ -14,6 +14,7 @@ import {
   ShieldCheckIcon,
   TagIcon,
 } from "@/components/landing-icons";
+import { Wordmark } from "@/components/wordmark";
 
 /**
  * Landing pre hráča, rodiča a manažéra — domovská stránka domény plaw.click
@@ -79,26 +80,11 @@ export async function LandingHrac() {
 
       <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
-          <span className="rounded-md bg-[#eef0f0] p-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/plaw-logo.webp"
-              alt="P.L.A.W — Plan. Log. Analyze. Win."
-              className="block h-7 w-auto"
-            />
-          </span>
+          <Wordmark />
         </div>
       </header>
 
       <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-14 pt-14 text-center sm:px-6 sm:pb-20 sm:pt-20">
-        <span className="rounded-2xl border border-border bg-[#eef0f0] p-3 shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/plaw-logo.webp"
-            alt="P.L.A.W — Plan. Log. Analyze. Win."
-            className="block h-auto w-full max-w-[240px] sm:max-w-[300px]"
-          />
-        </span>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/30">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {t.eyebrow}

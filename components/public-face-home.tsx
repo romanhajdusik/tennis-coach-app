@@ -2,6 +2,7 @@ import Link from "next/link";
 import { loadRozcestnikMessages } from "@/lib/landing-locale";
 import { EyeIcon, GlobeIcon, UsersIcon } from "@/components/landing-icons";
 import { PARENT_ORIGIN } from "@/lib/public-face";
+import { Wordmark } from "@/components/wordmark";
 
 /**
  * Domovská stránka verejnej tváre (plaw.online) — **rozcestník medzi dvoma
@@ -25,14 +26,7 @@ export async function PublicFaceHome() {
       </div>
 
       <section className="flex w-full max-w-2xl flex-col items-center gap-5 px-4 pb-10 pt-6 text-center sm:px-6 sm:pb-14 sm:pt-10">
-        <span className="rounded-2xl border border-border bg-[#eef0f0] p-3 shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/plaw-logo.webp"
-            alt="P.L.A.W — Plan. Log. Analyze. Win."
-            className="block h-auto w-full max-w-[240px] sm:max-w-[300px]"
-          />
-        </span>
+        <Wordmark className="text-2xl" />
         <h1 className="text-3xl font-bold tracking-tight text-balance text-foreground sm:text-4xl">
           {t.title}
         </h1>

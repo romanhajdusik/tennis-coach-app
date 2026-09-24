@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { loadNavodMessages } from "@/lib/landing-locale";
+import { Wordmark } from "@/components/wordmark";
 
 // Návod je verejná stránka — texty berie z tej istej vrstvy ako landing
 // (messages/en, mimo appkového next-intl). Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
@@ -29,13 +30,8 @@ export default async function NavodPage() {
 
       <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
-          <Link href="/" className="rounded-md bg-[#eef0f0] p-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/plaw-logo.webp"
-              alt="P.L.A.W — Plan. Log. Analyze. Win."
-              className="block h-7 w-auto"
-            />
+          <Link href="/" aria-label="P.L.A.W">
+            <Wordmark />
           </Link>
           <div className="flex items-center gap-3">
             <Link

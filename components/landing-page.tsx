@@ -14,6 +14,7 @@ import {
   TagIcon,
   UsersIcon,
 } from "@/components/landing-icons";
+import { Wordmark } from "@/components/wordmark";
 
 const FEATURE_ICONS = [
   CalendarIcon,
@@ -61,14 +62,7 @@ export async function LandingPage() {
           fotka nižšie ide až po horný okraj a značku nesie nápis na nej. */}
       <header className="sticky top-0 z-40 hidden w-full border-b border-border/70 bg-background/80 backdrop-blur-md md:block">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
-          <span className="rounded-md bg-[#eef0f0] p-1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/plaw-logo.webp"
-              alt="P.L.A.W — Plan. Log. Analyze. Win."
-              className="block h-7 w-auto"
-            />
-          </span>
+          <Wordmark />
           <div className="flex items-center gap-3">
             <Link
               href="/login"
@@ -140,14 +134,6 @@ export async function LandingPage() {
       </section>
 
       <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-16 pt-12 text-center sm:px-6 sm:pb-24 md:pt-24">
-        <span className="hidden rounded-2xl border border-border bg-[#eef0f0] p-3 shadow-sm md:block">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/plaw-logo.webp"
-            alt="P.L.A.W — Plan. Log. Analyze. Win. Timing for progress. plaw.win"
-            className="block h-auto w-full max-w-[260px] sm:max-w-[340px]"
-          />
-        </span>
         <span className="hidden items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/30 md:inline-flex">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {t.eyebrow}
