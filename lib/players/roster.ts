@@ -43,6 +43,8 @@ export type RosterEntry = {
   daysSincePractice: number | null;
   attention: AttentionLevel;
   nextSession: ScheduledSession | null;
+  /** Posledný odtrénovaný; `null` = žiadny v okne. Nástenka ho ukazuje v deň bez tréningu. */
+  lastSession: ScheduledSession | null;
 };
 
 export type RosterOverview = {
@@ -190,6 +192,7 @@ export async function getRosterOverview(
       daysSincePractice,
       attention: attentionOf(daysSincePractice, nextSession !== null),
       nextSession,
+      lastSession: last ?? null,
     };
   });
 

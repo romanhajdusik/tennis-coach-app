@@ -4,5 +4,8 @@
   "noSessionsToday": "No practices scheduled for today.",
   "tomorrowHeading": "Tomorrow's schedule",
   "noSessionsTomorrow": "Nothing scheduled for tomorrow.",
+  "lastPracticeHeading": "Last practice",
+  "focusHeading": "What the player has been working on",
+  "openAnalytics": "Open analytics",
   "openSession": "Open the practice with {name}"
 }

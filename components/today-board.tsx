@@ -1,9 +1,16 @@
+import Link from "next/link";
 import { getTranslations, getFormatter, getTimeZone } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { selectPlayerAndOpen } from "@/lib/actions/selected-player";
 import { getRosterOverview, type ScheduledSession } from "@/lib/players/roster";
-import { getActivePlayers } from "@/lib/players/selected";
-import { getDiscipline } from "@/lib/discipline";
+import { getActivePlayers, getSelectedPlayer } from "@/lib/players/selected";
+import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
+import {
+  getDefaultPeriodValue,
+  getPeriodRange,
+  getPlayerCategoryMinuteShares,
+} from "@/lib/actions/analytics";
+import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 import type { OrgContext } from "@/lib/org/context";
 
 // Ľavý rámček karty tréningu podľa stavu — rovnaká konvencia ako v kalendári.
@@ -65,6 +72,36 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
     now,
   );
 
+  // Posledný odtrénovaný naprieč hráčmi — nástenka je rozvrh dňa, takže aj
+  // náhrada za prázdny deň musí byť „čo bolo naposledy", nie jeden vybraný hráč.
+  const lastSession =
+    overview.entries
+      .map((entry) => entry.lastSession)
+      .filter((session): session is ScheduledSession => session !== null)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .at(-1) ?? null;
+
+  // Generálny graf sa viaže na VYBRANÉHO hráča (graf je vždy o jednom), na
+  // rozdiel od rozvrhu nad ním.
+  const discipline = await getDiscipline();
+  const config = await getDisciplineConfig();
+  const selected = await getSelectedPlayer(supabase, user.id);
+  const { start, end } = await getPeriodRange(
+    "last12",
+    getDefaultPeriodValue("last12"),
+  );
+  const shares = selected
+    ? await getPlayerCategoryMinuteShares(
+        supabase,
+        selected.id,
+        start,
+        end,
+        discipline,
+      )
+    : [];
+  const analyticsHref = `/analytics/${encodeURIComponent(config.categories[0])}`;
+  const showChart = overview.tomorrow.length === 0 && shares.length > 0;
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-5">
       <div>
@@ -81,10 +118,19 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted">
-          {t("scheduleHeading")}
+          {overview.today.length === 0 && lastSession
+            ? t("lastPracticeHeading")
+            : t("scheduleHeading")}
         </h2>
         {overview.today.length === 0 ? (
-          <p className="text-sm text-muted">{t("noSessionsToday")}</p>
+          // Deň bez tréningu nechával obrazovku prázdnu (používateľ,
+          // 2026-09-24) — namiesto hlášky sa ukáže posledný odtrénovaný, aby
+          // bolo na čo ťuknúť. Staršie než okno rostera už v dátach nie sú.
+          lastSession ? (
+            <SessionRow session={lastSession} showDate />
+          ) : (
+            <p className="text-sm text-muted">{t("noSessionsToday")}</p>
+          )
         ) : (
           <ul className="flex flex-col gap-2">
             {overview.today.map((session) => (
@@ -97,11 +143,35 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-muted">
-          {t("tomorrowHeading")}
-        </h2>
+        {/* Graf si nadpis nesie vo vlastnej karte, takže vlastný nadpis sekcie
+            by stál hneď nad ním druhýkrát. */}
+        {showChart ? null : (
+          <h2 className="text-sm font-medium text-muted">
+            {t("tomorrowHeading")}
+          </h2>
+        )}
         {overview.tomorrow.length === 0 ? (
-          <p className="text-sm text-muted">{t("noSessionsTomorrow")}</p>
+          // Keď na zajtra nič nie je, ukáže sa generálny graf vybraného hráča
+          // za predvolené obdobie analytiky — ťuknutím sa otvorí celá
+          // analytika, kde je čitateľný (používateľ, 2026-09-24).
+          showChart ? (
+            // Graf si vlastnú kartu kreslí sám, takže odkaz je len obal —
+            // inak by vznikol rámček v rámčeku a bol by širší než riadky
+            // rozvrhu nad ním.
+            <Link
+              href={analyticsHref}
+              aria-label={t("openAnalytics")}
+              className="block w-full min-w-0"
+            >
+              <CategoryShareChart
+                shares={shares}
+                currentCategory={null}
+                heading={t("focusHeading")}
+              />
+            </Link>
+          ) : (
+            <p className="text-sm text-muted">{t("noSessionsTomorrow")}</p>
+          )
         ) : (
           <ul className="flex flex-col gap-2">
             {overview.tomorrow.map((session) => (
@@ -124,9 +194,12 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
 async function SessionRow({
   session,
   muted,
+  showDate,
 }: {
   session: ScheduledSession;
   muted?: boolean;
+  /** Pri staršom tréningu nestačí čas — bez dátumu nie je jasné, kedy bol. */
+  showDate?: boolean;
 }) {
   const t = await getTranslations("Today");
   const tCommon = await getTranslations("Common");
@@ -150,7 +223,12 @@ async function SessionRow({
         {/* Pevná šírka zarovná časy pod sebou; 12-hodinový formát („1:27 PM")
             sa do užšieho stĺpca nezmestí a zalamoval by sa. */}
         <span className="w-[4.75rem] flex-none whitespace-nowrap text-sm font-semibold text-foreground">
-          {format.dateTime(new Date(session.date), { timeStyle: "short" })}
+          {showDate
+            ? format.dateTime(new Date(session.date), {
+                day: "numeric",
+                month: "short",
+              })
+            : format.dateTime(new Date(session.date), { timeStyle: "short" })}
         </span>
         <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
           {session.playerName}

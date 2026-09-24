@@ -124,7 +124,13 @@ async function main() {
     await request("/", { host: APP_HOST, cookies: await authCookies("demo@plaw.win") })
   ).body;
   const soloHome = rendered(soloBody);
-  check("tréner s jedným hráčom má nástenku", /Today's schedule/.test(textOf(soloBody)));
+  // Nadpis prvej sekcie závisí od dňa: keď je dnes tréning, je to „Today's
+  // schedule", inak „Last practice" (od 2026-09-24 sa prázdny deň nahrádza
+  // posledným odtrénovaným). Nástenku teda poznáme podľa oboch.
+  check(
+    "tréner s jedným hráčom má nástenku",
+    /Today's schedule|Last practice/.test(textOf(soloBody)),
+  );
   check(
     "vedľa jediného hráča je sivý čip noname",
     /Adam Kováč/.test(soloHome) && />noname</.test(soloHome),
