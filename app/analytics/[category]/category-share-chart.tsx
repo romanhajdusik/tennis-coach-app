@@ -11,27 +11,9 @@ import { useTranslations } from "next-intl";
 import { useDiscipline } from "@/lib/discipline-context";
 import type { DisciplineConfig } from "@/lib/discipline";
 import type { CategoryShareStat } from "@/lib/actions/analytics";
+import { categoryColor } from "@/lib/analytics-colors";
 
-// Stabilná farba na zameranie (podľa jeho poradia v konfigurácii disciplíny),
-// aby malo každé zameranie rovnakú farbu naprieč obdobiami. Tenis má 7 zameraní
-// = 7 odlíšených farieb (6 sérií + neutrálna pre posledné).
-//
-// POZOR: kondička má 10 zameraní, takže sa jej farby cez modulo opakujú —
-// paleta sa dopĺňa v `globals.css` v Kroku 2.
-const CATEGORY_COLOR_VARS = [
-  "var(--series-1)",
-  "var(--series-2)",
-  "var(--series-3)",
-  "var(--series-4)",
-  "var(--series-5)",
-  "var(--series-6)",
-  "var(--series-other)",
-];
-
-function categoryColor(category: string, categories: string[]): string {
-  const index = categories.indexOf(category);
-  return CATEGORY_COLOR_VARS[(index >= 0 ? index : 0) % CATEGORY_COLOR_VARS.length];
-}
+// Paleta žije v `lib/analytics-colors.ts` — používa ju aj nástenka.
 
 function ShareTooltip({
   active,

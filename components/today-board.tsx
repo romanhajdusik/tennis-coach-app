@@ -10,7 +10,7 @@ import {
   getPeriodRange,
   getPlayerCategoryMinuteShares,
 } from "@/lib/actions/analytics";
-import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
+import { categoryColor } from "@/lib/analytics-colors";
 import type { OrgContext } from "@/lib/org/context";
 
 // Ľavý rámček karty tréningu podľa stavu — rovnaká konvencia ako v kalendári.
@@ -143,8 +143,8 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
       </section>
 
       <section className="flex flex-col gap-2">
-        {/* Graf si nadpis nesie vo vlastnej karte, takže vlastný nadpis sekcie
-            by stál hneď nad ním druhýkrát. */}
+        {/* Riadok analytiky nesie názov v sebe, takže nadpis sekcie by nad ním
+            hovoril to isté druhýkrát. */}
         {showChart ? null : (
           <h2 className="text-sm font-medium text-muted">
             {t("tomorrowHeading")}
@@ -155,19 +155,19 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
           // za predvolené obdobie analytiky — ťuknutím sa otvorí celá
           // analytika, kde je čitateľný (používateľ, 2026-09-24).
           showChart ? (
-            // Graf si vlastnú kartu kreslí sám, takže odkaz je len obal —
-            // inak by vznikol rámček v rámčeku a bol by širší než riadky
-            // rozvrhu nad ním.
+            // Zámerne LEN názov a donut vo veľkosti riadku rozvrhu (rozhodol
+            // používateľ): celý graf s legendou zabral pol obrazovky. Čitateľný
+            // byť nemusí — je to vstup do analytiky, nie jej náhrada.
             <Link
               href={analyticsHref}
-              aria-label={t("openAnalytics")}
-              className="block w-full min-w-0"
+              className="flex w-full items-center gap-3 rounded-xl border border-l-4 border-border bg-surface p-3"
             >
-              <CategoryShareChart
-                shares={shares}
-                currentCategory={null}
-                heading={t("focusHeading")}
-              />
+              <span className="flex w-[4.75rem] flex-none justify-center">
+                <MiniDonut shares={shares} categories={config.categories} />
+              </span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+                {t("analyzeLabel")}
+              </span>
             </Link>
           ) : (
             <p className="text-sm text-muted">{t("noSessionsTomorrow")}</p>
@@ -183,6 +183,55 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
         )}
       </section>
     </div>
+  );
+}
+
+/**
+ * Donut v veľkosti ikonky — podiely zameraní na odohranom čase, bez popisov.
+ *
+ * Kreslí sa priamo do SVG, nie cez Recharts: v tejto veľkosti by z grafu aj
+ * tak ostali len farebné výseky a komponent by si so sebou priniesol klientský
+ * JavaScript na každé otvorenie domovskej obrazovky. Farby berie z tej istej
+ * palety ako analytika, takže zameranie má všade rovnakú farbu.
+ *
+ * Trik s kružnicou: polomer je zvolený tak, aby mal obvod presne 100, takže
+ * percentá idú priamo do `strokeDasharray` bez prepočtu.
+ */
+function MiniDonut({
+  shares,
+  categories,
+}: {
+  shares: { category: string; percentage: number }[];
+  categories: string[];
+}) {
+  const R = 15.9155;
+  // Každý výsek začína tam, kde skončil predošlý; 25 posunie začiatok hore
+  // namiesto doprava. Počíta sa dopredu, nie premennou v cykle — zameraní je
+  // najviac desať, takže súčet pred sebou nič nestojí.
+  const offsets = shares.map(
+    (_, index) =>
+      25 - shares.slice(0, index).reduce((sum, share) => sum + share.percentage, 0),
+  );
+
+  return (
+    // `viz-root` nesie premenné s farbami grafov — bez nej by výseky ostali
+    // bez farby (definované sú len vnútri nej, viď globals.css).
+    <svg viewBox="0 0 36 36" className="viz-root h-6 w-6" aria-hidden>
+      <circle cx="18" cy="18" r={R} fill="none" stroke="var(--color-input)" strokeWidth="6" />
+      {shares.map((share, index) => (
+        <circle
+          key={share.category}
+          cx="18"
+          cy="18"
+          r={R}
+          fill="none"
+          stroke={categoryColor(share.category, categories)}
+          strokeWidth="6"
+          strokeDasharray={`${share.percentage} ${100 - share.percentage}`}
+          strokeDashoffset={offsets[index]}
+        />
+      ))}
+    </svg>
   );
 }
 
