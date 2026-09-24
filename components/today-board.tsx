@@ -1,16 +1,9 @@
-import Link from "next/link";
 import { getTranslations, getFormatter, getTimeZone } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { selectPlayerAndOpen } from "@/lib/actions/selected-player";
 import { getRosterOverview, type ScheduledSession } from "@/lib/players/roster";
-import { getActivePlayers, getSelectedPlayer } from "@/lib/players/selected";
-import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
-import {
-  getDefaultPeriodValue,
-  getPeriodRange,
-  getPlayerCategoryMinuteShares,
-} from "@/lib/actions/analytics";
-import { categoryColor } from "@/lib/analytics-colors";
+import { getActivePlayers } from "@/lib/players/selected";
+import { getDiscipline } from "@/lib/discipline";
 import type { OrgContext } from "@/lib/org/context";
 
 // Ľavý rámček karty tréningu podľa stavu — rovnaká konvencia ako v kalendári.
@@ -81,27 +74,6 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
       .sort((a, b) => a.date.localeCompare(b.date))
       .at(-1) ?? null;
 
-  // Generálny graf sa viaže na VYBRANÉHO hráča (graf je vždy o jednom), na
-  // rozdiel od rozvrhu nad ním.
-  const discipline = await getDiscipline();
-  const config = await getDisciplineConfig();
-  const selected = await getSelectedPlayer(supabase, user.id);
-  const { start, end } = await getPeriodRange(
-    "last12",
-    getDefaultPeriodValue("last12"),
-  );
-  const shares = selected
-    ? await getPlayerCategoryMinuteShares(
-        supabase,
-        selected.id,
-        start,
-        end,
-        discipline,
-      )
-    : [];
-  const analyticsHref = `/analytics/${encodeURIComponent(config.categories[0])}`;
-  const showChart = overview.tomorrow.length === 0 && shares.length > 0;
-
   return (
     <div className="flex w-full min-w-0 flex-col gap-5">
       <div>
@@ -143,35 +115,15 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
       </section>
 
       <section className="flex flex-col gap-2">
-        {/* Riadok analytiky nesie názov v sebe, takže nadpis sekcie by nad ním
-            hovoril to isté druhýkrát. */}
-        {showChart ? null : (
-          <h2 className="text-sm font-medium text-muted">
-            {t("tomorrowHeading")}
-          </h2>
-        )}
+        <h2 className="text-sm font-medium text-muted">
+          {t("tomorrowHeading")}
+        </h2>
+        {/* Analytika tu bola 2026-09-24 pár hodín (riadok „Analyze" s malým
+            donutom) — používateľ ju na nástenke NECHCE. Nevracaj ju sem bez
+            nového rozhodnutia; na nástenke ostáva len rozvrh a posledný
+            odtrénovaný tréning. */}
         {overview.tomorrow.length === 0 ? (
-          // Keď na zajtra nič nie je, ukáže sa generálny graf vybraného hráča
-          // za predvolené obdobie analytiky — ťuknutím sa otvorí celá
-          // analytika, kde je čitateľný (používateľ, 2026-09-24).
-          showChart ? (
-            // Zámerne LEN názov a donut vo veľkosti riadku rozvrhu (rozhodol
-            // používateľ): celý graf s legendou zabral pol obrazovky. Čitateľný
-            // byť nemusí — je to vstup do analytiky, nie jej náhrada.
-            <Link
-              href={analyticsHref}
-              className="flex w-full items-center gap-3 rounded-xl border border-l-4 border-border bg-surface p-3"
-            >
-              <span className="flex w-[4.75rem] flex-none justify-center">
-                <MiniDonut shares={shares} categories={config.categories} />
-              </span>
-              <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                {t("analyzeLabel")}
-              </span>
-            </Link>
-          ) : (
-            <p className="text-sm text-muted">{t("noSessionsTomorrow")}</p>
-          )
+          <p className="text-sm text-muted">{t("noSessionsTomorrow")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {overview.tomorrow.map((session) => (
@@ -183,55 +135,6 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
         )}
       </section>
     </div>
-  );
-}
-
-/**
- * Donut v veľkosti ikonky — podiely zameraní na odohranom čase, bez popisov.
- *
- * Kreslí sa priamo do SVG, nie cez Recharts: v tejto veľkosti by z grafu aj
- * tak ostali len farebné výseky a komponent by si so sebou priniesol klientský
- * JavaScript na každé otvorenie domovskej obrazovky. Farby berie z tej istej
- * palety ako analytika, takže zameranie má všade rovnakú farbu.
- *
- * Trik s kružnicou: polomer je zvolený tak, aby mal obvod presne 100, takže
- * percentá idú priamo do `strokeDasharray` bez prepočtu.
- */
-function MiniDonut({
-  shares,
-  categories,
-}: {
-  shares: { category: string; percentage: number }[];
-  categories: string[];
-}) {
-  const R = 15.9155;
-  // Každý výsek začína tam, kde skončil predošlý; 25 posunie začiatok hore
-  // namiesto doprava. Počíta sa dopredu, nie premennou v cykle — zameraní je
-  // najviac desať, takže súčet pred sebou nič nestojí.
-  const offsets = shares.map(
-    (_, index) =>
-      25 - shares.slice(0, index).reduce((sum, share) => sum + share.percentage, 0),
-  );
-
-  return (
-    // `viz-root` nesie premenné s farbami grafov — bez nej by výseky ostali
-    // bez farby (definované sú len vnútri nej, viď globals.css).
-    <svg viewBox="0 0 36 36" className="viz-root h-6 w-6" aria-hidden>
-      <circle cx="18" cy="18" r={R} fill="none" stroke="var(--color-input)" strokeWidth="6" />
-      {shares.map((share, index) => (
-        <circle
-          key={share.category}
-          cx="18"
-          cy="18"
-          r={R}
-          fill="none"
-          stroke={categoryColor(share.category, categories)}
-          strokeWidth="6"
-          strokeDasharray={`${share.percentage} ${100 - share.percentage}`}
-          strokeDashoffset={offsets[index]}
-        />
-      ))}
-    </svg>
   );
 }
 
