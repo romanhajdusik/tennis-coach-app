@@ -85,6 +85,9 @@ export async function LandingHrac() {
       </header>
 
       <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-14 pt-14 text-center sm:px-6 sm:pb-20 sm:pt-20">
+        {/* Veľký nápis v úvode — tá istá podoba značky, akú vidí človek pred
+            prihlásením v appke a na rozcestníku. */}
+        <Wordmark variant="hero" />
         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/30">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {t.eyebrow}

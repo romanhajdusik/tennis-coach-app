@@ -134,6 +134,9 @@ export async function LandingPage() {
       </section>
 
       <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-16 pt-12 text-center sm:px-6 sm:pb-24 md:pt-24">
+        {/* Len od `md` vyššie — na telefóne nesie značku nápis na úvodnej fotke
+            a druhý by bol hneď pod ním. */}
+        <Wordmark variant="hero" className="hidden md:inline-block" />
         <span className="hidden items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/30 md:inline-flex">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {t.eyebrow}
