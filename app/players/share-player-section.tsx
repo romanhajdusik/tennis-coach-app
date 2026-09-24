@@ -85,6 +85,10 @@ export function SharePlayerSection({
 
       <div className="flex flex-col gap-2 pt-3">
         <p className="text-sm text-muted ">{t("description")}</p>
+        {/* Tréner rozhoduje o údajoch dieťaťa, takže musí vedieť, že kódom ich
+            odovzdáva natrvalo: zrušenie prepojenia zastaví pribúdanie nových
+            záznamov, ale doteraz skopírované sledujúcemu ostávajú. */}
+        <p className="text-xs leading-relaxed text-muted">{t("copyNotice")}</p>
 
         {!connection && (
           <button

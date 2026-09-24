@@ -50,6 +50,7 @@
   "share": {
     "heading": "Share access",
     "description": "Generate a code and send it to the player, parent, or manager (SMS, WhatsApp...). They enter it once in their own app and will see this player's practices and analytics.",
+    "copyNotice": "Sharing gives this person their own copy of the practices. Ending the connection stops new ones — it does not take back what they already have.",
     "generateButton": "Generate code",
     "codeLabel": "Access code",
     "copyButton": "Copy",

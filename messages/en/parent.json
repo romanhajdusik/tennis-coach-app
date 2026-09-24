@@ -13,6 +13,7 @@
   "connect": {
     "heading": "Connect a coach",
     "description": "If you're the player's parent, manager, or the player themselves, enter the code your coach sent you.",
+    "copyNotice": "Entering the code creates your own copy of the player's practices. It stays in your account even if the connection ends later.",
     "codePlaceholder": "e.g. 4GMQZKVP",
     "submit": "Connect",
     "submitPending": "Connecting..."

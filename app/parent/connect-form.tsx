@@ -19,6 +19,10 @@ export function ConnectForm() {
       <p className="text-sm text-muted ">
         {t("description")}
       </p>
+      {/* Zadaním kódu vzniká sledujúcemu VLASTNÁ KÓPIA tréningov
+          (`parent_session_records`), nie živý pohľad — a tá mu ostáva aj po
+          zrušení prepojenia. Nikde inde sa to nedozvie. */}
+      <p className="text-xs leading-relaxed text-muted">{t("copyNotice")}</p>
       <input
         name="code"
         required
