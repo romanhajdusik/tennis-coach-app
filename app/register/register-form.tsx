@@ -1,13 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { register } from "@/lib/actions/auth";
 
 export function RegisterForm({ promoRequired }: { promoRequired: boolean }) {
   const t = useTranslations("Auth.register");
   const [state, formAction, pending] = useActionState(register, undefined);
+  // Sledujúci má INÉ podmienky aj zásady než tréner (je vždy spotrebiteľ),
+  // takže odkazy pod formulárom sa riadia zvolenou rolou. Cesty sú relatívne:
+  // znenie pre sledujúceho býva na plaw.click a proxy tam odkaz presmeruje
+  // (`CANONICAL_ORIGINS`), takže sa tu nemusí písať doména.
+  const [role, setRole] = useState("coach");
+  const pravne =
+    role === "coach"
+      ? { terms: "/podmienky", privacy: "/zasady" }
+      : { terms: "/podmienky-hrac", privacy: "/zasady-hrac" };
 
   // Účet vznikol, ale prihlásiť sa dá až po kliknutí v maili. Bez tejto
   // obrazovky by to vyzeralo, že odoslanie formulára nespravilo nič.
@@ -82,6 +91,7 @@ export function RegisterForm({ promoRequired }: { promoRequired: boolean }) {
             name="role"
             defaultValue="coach"
             required
+            onChange={(event) => setRole(event.target.value)}
             className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
           >
             <option value="coach">{t("roleCoach")}</option>
@@ -158,6 +168,30 @@ export function RegisterForm({ promoRequired }: { promoRequired: boolean }) {
             {t("ageConfirmLabel")}
           </label>
         </div>
+        {/* Podmienky sa neodklikávajú zvlášť: podľa ich §1 je súhlasom samotná
+            registrácia, a druhé zaškrtnutie vedľa vyhlásenia o veku by
+            miešalo dve rôzne veci (spôsobilosť a súhlas). Odkazy tu ale byť
+            musia — bez nich si ich človek nemá kde prečítať. */}
+        <p className="text-xs leading-relaxed text-muted">
+          {t.rich("termsNotice", {
+            terms: (chunks) => (
+              <Link
+                href={pravne.terms}
+                className="font-medium text-foreground underline underline-offset-2"
+              >
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link
+                href={pravne.privacy}
+                className="font-medium text-foreground underline underline-offset-2"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
         {state?.error && (
           <p className="text-sm text-red-400">{state.error}</p>
         )}
