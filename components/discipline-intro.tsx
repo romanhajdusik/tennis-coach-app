@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { Wordmark } from "@/components/wordmark";
 
 /**
  * Úvodná obrazovka nasadenia BEZ vlastného landingu (dnes kondička na
@@ -49,9 +50,9 @@ export async function DisciplineIntro({
       </p>
 
       <div className="flex flex-col items-center gap-4">
-        <h1 className="mr-[-0.25em] text-5xl font-light tracking-[0.25em] text-foreground">
-          P.L.A.W
-        </h1>
+        {/* Bodky nesú primárnu farbu nasadenia (kondička tyrkysová) —
+            rovnako ako na verejnom webe. */}
+        <Wordmark variant="hero" as="h1" />
         <span aria-hidden className="h-px w-24 bg-foreground/40" />
         {/* Rozpis skratky sa neprekladá — je viazaný na písmená P-L-A-W. */}
         <p className="mr-[-0.4em] text-xs font-medium uppercase tracking-[0.4em] text-foreground/85">

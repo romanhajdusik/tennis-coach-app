@@ -92,9 +92,9 @@ export async function LandingPage() {
         <div aria-hidden className="hero-scrim absolute inset-x-0 top-0 -z-10 h-[86%]" />
 
         <div className="flex flex-col items-center gap-4">
-          <p className="mr-[-0.25em] text-5xl font-light tracking-[0.25em] text-foreground">
-            P.L.A.W
-          </p>
+          {/* Bodky v primárnej farbe ako na zvyšku webu — nápis na fotke je
+              tá istá značka, len na inom podklade. */}
+          <Wordmark variant="hero" as="p" />
           <span aria-hidden className="h-px w-24 bg-foreground/40" />
           <p className="mr-[-0.4em] text-xs font-medium uppercase tracking-[0.4em] text-foreground/85">
             Plan · Log · Analyze · Win
