@@ -208,7 +208,7 @@ stored; in that case the Provider informs the Organisation what has to be retain
 and for how long.
 
 **9.5** **Data disappears from backups within the backup retention cycle, at the
-latest within [X] days.** Until then it is accessible to no one and is not
+latest within 7 days.** Until then it is accessible to no one and is not
 processed for any purpose.
 
 ### 10. Information and audits
@@ -549,7 +549,7 @@ a strojovo čitateľnom formáte.
 vrátane existujúcich kópií, ibaže ich uchovanie vyžaduje právo Únie alebo
 členského štátu; v takom prípade organizácii oznámi, čo musí uchovať a ako dlho.
 
-**9.5** **Zo záloh údaje vypadnú v rámci cyklu záloh, najneskôr do [X] dní.**
+**9.5** **Zo záloh údaje vypadnú v rámci cyklu záloh, najneskôr do 7 dní.**
 Dovtedy nie sú nikomu prístupné a nespracúvajú sa na žiadny účel.
 
 ### 10. Informácie a audit
@@ -749,8 +749,13 @@ funkcionality, postupom podľa §6.2. Stripe nespracúva údaje hráčov.
    zväzom treba druhého človeka s prístupom a s podpísanou mlčanlivosťou (§4
    a príloha C). Postup zároveň pomenoval, že **rozsah incidentu vieme len
    odhadnúť** — appka nemá záznam o čítaní.
-7. **§9.5 — cyklus záloh `[X]` dní.** Produkcia beží na Free pláne a **stav záloh
-   nie je overený**. Číslo sa nedá vymyslieť, treba ho zistiť u Supabase.
+7. ~~**§9.5 — cyklus záloh `[X]` dní.**~~ **VYPLNENÉ 2026-09-25: 7 dní.**
+   Produkcia prešla na **Supabase Pro** (na Free pláne sa nezálohovalo vôbec —
+   „Not included" — a projekt sa navyše po týždni nečinnosti pozastavoval).
+   Pro robí denné zálohy s retenciou 7 dní. **Skúška obnovy ešte nebola**, a je
+   to posledná vec, ktorá blokuje ostrú prevádzku so skutočnými deťmi.
+   **Pozor: obnova v Supabase je in-place** — prepíše produkčnú databázu
+   a projekt je počas nej nedostupný, takže sa NESMIE použiť ako skúška.
 8. **Príloha C — `[počet]` osôb s prístupom k produkcii.** Dnes jedna; s prvým
    zamestnancom sa mení dokument.
 9. **Údaje s.r.o.** (hlavička) — firma sa zakladá, rovnaká zátvorka ako
