@@ -51,7 +51,7 @@ function Blocks({ blocks }: { blocks: Block[] }) {
             <h2
               key={i}
               id={block.id}
-              className="scroll-mt-20 pt-8 text-base font-semibold tracking-tight text-foreground sm:text-lg"
+              className="scroll-mt-20 pt-8 text-sm font-semibold tracking-tight text-foreground sm:text-base"
             >
               {block.number ? (
                 <span className="mr-2 text-primary">{block.number}.</span>
@@ -62,7 +62,7 @@ function Blocks({ blocks }: { blocks: Block[] }) {
         }
         if (block.kind === "paragraph") {
           return (
-            <p key={i} className="mt-3 text-[13px] leading-relaxed text-muted sm:text-sm">
+            <p key={i} className="mt-3 text-xs leading-relaxed text-muted sm:text-[13px]">
               <Runs runs={block.runs} />
             </p>
           );
@@ -71,7 +71,7 @@ function Blocks({ blocks }: { blocks: Block[] }) {
         return (
           <List
             key={i}
-            className={`mt-3 flex flex-col gap-2 pl-5 text-[13px] leading-relaxed text-muted sm:text-sm ${
+            className={`mt-3 flex flex-col gap-2 pl-5 text-xs leading-relaxed text-muted sm:text-[13px] ${
               block.ordered ? "list-decimal" : "list-disc"
             } marker:text-primary`}
           >
@@ -123,7 +123,7 @@ export function LegalPage({ doc, audience, sibling }: Props) {
             Identifikácia firmy je v §1 každého dokumentu, takže čl. 13 je
             splnený aj bez nej; a veta o záväznej angličtine nemá adresáta —
             slovenské znenie sa nezverejňuje, web je jednojazyčný. */}
-        <h1 className="text-2xl font-bold tracking-tight text-balance text-foreground sm:text-3xl">
+        <h1 className="text-xl font-bold tracking-tight text-balance text-foreground sm:text-2xl">
           {doc.title}
         </h1>
       </section>
@@ -138,7 +138,7 @@ export function LegalPage({ doc, audience, sibling }: Props) {
           <ol className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
             {sections.map((section) =>
               section.kind === "heading" ? (
-                <li key={section.id} className="flex gap-2 text-[13px]">
+                <li key={section.id} className="flex gap-2 text-xs">
                   <span className="w-5 shrink-0 text-right text-muted">{section.number}</span>
                   <a
                     href={`#${section.id}`}
