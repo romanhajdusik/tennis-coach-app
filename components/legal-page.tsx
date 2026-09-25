@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import type { Block, LegalDoc, Run } from "@/lib/legal-docs";
 import { Wordmark } from "@/components/wordmark";
@@ -13,8 +14,16 @@ type Props = {
   doc: LegalDoc;
   /** Komu je dokument určený — drobný riadok pod nadpisom. */
   audience: string;
-  /** Odkaz na druhý dokument toho istého publika (podmienky ↔ zásady). */
-  sibling: { href: string; label: string };
+  /**
+   * Odkaz na druhý dokument toho istého publika (podmienky ↔ zásady).
+   * Text pre rodičov dvojicu nemá, preto je nepovinný.
+   */
+  sibling?: { href: string; label: string };
+  /**
+   * Vysvetlenie nad textom — dnes ho má len text pre rodičov, kde treba
+   * povedať, že si ho tréner pred odovzdaním doplní o svoje meno a kontakt.
+   */
+  intro?: ReactNode;
 };
 
 function Runs({ runs }: { runs: Run[] }) {
@@ -34,6 +43,10 @@ function Runs({ runs }: { runs: Run[] }) {
           <strong key={i} className="font-semibold text-foreground">
             {run.text}
           </strong>
+        ) : run.italic ? (
+          <em key={i} className="italic">
+            {run.text}
+          </em>
         ) : (
           <span key={i}>{run.text}</span>
         ),
@@ -67,6 +80,18 @@ function Blocks({ blocks }: { blocks: Block[] }) {
             </p>
           );
         }
+        if (block.kind === "quote") {
+          // Voliteľný odsek (dnes jediný: súhlas so zdravotnými údajmi v texte
+          // pre rodičov). Rámček hovorí, že to nie je súčasť hlavného textu.
+          return (
+            <blockquote
+              key={i}
+              className="mt-4 rounded-xl border border-border bg-surface px-4 py-1 sm:px-5"
+            >
+              <Blocks blocks={block.blocks} />
+            </blockquote>
+          );
+        }
         const List = block.ordered ? "ol" : "ul";
         return (
           <List
@@ -87,7 +112,7 @@ function Blocks({ blocks }: { blocks: Block[] }) {
   );
 }
 
-export function LegalPage({ doc, audience, sibling }: Props) {
+export function LegalPage({ doc, audience, sibling, intro }: Props) {
   const sections = doc.blocks.filter((b) => b.kind === "heading" && b.number);
 
   return (
@@ -104,12 +129,14 @@ export function LegalPage({ doc, audience, sibling }: Props) {
           <Link href="/" aria-label="P.L.A.W">
             <Wordmark />
           </Link>
-          <Link
-            href={sibling.href}
-            className="text-sm font-medium text-muted transition-colors hover:text-foreground"
-          >
-            {sibling.label}
-          </Link>
+          {sibling ? (
+            <Link
+              href={sibling.href}
+              className="text-sm font-medium text-muted transition-colors hover:text-foreground"
+            >
+              {sibling.label}
+            </Link>
+          ) : null}
         </div>
       </header>
 
@@ -126,9 +153,16 @@ export function LegalPage({ doc, audience, sibling }: Props) {
         <h1 className="text-xl font-bold tracking-tight text-balance text-foreground sm:text-2xl">
           {doc.title}
         </h1>
+        {intro ? (
+          <div className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-left text-xs leading-relaxed text-muted sm:px-5">
+            {intro}
+          </div>
+        ) : null}
       </section>
 
-      {/* Obsah — na telefóne je dokument dlhý a bez neho sa v ňom nedá hýbať. */}
+      {/* Obsah — na telefóne je dokument dlhý a bez neho sa v ňom nedá hýbať.
+          Text pre rodičov číslované paragrafy nemá, tam by ostal prázdny. */}
+      {sections.length > 0 ? (
       <nav
         aria-label="Contents"
         className="w-full max-w-3xl px-4 sm:px-6"
@@ -152,6 +186,7 @@ export function LegalPage({ doc, audience, sibling }: Props) {
           </ol>
         </div>
       </nav>
+      ) : null}
 
       <article className="w-full max-w-3xl px-4 pb-4 sm:px-6">
         <Blocks blocks={doc.blocks} />
@@ -167,14 +202,16 @@ export function LegalPage({ doc, audience, sibling }: Props) {
             info@plawsports.com
           </a>
         </p>
-        <p className="mt-2">
-          <Link
-            href={sibling.href}
-            className="font-medium text-foreground underline underline-offset-2"
-          >
-            {sibling.label}
-          </Link>
-        </p>
+        {sibling ? (
+          <p className="mt-2">
+            <Link
+              href={sibling.href}
+              className="font-medium text-foreground underline underline-offset-2"
+            >
+              {sibling.label}
+            </Link>
+          </p>
+        ) : null}
       </footer>
     </div>
   );

@@ -127,8 +127,7 @@ This is the part most applications never tell a coach — and they should.
 **Your players' data is in your hands. Three things follow from that:**
 
 **1. Parents should know that you keep a record.** We have prepared a ready-made
-text for you to hand over — you will find it at **[link to the parent notice
-page]**. Nothing is signed; it is information. Hand it over within one month of
+text for you to hand over — you will find it at **plaw.click/informacia-pre-rodicov**. Nothing is signed; it is information. Hand it over within one month of
 adding the child at the latest, and if you give a parent an access code, then no
 later than that.
 
@@ -290,7 +289,7 @@ Toto je časť, ktorú väčšina aplikácií trénerovi nepovie — a mala by.
 **Údaje o deťoch sú v tvojej réžii. Z toho ti plynú tri veci:**
 
 **1. Rodičia majú vedieť, že záznam vedieš.** Pripravili sme ti hotový text, ktorý
-im stačí odovzdať — nájdeš ho na **[odkaz na stránku s textom pre rodičov]**. Nič
+im stačí odovzdať — nájdeš ho na **plaw.click/informacia-pre-rodicov**. Nič
 sa nepodpisuje, je to informácia. Odovzdaj ju najneskôr do mesiaca od zapísania
 dieťaťa, a ak rodičovi dávaš prístupový kód, tak najneskôr vtedy.
 

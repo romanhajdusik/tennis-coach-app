@@ -16,5 +16,7 @@
   "privacy": "Privacy Policy",
   "dataHeading": "Your data",
   "dataText": "To get a copy of your data or to have your account deleted, write to us. We handle such requests within one month.",
-  "dataNote": "What exactly happens to the records is described in the Privacy Policy above."
+  "dataNote": "What exactly happens to the records is described in the Privacy Policy above.",
+  "parentNotice": "Notice for parents",
+  "parentNoticeHint": "The notice for parents is not about you — it is a ready-made text to hand over, so you do not have to write your own."
 }

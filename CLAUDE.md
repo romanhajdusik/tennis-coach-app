@@ -347,6 +347,34 @@ Pre zväz je to jedna z vecí na kritickej ceste v [`docs/pred-prvym-zvazom.md`]
   odkazy pri registrácii, nie je to vec tejto stránky.
 - Overuje `http-coach.js` §3c, `http-parent.js` §0b a `http-director.js` §2.
 
+## Text pre rodičov `/informacia-pre-rodicov` (od 2026-09-25)
+
+Pri údajoch o dieťati je prevádzkovateľom **tréner, nie P.L.A.W**
+([`docs/gdpr-mapa-roli.md`](docs/gdpr-mapa-roli.md) §5.1), takže informačnú
+povinnosť podľa čl. 13 má on. Appka mu preto dáva **hotový text na odovzdanie
+rodičovi** — bez neho stojí zákonnosť celého produktu na tom, že si to každý
+tréner vyriešil sám.
+
+- **Žije na `plaw.click`**, lebo číta ho RODIČ; tréner mu sem pošle odkaz.
+  Tú istú adresu menujú **zásady pre trénera**, takže pri jej zmene sa musí
+  prepísať aj dokument. Odkaz je aj v `/settings` trénera (sledujúci ani
+  šéftréner ho tam nemajú — jemu ho tréner odovzdáva, nie naopak).
+- **Zverejnená je IBA anglická verzia** (rozhodol používateľ: appka aj celý
+  verejný web sú anglické). Slovenské znenie ostáva v `docs/`.
+- **Nie je to dokument, ktorý čitateľa viaže** — je to nástroj. Preto má nad
+  textom rámček pre trénera a v `/settings` vlastnú vysvetľujúcu vetu.
+- **Číta ho vlastný loader** `loadParentNotice()`, nie `loadLegalDoc()`: dokument
+  nemá hranice `# ENGLISH`/`# SLOVENSKY`, ale číslované časti. **Prvá časť je
+  návod pre trénera a posledná interné poznámky — ani jedna sa nesmie dostať
+  von** (stráži to `public-web.js` §5b).
+- **Kvôli nemu vie parser tri veci navyše** (`lib/legal-docs.ts`): citovaný blok
+  `>` (voliteľný odsek o zdraví sa vykreslí v ráme), `*kurzívu*` a **prázdne
+  zátvorky `[ ]`, ktoré sú zaškrtávacie políčko, nie nevyplnené miesto**. Keby
+  sa brali ako diera, stránka by žltou hlásila chybu tam, kde má byť štvorček.
+- **Tri žlté miesta v ňom ostať MAJÚ** — meno trénera, jeho kontakt a v
+  voliteľnom odseku to, čo presne zapisuje. Dopĺňa si ich tréner pred
+  odovzdaním, nie my.
+
 ## Registrácia na pozvánku a promo kódy (od 2026-08-16)
 
 Dovtedy sa registrácia dala len zapnúť alebo vypnúť (`REGISTRATION_ENABLED`) a účty trénerov sa zakladali ručne — tester sa k appke nedostal sám. Odteraz je vstupenkou **promo kód**, ktorý zároveň určuje, ako dlho má tréner appku zadarmo. Tabuľky `promo_codes` + `promo_code_redemptions`, migrácia `20260816090000_promo_codes.sql`. **Vydávanie kódov, kontrola použitia a poradie nasadenia sú v [`docs/promo-kody.md`](docs/promo-kody.md)** — tu len pravidlá pre kód:

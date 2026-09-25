@@ -41,7 +41,7 @@ Tréningovú dokumentáciu vášho dieťaťa vedie **[názov organizácie, IČO,
 kontakt na ňu.]**
 
 Na vedenie dokumentácie klub používa aplikáciu P.L.A.W od spoločnosti
-**&Go, s.r.o.**, Vnútorná okružná 178/27,
+&Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, IČO 46571388, ktorá údaje pre klub iba technicky uchováva.
 **O tom, čo sa zaznamená a ako dlho sa to drží, rozhoduje klub, nie ona.**
 
@@ -135,7 +135,7 @@ registered office]** ("the club"). Contact: **[email / phone]**. **[If a Data
 Protection Officer has been appointed: their contact details.]**
 
 To keep these records the club uses the P.L.A.W application provided by
-**&Go, s.r.o.**, Vnútorná okružná 178/27, 945 01 Komárno,
+&Go, s.r.o., Vnútorná okružná 178/27, 945 01 Komárno,
 Slovak Republic, Company ID 46571388, which only stores the data
 technically on the club's behalf. **What gets recorded, and for how long, is
 decided by the club, not by them.**

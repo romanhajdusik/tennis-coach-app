@@ -45,6 +45,7 @@ export default async function SettingsPage() {
   const isDirector = membership?.role === "director";
   const role = profile?.role ?? "coach";
   const isFollower = role === "parent" || role === "manager" || role === "player";
+  const isCoach = !isDirector && !isFollower;
 
   // Každé publikum má vlastné znenie: tréner (samostatný aj federačný — jeho
   // prípad rieši §3 podmienok) trénerské, sledujúci spotrebiteľské, šéftréner
@@ -61,6 +62,10 @@ export default async function SettingsPage() {
       : [
           { href: "/podmienky", label: t("terms") },
           { href: "/zasady", label: t("privacy") },
+          // Text na odovzdanie rodičovi nie je dokument, ktorý trénera viaže,
+          // ale bez neho si informačnú povinnosť podľa čl. 13 musí vyriešiť
+          // sám. Zásady mu ho sľubujú, takže tu musí byť po ruke.
+          { href: "/informacia-pre-rodicov", label: t("parentNotice") },
         ];
 
   // Každá časť appky má vlastný domov, rovnako ako v `components/home-button.tsx`.
@@ -106,6 +111,11 @@ export default async function SettingsPage() {
             </Link>
           ))}
         </div>
+        {/* Posledný odkaz trénera neviaže — je to nástroj, nie dokument. Bez
+            tejto vety by v zozname pôsobil ako ďalšie pravidlá pre neho. */}
+        {isCoach ? (
+          <p className="text-xs text-muted">{t("parentNoticeHint")}</p>
+        ) : null}
       </section>
 
       <section className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">

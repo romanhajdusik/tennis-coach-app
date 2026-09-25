@@ -163,6 +163,13 @@ async function main() {
     "nedostane znenie iného publika",
     !/podmienky-hrac|zasady-hrac|zasady-organizacia/.test(settingsHtml),
   );
+  // Text na odovzdanie rodičovi nie je dokument, ktorý trénera viaže — je to
+  // nástroj, bez ktorého si informačnú povinnosť musí vyriešiť sám. Zásady mu
+  // ho sľubujú, takže sa k nemu musí dostať.
+  check(
+    "má po ruke text na odovzdanie rodičovi",
+    settingsHtml.includes(String.fromCharCode(34) + "/informacia-pre-rodicov" + String.fromCharCode(34)),
+  );
   check(
     "export dát a zmazanie účtu majú kontakt",
     /support@plawsports\.com/.test(textOf(settings.body)),

@@ -42,6 +42,8 @@ const CANONICAL = [
   ["/podmienky-hrac", PARENT],
   ["/zasady-hrac", PARENT],
   ["/zasady-organizacia", PUBLIC],
+  // Text na odovzdanie rodičovi (od 2026-09-25) — číta ho rodič, takže plaw.click.
+  ["/informacia-pre-rodicov", PARENT],
 ];
 
 const HOSTS = [APP, PUBLIC, PARENT];
@@ -163,6 +165,48 @@ async function main() {
     // telefóne nedá prejsť.
     check(`${host}${path} má obsah s paragrafmi`, /href="#s1"/.test(res.body));
   }
+
+  section("5b) Text pre rodičov je celý a bez interných častí");
+  const rodicia = await request("/informacia-pre-rodicov", { host: PARENT });
+  const rodiciaText = textOf(rodicia.body);
+  check(
+    "stránka sa vykreslí",
+    rodicia.status === 200 &&
+      rodiciaText.includes("Information about the processing"),
+    `status ${rodicia.status}`,
+  );
+  check(
+    "má všetky časti textu",
+    ["Who processes the data", "What I record about your child", "Your rights"].every(
+      (h) => rodiciaText.includes(h),
+    ),
+  );
+  // Prvá časť dokumentu je návod pre trénera a posledná interné poznámky —
+  // ani jedna sa nesmie dostať von. Slovenské znenie tiež nie (rozhodol
+  // používateľ 2026-09-25: appka aj web sú anglické).
+  check(
+    "nezverejnil sa návod pre trénera ani interné poznámky",
+    !/Ako sa to má používať|Čo z toho ešte treba spraviť/.test(rodiciaText),
+  );
+  check(
+    "nezverejnila sa slovenská verzia",
+    !/Informácia o spracúvaní/.test(rodiciaText),
+  );
+  // Voliteľný odsek o zdraví je v dokumente blockquote a zaškrtávacie políčka
+  // sú prázdne zátvorky — ani jedno sa nesmie vykresliť ako surový markdown
+  // alebo ako žlté „nevyplnené miesto".
+  check(
+    "voliteľný odsek je v ráme, nie ako text s „>“",
+    /<blockquote/.test(rodicia.body) && !/&gt;\s/.test(rodiciaText),
+  );
+  check(
+    "zaškrtávacie políčka nie sú žlté diery",
+    rodiciaText.includes("[ ] yes") &&
+      !/<mark[^>]*>\s*<\/mark>/.test(rodicia.body),
+  );
+  // Žlté miesta tu ostať MAJÚ — sú to miesta, ktoré si dopĺňa tréner.
+  const znacky = (rodicia.body.match(/<mark/g) ?? []).length;
+  check("miesta na doplnenie trénerom sú zvýraznené", znacky === 3, `${znacky} miest`);
 
   section("4) Appka na marketingových doménach nežije");
   for (const host of [PUBLIC, PARENT]) {

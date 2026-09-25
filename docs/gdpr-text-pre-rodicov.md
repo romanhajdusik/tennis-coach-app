@@ -42,7 +42,7 @@ verzia je nižšie pre trénerov pracujúcich s cudzojazyčnými rodinami.
 
 Tréningovú dokumentáciu vášho dieťaťa vediem ja, **[meno trénera]**, kontakt
 **[e-mail / telefón]**. Používam na to aplikáciu P.L.A.W od spoločnosti
-**&Go, s.r.o.**, Vnútorná okružná 178/27,
+&Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, IČO 46571388, ktorá pre mňa údaje iba technicky uchováva —
 o tom, čo sa zapíše a ako dlho sa to drží, rozhodujem ja.
 
@@ -130,7 +130,7 @@ osobných údajov Slovenskej republiky, Hraničná 12, 820 07 Bratislava.
 
 I keep your child's training records myself — **[coach name]**, contact
 **[email / phone]**. I use the P.L.A.W application provided by
-**&Go, s.r.o.**, Vnútorná okružná 178/27, 945 01 Komárno,
+&Go, s.r.o., Vnútorná okružná 178/27, 945 01 Komárno,
 Slovak Republic, Company ID 46571388, which only stores the data
 technically on my behalf. What gets recorded, and for how long, is my decision.
 
@@ -211,16 +211,23 @@ Personal Data Protection of the Slovak Republic, Hraničná 12, 820 07 Bratislav
 
 ## 4. Čo z toho ešte treba spraviť
 
-1. **Doplniť údaje s.r.o.** na obe miesta v hranatých zátvorkách.
+1. ~~Doplniť údaje s.r.o.~~ **HOTOVÉ 2026-09-07** — v texte je &Go, s.r.o.
+   s adresou a IČO.
 2. ~~Potvrdiť lehotu (návrh 3 roky).~~ **HOTOVÉ — text prepísaný 2026-08-29 na
    platné lehoty:** jednotlivý tréning najviac 4 roky, celý záznam hráča rok po
    poslednom tréningu ([mapa rolí §6](gdpr-mapa-roli.md)). **Pozor pri ďalších
    zmenách lehôt: tento text sa musí meniť tiež** — je to jediný dokument, ktorý
    rodič naozaj dostane do ruky, a najľahšie sa naň zabudne.
-3. **Zverejniť ako stránku**, aby mal tréner čo poslať odkazom — najlepšie na
-   `plaw.click`, kde už rodičovská landing je.
+3. ~~Zverejniť ako stránku~~ **HOTOVÉ 2026-09-25:**
+   `plaw.click/informacia-pre-rodicov` (`app/informacia-pre-rodicov/page.tsx`,
+   číta sa odtiaľto cez `loadParentNotice()`). **Zverejnená je IBA anglická
+   verzia** — rozhodol používateľ, appka aj celý verejný web sú anglické.
+   Slovenská ostáva v tomto súbore. Na stránku vedie odkaz z `/settings`
+   trénera a zo zásad pre trénera (§ o povinnostiach voči rodičom), takže
+   **pri zmene adresy treba prepísať aj ich**.
 4. **Doplniť odkaz do trénerského návodu** (`/navod`) s vetou, že text má rodičom
-   odovzdať — inak ho nikto nenájde.
+   odovzdať. **Čiastočne odpadlo 2026-09-25** — tréner ho nájde v appke
+   (`/settings`) aj v zásadách; v návode ho stále nemá.
 5. Zvážiť **predvyplnenie mena a kontaktu trénera** z profilu (neskoršie vylepšenie).
 6. **Overiť adresu úradu** pred zverejnením — je to jediný údaj v texte, ktorý som
    nemal ako skontrolovať proti zdroju.

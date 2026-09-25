@@ -33,6 +33,9 @@ const PARENT_FACE_PATHS = new Set([
   "/cennik-hrac",
   "/podmienky-hrac",
   "/zasady-hrac",
+  // Text, ktorý tréner odovzdáva rodičovi — číta ho rodič, takže patrí sem
+  // (od 2026-09-25). Tréner mu sem pošle odkaz zo zásad.
+  "/informacia-pre-rodicov",
 ]);
 
 // KAŽDÁ VEREJNÁ STRÁNKA MÁ PRÁVE JEDNU ADRESU (od 2026-08-24).
@@ -60,6 +63,7 @@ const CANONICAL_ORIGINS = new Map([
   ["/podmienky-hrac", PARENT_ORIGIN],
   ["/zasady-hrac", PARENT_ORIGIN],
   ["/zasady-organizacia", PUBLIC_ORIGIN],
+  ["/informacia-pre-rodicov", PARENT_ORIGIN],
 ]);
 const LOGIN_PATH = "/login";
 

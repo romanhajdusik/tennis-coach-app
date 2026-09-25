@@ -63,6 +63,12 @@ async function main() {
     !followerHtml.includes('href="/podmienky"') &&
       !followerHtml.includes('href="/zasady"'),
   );
+  // Text pre rodičov mu tréner ODOVZDÁVA; v jeho vlastných nastaveniach by
+  // pôsobil, akoby ho mal niekomu dať sám.
+  check(
+    "nedostane trénerov nástroj na odovzdanie rodičovi",
+    !followerHtml.includes("/informacia-pre-rodicov"),
+  );
 
   const { coach: fitnessCoach, player: fitnessPlayer } =
     await ensureFitnessCoach(db);

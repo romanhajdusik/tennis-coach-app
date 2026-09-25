@@ -20,6 +20,7 @@ const HIDDEN_PATHS = new Set([
   "/podmienky-hrac",
   "/zasady-hrac",
   "/zasady-organizacia",
+  "/informacia-pre-rodicov",
   "/login",
   "/register",
   "/parent",
