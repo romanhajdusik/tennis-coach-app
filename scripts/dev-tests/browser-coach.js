@@ -755,7 +755,9 @@ async function main() {
     await limitPage.waitForTimeout(2000);
     check(
       "nástenka „Dnes\" sa zapla aj samostatnému trénerovi",
-      /Today's schedule/.test(await browserText(limitPage)),
+      // Nadpis zajtrajška je jediný, ktorý má nástenka VŽDY: od 2026-09-24
+      // ukáže v deň bez tréningu namiesto rozvrhu posledný odtrénovaný.
+      /Tomorrow's schedule/.test(await browserText(limitPage)),
     );
 
     // --- zníženie hladiny pod počet hráčov ---------------------------------
@@ -1237,7 +1239,7 @@ async function main() {
     await resetPage.waitForTimeout(1500);
     check(
       "po uložení je tréner prihlásený vo svojej appke",
-      /Today's schedule/.test(afterReset) &&
+      /Tomorrow's schedule/.test(afterReset) &&
         /Adam Kováč/.test(await browserText(resetPage)),
       `${resetPage.url()} | ${afterReset.slice(0, 90)}`,
     );
