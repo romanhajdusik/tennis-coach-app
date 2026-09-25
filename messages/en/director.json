@@ -122,5 +122,6 @@
   },
   "disciplineTennis": "Court",
   "disciplineFitness": "Fitness",
-  "loadSplit": "Last 30 days: {court} min court · {fitness} min fitness"
+  "loadSplit": "Last 30 days: {court} min court · {fitness} min fitness",
+  "settings": "Settings"
 }

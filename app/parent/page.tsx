@@ -163,14 +163,24 @@ export default async function ParentDashboardPage({
         <h1 className="text-xl font-semibold text-foreground ">
           {t("title")}
         </h1>
-        <form action={logout.bind(null, "/parent/login")}>
-          <button
-            type="submit"
-            className="text-sm font-medium text-muted underline "
+        <div className="flex items-center gap-4">
+          {/* Jediné miesto, kde sa sledujúci v appke dostane k podmienkam
+              a zásadám — na verejnom webe sú pred prihlásením. */}
+          <Link
+            href="/settings"
+            className="text-sm font-medium text-muted underline"
           >
-            {t("logout")}
-          </button>
-        </form>
+            {t("settings")}
+          </Link>
+          <form action={logout.bind(null, "/parent/login")}>
+            <button
+              type="submit"
+              className="text-sm font-medium text-muted underline "
+            >
+              {t("logout")}
+            </button>
+          </form>
+        </div>
       </div>
 
       {!connection ? (

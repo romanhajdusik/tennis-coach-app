@@ -289,7 +289,8 @@ Integrácia s Google Kalendárom **v appke už nie je** a nevracaj ju bez rozhod
 Zmazané: `lib/google/`, `app/api/google/`, `lib/actions/google-calendar.ts`,
 tabuľka `google_calendar_connections` aj stĺpec `sessions.google_event_id`
 (migrácia `20260829090000`). S ňou odišla aj stránka `/settings` — obsahovala
-výhradne pripojenie kalendára a ostala by prázdna.
+výhradne pripojenie kalendára a ostala by prázdna. **Od 2026-09-25 je späť**,
+už s iným obsahom (viď sekciu „Nastavenia účtu“ nižšie).
 
 **Prečo:** bolo to jediné miesto v celej appke, kde **meno dieťaťa opúšťalo naše
 systémy** — udalosť vznikala v Google účte trénera, kde Google nie je naším
@@ -308,6 +309,43 @@ odteraz pripomienku nedostane — pri stavbe notifikácií na to pamätaj.
 (kalendár je „citlivý" rozsah) a k nemu **zverejnené zásady ochrany údajov**.
 To bola pravdepodobne aj príčina tej nuly. A vtedy jej rovno daj prepínač, či má
 byť v názve udalosti meno, iniciály alebo len „Training".
+
+## Nastavenia účtu `/settings` (znova od 2026-09-25)
+
+Stránka zanikla 2026-08-29 spolu s Google Kalendárom (bol jej jediný obsah)
+a vrátila sa preto, že **prihlásený sa inak k podmienkam a zásadám nedostane** —
+odkazy na ne sú len na verejnom webe a pri registrácii, teda pred prihlásením.
+Pre zväz je to jedna z vecí na kritickej ceste v [`docs/pred-prvym-zvazom.md`](docs/pred-prvym-zvazom.md).
+
+- **Každé publikum dostane VLASTNÉ znenie** — rozhoduje `profiles.role` plus
+  členstvo (šéftréner sa registruje tiež ako `coach`, pozná ho až
+  `getOrgMembership()`, rovnako ako v `lib/coach-nav.ts`):
+  - **tréner, samostatný aj federačný** → `/podmienky` + `/zasady`. Federačný
+    tréner dostáva to isté zámerne: §3 trénerských podmienok výslovne rieši
+    prípad, keď účet patrí organizácii.
+  - **sledujúci** (`parent`/`manager`/`player`) → `/podmienky-hrac` + `/zasady-hrac`
+  - **šéftréner** → `/zasady-organizacia`. Spotrebiteľské podmienky trénera preňho
+    neplatia: appku mu poskytuje zväz na základe zmluvy, nie my jemu.
+- **Odkazy sú RELATÍVNE**, nie absolútne — znenie pre sledujúceho žije na
+  `plaw.click` a proxy tam odkaz presmeruje (`CANONICAL_ORIGINS`). Absolútna
+  adresa by z lokálneho vývoja viedla na produkciu.
+- **Export dát a zmazanie účtu sú zatiaľ KONTAKT, nie tlačidlo**
+  (`support@plawsports.com`, `info@` je kontakt verejného webu). Dôvod je
+  technický: zmazať účet z `auth.users` sa nedá bez `service_role` kľúča a ten
+  appka nikde nedrží — príde až so Stripe webhookom (viď Fáza 3). Zákonná lehota
+  je mesiac, takže ručné vybavenie ju spĺňa. **Keď kľúč pribudne, je to prvé
+  miesto, kde sa dá z kontaktu spraviť tlačidlo.**
+- **Kam vedie odkaz:** tréner ikonkou v hlavičke domova (`HomeHeader`, tretia
+  vedľa kódov cvičení a odhlásenia — odstup v rade je preto `gap-1`, pri
+  `gap-3` rad pri šírke 320 px pretekal), sledujúci a šéftréner odkazom vedľa
+  odhlásenia. V spodnej lište nastavenia **nie sú** a nepridávaj ich tam: tých
+  päť záložiek je rozhodnutých.
+- **Vedomá diera do spustenia:** na `fitness.plawsports.com` sa právne stránky
+  **nekanonizujú** (tá doména nie je v `faceOriginOf`), takže `/podmienky` sa
+  vykreslí aj tam — tá istá stránka na dvoch adresách. Dnes neškodí (všetky sú
+  `noindex`), ale **pred indexovaním to treba doriešiť**. Platí to rovnako pre
+  odkazy pri registrácii, nie je to vec tejto stránky.
+- Overuje `http-coach.js` §3c, `http-parent.js` §0b a `http-director.js` §2.
 
 ## Registrácia na pozvánku a promo kódy (od 2026-08-16)
 

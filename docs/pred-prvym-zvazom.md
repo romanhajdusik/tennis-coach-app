@@ -16,7 +16,10 @@ keď sa objaví prvý skutočný zväz.
 **Pozor, sú to dve rôzne hranice a tá druhá môže prísť skôr.** Tento zoznam rieši
 **prvý zväz**. Prvé **skutočné dieťa** v appke — hoci ho zadá len tréner
 v samostatnom režime — blokujú **dve** veci: zverejnené zásady a podmienky
-dostupné z appky (dnes vedome odložené) a zálohy s jednou skúškou obnovy.
+dostupné z appky a zálohy s jednou skúškou obnovy. **Prvá z nich odpadla
+2026-09-25:** texty majú od 2026-09-24 päť verejných adries a od 2026-09-25 na
+ne vedú odkazy aj zvnútra appky (stránka `/settings`, každá rola vidí svoje
+znenie). **Ostávajú už len zálohy.**
 **Tretia odpadla 2026-09-22: anglické znenie podmienok pre trénera je schválené**
 (schválil používateľ; záväzné je EN, slovenské znenie je schválené od 2026-08-29).
 **Od 2026-09-23 sú schválené VŠETKY dokumenty, ktoré idú von** — obe zmluvy,
@@ -136,9 +139,9 @@ sporov, dátumy a údaje druhej strany sa dopĺňajú až pri použití.
   úpravou dokumentu.
 
 - [ ] **Priložiť zásady pre organizáciu** k zmluve ako dokument.
-  Zverejnenie na webe je zatiaľ odložené (právne stránky v appke neexistujú),
-  ale **pre B2B zákazníka to nevadí** — dostane text ako prílohu. Verejné
-  stránky sú potrebné pre trénerov a rodičov, nie pre zväz.
+  Na webe už sú (`plaw.online/zasady-organizacia`, od 2026-09-24) a šéftréner
+  sa k nim dostane aj v appke cez `/settings`, ale **pre B2B zákazníka je
+  príloha k zmluve aj tak to podstatné** — podpisuje text, nie odkaz.
 
 ---
 
@@ -146,8 +149,11 @@ sporov, dátumy a údaje druhej strany sa dopĺňajú až pri použití.
 
 - [ ] **Export dát a zmazanie účtu v appke.**
   Zmluva (§7.2, §9.2) aj zásady ich sľubujú ako funkciu; dnes ich robí podpora
-  ručne. Pri jednom-dvoch zväzoch to stačí, pri desiatich nie. **S nimi sa
-  vráti aj stránka `/settings`**, ktorá po odstránení Google Kalendára zanikla.
+  ručne. Pri jednom-dvoch zväzoch to stačí, pri desiatich nie. **Stránka
+  `/settings` je od 2026-09-25 späť** a obe veci na nej majú zatiaľ kontakt
+  (`support@plawsports.com`) namiesto tlačidla. **Zmazanie účtu sa bez
+  `service_role` kľúča spraviť nedá** a ten príde až so Stripe webhookom —
+  vtedy je to prvé miesto, kde sa z kontaktu stane tlačidlo.
 
 - [ ] **Mazacia úloha pre lehoty sledujúceho.**
   Prvý záznam vypadne z okna okolo **januára 2027** (najstaršie dáta sú z júla
@@ -159,6 +165,9 @@ sporov, dátumy a údaje druhej strany sa dopĺňajú až pri použití.
   Appka dnes nevie povedať, kto ktorý riadok videl, takže **rozsah incidentu sa
   odhaduje, nemeria**. Stačilo by začať pri `security definer` funkciách.
 
-- [ ] **Právne stránky na webe** — odkazy v štyroch pätičkách, potvrdenie
-  dokumentov pri registrácii a tri vety v prepojení rodiča čakajú na to, kým
-  budú mať texty na webe adresu. Rozhodnuté 2026-08-30 odložiť.
+- [x] **Právne stránky na webe — HOTOVÉ 2026-09-24** (päť adries, text sa číta
+  priamo zo schválených dokumentov v `docs/`). Odkazy sú v troch pätičkách, pri
+  registrácii sa menia podľa roly a dve vety pribudli pri prepojení rodiča.
+  **Od 2026-09-25 na ne vedie aj cesta zvnútra appky** — `/settings`. Ostáva
+  jediné: na `fitness.plawsports.com` sa tie stránky nekanonizujú, takže tam
+  odpovedajú druhýkrát; kým sú `noindex`, neškodí to, pred indexovaním áno.

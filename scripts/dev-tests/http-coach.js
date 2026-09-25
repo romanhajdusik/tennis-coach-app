@@ -141,6 +141,39 @@ async function main() {
     !/aria-label="Main navigation"/.test(rendered(landing.body)),
   );
 
+  section("3c) Nastavenia účtu (od 2026-09-25)");
+  // Stránka je jediné miesto, kde sa PRIHLÁSENÝ dostane k podmienkam
+  // a zásadám — na verejnom webe sú pred prihlásením, takže po registrácii by
+  // ich už nenašiel. Každé publikum má pritom vlastné znenie.
+  const settings = await request("/settings", {
+    host: APP_HOST,
+    cookies: await authCookies("demo@plaw.win"),
+  });
+  const settingsHtml = rendered(settings.body);
+  check(
+    "hlavička domova vedie na nastavenia",
+    /<header[\s\S]*href="\/settings"[\s\S]*Settings[\s\S]*<\/header>/.test(soloHome),
+  );
+  check("tréner sa na ne dostane", settings.status === 200, String(settings.status));
+  check(
+    "dostane SVOJE znenie (podmienky aj zásady trénera)",
+    settingsHtml.includes('href="/podmienky"') && settingsHtml.includes('href="/zasady"'),
+  );
+  check(
+    "nedostane znenie iného publika",
+    !/podmienky-hrac|zasady-hrac|zasady-organizacia/.test(settingsHtml),
+  );
+  check(
+    "export dát a zmazanie účtu majú kontakt",
+    /support@plawsports\.com/.test(textOf(settings.body)),
+  );
+  const settingsAnon = await request("/settings", { host: APP_HOST });
+  check(
+    "neprihlásený na ne nemá prístup",
+    settingsAnon.status === 307 && /\/login/.test(settingsAnon.headers.location ?? ""),
+    settingsAnon.status + " " + (settingsAnon.headers.location ?? ""),
+  );
+
   section("4) Farebné odlíšenie appiek");
   // Federačná appka má svetlomodré tlačidlá, tenisová predvolené limetkové —
   // rozlišuje ich `data-app` na <html>, odtiene sú v globals.css.

@@ -44,6 +44,29 @@ async function main() {
     "šéftréner nemá spodnú lištu trénera",
     !/aria-label="Main navigation"/.test(panel.body),
   );
+  // Nastavenia (od 2026-09-25): šéftréner sa k zásadám pre organizácie inak
+  // v appke nedostane. Spotrebiteľské podmienky trénera preňho neplatia —
+  // appku mu poskytuje zväz na základe zmluvy, nie my jemu.
+  check("pult vedie na nastavenia", rendered(panel.body).includes('href="/settings"'));
+  const orgSettings = rendered((await request("/settings", { cookies: director })).body);
+  check(
+    "šéftréner dostane zásady pre organizácie",
+    orgSettings.includes('href="/zasady-organizacia"'),
+  );
+  check(
+    "nedostane spotrebiteľské znenie trénera",
+    !orgSettings.includes('href="/podmienky"') && !orgSettings.includes('href="/zasady"'),
+  );
+  // Federačný TRÉNER je naopak trénerom ako každý iný — §3 podmienok
+  // výslovne počíta s tým, že účet patrí organizácii.
+  const coachSettings = rendered(
+    (await request("/settings", { cookies: await authCookies("coach-today@test.local") })).body,
+  );
+  check(
+    "federačný tréner dostane trénerské znenie",
+    coachSettings.includes('href="/podmienky"') && coachSettings.includes('href="/zasady"'),
+  );
+
   check("6 hráčov v dlaždici", /6 players/.test(panelText), panelText.slice(0, 250));
   check("2 tréneri v dlaždici", /2 coaches/.test(panelText));
   check(

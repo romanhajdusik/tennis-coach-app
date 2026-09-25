@@ -37,7 +37,8 @@
     "disconnectConfirm": "Are you sure? New practices will stop arriving.",
     "disconnectConfirmYes": "Yes, stop",
     "disconnectCancel": "Cancel",
-    "disconnectPending": "Stopping..."
+    "disconnectPending": "Stopping...",
+    "settings": "Settings"
   },
   "calendar": {
     "back": "Back",

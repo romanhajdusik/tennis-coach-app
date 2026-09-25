@@ -22,7 +22,7 @@ import { getOrgMembership, getOrgRole } from "@/lib/org/membership";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import { TodayBoard } from "@/components/today-board";
 import { TagIcon } from "@/components/landing-icons";
-import { LogoutIcon } from "@/components/nav-icons";
+import { LogoutIcon, SettingsIcon } from "@/components/nav-icons";
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
@@ -170,6 +170,7 @@ export default async function Home() {
       <HomeHeader
         title={t("title")}
         drillCodesLabel={t("drillCodes")}
+        settingsLabel={t("settings")}
         logoutLabel={t("logout")}
       />
 
@@ -204,10 +205,12 @@ const ICON_BUTTON =
 function HomeHeader({
   title,
   drillCodesLabel,
+  settingsLabel,
   logoutLabel,
 }: {
   title: string;
   drillCodesLabel: string;
+  settingsLabel: string;
   logoutLabel: string;
 }) {
   // Bodky v „P.L.A.W" nesú primárnu farbu appky (tenis limetková).
@@ -225,12 +228,21 @@ function HomeHeader({
       </span>
       {/* Popisok pod ikonkou ako v spodnej lište (používateľ, 2026-09-21) —
           samotná ikonka štítku nehovorí, že ide o kódy cvičení. */}
-      <div className="flex gap-3">
+      {/* Odstup je `gap-1`, nie `gap-3`: od tretej ikonky (nastavenia, 2026-09-25)
+          rad pri šírke 320 px pretekal, a užšie položky by zalomili popisok
+          „Drill codes" na dva riadky. */}
+      <div className="flex gap-1">
         <Link href="/drill-codes" className={ICON_ITEM}>
           <span className={ICON_BUTTON}>
             <TagIcon className="h-5 w-5" />
           </span>
           {drillCodesLabel}
+        </Link>
+        <Link href="/settings" className={ICON_ITEM}>
+          <span className={ICON_BUTTON}>
+            <SettingsIcon />
+          </span>
+          {settingsLabel}
         </Link>
         <form action={logout.bind(null, "/login")}>
           <button type="submit" className={ICON_ITEM}>

@@ -18,6 +18,7 @@ const {
   APP_HOST,
   authCookies,
   request,
+  rendered,
   textOf,
   serviceClient,
   ensureFitnessCoach,
@@ -38,6 +39,30 @@ async function main() {
     process.exit(1);
   }
   check("prihlásenie pre sledujúceho sa vykreslí", probe.status === 200);
+
+  section("0b) Nastavenia účtu sledujúceho (od 2026-09-25)");
+  // Sledujúci je vždy spotrebiteľ, takže má INÉ podmienky aj zásady než
+  // tréner. Nastavenia sú jediné miesto, kde sa k nim po prihlásení dostane.
+  const followerCookies = await authCookies(PARENT);
+  const dashboard = rendered(
+    (await request("/parent", { host: APP_HOST, cookies: followerCookies })).body,
+  );
+  check("prehľad vedie na nastavenia", dashboard.includes('href="/settings"'));
+  const followerSettings = await request("/settings", {
+    host: APP_HOST,
+    cookies: followerCookies,
+  });
+  const followerHtml = rendered(followerSettings.body);
+  check(
+    "dostane SVOJE znenie",
+    followerHtml.includes('href="/podmienky-hrac"') &&
+      followerHtml.includes('href="/zasady-hrac"'),
+  );
+  check(
+    "nedostane trénerské znenie",
+    !followerHtml.includes('href="/podmienky"') &&
+      !followerHtml.includes('href="/zasady"'),
+  );
 
   const { coach: fitnessCoach, player: fitnessPlayer } =
     await ensureFitnessCoach(db);

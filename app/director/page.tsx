@@ -247,14 +247,24 @@ export default async function DirectorPage() {
 
       <p className="text-xs text-muted">{t("readOnlyNote")}</p>
 
-      <form action={logout.bind(null, "/login")}>
-        <button
-          type="submit"
+      <div className="flex flex-wrap gap-3">
+        {/* Šéftréner sa k zásadám pre organizácie inak v appke nedostane —
+            na verejnom webe sú pred prihlásením. */}
+        <Link
+          href="/settings"
           className="rounded-lg border border-border px-4 py-2 text-sm font-medium"
         >
-          {t("logout")}
-        </button>
-      </form>
+          {t("settings")}
+        </Link>
+        <form action={logout.bind(null, "/login")}>
+          <button
+            type="submit"
+            className="rounded-lg border border-border px-4 py-2 text-sm font-medium"
+          >
+            {t("logout")}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

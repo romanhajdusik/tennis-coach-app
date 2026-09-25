@@ -150,3 +150,28 @@ export function LogoutIcon({ className = "h-5 w-5" }: IconProps) {
     </svg>
   );
 }
+
+/** Nastavenia — ozubené koleso, obrysové ako ostatné malé ikonky v hlavičke. */
+export function SettingsIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className={className}
+    >
+      {/* Obruč a stred; zuby sú krátke hrubé čiary od obruče von — tenké dlhé
+          lúče by z toho spravili slniečko. */}
+      <circle cx="12" cy="12" r="5.8" />
+      <circle cx="12" cy="12" r="2.3" />
+      <g strokeWidth="2.6" strokeLinecap="butt">
+        <path d="M17.8 12h2.5M3.7 12h2.5M12 6.2V3.7M12 17.8v2.5" />
+        <path d="m16.1 7.9 1.8-1.8M6.1 17.9l1.8-1.8M16.1 16.1l1.8 1.8M6.1 6.1l1.8 1.8" />
+      </g>
+    </svg>
+  );
+}

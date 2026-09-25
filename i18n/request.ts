@@ -35,6 +35,7 @@ async function loadMessages(locale: AppLocale) {
     today,
     director,
     join,
+    settings,
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`),
     import(`../messages/${locale}/auth.json`),
@@ -48,6 +49,7 @@ async function loadMessages(locale: AppLocale) {
     import(`../messages/${locale}/today.json`),
     import(`../messages/${locale}/director.json`),
     import(`../messages/${locale}/join.json`),
+    import(`../messages/${locale}/settings.json`),
   ]);
 
   return {
@@ -63,6 +65,7 @@ async function loadMessages(locale: AppLocale) {
     Today: today.default,
     Director: director.default,
     Join: join.default,
+    Settings: settings.default,
   };
 }
 

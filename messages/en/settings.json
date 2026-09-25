@@ -1,0 +1,20 @@
+{
+  "title": "Settings",
+  "nav": "Settings",
+  "accountHeading": "Account",
+  "signedInAs": "Signed in as",
+  "roles": {
+    "coach": "Coach",
+    "director": "Head coach",
+    "parent": "Parent",
+    "manager": "Manager",
+    "player": "Player"
+  },
+  "documentsHeading": "Terms and privacy",
+  "documentsIntro": "These documents govern your use of the application. They open on our website.",
+  "terms": "Terms of Use",
+  "privacy": "Privacy Policy",
+  "dataHeading": "Your data",
+  "dataText": "To get a copy of your data or to have your account deleted, write to us. We handle such requests within one month.",
+  "dataNote": "What exactly happens to the records is described in the Privacy Policy above."
+}

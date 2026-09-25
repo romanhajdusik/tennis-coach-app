@@ -25,8 +25,8 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 
 | Skript | Čo overuje |
 |---|---|
-| `http-coach.js` | Nástenka „Dnes", roster so stavmi, nedotknutý samostatný režim |
-| `http-director.js` | Smerovanie podľa roly, obsah pultu, drill-in, tenant izolácia |
+| `http-coach.js` | Nástenka „Dnes", roster so stavmi, nedotknutý samostatný režim, §3c **nastavenia účtu** (tréner dostane svoje znenie, neprihlásený sa tam nedostane) |
+| `http-director.js` | Smerovanie podľa roly, obsah pultu, drill-in, tenant izolácia, **nastavenia** (šéftréner dostane zásady pre organizácie, federačný tréner trénerské znenie) |
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča, životný cyklus členstva, skupinový tréning naprieč trénermi |
 | `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, kód uplatní len prihlásený, rodičovi ostáva jeho prístup |
 | `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
@@ -34,7 +34,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
 | `fitness.js` | **Kondičné nasadenie** — 10 zameraní, prázdne sloty kódov, chýbajúce pole charakteru, trvanie 60, analytika bez odhadu úderov, žiadna tenisová landing, kondička kód prepojenia VYDÁVA, a §6 — tenisový **súhrn opačným smerom** bez kódov cvičení a poznámok |
 | `public-web.js` | **Smerovanie verejného webu** medzi plaw.win / plaw.online / plaw.click — každá stránka odpovedá 200 práve na jednom hostiteľovi, jazyk prežije skok na druhú doménu a appkové cesty na marketingových doménach nežijú |
-| `http-parent.js` | **Rodičovská vrstva** — súhrn druhej disciplíny u sledujúceho: bez súhlasu vlastníka tam nie je, so súhlasom sú v ňom len súčty (žiadne kódy ani poznámky) a cudzie minúty ostávajú pod čiarou. Prvá sada, ktorá vôbec vykresľuje rodičovskú stránku |
+| `http-parent.js` | **Rodičovská vrstva** — súhrn druhej disciplíny u sledujúceho: bez súhlasu vlastníka tam nie je, so súhlasom sú v ňom len súčty (žiadne kódy ani poznámky) a cudzie minúty ostávajú pod čiarou. Prvá sada, ktorá vôbec vykresľuje rodičovskú stránku. §0b overuje **nastavenia účtu** — sledujúci dostane spotrebiteľské znenie, nie trénerské |
 | `card-links.js` | **Prepojenie kariet hráča naprieč disciplínami** — vydanie a zaklaimovanie kódu, cross-read je len na čítanie, cudzia karta sa nedostane medzi hráčov, po zrušení prístup zmizne, a oba **súhrny** — opačným smerom (§10) aj pre sledujúceho (§10b): súhlas prepína vždy len tá strana, ktorej dáta to sú, súčty sedia a tréningy ani cvičenia sa neotvoria. Nepotrebuje dev server |
 | `promo-codes.js` | **Registrácia na pozvánku** — kódy nesmie nikto čítať ani meniť, vymyslený kód v metadátach nedá nič, hromadný kód sa vyčerpá a viac nepustí, rok vs. doživotne, kód sa míňa len trénerovi, na org subdoméne vedie `/register` na `/join` |
 | `password-reset.js` | **Obnova zabudnutého hesla** — stránky a odkazy na oboch prihláseniach, neplatný a už použitý odkaz, `?next` na cudziu adresu, a celý reťazec mail → overenie → formulár presne ako v appke (vrátane toho, že odkaz v maili naozaj vedie na `/auth/confirm`, nie na východziu adresu) |
