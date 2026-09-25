@@ -25,7 +25,7 @@
 
 The P.L.A.W application is operated by &Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, Slovak Republic, Company ID 46571388. You can write to us at
-**[support@plawsports.com]**.
+**support@plawsports.com**.
 
 We have not appointed a Data Protection Officer — at our current size the law does
 not require one. We will reassess this as the number of organisations grows.
@@ -139,7 +139,7 @@ delete it.**
 
 **Your director and coaches** may ask us for access to their account data, its
 correction, deletion, restriction, portability, or object to processing based on
-legitimate interest. Write to **[support@plawsports.com]**; we respond within one
+legitimate interest. Write to **support@plawsports.com**; we respond within one
 month, free of charge.
 
 **Players and their parents** exercise their rights **towards your organisation**,
@@ -177,7 +177,7 @@ data processing agreement.
 
 Aplikáciu P.L.A.W prevádzkuje &Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, IČO 46571388.
-Napísať nám môžete na **[support@plawsports.com]**.
+Napísať nám môžete na **support@plawsports.com**.
 
 Nemáme určenú zodpovednú osobu (DPO) — pri našom dnešnom rozsahu ju zákon
 nevyžaduje. S rastúcim počtom organizácií to prehodnotíme.
@@ -287,7 +287,7 @@ prístupu k vašim údajom.
 
 **Váš šéftréner a tréneri** môžu od nás žiadať prístup k údajom o svojom účte,
 ich opravu, zmazanie, obmedzenie, prenos alebo namietať proti spracúvaniu
-založenému na oprávnenom záujme. Stačí napísať na **[support@plawsports.com]**;
+založenému na oprávnenom záujme. Stačí napísať na **support@plawsports.com**;
 odpovedáme do jedného mesiaca a je to zadarmo.
 
 **Hráči a ich rodičia** uplatňujú svoje práva **voči vašej organizácii**, ktorá je

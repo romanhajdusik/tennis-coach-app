@@ -218,7 +218,7 @@ If you are a consumer, you may also try to resolve a dispute out of court throug
 
 ### 14. Contact
 
-**[support@plawsports.com]**
+**support@plawsports.com**
 
 **These terms are effective from [date].**
 
@@ -409,7 +409,7 @@ riešenia sporov — doplniť]**.
 
 ## 14. Kontakt
 
-**[support@plawsports.com]**
+**support@plawsports.com**
 
 **Tieto podmienky platia od [dátum].**
 

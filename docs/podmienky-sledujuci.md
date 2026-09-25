@@ -112,7 +112,7 @@ pass, you confirm this expressly when ordering. **Your right of withdrawal then
 lapses once the service has been fully provided**; if you withdraw while it is
 running, you pay a proportionate amount for what you have used.
 
-To withdraw, an email to **[support@plawsports.com]** is enough.
+To withdraw, an email to **support@plawsports.com** is enough.
 
 ### 8. The coach is responsible for the content
 
@@ -194,7 +194,7 @@ dispute resolution body — to be added]**.
 
 ### 15. Contact
 
-**[support@plawsports.com]**
+**support@plawsports.com**
 
 **These terms are effective from [date].**
 
@@ -286,7 +286,7 @@ lehoty, pri objednávke to výslovne potvrdíš. **Po úplnom poskytnutí služb
 právo na odstúpenie zaniká**; ak odstúpiš počas nej, uhradíš pomernú časť za to,
 čo si už využil.
 
-Odstúpiť stačí e-mailom na **[support@plawsports.com]**.
+Odstúpiť stačí e-mailom na **support@plawsports.com**.
 
 ## 8. Za obsah zodpovedá tréner
 
@@ -364,7 +364,7 @@ sporov — doplniť]**.
 
 ## 15. Kontakt
 
-**[support@plawsports.com]**
+**support@plawsports.com**
 
 **Tieto podmienky platia od [dátum].**
 

@@ -22,7 +22,7 @@
 
 The P.L.A.W application is operated by &Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, Slovak Republic, Company ID 46571388. You can write to us at
-**[support@plawsports.com]**.
+**support@plawsports.com**.
 
 We have not appointed a Data Protection Officer — at our size the law does not
 require one. Data protection questions are handled directly through the contact
@@ -153,7 +153,7 @@ You can ask us at any time for:
 - **portability** — your data in a readable format,
 - **to object** to processing we base on legitimate interest.
 
-Just write to **[support@plawsports.com]**. We will respond within one month at the
+Just write to **support@plawsports.com**. We will respond within one month at the
 latest, free of charge.
 
 **One practical note.** If something is wrong in a practice record — a mistaken note
@@ -202,7 +202,7 @@ enough, and we do not do it.
 
 Aplikáciu P.L.A.W prevádzkuje &Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, IČO 46571388.
-Napísať nám môžeš na **[support@plawsports.com]**.
+Napísať nám môžeš na **support@plawsports.com**.
 
 Nemáme určenú zodpovednú osobu (DPO) — pri našom rozsahu ju zákon nevyžaduje.
 Otázky k ochrane údajov vybavuje priamo kontakt vyššie.
@@ -325,7 +325,7 @@ Môžeš od nás kedykoľvek žiadať:
 - **prenos** údajov v čitateľnej podobe,
 - **namietať** proti spracúvaniu, ktoré staviame na oprávnenom záujme.
 
-Stačí napísať na **[support@plawsports.com]**. Ozveme sa najneskôr do jedného
+Stačí napísať na **support@plawsports.com**. Ozveme sa najneskôr do jedného
 mesiaca a je to zadarmo.
 
 **Jedna praktická poznámka.** Ak je v zázname o tréningu niečo zle — pomýlená
