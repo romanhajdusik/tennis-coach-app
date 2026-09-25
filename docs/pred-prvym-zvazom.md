@@ -15,11 +15,12 @@ keď sa objaví prvý skutočný zväz.
 
 **Pozor, sú to dve rôzne hranice a tá druhá môže prísť skôr.** Tento zoznam rieši
 **prvý zväz**. Prvé **skutočné dieťa** v appke — hoci ho zadá len tréner
-v samostatnom režime — blokujú **dve** veci: zverejnené zásady a podmienky
-dostupné z appky a zálohy s jednou skúškou obnovy. **Prvá z nich odpadla
-2026-09-25:** texty majú od 2026-09-24 päť verejných adries a od 2026-09-25 na
-ne vedú odkazy aj zvnútra appky (stránka `/settings`, každá rola vidí svoje
-znenie). **Ostávajú už len zálohy.**
+v samostatnom režime — blokovali **dve** veci: zverejnené zásady a podmienky
+dostupné z appky a zálohy s jednou skúškou obnovy. **OBE ODPADLI 2026-09-25.**
+Texty majú od 2026-09-24 päť verejných adries a vedú na ne odkazy aj zvnútra
+appky (`/settings`, každá rola vidí svoje znenie). Zálohy pribudli s prechodom
+na Supabase Pro a **skúška obnovy prebehla v ten istý deň** — podrobnosti nižšie.
+**Prvému skutočnému dieťaťu v appke už nič nebráni.**
 **Tretia odpadla 2026-09-22: anglické znenie podmienok pre trénera je schválené**
 (schválil používateľ; záväzné je EN, slovenské znenie je schválené od 2026-08-29).
 **Od 2026-09-23 sú schválené VŠETKY dokumenty, ktoré idú von** — obe zmluvy,
@@ -110,10 +111,36 @@ sporov, dátumy a údaje druhej strany sa dopĺňajú až pri použití.
   v prílohe B. **Je to pol hodiny v dvoch dashboardoch** a je to prvá vec, na
   ktorú sa spýta právnik zväzu. Vercel má DPA súčasťou obchodných podmienok.
 
-- [ ] **Overiť zálohy a raz vyskúšať obnovu.**
-  Súvisí s bodom o §9.5, ale nie je to to isté: retencia je číslo do zmluvy,
-  obnova je otázka, či dáta naozaj vieme dostať späť. **Strata dát bez
-  použiteľnej zálohy je incident** rovnako ako únik.
+- [x] **Zálohy a skúška obnovy — HOTOVÉ 2026-09-25.**
+  Produkcia prešla na **Supabase Pro**; na Free pláne sa nezálohovalo vôbec
+  („Not included" v cenníku) a projekt sa po týždni nečinnosti pozastavoval.
+  Pro robí denné zálohy s retenciou **7 dní** — to číslo je odvtedy v §9.5
+  zmluvy podľa čl. 28.
+
+  **Skúška obnovy prebehla takto** (postup je opakovateľný):
+  1. `pg_dump` schémy `public` z produkcie cez **session pooler**
+     (`aws-0-eu-central-1.pooler.supabase.com:5432`) — priame spojenie
+     `db.*.supabase.co` je IPv6-only a z vývojového prostredia nedostupné.
+     Výstup 493 kB.
+  2. Obnova do **čistej lokálnej databázy**, nie na produkciu.
+  3. Porovnanie proti produkcii: **12 tabuliek sedelo na riadok**
+     (580 kódov cvičení, 17 hráčov, 311 tréningov, 1004 cvičení…),
+     **46 RLS policy, 29 funkcií, RLS zapnuté na 15 tabuľkách, 38 indexov**,
+     a **md5 odtlačky tréningov, cvičení, hráčov aj kódov boli zhodné** —
+     teda nielen počty, ale aj obsah.
+  4. Testovacia databáza aj stiahnutý dump sa hneď zmazali.
+
+  **Tri veci, ktoré sa pri tom zistili a platia pre každú ďalšiu skúšku:**
+  - **Obnova v Supabase je in-place** — prepíše produkčnú databázu a projekt je
+    počas nej nedostupný. **Ako skúška sa použiť NESMIE**, hoci je to prvé, čo
+    by človek v dashboarde klikol. Skúša sa vždy do inej databázy.
+  - Dump schémy `public` sa **neobnoví do prázdnej databázy sám**: policies
+    volajú `auth.uid()` a cudzie kľúče ukazujú na `auth.users`. Pred obnovou
+    treba vytvoriť schému `auth` so zástupnými funkciami a tabuľku `auth.users`
+    naplnenú identifikátormi (dajú sa vziať z `profiles` priamo v dumpe, takže
+    netreba sťahovať účty).
+  - `psql -c "a; b; c"` beží ako **jedna transakcia** — chyba v poslednom
+    príkaze zroluje aj tie predošlé. Prípravné príkazy púšťaj po jednom.
 
 - [ ] **Overiť adresu Úradu** na jeho stránke.
   Dnes je vo všetkých zásadách aj v postupe pri incidente uvedená „Hraničná 12,
