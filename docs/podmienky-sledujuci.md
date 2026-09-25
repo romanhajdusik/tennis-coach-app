@@ -25,7 +25,7 @@
 
 ### 1. Who we are and what these terms cover
 
-The P.L.A.W application is operated by **&Go, s.r.o.**, Vnútorná okružná 178/27, 945 01
+The P.L.A.W application is operated by &Go, s.r.o., Vnútorná okružná 178/27, 945 01
 Komárno, Slovak Republic, Company ID 46571388, VAT ID SK2023447976, registered
 in the Commercial Register of the District Court Nitra, Section Sro,
 Insert No. 31170/N ("we"). These terms govern the use of the
@@ -205,7 +205,7 @@ dispute resolution body — to be added]**.
 
 ## 1. Kto sme a čoho sa tieto podmienky týkajú
 
-Aplikáciu P.L.A.W prevádzkuje **&Go, s.r.o.**, Vnútorná okružná 178/27,
+Aplikáciu P.L.A.W prevádzkuje &Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, IČO 46571388, DIČ 2023447976, IČ DPH SK2023447976, zapísaná
 v Obchodnom registri Okresného súdu Nitra, oddiel Sro, vložka č. 31170/N
 (ďalej „my"). Tieto podmienky upravujú používanie aplikácie tým, kto sleduje

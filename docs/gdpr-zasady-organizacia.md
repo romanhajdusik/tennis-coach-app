@@ -23,7 +23,7 @@
 
 ### 1. Who we are
 
-The P.L.A.W application is operated by **&Go, s.r.o.**, Vnútorná okružná 178/27,
+The P.L.A.W application is operated by &Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, Slovak Republic, Company ID 46571388. You can write to us at
 **[support@plawsports.com]**.
 
@@ -175,7 +175,7 @@ data processing agreement.
 
 ### 1. Kto sme
 
-Aplikáciu P.L.A.W prevádzkuje **&Go, s.r.o.**, Vnútorná okružná 178/27,
+Aplikáciu P.L.A.W prevádzkuje &Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, IČO 46571388.
 Napísať nám môžete na **[support@plawsports.com]**.
 

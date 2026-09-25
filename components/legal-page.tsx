@@ -51,7 +51,7 @@ function Blocks({ blocks }: { blocks: Block[] }) {
             <h2
               key={i}
               id={block.id}
-              className="scroll-mt-20 pt-8 text-lg font-semibold tracking-tight text-foreground sm:text-xl"
+              className="scroll-mt-20 pt-8 text-base font-semibold tracking-tight text-foreground sm:text-lg"
             >
               {block.number ? (
                 <span className="mr-2 text-primary">{block.number}.</span>
@@ -62,7 +62,7 @@ function Blocks({ blocks }: { blocks: Block[] }) {
         }
         if (block.kind === "paragraph") {
           return (
-            <p key={i} className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
+            <p key={i} className="mt-3 text-[13px] leading-relaxed text-muted sm:text-sm">
               <Runs runs={block.runs} />
             </p>
           );
@@ -71,7 +71,7 @@ function Blocks({ blocks }: { blocks: Block[] }) {
         return (
           <List
             key={i}
-            className={`mt-3 flex flex-col gap-2 pl-5 text-sm leading-relaxed text-muted sm:text-base ${
+            className={`mt-3 flex flex-col gap-2 pl-5 text-[13px] leading-relaxed text-muted sm:text-sm ${
               block.ordered ? "list-decimal" : "list-disc"
             } marker:text-primary`}
           >
@@ -118,13 +118,14 @@ export function LegalPage({ doc, audience, sibling }: Props) {
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {audience}
         </span>
-        <h1 className="text-3xl font-bold tracking-tight text-balance text-foreground sm:text-4xl">
+        {/* Pod nadpisom NIE JE podhlavie s prevádzkovateľom ani s vetou
+            o záväznom jazyku (odstránené 2026-09-25, rozhodol používateľ).
+            Identifikácia firmy je v §1 každého dokumentu, takže čl. 13 je
+            splnený aj bez nej; a veta o záväznej angličtine nemá adresáta —
+            slovenské znenie sa nezverejňuje, web je jednojazyčný. */}
+        <h1 className="text-2xl font-bold tracking-tight text-balance text-foreground sm:text-3xl">
           {doc.title}
         </h1>
-        <p className="text-sm text-muted">
-          Operated by <strong className="font-medium text-foreground">&amp;Go, s.r.o.</strong> ·
-          English is the binding version
-        </p>
       </section>
 
       {/* Obsah — na telefóne je dokument dlhý a bez neho sa v ňom nedá hýbať. */}
@@ -137,7 +138,7 @@ export function LegalPage({ doc, audience, sibling }: Props) {
           <ol className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
             {sections.map((section) =>
               section.kind === "heading" ? (
-                <li key={section.id} className="flex gap-2 text-sm">
+                <li key={section.id} className="flex gap-2 text-[13px]">
                   <span className="w-5 shrink-0 text-right text-muted">{section.number}</span>
                   <a
                     href={`#${section.id}`}
