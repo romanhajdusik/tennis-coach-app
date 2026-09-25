@@ -7,8 +7,9 @@
 > prvá. Držať ich spolu je zámer, aby bolo pri každej úprave vidieť, či sa
 > nerozišli.
 >
-> **Schválené je ZNENIE, nie účinnosť.** Tri miesta sú stále otvorené a musia sa
-> doplniť pred zverejnením: orgán alternatívneho riešenia sporov (§13), dátum
+> **Schválené je ZNENIE, nie účinnosť.** Orgán alternatívneho riešenia sporov
+> (§13) je **doplnený 2026-09-25: Slovenská obchodná inšpekcia** (určil
+> používateľ, adresa overená na soi.sk). Otvorené ostávajú dve miesta: dátum
 > účinnosti (§14, bude to deň spustenia) a veta „registrácia je momentálne na
 > pozvánku" (§3), ktorá po spustení prestane platiť. **Pri ich doplnení sa mení
 > len to, čo je tu vymenované** — ostatný text je odsúhlasený a neprepisuje sa
@@ -214,7 +215,8 @@ belong to Slovak courts. If you are a consumer, you do not thereby lose the
 protection given to you by the law of your country of residence.
 
 If you are a consumer, you may also try to resolve a dispute out of court through
-**[the alternative dispute resolution body — to be added]**.
+**the Slovak Trade Inspection Authority (Slovenská obchodná inšpekcia),
+Bajkalská 21/A, P. O. BOX 29, 827 99 Bratislava, Slovak Republic, www.soi.sk**.
 
 ### 14. Contact
 
@@ -404,8 +406,8 @@ Vzťah sa riadi **právom Slovenskej republiky** a spory patria slovenským súd
 Ak si spotrebiteľ, nestrácaš tým ochranu, ktorú ti dávajú predpisy krajiny tvojho
 bydliska.
 
-Ak si spotrebiteľ, môžeš spor riešiť aj mimosúdne cez **[orgán alternatívneho
-riešenia sporov — doplniť]**.
+Ak si spotrebiteľ, môžeš spor riešiť aj mimosúdne cez **Slovenskú obchodnú inšpekciu, Bajkalská 21/A, P. O. BOX 29,
+827 99 Bratislava, www.soi.sk**.
 
 ## 14. Kontakt
 

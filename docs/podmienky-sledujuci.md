@@ -1,6 +1,6 @@
 # Podmienky používania — sledujúci (`plaw.click`)
 
-> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — miesta v hranatých zátvorkách sa dopĺňajú až pri konkrétnom použití (údaje druhej strany, orgán alternatívneho riešenia sporov, dátumy). Pre rodiča, manažéra a hráča, ktorý sleduje vlastné
+> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — orgán alternatívneho riešenia sporov je **doplnený 2026-09-25: Slovenská obchodná inšpekcia**; v hranatých zátvorkách ostávajú už len údaje druhej strany a dátumy. Pre rodiča, manažéra a hráča, ktorý sleduje vlastné
 > tréningy. Súbor obsahuje obe znenia: **anglické je ZÁVÄZNÉ**, slovenské je
 > preklad — preto je angličtina prvá. Obchodné rozhodnutia sú prevzaté
 > z trénerských podmienok, kde sa prechádzali po jednom
@@ -189,8 +189,8 @@ The relationship is governed by **the law of the Slovak Republic**. As a consume
 **you do not lose the protection given to you by the law of your country of
 residence**.
 
-You may also try to resolve a dispute out of court through **[the alternative
-dispute resolution body — to be added]**.
+You may also try to resolve a dispute out of court through **the Slovak Trade Inspection Authority (Slovenská obchodná inšpekcia),
+Bajkalská 21/A, P. O. BOX 29, 827 99 Bratislava, Slovak Republic, www.soi.sk**.
 
 ### 15. Contact
 
@@ -359,8 +359,8 @@ a dostaneš späť pomernú časť predplatného.
 Vzťah sa riadi **právom Slovenskej republiky**. Ako spotrebiteľ **nestrácaš
 ochranu, ktorú ti dávajú predpisy krajiny tvojho bydliska**.
 
-Spor sa môžeš pokúsiť vyriešiť aj mimosúdne cez **[orgán alternatívneho riešenia
-sporov — doplniť]**.
+Spor sa môžeš pokúsiť vyriešiť aj mimosúdne cez **Slovenskú obchodnú inšpekciu, Bajkalská 21/A, P. O. BOX 29,
+827 99 Bratislava, www.soi.sk**.
 
 ## 15. Kontakt
 
