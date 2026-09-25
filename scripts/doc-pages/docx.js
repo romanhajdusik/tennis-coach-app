@@ -1,3 +1,11 @@
+// POZOR: OD 2026-09-25 SA TENTO GENERÁTOR NEPOUŽÍVA (rozhodol používateľ:
+// „všetky dokumenty rob len v Google Docs"). Dokumenty idú von ako Google Docs
+// — zdroj `docs/*.md` → `split.js` → nahratie na Drive ako `text/markdown`,
+// Drive z toho spraví Google Doc aj s nadpismi a tabuľkami. Nahrať hotový
+// .docx cez MCP NEJDE, base64 sa pri prenose poškodí.
+// Skript ostáva v repe pre prípad, že by si ho používateľ vypýtal; nespúšťaj
+// ho sám od seba.
+//
 // Postaví z dvojjazyčného dokumentu v `docs/` jeden .docx na posielanie —
 // obe znenia za sebou (najprv záväzná angličtina, potom slovenský preklad),
 // aby kontrolór mohol písať pripomienky rovno do textu cez sledovanie zmien.
