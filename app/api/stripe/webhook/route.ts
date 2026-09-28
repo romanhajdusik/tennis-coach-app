@@ -49,7 +49,13 @@ function mapStatus(stripeStatus: string): string | null {
   return null;
 }
 
-type Outcome = { userId: string; status: string; playerLimit?: number } | null;
+type Outcome = {
+  userId: string;
+  status: string;
+  playerLimit?: number;
+  /** Zákazník v Stripe — podľa neho appka otvára zákaznícky portál. */
+  customerId?: string;
+} | null;
 
 /** Metadáta nesie platba aj predplatné — obe sa im nastavujú pri pokladni. */
 function readMeta(metadata: Stripe.Metadata | null | undefined) {
@@ -73,7 +79,11 @@ function outcomeFor(event: Stripe.Event): Outcome {
     // Predplatné so skúšobnou dobou má `payment_status = "no_payment_required"`
     // — je to platná objednávka, len sa zatiaľ nestrhlo.
     if (session.payment_status === "unpaid") return null;
-    return { userId: id, status: "active", playerLimit };
+    // Zákazníka si pamätáme práve tu: je to jediná udalosť, pri ktorej
+    // vzniká, a bez neho by sme trénera do portálu nevedeli pustiť.
+    const customerId =
+      typeof session.customer === "string" ? session.customer : undefined;
+    return { userId: id, status: "active", playerLimit, customerId };
   }
 
   if (
@@ -135,11 +145,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ignored: event.type });
   }
 
-  const update: { subscription_status: string; player_limit?: number } = {
-    subscription_status: outcome.status,
-  };
+  const update: {
+    subscription_status: string;
+    player_limit?: number;
+    stripe_customer_id?: string;
+  } = { subscription_status: outcome.status };
+
   if (outcome.playerLimit !== undefined) {
     update.player_limit = outcome.playerLimit;
+  }
+  // Zákazník sa zapisuje len keď v udalosti je — pri zrušení sa NEMAŽE.
+  // Tréner sa môže vrátiť a je to ten istý zákazník; vymazaním by sme mu
+  // zároveň zavreli portál, teda jedinú cestu k jeho vlastným faktúram.
+  if (outcome.customerId) {
+    update.stripe_customer_id = outcome.customerId;
   }
 
   const { error } = await createAdminClient()

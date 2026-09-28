@@ -22,9 +22,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Adresa podpory pre existujúceho zákazníka — tá istá ako na `/settings`. */
-const SUPPORT_EMAIL = "support@plawsports.com";
-
 export default async function SubscribePage({
   searchParams,
 }: {
@@ -111,12 +108,16 @@ export default async function SubscribePage({
           <p className="text-sm text-muted">
             {t("activeText", { count: subscription.playerLimit })}
           </p>
-          {/* Zmena a zrušenie sú zatiaľ kontakt, nie tlačidlo — rovnako ako
-              export dát na `/settings`. Tlačidlo z toho spraví až zákaznícky
-              portál Stripe. */}
-          <p className="text-sm text-muted">
-            {t("activeChange", { email: SUPPORT_EMAIL })}
-          </p>
+          {/* Zmena a zrušenie sa robia v zákazníckom portáli Stripe a ten má
+              dvere v nastaveniach — nie tu, aby neboli dve. Do 2026-09-28 tu
+              stál e-mail na podporu, čo bola pri zrušení predplatného zlá
+              odpoveď. */}
+          <Link
+            href="/settings"
+            className="text-sm font-medium text-primary underline underline-offset-2"
+          >
+            {t("activeChange")}
+          </Link>
         </div>
       ) : (
         <PlanPicker plans={plans} />

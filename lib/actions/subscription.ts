@@ -7,6 +7,7 @@ import { COACH_TIERS } from "@/lib/landing-pricing";
 import { isKnownCoachLookupKey } from "@/lib/stripe-plans";
 import {
   createCheckoutSession,
+  createPortalSession,
   findPriceIdByLookupKey,
   isStripeConfigured,
 } from "@/lib/stripe";
@@ -104,6 +105,62 @@ export async function startCheckout(
     // Hláška Stripe môže niesť identifikátory účtu — patrí do logu, nie
     // na obrazovku.
     console.error("Stripe checkout zlyhal:", error);
+    return { error: "unavailable" };
+  }
+}
+
+/**
+ * Otvorenie zákazníckeho portálu Stripe.
+ *
+ * Tu si tréner **sám** zmení kartu, prejde na inú hladinu alebo predplatné
+ * **zruší**. Do 2026-09-28 mu appka na to ponúkala len e-mail na podporu, čo
+ * bola zlá odpoveď: ukončiť zmluvu má byť rovnako jednoduché ako ju uzavrieť.
+ *
+ * **Vracia adresu, nepresmerúva sama** — z rovnakého dôvodu ako
+ * `startCheckout` (viď tam).
+ *
+ * `stripe_customer_id` zapisuje výhradne webhook, takže si ho volajúci nemôže
+ * podvrhnúť; akcia si ho navyše číta z **vlastného** riadku (RLS `id =
+ * auth.uid()`), teda cudzí portál sa otvoriť nedá.
+ */
+export async function openBillingPortal(): Promise<
+  { url: string } | { error: string }
+> {
+  if (!isStripeConfigured()) {
+    return { error: "unavailable" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "unauthenticated" };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("stripe_customer_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  // Kto cez Stripe nikdy neplatil, nemá čo spravovať — napríklad účet
+  // s prístupom zadarmo od nás (`complimentary`).
+  if (!profile?.stripe_customer_id) {
+    return { error: "noSubscription" };
+  }
+
+  const origin = await requestOrigin();
+
+  try {
+    const url = await createPortalSession(
+      profile.stripe_customer_id,
+      `${origin}/settings`,
+    );
+    return { url };
+  } catch (error) {
+    console.error("Stripe portál zlyhal:", error);
     return { error: "unavailable" };
   }
 }

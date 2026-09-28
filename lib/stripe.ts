@@ -143,6 +143,30 @@ export async function createCheckoutSession({
 }
 
 /**
+ * Zákaznícky portál Stripe — hotová stránka, kde si zákazník **sám** zmení
+ * kartu, prejde na inú hladinu alebo predplatné **zruší**.
+ *
+ * Je to jediná rozumná odpoveď na „ako predplatné zrušim": ukončiť zmluvu má
+ * byť rovnako jednoduché ako ju uzavrieť, a odkazovať pritom na e-mail podpory
+ * je slabá náhrada. Nič z toho nepíšeme sami — Stripe to má hotové, my robíme
+ * len dvere.
+ *
+ * Relácia platí krátko a je jednorazová, takže sa adresa nedá uložiť do
+ * záložiek ani poslať ďalej.
+ */
+export async function createPortalSession(
+  customerId: string,
+  returnUrl: string,
+) {
+  const session = await stripeRequest("POST", "/billing_portal/sessions", {
+    customer: customerId,
+    return_url: returnUrl,
+  });
+
+  return session.url as string;
+}
+
+/**
  * Overenie podpisu Stripe na prichádzajúcej udalosti.
  *
  * **Toto je bezpečnostná hranica webhooku.** Je to verejná adresa bez

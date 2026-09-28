@@ -490,6 +490,7 @@ export type Database = {
           id: string
           player_limit: number
           role: string
+          stripe_customer_id: string | null
           subscription_status: string
           trial_ends_at: string
           updated_at: string
@@ -501,6 +502,7 @@ export type Database = {
           id: string
           player_limit?: number
           role?: string
+          stripe_customer_id?: string | null
           subscription_status?: string
           trial_ends_at?: string
           updated_at?: string
@@ -512,6 +514,7 @@ export type Database = {
           id?: string
           player_limit?: number
           role?: string
+          stripe_customer_id?: string | null
           subscription_status?: string
           trial_ends_at?: string
           updated_at?: string

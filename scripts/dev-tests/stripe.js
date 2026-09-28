@@ -133,6 +133,61 @@ async function main() {
       .eq("id", payer.id);
   }
 
+  section("1c) Predplatné si tréner spravuje SÁM");
+  // Zrušiť zmluvu má byť rovnako jednoduché ako ju uzavrieť, takže
+  // v nastaveniach musí byť tlačidlo do zákazníckeho portálu, nie e-mail
+  // na podporu. Vidí ho len ten, kto cez Stripe naozaj platil — inak by
+  // skončilo chybou.
+  const db1 = serviceClient();
+  const { data: solo } = await db1
+    .from("profiles")
+    .select("id, stripe_customer_id")
+    .eq("email", SOLO_COACH)
+    .maybeSingle();
+  const hadCustomer = solo?.stripe_customer_id ?? null;
+  try {
+    await db1
+      .from("profiles")
+      .update({ stripe_customer_id: "cus_test_sada" })
+      .eq("id", solo.id);
+    const withPortal = await request("/settings", {
+      host: APP,
+      cookies: await authCookies(SOLO_COACH),
+    });
+    check(
+      "kto platil, má v nastaveniach tlačidlo do portálu",
+      textOf(withPortal.body).includes("Manage subscription"),
+    );
+
+    await db1
+      .from("profiles")
+      .update({ stripe_customer_id: null })
+      .eq("id", solo.id);
+    const without = await request("/settings", {
+      host: APP,
+      cookies: await authCookies(SOLO_COACH),
+    });
+    check(
+      "kto cez Stripe neplatil, tlačidlo nevidí",
+      !textOf(without.body).includes("Manage subscription"),
+    );
+
+    // Sledujúci má vlastnú cenu a vlastnú stráž; portál trénera mu do
+    // nastavení nepatrí.
+    const follower = await request("/settings", {
+      host: APP,
+      cookies: await authCookies(FOLLOWER),
+    });
+    check(
+      "sledujúci tlačidlo nevidí",
+      !textOf(follower.body).includes("Manage subscription"),
+    );
+  } finally {
+    await db1
+      .from("profiles")
+      .update({ stripe_customer_id: hadCustomer })
+      .eq("id", solo.id);
+  }
   section("2) Kto platiť nemá, sa k pokladni nedostane");
   const followerPage = await request("/subscribe", {
     host: APP,

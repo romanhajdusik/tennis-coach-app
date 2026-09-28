@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getOrgMembership } from "@/lib/org/membership";
+import { isStripeConfigured } from "@/lib/stripe";
+import { ManageSubscription } from "./manage-subscription";
 
 // Nastavenia účtu. Stránka zanikla 2026-08-29 spolu s Google Kalendárom (bol
 // jej jediný obsah) a vracia sa preto, že prihlásený sa inak k podmienkam
@@ -35,7 +37,7 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, stripe_customer_id")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -46,6 +48,11 @@ export default async function SettingsPage() {
   const role = profile?.role ?? "coach";
   const isFollower = role === "parent" || role === "manager" || role === "player";
   const isCoach = !isDirector && !isFollower;
+  // Portál má zmysel len tomu, kto cez Stripe naozaj platil — inak by tlačidlo
+  // skončilo chybou. Federačný tréner tam nepatrí vôbec: za jeho sedadlo platí
+  // organizácia faktúrou mimo appky (§5.9).
+  const canManageBilling =
+    isCoach && isStripeConfigured() && Boolean(profile?.stripe_customer_id);
 
   // Každé publikum má vlastné znenie: tréner (samostatný aj federačný — jeho
   // prípad rieši §3 podmienok) trénerské, sledujúci spotrebiteľské, šéftréner
@@ -117,6 +124,21 @@ export default async function SettingsPage() {
           <p className="text-xs text-muted">{t("parentNoticeHint")}</p>
         ) : null}
       </section>
+
+      {/* Predplatné spravuje tréner SÁM — zrušiť zmluvu má byť rovnako
+          jednoduché ako ju uzavrieť, takže tu nesmie stáť „napíšte nám".
+          Vidí to len ten, kto cez Stripe naozaj platil: šéftrénera aj
+          sledujúceho by to mýlilo a účet s prístupom zadarmo od nás nemá
+          v portáli čo spravovať. */}
+      {canManageBilling && (
+        <section className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
+          <h2 className="text-sm font-medium text-foreground">
+            {t("billingHeading")}
+          </h2>
+          <p className="text-sm text-muted">{t("billingText")}</p>
+          <ManageSubscription />
+        </section>
+      )}
 
       <section className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
         <h2 className="text-sm font-medium text-foreground">

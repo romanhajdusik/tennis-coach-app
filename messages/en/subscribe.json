@@ -3,7 +3,7 @@
   "intro": "Choose how many players you want active at the same time. Archived players do not count.",
   "activeTitle": "You already have a subscription.",
   "activeText": "{count, plural, one {# active player} other {# active players}} included.",
-  "activeChange": "To change or cancel it, write to {email}.",
+  "activeChange": "Change or cancel it in Settings",
   "monthly": "Monthly",
   "yearly": "Yearly",
   "yearlySaving": "Save 40%",
