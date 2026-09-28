@@ -112,7 +112,22 @@ function clearAuthCookies(request: NextRequest, response: NextResponse) {
   return response;
 }
 
+/**
+ * Stripe webhook ide rovno k appke, bez akéhokoľvek zasahovania.
+ *
+ * Nie je to dnes potrebné — kanonizácia beží len na GET a stráž členstva tiež
+ * —, ale je to **poistka do budúcnosti**: keby sem raz pribudlo pravidlo, ktoré
+ * presmeruje aj POST, prišlo by o platby a prejavilo by sa to tým, že zákazník
+ * zaplatí a appka sa to nedozvie. Taká chyba je ticho a všimne si ju až
+ * nahnevaný zákazník.
+ */
+const STRIPE_WEBHOOK_PATH = "/api/stripe/webhook";
+
 export async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === STRIPE_WEBHOOK_PATH) {
+    return NextResponse.next();
+  }
+
   const host = normalizeHost(request.headers.get("host"));
 
   // Kanonizácia ide PRED rozdelením podľa hostiteľa — inak by si stránku stihol

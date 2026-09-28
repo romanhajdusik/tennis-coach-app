@@ -65,7 +65,11 @@ export async function startCheckout(
     return { error: "alreadySubscribed" };
   }
 
-  if (!isKnownCoachLookupKey(lookupKey, COACH_TIERS.map((tier) => tier.players))) {
+  const tier = COACH_TIERS.find((candidate) =>
+    isKnownCoachLookupKey(lookupKey, [candidate.players]),
+  );
+
+  if (!tier) {
     return { error: "unknownPlan" };
   }
 
@@ -90,6 +94,10 @@ export async function startCheckout(
       customerEmail: user.email,
       successUrl: `${origin}/subscribe?paid=1`,
       cancelUrl: `${origin}/subscribe`,
+      // Hladinu nesie platba v metadátach, aby ju webhook nemusel doťahovať
+      // späť zo Stripe. Číslo je z `COACH_TIERS`, teda z rovnakého zdroja ako
+      // cena — nie z toho, čo poslal prehliadač.
+      playerLimit: tier.players,
     });
     return { url };
   } catch (error) {

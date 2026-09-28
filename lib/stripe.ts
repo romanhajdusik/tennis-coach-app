@@ -87,6 +87,14 @@ export type CheckoutSessionInput = {
   customerEmail: string | undefined;
   successUrl: string;
   cancelUrl: string;
+  /**
+   * Koľko hráčov hladina dovoľuje. Ide do metadát, aby ho webhook **nemusel
+   * doťahovať zo Stripe** — stačí mu udalosť, ktorá príde. Číslo pritom
+   * nevzniká tu: berie sa z `lib/landing-pricing.ts`, teda z toho istého
+   * zdroja ako cena na webe a ako metadáta produktu, ktoré zakladá
+   * `scripts/stripe/setup-products.js`.
+   */
+  playerLimit: number;
 };
 
 /**
@@ -103,7 +111,18 @@ export async function createCheckoutSession({
   customerEmail,
   successUrl,
   cancelUrl,
+  playerLimit,
 }: CheckoutSessionInput) {
+  // Tie isté metadáta sa píšu na platbu AJ na vzniknuté predplatné. Nie je to
+  // duplicita pre istotu: `checkout.session.completed` nesie metadáta platby,
+  // kým neskoršie udalosti (zmena plánu, zrušenie) nesú metadáta predplatného.
+  // Bez oboch by webhook pri niektorej udalosti nevedel, komu patrí.
+  const meta = {
+    plaw_user_id: userId,
+    plaw_role: "coach",
+    plaw_player_limit: String(playerLimit),
+  };
+
   const session = await stripeRequest("POST", "/checkout/sessions", {
     mode: "subscription",
     "line_items[0][price]": priceId,
@@ -111,10 +130,42 @@ export async function createCheckoutSession({
     success_url: successUrl,
     cancel_url: cancelUrl,
     client_reference_id: userId,
-    "metadata[plaw_user_id]": userId,
-    "subscription_data[metadata][plaw_user_id]": userId,
+    ...Object.fromEntries(
+      Object.entries(meta).flatMap(([key, value]) => [
+        [`metadata[${key}]`, value],
+        [`subscription_data[metadata][${key}]`, value],
+      ]),
+    ),
     ...(customerEmail ? { customer_email: customerEmail } : {}),
   });
 
   return session.url as string;
+}
+
+/**
+ * Overenie podpisu Stripe na prichádzajúcej udalosti.
+ *
+ * **Toto je bezpečnostná hranica webhooku.** Je to verejná adresa bez
+ * prihlásenia, ktorá zapisuje do databázy — bez overenia podpisu by si
+ * ktokoľvek nastavil „zaplatené" tým, že na ňu pošle vymyslenú správu.
+ *
+ * Používa oficiálnu knižnicu, nie vlastný HMAC: overenie rieši aj **ochranu
+ * proti opakovaniu** (odmietne starú časovú pečiatku) a **porovnanie odolné
+ * voči meraniu času**. Vlastnoručný podpis je presne ten druh kódu, kde sa
+ * chyba nedá odhaliť testom správnej cesty.
+ *
+ * Telo musí byť **surový text**, nie prečítaný JSON — podpis sa počíta
+ * z bajtov tak, ako prišli.
+ */
+export async function verifyWebhookEvent(rawBody: string, signature: string) {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) throw new Error("STRIPE_WEBHOOK_SECRET nie je nastavený");
+
+  const { default: Stripe } = await import("stripe");
+  // Verzia API sa tu ZÁMERNE nenastavuje. Cez tohto klienta nerobíme ani jedno
+  // volanie — slúži výhradne na overenie podpisu, a to od verzie nezávisí.
+  // Naše skutočné volania idú `fetch`om s pevnou `STRIPE_API_VERSION` vyššie.
+  const stripe = new Stripe(secretKey());
+
+  return stripe.webhooks.constructEventAsync(rawBody, signature, secret);
 }

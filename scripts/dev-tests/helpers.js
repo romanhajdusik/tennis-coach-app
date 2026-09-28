@@ -86,28 +86,48 @@ async function authCookies(email) {
 }
 
 /**
- * GET na dev server s podvrhnutou hlavičkou `Host` (tak sa testuje org
+ * Požiadavka na dev server s podvrhnutou hlavičkou `Host` (tak sa testuje org
  * subdoména). Node `fetch` hlavičku `Host` zahadzuje — preto `node:http`.
+ *
+ * Predvolene GET. `method`/`body`/`headers` pribudli kvôli Stripe webhooku:
+ * je to jediná adresa appky, ktorá prijíma POST od cudzieho servera, a testuje
+ * sa práve tým, že sa naň posielajú zle podpísané telá.
  */
-function request(pathname, { host = ORG_HOST, cookies = "" } = {}) {
+function request(
+  pathname,
+  { host = ORG_HOST, cookies = "", method = "GET", body = null, headers = {} } = {},
+) {
   return new Promise((resolve, reject) => {
+    const payload = body === null ? null : Buffer.from(body);
     const req = http.request(
       {
         host: "127.0.0.1",
         port: DEV_PORT,
         path: pathname,
-        headers: { Host: host, ...(cookies ? { Cookie: cookies } : {}) },
+        method,
+        headers: {
+          Host: host,
+          ...(cookies ? { Cookie: cookies } : {}),
+          ...(payload
+            ? {
+                "Content-Type": "application/json",
+                "Content-Length": payload.length,
+              }
+            : {}),
+          ...headers,
+        },
       },
       (res) => {
-        let body = "";
+        let text = "";
         res.setEncoding("utf8");
-        res.on("data", (chunk) => (body += chunk));
+        res.on("data", (chunk) => (text += chunk));
         res.on("end", () =>
-          resolve({ status: res.statusCode, headers: res.headers, body }),
+          resolve({ status: res.statusCode, headers: res.headers, body: text }),
         );
       },
     );
     req.on("error", reject);
+    if (payload) req.write(payload);
     req.end();
   });
 }
