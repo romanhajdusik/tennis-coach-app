@@ -7,6 +7,7 @@ import {
   PUBLIC_ONLY_HOSTS,
   PUBLIC_ORIGIN,
   faceOriginOf,
+  isFitnessHost,
   isParentFaceHost,
   normalizeHost,
 } from "@/lib/public-face";
@@ -120,10 +121,16 @@ export async function proxy(request: NextRequest) {
   const canonical = CANONICAL_ORIGINS.get(request.nextUrl.pathname);
   const face = faceOriginOf(host);
   // Kanonizuje sa len na hostiteľoch, ktoré v produkcii vlastníme (tri verejné
-  // domény + org subdomény). Na localhoste, LAN adrese a `*.vercel.app` sa
-  // stránka vykreslí tak, ako je — inak by lokálny vývoj otvoril návod a skončil
-  // na produkcii.
-  const ours = face !== null || orgSlugFromHost(host) !== null;
+  // domény + org subdomény + kondičné nasadenie). Na localhoste, LAN adrese
+  // a `*.vercel.app` sa stránka vykreslí tak, ako je — inak by lokálny vývoj
+  // otvoril návod a skončil na produkcii.
+  //
+  // Org subdoména aj kondička sú tu preto, že sú NAŠE, ale nie sú domovom
+  // žiadnej verejnej stránky (`faceOriginOf` im vracia null) — kanonizuje sa
+  // z nich teda vždy preč. Kondička sem pribudla 2026-09-28; dovtedy na nej
+  // právne stránky odpovedali druhýkrát.
+  const ours =
+    face !== null || orgSlugFromHost(host) !== null || isFitnessHost(host);
   if (canonical && request.method === "GET" && ours && face !== canonical) {
     const target = new URL(
       request.nextUrl.pathname + request.nextUrl.search,

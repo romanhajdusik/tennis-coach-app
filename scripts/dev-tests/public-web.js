@@ -27,6 +27,9 @@ const { check, section, report } = createChecks();
 const APP = "plaw.win";
 const PUBLIC = "plaw.online";
 const PARENT = "plaw.click";
+// Kondičné nasadenie je NAŠE, ale nie je domovom žiadnej verejnej stránky —
+// kanonizuje sa z neho preč rovnako ako z org subdomény (§1b).
+const FITNESS = "fitness.plawsports.com";
 
 // Stránka → hostiteľ, ktorému patrí. Poradie zodpovedá `CANONICAL_ORIGINS`
 // v `proxy.ts`; keď tam niečo pribudne, patrí to aj sem.
@@ -85,6 +88,23 @@ async function main() {
         );
       }
     }
+  }
+
+  section("1b) Kondičné nasadenie nie je domovom žiadnej verejnej stránky");
+  // Do 2026-09-28 sa na `fitness.plawsports.com` nekanonizovalo nič (doména
+  // nebola medzi „našimi"), takže tam právne stránky a návody odpovedali
+  // druhýkrát — tá istá stránka na dvoch adresách. Kým je web `noindex`,
+  // neškodilo to; po spustení indexovania by si stránky kazili poradie.
+  for (const [path, owner] of CANONICAL) {
+    // `/` je na kondičke jej vlastná úvodná obrazovka, nie verejná stránka.
+    if (path === "/") continue;
+    const res = await request(path, { host: FITNESS });
+    const location = res.headers.location ?? "";
+    check(
+      `${FITNESS}${path} vedie na ${owner}`,
+      res.status === 307 && location.startsWith(ORIGIN[owner] + path),
+      `status ${res.status}, location ${location}`,
+    );
   }
 
   section("2) Domovská stránka hovorí k tomu, kto na ňu prišiel");
@@ -207,6 +227,16 @@ async function main() {
   // Žlté miesta tu ostať MAJÚ — sú to miesta, ktoré si dopĺňa tréner.
   const znacky = (rodicia.body.match(/<mark/g) ?? []).length;
   check("miesta na doplnenie trénerom sú zvýraznené", znacky === 3, `${znacky} miest`);
+
+  // Tréner ho má odovzdať do mesiaca od zapísania dieťaťa (zásady pre trénera
+  // §„Údaje o deťoch"), takže sa o ňom musí dozvedieť aj z VEREJNÉHO návodu —
+  // do 2026-09-28 na text viedla cesta len zo zásad a z `/settings`, teda až
+  // spoza prihlásenia.
+  const navod = await request("/navod", { host: APP });
+  check(
+    "verejný návod odkazuje na text pre rodičov",
+    /href="\/informacia-pre-rodicov"/.test(navod.body),
+  );
 
   section("4) Appka na marketingových doménach nežije");
   for (const host of [PUBLIC, PARENT]) {

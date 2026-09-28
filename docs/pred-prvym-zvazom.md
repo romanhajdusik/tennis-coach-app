@@ -195,6 +195,13 @@ sporov, dátumy a údaje druhej strany sa dopĺňajú až pri použití.
 - [x] **Právne stránky na webe — HOTOVÉ 2026-09-24** (päť adries, text sa číta
   priamo zo schválených dokumentov v `docs/`). Odkazy sú v troch pätičkách, pri
   registrácii sa menia podľa roly a dve vety pribudli pri prepojení rodiča.
-  **Od 2026-09-25 na ne vedie aj cesta zvnútra appky** — `/settings`. Ostáva
-  jediné: na `fitness.plawsports.com` sa tie stránky nekanonizujú, takže tam
-  odpovedajú druhýkrát; kým sú `noindex`, neškodí to, pred indexovaním áno.
+  **Od 2026-09-25 na ne vedie aj cesta zvnútra appky** — `/settings`.
+  **Od 2026-09-28 má každá z nich naozaj len jednu adresu:** na
+  `fitness.plawsports.com` sa dovtedy nekanonizovalo nič, takže tam odpovedali
+  druhýkrát — kým boli `noindex`, neškodilo to, po spustení indexovania by si
+  stránky kazili poradie navzájom.
+
+- [x] **Text pre rodičov je odkázaný aj z verejného návodu — HOTOVÉ
+  2026-09-28.** Tréner ho dovtedy našiel len v zásadách a v `/settings`, teda
+  až po prihlásení, hoci odovzdať ho má **do mesiaca od zapísania dieťaťa**.
+  Odkaz je v `/navod` pri kroku o pridaní hráčov.

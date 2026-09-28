@@ -13,7 +13,11 @@
     },
     {
       "title": "Add your players",
-      "body": "Add everyone you coach in the Players section. How many can be active at the same time depends on your plan — with more than one, you switch between them in the app and get a daily overview of all of them."
+      "body": "Add everyone you coach in the Players section. How many can be active at the same time depends on your plan — with more than one, you switch between them in the app and get a daily overview of all of them. When the player is a child, the parent should know you keep a record: we have a ready-made text for you to hand over, within a month of adding the child at the latest.",
+      "link": {
+        "href": "/informacia-pre-rodicov",
+        "text": "Text for parents"
+      }
     },
     {
       "title": "Set up your drill codes",

@@ -37,6 +37,26 @@ export const PARENT_FACE_HOSTS = new Set(["plaw.click", "www.plaw.click"]);
 
 export const PARENT_ORIGIN = "https://plaw.click";
 
+/**
+ * Kondičné nasadenie — NAŠE, ale nie je domovom žiadnej verejnej stránky.
+ * Je to druhá appka nad tým istým kódom (`NEXT_PUBLIC_PLAW_DISCIPLINE`),
+ * nie ďalšia verejná tvár: marketing nemá (landing by tu bol nepravdivý,
+ * viď `components/discipline-intro.tsx`) a právne stránky patria doméne
+ * svojho publika.
+ *
+ * Preto NEPATRÍ do `faceOriginOf` — ten vracia adresu, na ktorej stránka
+ * BÝVA, a kondička ňou nie je pre žiadnu. Je tu preto, aby ju `proxy.ts`
+ * počítal medzi hostiteľov, na ktorých sa kanonizuje: do 2026-09-28 sa na
+ * nej `/podmienky` a spol. vykresľovali druhýkrát, teda tá istá stránka na
+ * dvoch adresách. Kým je web `noindex`, neškodí to; po spustení
+ * indexovania by si stránky kazili poradie navzájom.
+ */
+export const FITNESS_HOSTS = new Set(["fitness.plawsports.com"]);
+
+export function isFitnessHost(host: string | null | undefined) {
+  return FITNESS_HOSTS.has(normalizeHost(host));
+}
+
 /** Hostname bez portu, malými písmenami — tak, ako ho porovnáva proxy. */
 export function normalizeHost(host: string | null | undefined) {
   return host?.split(":")[0].toLowerCase() ?? "";
@@ -56,8 +76,10 @@ const APP_HOSTS = new Set(["plaw.win", "www.plaw.win"]);
  * Ktorej z našich verejných adries tento hostiteľ JE — vstup pre kanonizáciu
  * v `proxy.ts` (každá verejná stránka má práve jednu adresu).
  *
- * `null` znamená „žiadna z nich": org subdoména (tá nie je domovom žiadnej
- * verejnej stránky, takže sa z nej kanonizuje preč) a rovnako aj localhost,
+ * `null` znamená „žiadna z nich" a pokrýva DVE rôzne veci. Prvá: naše
+ * hostitele, ktoré nie sú domovom žiadnej verejnej stránky — org subdoména
+ * a kondičné nasadenie (`FITNESS_HOSTS`). Z tých sa kanonizuje **preč**;
+ * `proxy.ts` si ich preto do `ours` pripočítava zvlášť. Druhá: localhost,
  * LAN adresa či `*.vercel.app`. Tie sa **nekanonizujú vôbec** — inak by sa
  * lokálny vývoj a preview nasadenie pri otvorení návodu presmerovali na
  * produkciu a stránka by sa nedala pozrieť tam, kde sa práve robí.

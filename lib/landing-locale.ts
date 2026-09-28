@@ -85,7 +85,13 @@ export type NavodMessages = {
   subtitle: string;
   backToHome: string;
   stepWord: string;
-  steps: { title: string; body: string }[];
+  // `link` je nepovinný — má ho len krok, ktorý čitateľa niekam posiela.
+  // Dnes jediný: text na odovzdanie rodičovi v trénerskom návode.
+  steps: {
+    title: string;
+    body: string;
+    link?: { href: string; text: string };
+  }[];
   tipsTitle: string;
   tips: string[];
   ctaTitle: string;

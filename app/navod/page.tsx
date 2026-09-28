@@ -78,6 +78,17 @@ export default async function NavodPage() {
                   {step.title}
                 </h2>
                 <p className="text-sm leading-relaxed text-muted">{step.body}</p>
+                {/* Odkaz je RELATÍVNY — text pre rodičov býva na plaw.click
+                    a proxy ho tam presmeruje (`CANONICAL_ORIGINS`). Absolútna
+                    adresa by z lokálneho vývoja viedla na produkciu. */}
+                {step.link && (
+                  <Link
+                    href={step.link.href}
+                    className="mt-2 inline-block text-sm font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
+                  >
+                    {step.link.text}
+                  </Link>
+                )}
               </div>
             </li>
           ))}
