@@ -1,0 +1,120 @@
+/**
+ * Tenká vrstva nad Stripe API. **Beží výhradne na serveri** — drží tajný kľúč,
+ * takže sa nesmie importovať z komponentu s `"use client"`.
+ *
+ * Zámerne bez balíčka `stripe`: pokladňa potrebuje dve volania a tie sa dajú
+ * spraviť obyčajným `fetch`om. Keby raz pribudol webhook, ktorý overuje podpis,
+ * knižnica sa oplatí — a zmení sa vtedy **len tento súbor**, nič nad ním.
+ */
+
+// Bez pevnej verzie by sa správanie appky menilo pod rukami vždy, keď Stripe
+// vydá novú. Rovnaká hodnota je v `scripts/stripe/setup-products.js` — dvíha
+// sa vedome a na oboch miestach naraz.
+const STRIPE_API_VERSION = "2025-08-27.basil";
+
+/**
+ * Je Stripe vôbec nastavený? **Na produkcii dnes NIE** a je to zámer: kým tam
+ * kľúče nepribudnú, appka sa nesmie tváriť, že vie prijať platbu. Preto sa
+ * podľa toho skrýva tlačidlo aj celá stránka `/subscribe` — mŕtve tlačidlo,
+ * ktoré vyhodí chybu až po kliknutí, je horšie než žiadne.
+ */
+export function isStripeConfigured() {
+  return Boolean(process.env.STRIPE_SECRET_KEY);
+}
+
+function secretKey() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY nie je nastavený");
+  return key;
+}
+
+/** Stripe API neberie JSON, len form-encoded telo s plochými kľúčmi. */
+function encodeForm(params: Record<string, string>) {
+  return Object.entries(params)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join("&");
+}
+
+async function stripeRequest(
+  method: "GET" | "POST",
+  endpoint: string,
+  params?: Record<string, string>,
+) {
+  const response = await fetch(`https://api.stripe.com/v1${endpoint}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${secretKey()}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Stripe-Version": STRIPE_API_VERSION,
+    },
+    body: params ? encodeForm(params) : undefined,
+    // Platba nesmie visieť na Next cache — ide o jednorazovú operáciu.
+    cache: "no-store",
+  });
+
+  const body = await response.json();
+
+  if (!response.ok) {
+    // Hlášku Stripe berieme do LOGU, nie do odpovede používateľovi: vie
+    // obsahovať identifikátory účtu a nič mu nepovie.
+    throw new Error(
+      `Stripe ${method} ${endpoint} → ${response.status}: ${
+        body?.error?.message ?? "neznáma chyba"
+      }`,
+    );
+  }
+
+  return body;
+}
+
+/**
+ * Nájde cenu podľa `lookup_key`. Ceny sa hľadajú takto, a nie podľa `price_…`
+ * zapísaného v kóde: identifikátory sú v testovacej a ostrej polovici účtu
+ * INÉ, takže by sa appka v deň spustenia pýtala na neexistujúcu cenu.
+ */
+export async function findPriceIdByLookupKey(lookupKey: string) {
+  const found = await stripeRequest(
+    "GET",
+    `/prices?lookup_keys[]=${encodeURIComponent(lookupKey)}&limit=1&active=true`,
+  );
+  return (found.data?.[0]?.id as string | undefined) ?? null;
+}
+
+export type CheckoutSessionInput = {
+  priceId: string;
+  /** Účet, ktorému predplatné patrí — podľa neho ho neskôr priradí webhook. */
+  userId: string;
+  customerEmail: string | undefined;
+  successUrl: string;
+  cancelUrl: string;
+};
+
+/**
+ * Založí platobnú stránku Stripe a vráti adresu, na ktorú sa má prehliadač
+ * presmerovať.
+ *
+ * `client_reference_id` a metadáta nesú `userId` zámerne dvakrát — na samotnej
+ * platbe aj na vzniknutom predplatnom. Webhook potom nemusí dohľadávať, komu
+ * platba patrí: účet mu príde priamo v udalosti.
+ */
+export async function createCheckoutSession({
+  priceId,
+  userId,
+  customerEmail,
+  successUrl,
+  cancelUrl,
+}: CheckoutSessionInput) {
+  const session = await stripeRequest("POST", "/checkout/sessions", {
+    mode: "subscription",
+    "line_items[0][price]": priceId,
+    "line_items[0][quantity]": "1",
+    success_url: successUrl,
+    cancel_url: cancelUrl,
+    client_reference_id: userId,
+    "metadata[plaw_user_id]": userId,
+    "subscription_data[metadata][plaw_user_id]": userId,
+    ...(customerEmail ? { customer_email: customerEmail } : {}),
+  });
+
+  return session.url as string;
+}

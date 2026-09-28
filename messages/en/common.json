@@ -14,7 +14,8 @@
   "trial": {
     "daysLeft": "{days, plural, one {# day left} other {# days left}} of your free trial.",
     "endedTitle": "Your free trial has ended.",
-    "endedText": "Everything you have recorded stays here and you can keep reading it — you just cannot plan or log new practices for now."
+    "endedText": "Everything you have recorded stays here and you can keep reading it — you just cannot plan or log new practices for now.",
+    "subscribe": "Subscribe"
   },
   "playerLimit": {
     "exceededTitle": "You have {count} active players, your plan allows {limit}.",

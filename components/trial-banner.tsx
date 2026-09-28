@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getPlayerLimitState, getSubscription } from "@/lib/subscription";
+import { isStripeConfigured } from "@/lib/stripe";
 
 /**
  * Pruh so stavom skúšobnej doby. Vykreslí sa **len trénerovi, ktorého sa
@@ -11,10 +13,25 @@ import { getPlayerLimitState, getSubscription } from "@/lib/subscription";
  * a kým do konca skúšobnej doby ostáva viac než týždeň — inak by to bola
  * len otravná lišta na každej obrazovke.
  *
- * Tlačidlo „Predplatiť" tu zatiaľ nie je: Stripe ešte nie je napojený a mŕtve
- * tlačidlo je horšie než žiadne. Pribudne sem, keď bude kam viesť.
+ * Tlačidlo „Predplatiť" (od 2026-09-28) vedie na `/subscribe`, kde si tréner
+ * vyberie hladinu — pruh ju vybrať nemôže, sú tri. **Vykreslí sa len tam, kde
+ * je Stripe naozaj nastavený** (`isStripeConfigured()`): na produkcii dnes
+ * kľúče nie sú, takže tam pruh vyzerá presne ako doteraz. Mŕtve tlačidlo,
+ * ktoré spadne až po kliknutí, je horšie než žiadne.
  */
 const WARN_WHEN_DAYS_LEFT_BELOW = 8;
+
+/** Odkaz do pokladne — rovnaký v červenom pruhu aj v tichom upozornení. */
+function SubscribeLink({ label }: { label: string }) {
+  return (
+    <Link
+      href="/subscribe"
+      className="ml-2 inline-block rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground transition hover:bg-primary-hover"
+    >
+      {label}
+    </Link>
+  );
+}
 
 export async function TrialBanner() {
   const supabase = await createClient();
@@ -37,12 +54,14 @@ export async function TrialBanner() {
   if (subscription.coveredByOrganization) return null;
 
   const t = await getTranslations("Common.trial");
+  const canPay = isStripeConfigured();
 
   if (!subscription.canWrite) {
     return (
       <div className="w-full bg-red-950 px-4 py-2.5 text-center text-sm text-red-200">
         <span className="font-medium">{t("endedTitle")}</span>{" "}
         <span className="text-red-300">{t("endedText")}</span>
+        {canPay && <SubscribeLink label={t("subscribe")} />}
       </div>
     );
   }
@@ -79,6 +98,7 @@ export async function TrialBanner() {
   return (
     <div className="w-full bg-surface px-4 py-2 text-center text-sm text-muted">
       {t("daysLeft", { days: daysLeft })}
+      {canPay && <SubscribeLink label={t("subscribe")} />}
     </div>
   );
 }

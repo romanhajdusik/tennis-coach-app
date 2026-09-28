@@ -112,7 +112,17 @@ async function main() {
     ...COACH_TIERS.map((tier) => ({
       id: `plaw_coach_${tier.players}`,
       name: `P.L.A.W — Coach, ${tier.players} players`,
-      description: `Plan, log and analyse practices for up to ${tier.players} active players.`,
+      // Popis hovorí VÝSLOVNE, že predávame softvér a nie tréning. Managed
+      // Payments je len pre plne automatizovaný digitálny produkt a Stripe
+      // z neho vylučuje služby s ľudským zásahom, „napríklad živý tréning
+      // jeden na jedného". Nás sa to netýka — tréning robí tréner svojmu
+      // hráčovi mimo appky —, ale názov „Coach" sa dá pri rýchlom čítaní
+      // pochopiť inak, a mýlka by znamenala spätnú daňovú povinnosť.
+      description: `Software subscription (SaaS) for a tennis coach — plan, log and analyse practices for up to ${tier.players} active players. Coaching services are not included.`,
+      // Tréner je podnikateľ, sledujúci spotrebiteľ. Rozdiel medzi „business"
+      // a „personal use" má význam len pri predaji do USA, ale zaradenie má
+      // byť pravdivé.
+      taxCode: "txcd_10103001",
       // Hladinu číta pri platbe webhook a zapisuje ju do `profiles.player_limit`
       // (docs/stripe.md). Preto patrí k cene, nie do tabuľky v kóde webhooku —
       // inak by sa pri pridaní hladiny museli meniť dve miesta.
@@ -123,7 +133,9 @@ async function main() {
     {
       id: "plaw_follower",
       name: "P.L.A.W — Player, parent or manager",
-      description: "Follow one player's practice history, calendar and analytics.",
+      description:
+        "Software subscription (SaaS) for a player, parent or manager — follow one player's practice history, calendar and analytics. Coaching services are not included.",
+      taxCode: "txcd_10103000",
       metadata: { plaw_role: "follower" },
       monthly: FOLLOWER_PRICE.monthly,
       yearly: FOLLOWER_PRICE.yearly,
@@ -135,21 +147,36 @@ async function main() {
   );
 
   for (const plan of plans) {
+    const fields = {
+      name: plan.name,
+      description: plan.description,
+      tax_code: plan.taxCode,
+      ...Object.fromEntries(
+        Object.entries(plan.metadata).map(([k, v]) => [`metadata[${k}]`, v]),
+      ),
+    };
+
     const existing = await stripeOrNull(`/products/${plan.id}`);
     if (!existing) {
       if (APPLY) {
-        await stripe("POST", "/products", {
-          id: plan.id,
-          name: plan.name,
-          description: plan.description,
-          ...Object.fromEntries(
-            Object.entries(plan.metadata).map(([k, v]) => [`metadata[${k}]`, v]),
-          ),
-        });
+        await stripe("POST", "/products", { id: plan.id, ...fields });
       }
       console.log(`  ${APPLY ? "založený" : "chýba  "} produkt  ${plan.id}`);
     } else {
-      console.log(`  je      produkt  ${plan.id}`);
+      // Produkt sa na rozdiel od ceny meniť DÁ, takže sa opravuje na mieste —
+      // inak by sa oprava popisu alebo daňového kódu musela robiť ručne
+      // v dashboarde a v ostrom režime by sa na ňu zabudlo.
+      const stale =
+        existing.name !== plan.name ||
+        existing.description !== plan.description ||
+        existing.tax_code !== plan.taxCode;
+
+      if (stale && APPLY) {
+        await stripe("POST", `/products/${plan.id}`, fields);
+      }
+      console.log(
+        `  ${stale ? (APPLY ? "upravený" : "líši sa") : "je     "} produkt  ${plan.id}`,
+      );
     }
 
     for (const [interval, eur] of [

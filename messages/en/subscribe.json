@@ -1,0 +1,23 @@
+{
+  "title": "Subscribe",
+  "intro": "Choose how many players you want active at the same time. Archived players do not count.",
+  "monthly": "Monthly",
+  "yearly": "Yearly",
+  "yearlySaving": "Save 40%",
+  "players": "{count} players",
+  "perMonth": "per month",
+  "perYear": "per year",
+  "vat": "VAT included",
+  "cta": "Subscribe",
+  "opening": "Opening checkout…",
+  "paidTitle": "Payment received.",
+  "paidText": "If your account still shows the trial, give it a moment and refresh the page.",
+  "back": "Back",
+  "errors": {
+    "unavailable": "Payments are not available right now. Please try again later.",
+    "unauthenticated": "Please sign in again.",
+    "notForThisAccount": "This account does not pay for P.L.A.W.",
+    "alreadySubscribed": "You already have an active subscription.",
+    "unknownPlan": "That plan does not exist."
+  }
+}
