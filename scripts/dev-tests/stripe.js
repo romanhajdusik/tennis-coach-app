@@ -95,6 +95,44 @@ async function main() {
     );
   }
 
+  section("1b) Kto už platí, ponuku znova nevidí");
+  // Zistené pri prvej skutočnej testovacej platbe: stránka po zaplatení
+  // vyzerala rovnako ako pred ním, takže to pôsobilo, akoby sa platba
+  // nestala. Server action druhý nákup odmietne tak či tak, ale ponúkať
+  // tlačidlo, ktoré skončí chybou, je horšie než ho neponúkať.
+  const db0 = serviceClient();
+  const { data: payer } = await db0
+    .from("profiles")
+    .select("id, subscription_status")
+    .eq("email", SOLO_COACH)
+    .maybeSingle();
+  const wasStatus = payer?.subscription_status;
+  try {
+    await db0
+      .from("profiles")
+      .update({ subscription_status: "active" })
+      .eq("id", payer.id);
+    const paidPage = await request("/subscribe", {
+      host: APP,
+      cookies: await authCookies(SOLO_COACH),
+    });
+    const paidText = textOf(paidPage.body);
+    check(
+      "povie, že predplatné už má",
+      paidText.includes("You already have a subscription"),
+      paidText.slice(0, 120),
+    );
+    check(
+      "hladiny už neponúka",
+      !COACH_TIERS.some((tier) => paidPage.body.includes(formatEur(tier.yearly))),
+    );
+  } finally {
+    await db0
+      .from("profiles")
+      .update({ subscription_status: wasStatus })
+      .eq("id", payer.id);
+  }
+
   section("2) Kto platiť nemá, sa k pokladni nedostane");
   const followerPage = await request("/subscribe", {
     host: APP,

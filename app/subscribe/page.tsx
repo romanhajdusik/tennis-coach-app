@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/** Adresa podpory pre existujúceho zákazníka — tá istá ako na `/settings`. */
+const SUPPORT_EMAIL = "support@plawsports.com";
+
 export default async function SubscribePage({
   searchParams,
 }: {
@@ -66,6 +69,12 @@ export default async function SubscribePage({
   const t = await getTranslations("Subscribe");
   const { paid } = await searchParams;
 
+  // Kto už platí, nemá vidieť ponuku znova. Server action by druhý nákup aj
+  // tak odmietla (`alreadySubscribed`), ale ponúkať tlačidlo, ktoré skončí
+  // chybou, je horšie než ho neponúkať — a po návrate z pokladne to pôsobilo,
+  // akoby sa platba nestala (zistené pri prvej skutočnej testovacej platbe).
+  const alreadyPaying = subscription.status === "active";
+
   const plans: PlanOption[] = COACH_TIERS.map((tier) => {
     const product = coachProductId(tier.players);
     return {
@@ -86,17 +95,32 @@ export default async function SubscribePage({
     <div className="mx-auto flex w-full min-w-0 max-w-md flex-col gap-5 p-4">
       <header className="flex flex-col gap-1">
         <h1 className="text-xl font-bold text-foreground">{t("title")}</h1>
-        <p className="text-sm text-muted">{t("intro")}</p>
+        {!alreadyPaying && <p className="text-sm text-muted">{t("intro")}</p>}
       </header>
 
-      {paid === "1" && (
+      {paid === "1" && !alreadyPaying && (
         <div className="rounded-xl border border-emerald-500 bg-emerald-950 px-4 py-3 text-sm text-emerald-200">
           <p className="font-medium">{t("paidTitle")}</p>
           <p className="text-emerald-300">{t("paidText")}</p>
         </div>
       )}
 
-      <PlanPicker plans={plans} />
+      {alreadyPaying ? (
+        <div className="flex flex-col gap-2 rounded-2xl border border-primary bg-surface p-5">
+          <p className="font-semibold text-foreground">{t("activeTitle")}</p>
+          <p className="text-sm text-muted">
+            {t("activeText", { count: subscription.playerLimit })}
+          </p>
+          {/* Zmena a zrušenie sú zatiaľ kontakt, nie tlačidlo — rovnako ako
+              export dát na `/settings`. Tlačidlo z toho spraví až zákaznícky
+              portál Stripe. */}
+          <p className="text-sm text-muted">
+            {t("activeChange", { email: SUPPORT_EMAIL })}
+          </p>
+        </div>
+      ) : (
+        <PlanPicker plans={plans} />
+      )}
 
       <Link
         href="/"
