@@ -130,14 +130,72 @@ viď etapu 2), nezapínať ďalšie platobné metódy (začína sa kartami), nez
 8. **Overenie** miestnymi sadami (`paywall.js`, `browser-coach.js`) plus nové
    scenáre na celú cestu platby.
 
-### Rozhodnutia, ktoré v tejto etape padnú
+### Rozhodnutia, ktoré v tejto etape padli (2026-09-28)
 
-- **DPH.** Ceny sú vrátane DPH a firma je platiteľ. Stripe vie DPH počítať a
-  vykazovať sám (Stripe Tax, za percento z platby), alebo to ostane účtovníkovi.
-  **Patrí to účtovníkovi, nie nám** — spýtať sa skôr, než sa čokoľvek zapne.
-- **Hladina hráčov po zaplatení.** Odporúčanie: nastavuje ju webhook sám podľa
-  kúpenej ceny, bez ručného zásahu.
-- **Či sa bod 7 (stráže) robí hneď, alebo až v etape 3.**
+#### MANAGED PAYMENTS = ÁNO. Predávajúcim je Link (Stripe), nie &Go, s.r.o.
+
+Rozhodol používateľ. Vyšlo to najavo tak, že pokladňa sa odmietla založiť:
+Managed Payments je na novom účte **zapnutý predvolene** a žiada daňový kód
+produktu.
+
+**Čo to je:** Stripe je *merchant of record*. Zákazník kupuje od jeho služby
+**Link**, tá mu vystaví doklad, vyberie a odvedie DPH v 80+ krajinách, rieši
+spory a reklamácie. Zákazníkovi to hovorí výslovne („Sold through Link").
+
+**Prečo áno:** používateľ predáva **mimo EÚ** (to bolo rozhodujúce — pôvodne
+som odporúčal opak, lebo som počítal so slovenskými zákazníkmi). OSS pokrýva
+len EÚ; v Británii vzniká povinnosť registrovať sa na VAT **od prvého predaja**
+a Nórsko, Švajčiarsko, Austrália, Kanada, Japonsko aj jednotlivé štáty USA majú
+každé vlastné pravidlá. To je agenda, ktorá jednočlennú firmu položí.
+
+**Čo to stojí:** **3,5 % z platby navyše** k bežnému poplatku (ten je pri EEA
+karte 1,5 % + 0,25 €), teda spolu zhruba 5 % + 0,25 €.
+
+**Čo z toho plynie pre kód a dokumenty:**
+- Produkty musia mať **daňový kód** — bez neho Stripe pokladňu nezaloží.
+  Tréner `txcd_10103001` (SaaS, business use), sledujúci `txcd_10103000`
+  (personal use). Nastavuje ich `scripts/stripe/setup-products.js`.
+- Popis produktu **výslovne hovorí, že predávame softvér a nie tréning**.
+  Managed Payments je len pre plne automatizovaný digitálny produkt a Stripe
+  z neho vylučuje služby s ľudským zásahom, „napríklad živý tréning jeden na
+  jedného". **Nás sa to netýka** — tréning robí tréner svojmu hráčovi mimo
+  appky —, ale slovo „Coach" v názve sa dá prečítať zle a omyl by znamenal
+  spätnú daňovú povinnosť.
+- **ČÍNU Managed Payments NEPODPORUJE** (spolu s Ruskom, Iránom, Kubou,
+  Severnou Kóreou, Sýriou a Kosovom). Pokladňa sa pre čínsku adresu založiť
+  DÁ — obmedzenie sa prejaví až pri platbe.
+- Vlastná doména na platobnej stránke nie je podporovaná.
+- Ak sa Stripe do 48 hodín nedovolá pri spore, **môže vrátiť peniaze aj bez
+  nášho súhlasu**.
+- **OTVORENÉ: podmienky sa musia prepísať** v časti o platbe a fakturácii —
+  dnes tvrdia, že zmluvu uzatvára zákazník s &Go, s.r.o. Týka sa to OBOCH
+  podmienok a aj **orgánu na riešenie sporov**: SOI ostáva správna pre spory
+  o službu, ale pre spory o platbu (írska spoločnosť Stripe) pravdepodobne nie.
+
+#### Ceny ostávajú VRÁTANE DANE a v dnešnej výške
+
+Overené naostro na pokladni pre newyorskú adresu: **subtotal 92,90 €, Sales
+Tax 7,57 €, celkom 92,90 €** — daň sa z ceny vyčlenila, suma sa nezmenila.
+Sedí aj sadzba (8,875 % NYC).
+
+Používateľ zvažoval prechod na ceny bez dane a **rozhodol NEMENIŤ NIČ**.
+Dôvody proti zmene: spotrebiteľovi v EÚ sa musí ukázať konečná cena, argument
+„pod 10 centov na deň" bez konečnej ceny nefunguje, a príznak `tax_behavior`
+je na cene v Stripe **nemenný** — zmena by znamenala založiť ceny nanovo.
+
+**Dôsledok, ktorý treba držať v hlave:** pri cenách vrátane dane sa čistý
+výnos líši podľa krajiny. Z ročných 92,90 € po dani aj po poplatku zostane
+~80 € (USA), ~79 € (Japonsko, Austrália), ~76 € (JAR), ~72 € (Argentína),
+**~71 € (Slovensko)**. Pri mesačných 6,90 € zostane ~5,00 €, teda 72 % —
+pevných 25 centov z každej platby je pri malej sume citeľných. **Je to ďalší
+dôvod tlačiť do ročnej platby**, čo cenník už robí (ročná je predvolená).
+
+#### Ostatné
+
+- **Hladina hráčov po zaplatení.** Nastavuje ju webhook sám podľa kúpenej
+  ceny — číslo je v metadátach produktu (`plaw_player_limit`), nie v tabuľke
+  v kóde webhooku.
+- **Či sa bod 7 (stráže) robí hneď, alebo až v etape 3** — stále otvorené.
 
 ---
 
