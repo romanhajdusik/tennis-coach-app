@@ -4,11 +4,21 @@ Tento dokument je návod pre **prvé napojenie Stripe** na P.L.A.W: čo urobiť,
 v akom poradí a čo sa nesmie pokaziť. Písaný je pre človeka, ktorý Stripe nikdy
 nerobil, takže vysvetľuje aj pojmy.
 
-**Stav k 2026-09-22:** rozhodnuté je, že P.L.A.W dostane **vlastný, oddelený
+**Stav k 2026-09-28:** rozhodnuté je, že P.L.A.W dostane **vlastný, oddelený
 Stripe účet** (rozhodnuté 2026-08-16, potvrdené 2026-09-22). Firma síce už jeden
 účet má, ale patrí k inej činnosti; zvažovalo sa jeho premenovanie, keďže cezeň
 nebežia žiadne platby, a používateľ sa napriek tomu rozhodol založiť nový.
 **Zakladá sa PRED prvou platbou** — transakcie sa medzi účtami presunúť nedajú.
+
+**Upresnené 2026-09-28: je to ÚPLNE NOVÁ REGISTRÁCIA, nie druhý účet pod
+existujúcim prihlásením** (rozhodol používateľ). Oddelenosť účtu je v oboch
+prípadoch rovnaká — peniaze, platby, výplaty aj overenie firmy sú zvlášť tak či
+tak. Líši sa len to, **kto sa doň prihlasuje**: samostatná registrácia znamená
+druhé heslo a druhé 2FA bez prepínača účtov v rohu, ale účet nie je priviazaný
+na osobné prihlásenie konateľa a dá sa odovzdať bez zásahu do druhej firmy.
+Prihlasovací e-mail je **`billing@plawsports.com`** — alias do existujúcej
+schránky (viď [`docs/domeny-a-email.md`](domeny-a-email.md) Krok 8), takže pošta
+chodí tam, kde je zvyknutý, ale vlastníkom účtu je firemná adresa, nie súkromná.
 
 Ceny sú rozhodnuté a žijú v [`lib/landing-pricing.ts`](../lib/landing-pricing.ts),
 odôvodnené sú v [`docs/cennik-navrh.md`](cennik-navrh.md). Pravidlá paywallu sú
@@ -51,13 +61,17 @@ IČ DPH SK2023447976, Vnútorná okružná 178/27, 945 01 Komárno; zápis Okres
 Nitra, oddiel Sro, vložka č. 31170/N), IBAN firmy, doklad totožnosti konateľa
 a telefón s aplikáciou na dvojfaktorové prihlásenie.
 
-1. Prihlás sa na `dashboard.stripe.com` existujúcim firemným účtom.
-2. Vľavo hore klikni na názov účtu — je to prepínač účtov.
-3. Zvoľ vytvorenie nového účtu („New account"). **Nie je to nová registrácia
-   ani nový e-mail** — je to druhý účet pod tým istým prihlásením.
-4. Názov účtu: `P.L.A.W`. Dá sa zmeniť kedykoľvek.
-5. **Krajina: Slovensko. Mena: euro.** Krajinu účtu Stripe neskôr nezmení —
-   toto je jediné políčko, ktoré treba trafiť na prvý raz.
+1. **Odhlás sa zo Stripe** (alebo otvor anonymné okno) — inak ponúkne pridať
+   účet k existujúcemu prihláseniu, čo je práve to, čo nechceme.
+2. Choď na `dashboard.stripe.com/register`.
+3. E-mail **`billing@plawsports.com`**, meno konateľa a silné heslo do správcu
+   hesiel. **Nie súkromná adresa** — vlastník účtu drží peniaze.
+4. **Krajina: Slovensko. Mena: euro.** Krajinu účtu Stripe neskôr nezmení —
+   toto je jediné políčko, ktoré treba trafiť na prvý raz. Názov účtu
+   (`P.L.A.W`) sa naopak dá zmeniť kedykoľvek.
+5. Potvrď e-mail a nastav **2FA** cez aplikáciu v telefóne. **Ulož si záložné
+   kódy** — bez nich sa pri strate telefónu do účtu nedostaneš, a je to jediné
+   prihlásenie do tohto účtu (nezdieľa sa s existujúcim firemným).
 6. Ocitneš sa v prázdnom účte v **testovacom režime**. Ten funguje hneď, aj keď
    firma ešte overená nie je.
 7. Spusti overenie firmy („Activate payments" / „Complete your business
