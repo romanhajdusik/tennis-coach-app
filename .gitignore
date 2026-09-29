@@ -45,3 +45,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Dočasné PNG z fotenia landingu (scripts/landing-shots.js)
+.landing-shots/
