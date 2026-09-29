@@ -162,8 +162,17 @@ karte 1,5 % + 0,25 €), teda spolu zhruba 5 % + 0,25 €.
   appky —, ale slovo „Coach" v názve sa dá prečítať zle a omyl by znamenal
   spätnú daňovú povinnosť.
 - **ČÍNU Managed Payments NEPODPORUJE** (spolu s Ruskom, Iránom, Kubou,
-  Severnou Kóreou, Sýriou a Kosovom). Pokladňa sa pre čínsku adresu založiť
-  DÁ — obmedzenie sa prejaví až pri platbe.
+  Severnou Kóreou, Sýriou a Kosovom). **OVERENÉ NAOSTRO v sandboxe
+  2026-09-29** — a dopadlo to lepšie, než sme písali:
+  - Relácia pokladne sa pre čínsku adresu **založí normálne**; porovnanie CN,
+  SK a US ukázalo relácie zhodné pole po poli okrem adresy zákazníka.
+  - **Obmedzenie sa ale neprejaví až pri platbe.** Len čo zákazník vyberie
+  krajinu, pokladňa **hneď pod formulárom ukáže červené
+  „China is not currently supported."** — teda skôr, než čokoľvek zaplatí
+  a bez toho, aby mu zlyhala karta. Pôvodná poznámka „prejaví sa až pri
+  platbe" bola nepresná; **žiadna stráž v appke na to netreba.**
+  - **Čína je v rozbaľovacom zozname krajín prítomná** (rovnako Rusko);
+  **Irán v ňom nie je vôbec**. Zoznam má 240 položiek.
 - Vlastná doména na platobnej stránke nie je podporovaná.
 - Ak sa Stripe do 48 hodín nedovolá pri spore, **môže vrátiť peniaze aj bez
   nášho súhlasu**.
@@ -176,6 +185,21 @@ karte 1,5 % + 0,25 €), teda spolu zhruba 5 % + 0,25 €.
   o službu → SOI, spor o samotnú platbu → Stripe a podmienky služby Link,
   SOI preň príslušná nie je. **Je to zmena ZNENIA schváleného dokumentu —
   čaká na nové schválenie používateľom.**
+- **ČO ZÁKAZNÍK V POKLADNI NAOZAJ VIDÍ — odfotené 2026-09-29, tým sa uzavrela
+  posledná pochybnosť o znení §5.** Pod tlačidlom stojí: „By subscribing, you
+  agree to Link.s **Terms** and **Privacy Policy** and authorize Link to charge
+  you for the described subscription until you cancel. This subscription is
+  **provided by** &GO sro in accordance with their terms.", a úplne dole odznak
+  **„Sold through Link"**.
+  - **Podmienky služby Link SÚ v pokladni klikateľné** — to bola otvorená
+  otázka a je zodpovedaná: veta v našich podmienkach („Link.s own terms apply
+  to that purchase and are available to you at checkout") je pravdivá.
+  - **Stripe sám rozlišuje „sold through Link" od „provided by &Go"** — presne
+  to delenie, ktoré sme do §5 napísali (predaj je ich, služba naša).
+  - **POZOR NA MENO:** zákazník vidí ako poskytovateľa **názov stripovského
+  účtu**, teda „&GO sro" — nie „P.L.A.W". Kupuje si pritom P.L.A.W a &Go nikdy
+  nepočul. Zvážiť premenovanie verejného názvu účtu; popis na výpise z karty
+  (`PLAWSPORTS`) je nastavený správne.
 
 #### Ceny ostávajú VRÁTANE DANE a v dnešnej výške
 
