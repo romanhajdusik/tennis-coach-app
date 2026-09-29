@@ -167,10 +167,15 @@ karte 1,5 % + 0,25 €), teda spolu zhruba 5 % + 0,25 €.
 - Vlastná doména na platobnej stránke nie je podporovaná.
 - Ak sa Stripe do 48 hodín nedovolá pri spore, **môže vrátiť peniaze aj bez
   nášho súhlasu**.
-- **OTVORENÉ: podmienky sa musia prepísať** v časti o platbe a fakturácii —
-  dnes tvrdia, že zmluvu uzatvára zákazník s &Go, s.r.o. Týka sa to OBOCH
-  podmienok a aj **orgánu na riešenie sporov**: SOI ostáva správna pre spory
-  o službu, ale pre spory o platbu (írska spoločnosť Stripe) pravdepodobne nie.
+- **PODMIENKY SÚ PREPÍSANÉ (2026-09-29).** Obe — trénerské aj pre sledujúcich,
+  v oboch zneniach. Predtým tvrdili, že zmluvu uzatvára zákazník s &Go, s.r.o.
+  Zmenené miesta: §1 (veta o predávajúcom), cena „je konečná" namiesto
+  „vrátane DPH", **celá sekcia o platbách** (predávajúcim je Link, doklad
+  vystavuje Link, portál v Nastaveniach), sekcia o odstúpení (píše sa nám,
+  odstúpenie posunieme Stripe) a **celá sekcia o rozhodnom práve**: spor
+  o službu → SOI, spor o samotnú platbu → Stripe a podmienky služby Link,
+  SOI preň príslušná nie je. **Je to zmena ZNENIA schváleného dokumentu —
+  čaká na nové schválenie používateľom.**
 
 #### Ceny ostávajú VRÁTANE DANE a v dnešnej výške
 

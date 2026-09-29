@@ -15,6 +15,14 @@
 > len to, čo je tu vymenované** — ostatný text je odsúhlasený a neprepisuje sa
 > bez nového rozhodnutia.
 >
+> **PREPÍSANÉ 2026-09-29 kvôli Managed Payments** (rozhodnutie z 2026-09-28,
+> odôvodnenie v [stripe.md](stripe.md)): predávajúcim voči zákazníkovi je
+> **Link (Stripe)**, nie &Go, s.r.o. Zmenené miesta: **§1** (veta o predávajúcom),
+> **§4** (cena je konečná namiesto „vrátane DPH"), **§5 celý**, **§6** (kam poslať
+> odstúpenie) a **§13 celý** (spor o službu → SOI, spor o platbu → Stripe; nadpis
+> je teraz „Rozhodné právo a spory"). **Je to zmena ZNENIA schváleného dokumentu
+> a potrebuje nové schválenie.**
+>
 > **Toto nie sú zásady ochrany údajov.** Tie hovoria, čo robíme s údajmi
 > ([gdpr-zasady-trener.md](gdpr-zasady-trener.md)). Podmienky hovoria, čo si
 > navzájom sľubujeme ako zmluvné strany — služba, platba, ukončenie,
@@ -40,6 +48,9 @@ Komárno, Slovak Republic, Company ID 46571388, VAT ID SK2023447976, registered
 in the Commercial Register of the District Court Nitra, Section Sro,
 Insert No. 31170/N ("we"). These terms govern the use of the
 application by a coach ("you").
+
+**We operate the application; the subscription itself is sold to you by our
+payment partner** — see section 5.
 
 By registering and using the application you agree to them. If you do not agree,
 do not use the application.
@@ -84,7 +95,7 @@ not a limitation: your employer's data and your own players should not mix.
 
 **Plans differ in how many players you may have active at the same time.**
 Archived players do not count towards your plan. Current prices are on the pricing
-page and include VAT.
+page and are final — any tax that applies is already included in them.
 
 **What happens when a subscription ends:**
 
@@ -101,11 +112,33 @@ you** — deciding which child you stop working with is not ours to make.
 
 ### 5. Payments
 
-The subscription is paid in advance for the chosen period. **Payments are handled
-by a payment provider** — your payment details never reach us.
+The subscription is paid in advance for the chosen period.
+
+**The subscription is sold to you by Link, a Stripe service, and not by us.**
+Stripe acts as the merchant of record: it takes the payment, works out and pays
+any tax due in your country, issues your receipt and handles refunds and payment
+disputes. The checkout page states this. Link's own terms apply to that purchase
+and are available to you at checkout.
+
+**What stays ours is the service itself** — the application, your data in it and
+everything these terms promise. If the application does not work as promised, you
+deal with us.
+
+**The price you see is the final price.** Any tax that applies is already included
+in it, so the amount does not grow at checkout.
+
+**Your payment details never reach us.** We neither see nor store your card number.
+
+**Your receipt is issued by Link**, not by us. If you need it again, or a payment
+goes wrong, write to **support@plawsports.com** and we will sort it out with Stripe
+for you.
+
+**You change and cancel the subscription yourself** in the application, under
+Settings — the customer portal opens there, where you can change your card, move
+between plans and cancel.
 
 **If you are an organisation**, coach seats are invoiced outside the application
-under a separate agreement.
+under a separate agreement — that invoice comes from us, not from Stripe.
 
 ### 6. Withdrawal from the contract
 
@@ -119,6 +152,10 @@ running, you pay a proportionate amount for what you have used.
 
 **If you are in business** (self-employed or a company) and order the service for
 that business, this right does not apply to you.
+
+**To withdraw, an email to support@plawsports.com is enough.** Because the
+subscription is sold by Link (section 5), we pass the withdrawal on to Stripe and
+see it through — you do not have to deal with them yourself.
 
 ### 7. Your responsibility for other people's data
 
@@ -208,15 +245,23 @@ subscription.
 Minor corrections that change neither your rights nor your obligations are made
 without notice.
 
-### 13. Governing law
+### 13. Governing law and disputes
 
 The relationship is governed by **the law of the Slovak Republic** and disputes
 belong to Slovak courts. If you are a consumer, you do not thereby lose the
 protection given to you by the law of your country of residence.
 
-If you are a consumer, you may also try to resolve a dispute out of court through
-**the Slovak Trade Inspection Authority (Slovenská obchodná inšpekcia),
-Bajkalská 21/A, P. O. BOX 29, 827 99 Bratislava, Slovak Republic, www.soi.sk**.
+**A dispute about the service** — the application, your data in it or anything
+these terms promise — is a dispute with us. If you are a consumer, you may also
+try to resolve it out of court through **the Slovak Trade Inspection Authority
+(Slovenská obchodná inšpekcia), Bajkalská 21/A, P. O. BOX 29, 827 99 Bratislava,
+Slovak Republic, www.soi.sk**.
+
+**A dispute about the payment itself** — the amount charged, the receipt, a refund
+or a chargeback — is a dispute with Stripe, which sold you the subscription
+(section 5), and it is governed by Link's terms; the Slovak Trade Inspection
+Authority is not the authority for it. Write to us all the same: we will pass it
+on and follow it through.
 
 ### 14. Contact
 
@@ -235,6 +280,9 @@ Aplikáciu P.L.A.W prevádzkuje &Go, s.r.o., Vnútorná okružná 178/27,
 945 01 Komárno, IČO 46571388, DIČ 2023447976, IČ DPH SK2023447976, zapísaná
 v Obchodnom registri Okresného súdu Nitra, oddiel Sro, vložka č. 31170/N
 (ďalej „my"). Tieto podmienky upravujú používanie aplikácie trénerom (ďalej „ty").
+
+**Aplikáciu prevádzkujeme my; samotné predplatné ti predáva náš platobný
+partner** — viď §5.
 
 Registráciou a používaním aplikácie s nimi súhlasíš. Ak s nimi nesúhlasíš,
 aplikáciu nepoužívaj.
@@ -279,7 +327,7 @@ a tvoji vlastní hráči sa nemajú miešať.
 
 **Cenové hladiny sa líšia počtom hráčov, ktorých smieš mať naraz aktívnych.**
 Archivovaní hráči sa do hladiny nepočítajú. Aktuálne ceny sú na cenníkovej
-stránke a platia vrátane DPH.
+stránke a sú konečné — daň je v nich už zahrnutá.
 
 **Čo sa stane, keď predplatné skončí:**
 
@@ -296,11 +344,31 @@ s ktorým dieťaťom prestaneš pracovať, nám nepatrí.
 
 ## 5. Platby
 
-Predplatné sa platí vopred na zvolené obdobie. **Platbu spracúva platobná brána**
-— platobné údaje k nám neprichádzajú.
+Predplatné sa platí vopred na zvolené obdobie.
+
+**Predplatné ti nepredávame my, ale Link — služba spoločnosti Stripe.** Stripe
+vystupuje ako predávajúci (*merchant of record*): prijme platbu, vypočíta a odvedie
+daň podľa tvojej krajiny, vystaví ti doklad a rieši vrátenie peňazí aj spory
+o platbu. Pokladničná stránka to výslovne uvádza. Na tento nákup sa vzťahujú aj
+vlastné podmienky služby Link, ktoré máš v pokladni k dispozícii.
+
+**Naša ostáva samotná služba** — aplikácia, tvoje údaje v nej a všetko, čo tieto
+podmienky sľubujú. Ak aplikácia nefunguje, ako je sľúbené, rieš to s nami.
+
+**Cena, ktorú vidíš, je konečná.** Daň je v nej už zahrnutá, takže suma sa
+v pokladni nezvýši.
+
+**Platobné údaje k nám neprichádzajú.** Číslo tvojej karty nevidíme ani neukladáme.
+
+**Doklad o zaplatení vystavuje Link**, nie my. Ak ho potrebuješ znova alebo sa
+platba pokazí, napíš na **support@plawsports.com** a vybavíme to so Stripe za teba.
+
+**Predplatné si meníš a rušíš sám** v aplikácii v Nastaveniach — otvorí sa tam
+zákaznícky portál, kde si zmeníš kartu, prejdeš na inú hladinu alebo predplatné
+zrušíš.
 
 **Ak si organizácia**, sedadlá pre trénerov sa fakturujú mimo aplikácie na
-základe samostatnej dohody.
+základe samostatnej dohody — tú faktúru vystavujeme my, nie Stripe.
 
 ## 6. Odstúpenie od zmluvy
 
@@ -314,6 +382,10 @@ poskytnutí služby zaniká**; ak odstúpiš počas nej, uhradíš pomernú čas
 
 **Ak podnikáš** (živnosť, s.r.o.) a službu si objednávaš na podnikanie, toto
 právo sa na teba nevzťahuje.
+
+**Odstúpiť stačí e-mailom na support@plawsports.com.** Keďže predplatné predáva
+Link (§5), odstúpenie posunieme Stripe a dotiahneme ho — ty s nimi nemusíš riešiť
+nič.
 
 ## 7. Tvoja zodpovednosť za údaje iných ľudí
 
@@ -400,14 +472,21 @@ a dostaneš späť pomernú časť predplatného.
 
 Drobné opravy, ktoré nemenia tvoje práva ani povinnosti, robíme bez oznámenia.
 
-## 13. Rozhodné právo
+## 13. Rozhodné právo a spory
 
 Vzťah sa riadi **právom Slovenskej republiky** a spory patria slovenským súdom.
 Ak si spotrebiteľ, nestrácaš tým ochranu, ktorú ti dávajú predpisy krajiny tvojho
 bydliska.
 
-Ak si spotrebiteľ, môžeš spor riešiť aj mimosúdne cez **Slovenskú obchodnú inšpekciu, Bajkalská 21/A, P. O. BOX 29,
+**Spor o službu** — o aplikáciu, o tvoje údaje v nej alebo o čokoľvek, čo tieto
+podmienky sľubujú — je spor s nami. Ak si spotrebiteľ, môžeš ho riešiť aj
+mimosúdne cez **Slovenskú obchodnú inšpekciu, Bajkalská 21/A, P. O. BOX 29,
 827 99 Bratislava, www.soi.sk**.
+
+**Spor o samotnú platbu** — o strhnutú sumu, o doklad, o vrátenie peňazí alebo
+o reklamáciu platby — je spor so Stripe, ktorý ti predplatné predal (§5), a riadi
+sa podmienkami služby Link; Slovenská obchodná inšpekcia preň príslušná nie je.
+Napíš nám aj tak — posunieme to ďalej a dotiahneme.
 
 ## 14. Kontakt
 
@@ -508,6 +587,10 @@ Ak si spotrebiteľ, môžeš spor riešiť aj mimosúdne cez **Slovenskú obchod
      — odkazovať spotrebiteľa na neexistujúcu službu je horšie než neuviesť nič.
      **Nevracaj ho.** Povinnosť uviesť orgán alternatívneho riešenia sporov tým
      nezaniká, tá platí ďalej.
+   - **OD 2026-09-29 JE ROZDELENÝ** (Managed Payments): SOI ostáva pre spory
+     o službu, ale pre spor o samotnú platbu príslušná nie je — tam je
+     druhou stranou Stripe a platia podmienky služby Link. Nezlučuj to
+     späť do jednej vety.
 10. **Odkazy na zásady** (§1, §7) a **na text pre rodičov** (§7) — stránky musia
     najprv vzniknúť.
 11. **Dátum účinnosti** (§14).
