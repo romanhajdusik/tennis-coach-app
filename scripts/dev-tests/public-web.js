@@ -238,6 +238,34 @@ async function main() {
     /href="\/informacia-pre-rodicov"/.test(navod.body),
   );
 
+  section("6) Náhľad odkazu pri zdieľaní");
+  // Appka sa šíri tým, že si ju tréneri posielajú v správach. Bez týchto
+  // značiek príde na druhú stranu holý odkaz. Sada preto stráži oboje:
+  // že stránka značky NESIE a že obrázok na tej istej doméne NAOZAJ
+  // odpovedá — `/og` nebolo v zozname povolených ciest a na plaw.click
+  // aj plaw.online sa presmerovalo preč (opravené 2026-09-29).
+  for (const [host, face] of [
+    [APP, "coach"],
+    [PARENT, "parent"],
+    [PUBLIC, "org"],
+  ]) {
+    const page = await request("/", { host });
+    const image = `${ORIGIN[host]}/og?face=${face}`;
+    check(
+      `${host} má og:image na vlastnej doméne`,
+      page.body.includes(`property="og:image" content="${image}"`),
+    );
+    check(
+      `${host} má twitter:card summary_large_image`,
+      /name="twitter:card" content="summary_large_image"/.test(page.body),
+    );
+    const og = await request(`/og?face=${face}`, { host });
+    check(
+      `${host}/og vráti obrázok, nie presmerovanie`,
+      og.status === 200 && (og.headers["content-type"] || "").includes("image/png"),
+      `status ${og.status}, typ ${og.headers["content-type"]}`,
+    );
+  }
   section("4) Appka na marketingových doménach nežije");
   for (const host of [PUBLIC, PARENT]) {
     for (const path of ["/login", "/players", "/parent"]) {

@@ -22,7 +22,12 @@ import {
 // Od kanonizácie (2026-08-24) sú to len DVE cesty: rozcestník a stránka pre
 // federácie. Návody a cenník pre sledujúceho tu boli tiež, ale patria svojmu
 // publiku — `CANONICAL_ORIGINS` nižšie ich odchytí ešte pred týmto zoznamom.
-const PUBLIC_PATHS = new Set(["/", "/federacie", "/zasady-organizacia"]);
+// `/og` je nakreslený náhľadový obrázok odkazu (app/og/route.tsx). Musí
+// odpovedať na KAŽDEJ verejnej doméne, nie len na plaw.win: čítačka náhľadu
+// (WhatsApp, Messenger, Instagram) si ho sťahuje z tej istej adresy, na akej
+// je zdieľaná stránka. Presmerovanie by jej vrátilo 307 namiesto obrázka
+// a rodičovský aj federačný odkaz by prišiel bez náhľadu.
+const PUBLIC_PATHS = new Set(["/", "/federacie", "/zasady-organizacia", "/og"]);
 
 // plaw.click hovorí k druhej strane appky (hráč, rodič, manažér), takže na nej
 // nie je celý verejný web — len jej landing na `/` a dve stránky, na ktoré
@@ -37,6 +42,8 @@ const PARENT_FACE_PATHS = new Set([
   // Text, ktorý tréner odovzdáva rodičovi — číta ho rodič, takže patrí sem
   // (od 2026-09-25). Tréner mu sem pošle odkaz zo zásad.
   "/informacia-pre-rodicov",
+  // Náhľadový obrázok — dôvod viď pri PUBLIC_PATHS.
+  "/og",
 ]);
 
 // KAŽDÁ VEREJNÁ STRÁNKA MÁ PRÁVE JEDNU ADRESU (od 2026-08-24).

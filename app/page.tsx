@@ -12,6 +12,7 @@ import { DisciplineIntro } from "@/components/discipline-intro";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
 import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
+import { ogFaceOf, ogMetadata } from "@/lib/og";
 import {
   loadLandingHracMessages,
   loadLandingMessages,
@@ -48,6 +49,11 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t.metaTitle,
       description: t.metaDescription,
       robots: { index: false, follow: false },
+      ...ogMetadata({
+        face: "parent",
+        title: t.metaTitle,
+        description: t.metaDescription,
+      }),
     };
   }
 
@@ -59,6 +65,11 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t.metaTitle,
       description: t.metaDescription,
       robots: { index: false, follow: false },
+      ...ogMetadata({
+        face: "org",
+        title: t.metaTitle,
+        description: t.metaDescription,
+      }),
     };
   }
 
@@ -72,6 +83,11 @@ export async function generateMetadata(): Promise<Metadata> {
       title: tCommon("appTitle"),
       description: tCommon("appDescription"),
       robots: { index: false, follow: false },
+      ...ogMetadata({
+        face: ogFaceOf(host),
+        title: tCommon("appTitle"),
+        description: tCommon("appDescription"),
+      }),
     };
   }
 
@@ -80,6 +96,11 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t.heroTitle,
     description: t.heroSubtitle,
     robots: { index: false, follow: false },
+    ...ogMetadata({
+      face: "coach",
+      title: t.heroTitle,
+      description: t.heroSubtitle,
+    }),
   };
 }
 
