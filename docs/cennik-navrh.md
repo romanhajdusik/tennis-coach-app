@@ -205,30 +205,36 @@ s trénerom skončí.
 
 **Platia nič.** A hlavne: **`one_active_connection_per_parent` im dovolí
 jediné aktívne prepojenie naraz** — nový kód automaticky zruší predošlé.
-
 ### 8.2 ROZHODNUTIE (používateľ, 2026-08-16): platia aj oni
 
-**Hráč, rodič aj manažér platia — vždy na úrovni jedného hráča, 36 € ročne**
-(teda pod 10 centov na deň). Rozhodnutie padlo po tom, čo som odporúčal nechať
-rodičovskú vrstvu zadarmo; **odporúčanie bolo prebité vedome**, argument proti
-je zapísaný nižšie, aby sa nemusel objavovať znova.
+**Hráč, rodič aj manažér platia — vždy na úrovni jedného hráča.** Rozhodnutie
+padlo po tom, čo som odporúčal nechať rodičovskú vrstvu zadarmo; **odporúčanie
+bolo prebité vedome**, argument proti je zapísaný nižšie, aby sa nemusel
+objavovať znova.
+
+**CENA ZVÝŠENÁ 2026-09-29 (rozhodol používateľ): 49,90 € ročne / 6,90 €
+mesačne.** Predtým to bolo 36 € / 5,90 €.
 
 | Hladina | Koho sleduje | Ročne | Mesačne |
 |---|---|---|---|
-| **Hráč / Rodič / Manažér** | 1 hráča | **36 €** | **5,90 €** |
+| **Hráč / Rodič / Manažér** | 1 hráča | **49,90 €** | **6,90 €** |
 
-Ročná cena je hlavná a tak sa aj komunikuje: *„pod 10 centov na deň."*
-Mesačná vychádza na 70,80 € ročne, čiže **ročná platba ušetrí takmer polovicu**
-— je to zámerne veľký rozdiel. Mesačná voľba tu nie je preto, aby ju niekto
-bral, ale aby bola ročná zjavne výhodná a aby mal kam siahnuť ten, kto sa na
-rok zaviazať nechce.
+**Výnimka z pravidla −40 % tým ZANIKLA.** Nová cena pravidlo spĺňa presne
+(6,90 × 12 − 40 % = 49,68 → 49,90), takže ročná zľava je odteraz na celom webe
+rovnaká a cenník nemá zvláštny prípad. Suma je **zhodná s najnižšou trénerskou
+hladinou** (3 hráči, 6,90/49,90 €) — je to zámer, nie prehliadnutie.
 
-**Rodičovská cena je vedomá výnimka z pravidla −40 %** (rozhodnuté 2026-08-16).
-To pravidlo by dalo 42,48 €, čím by padla veta „pod 10 centov na deň" (vyšlo by
-11,8 centa). Používateľ si zvolil ponechať **36 €**, čo je zľava −49 %. Veta je
-tu dôležitejšia než jednotnosť pravidla — 36 € vychádza na **9,86 centa denne**.
-Zvažovaná bola aj cesta cez zníženie mesačnej ceny na 4,90 € (dá 35,90 € a
-pravidlo by platilo všade), ale mesačná ostala na 5,90 €.
+**ČO TÝM PADLO: veta „pod 10 centov na deň."** Bola to dovtedy hlavná zbraň
+tejto stránky a 36 € existovalo kvôli nej (9,86 centa denne). Pri 49,90 € vyjde
+**13,7 centa denne**. Používateľ to vedel a cenu zvýšil aj tak. **Nevracaj sa
+k tomu s návrhom znížiť cenu kvôli tej vete.** Text si dennú sumu dopočítava
+sám (`centsPerPlayerDay`), takže nikde neostalo staré číslo; prepísať bolo
+treba jedinú vetu — „ročná ušetrí takmer polovicu" už neplatí a v cenníku je
+odteraz „Paying for the year saves you 40 %", rovnako ako u trénera.
+
+Ročná cena je hlavná a tak sa aj komunikuje. Mesačná vychádza na 82,80 € ročne.
+Mesačná voľba tu nie je preto, aby ju niekto bral, ale aby bola ročná zjavne
+výhodná a aby mal kam siahnuť ten, kto sa na rok zaviazať nechce.
 
 **Argument, ktorý bol prebitý** (nechávam ho tu ako riziko na sledovanie, nie
 ako námietku): rodičovská vrstva je zároveň dôvod, prečo tréner appku chce —
@@ -273,7 +279,7 @@ záznamu nikoho reálneho nepostihne.
 rodič vidí ZOZNAM tréningov a ich detail vždy; KALENDÁR a ANALYTIKA sú za
 platbou.**
 
-| | Zadarmo | Za 36 €/rok |
+| | Zadarmo | Za 49,90 €/rok |
 |---|---|---|
 | Zoznam tréningov (od najnovšieho) | ✅ | ✅ |
 | Filter zoznamu na mesiac | ✅ | ✅ |
@@ -354,7 +360,7 @@ predáva prehľadom týždňa, nie zamknutím tejto informácie.
 — sú to dva produkty v Stripe a jedna nová stráž v appke (§8.3, bod 1).
 
 **Sledovanie viacerých hráčov naraz (bod 4) je samostatná dávka** a do prvej
-verzie nemusí: 36 € je cena za jedného sledovaného hráča, čo dnešný model
+verzie nemusí: 49,90 € je cena za jedného sledovaného hráča, čo dnešný model
 (jedno aktívne prepojenie) presne pokrýva. Rodič s dvomi deťmi bude vtedy
 potrebovať dva účty — **to treba vedieť dopredu**, lebo to je prvá vec, na
 ktorú sa taký rodič spýta.
@@ -380,7 +386,7 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
 | Kde | Čo tam je |
 |---|---|
 | Landing `/` (sekcia „Cenník") | tri hladiny, prepínač mesačne/ročne, tabuľka „Čo dostaneš" (bez predplatného vs. s predplatným) |
-| Landing na `plaw.click` (od 2026-08-22) | jedno číslo — ročných 36 € + dopočítané centy na deň — a odkaz na `/cennik-hrac`; dlaždice kalendára a analytiky nesú štítok „S predplatným" |
+| Landing na `plaw.click` (od 2026-08-22) | jedno číslo — ročných 49,90 € + dopočítané centy na deň — a odkaz na `/cennik-hrac`; dlaždice kalendára a analytiky nesú štítok „S predplatným" |
 | `/cennik-hrac` | cena za sledovanie jedného hráča + tabuľka bez predplatného vs. s predplatným (päť riadkov podľa §8.3) |
 | `/federacie` | **od 2026-08-31 vstupná cena** — „od 49 € za trénera na mesiac", najmenej traja, bez DPH, ročne až −30 %; tabuľka pásiem ani pásmo na dohodu tam nie sú (§11) |
 

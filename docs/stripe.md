@@ -110,7 +110,7 @@ viď etapu 2), nezapínať ďalšie platobné metódy (začína sa kartami), nez
    | Tréner, 3 hráči | 6,90 € | 49,90 € |
    | Tréner, 6 hráčov | 12,90 € | 92,90 € |
    | Tréner, 12 hráčov | 24,90 € | 179,90 € |
-   | Sledujúci | 5,90 € | 36,00 € |
+   | Sledujúci | 6,90 € | 49,90 € |
 
    Ten istý skript založí v deň spustenia to isté v ostrom režime.
 5. **Pokladňa (Checkout).** Tlačidlo „Predplatiť" do

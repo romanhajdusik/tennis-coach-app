@@ -24,10 +24,15 @@ export const COACH_TIERS: readonly CoachTier[] = [
   { players: 12, monthly: 24.9, yearly: 179.9 },
 ];
 
-// Hráč / rodič / manažér sleduje vždy JEDNÉHO hráča. Ročná cena je vedomá
-// výnimka z pravidla −40 % (dala by 42,48 €) — 36 € drží vetu „pod 10 centov
-// na deň", ktorá je na tejto stránke hlavným argumentom (docs §8.2).
-export const FOLLOWER_PRICE = { monthly: 5.9, yearly: 36 } as const;
+// Hráč / rodič / manažér sleduje vždy JEDNÉHO hráča.
+//
+// Od 2026-09-29 platí aj tu pravidlo −40 % (6,90 × 12 − 40 % = 49,68 → 49,90),
+// takže cenník už nemá výnimku a ročná zľava je na celom webe rovnaká.
+// Predtým to bolo 5,90/36 € — 36 € držalo vetu „pod 10 centov na deň".
+// Tú vetu tým používateľ vedome obetoval (rozhodol 2026-09-29): denná suma je
+// teraz 13,7 centa a text ju dopočítava sám, takže nikde neostalo staré číslo.
+// Suma je zhodná s najnižšou trénerskou hladinou (3 hráči) — je to zámer.
+export const FOLLOWER_PRICE = { monthly: 6.9, yearly: 49.9 } as const;
 
 // Verejný web je jednojazyčný (viď lib/landing-locale.ts), takže je formát
 // pevne anglický — „€6.90", nie „6,90 €".
