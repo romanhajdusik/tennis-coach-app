@@ -88,7 +88,7 @@ export default async function SessionDetailPage({
   ).filter((player) => player.id !== session.player_id);
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-foreground ">
           {t("heading")}
