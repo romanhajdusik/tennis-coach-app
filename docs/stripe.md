@@ -268,3 +268,32 @@ zámerné: návštevník z Googlu sa musí vedieť hneď zaregistrovať aj zapla
 - **Rodičovský paywall je INÝ než trénerský.** Tréner „číta, ale nezapisuje";
   sledujúci nezapisuje nič, takže jeho stráž musí byť na **čítanie**
   (`app/parent/**`, `lib/actions/parent-data.ts`), nie `requireWriteAccess`.
+
+---
+
+## Viac mien (USD a spol.) — overené v sandboxe 2026-09-30
+
+Otázka používateľa: *„môže byť v USA a niektorých krajinách cena v USD?"*
+**Áno, a Managed Payments tomu nebráni** — overené naostro, nie z dokumentácie.
+
+**Ako to funguje:** cena v Stripe unesie **viac mien naraz** (`currency_options`)
+— nie je to druhá cena ani druhý produkt. Skúška: jedna cena s eurom 49,90 €
+a dolárom 59,00 $, pokladňa založená s `currency: usd` vypýtala **59,00 $**,
+nie prepočítané euro. Obe meny môžu byť `tax_behavior: inclusive`, takže
+pravidlo „cena je konečná" platí ďalej.
+
+**Skutočná ťažkosť nie je v Stripe, ale v rozhodnutí PRED pokladňou.**
+Adresu zákazníka sa appka dozvie až v pokladni, takže menu musí vybrať skôr —
+podľa IP, podľa jazyka prehliadača, alebo tak, že si ju zákazník zvolí sám.
+Žiadna z tých ciest nie je presná (Slovák na dovolenke v USA, Američan
+v Európe) a je to produktové rozhodnutie, nie technické.
+
+**Čo to stojí navyše:** každá ďalšia mena je ďalšie číslo, ktoré sa musí
+rozhodnúť psychologicky (49,90 € nie je 49,90 $ ani 58,42 $), musí sa udržiavať
+pri každej zmene cenníka a musí sa objaviť na webe. Dnes má cenník **osem
+čísel**; dve meny z neho spravia šestnásť.
+
+**Odporúčanie: nie pred spustením.** Nikto nie je predplatený, takže pridať
+meny neskôr je rovnako lacné ako dnes (nové ceny, staré archivovať —
+presne ako pri zmene rodičovskej ceny 29. 9.). Kým nie je vidieť, odkiaľ
+zákazníci naozaj chodia, je voľba mien hádanie.
