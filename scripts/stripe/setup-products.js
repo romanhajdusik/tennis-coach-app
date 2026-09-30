@@ -184,9 +184,15 @@ async function main() {
       ["year", plan.yearly],
     ]) {
       const lookupKey = `${plan.id}_${interval}ly`;
+      // `active=true` je POVINNÉ, nie kozmetika: archivovaná cena si môže
+      // `lookup_key` PODRŽAŤ (stane sa to vždy, keď niekto archivuje cenu
+      // ručne v dashboarde — tento skript ho pri archivácii uvoľňuje sám).
+      // Bez tohto filtra by sa taká cena našla, skript by ohlásil „je"
+      // a cenu by NEZALOŽIL — v katalógu by potom chýbala a pokladňa by sa
+      // pre tú hladinu nedala otvoriť. Overené v sandboxe 2026-09-30.
       const found = await stripe(
         "GET",
-        `/prices?lookup_keys[]=${encodeURIComponent(lookupKey)}&limit=1`,
+        `/prices?lookup_keys[]=${encodeURIComponent(lookupKey)}&active=true&limit=1`,
       );
       const price = found.data[0];
       const amount = cents(eur);
