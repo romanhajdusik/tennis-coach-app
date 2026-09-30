@@ -20,7 +20,7 @@ import {
 } from "@/lib/discipline";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
-import { getFollowerAccess } from "@/lib/subscription";
+import { getPaidFeatureAccess } from "@/lib/subscription";
 
 const RANGE_VALUES: PeriodRangeType[] = [
   "last12",
@@ -96,8 +96,8 @@ export default async function ParentAnalyticsPage({
 
   // Kalendar a analytika su plateny obsah (cennik na plaw.click). Sledujuci
   // nikdy nic nezapisuje, takze tu ten isty stav uctu riadi CITANIE —
-  // dovod je v `getFollowerAccess`. Bez napojeneho Stripe je vsetko otvorene.
-  const access = await getFollowerAccess(supabase, user.id);
+  // dovod je v `getPaidFeatureAccess`. Bez napojeneho Stripe je vsetko otvorene.
+  const access = await getPaidFeatureAccess(supabase, user.id);
 
   if (!access.unlocked) {
     redirect("/parent/subscribe");

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTranslations, getFormatter, getTimeZone } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { getFollowerAccess } from "@/lib/subscription";
+import { getPaidFeatureAccess } from "@/lib/subscription";
 import {
   LABEL_TIME_ZONE,
   addPlainDays,
@@ -78,8 +78,8 @@ export default async function ParentCalendarPage({
 
   // Kalendar a analytika su plateny obsah (cennik na plaw.click). Sledujuci
   // nikdy nic nezapisuje, takze tu ten isty stav uctu riadi CITANIE —
-  // dovod je v `getFollowerAccess`. Bez napojeneho Stripe je vsetko otvorene.
-  const access = await getFollowerAccess(supabase, user.id);
+  // dovod je v `getPaidFeatureAccess`. Bez napojeneho Stripe je vsetko otvorene.
+  const access = await getPaidFeatureAccess(supabase, user.id);
 
   if (!access.unlocked) {
     redirect("/parent/subscribe");

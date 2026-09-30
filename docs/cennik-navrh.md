@@ -37,9 +37,10 @@ vie ustrážiť:
   rovnako ako zápis. Kalendár zámerne ostáva — tréner musí vidieť, kedy má
   tréningy, inak mu appka prestane byť použiteľná ako denník. Je to zrkadlo
   rodičovského modelu (§8.3) s jedným rozdielom: rodičovi kalendár za platbou
-  je, trénerovi nie. **Appka to zatiaľ nevynucuje** — dnes zastavuje len zápis
-  (`requireWriteAccess`), stráž na analytiku pribudne so Stripe a musí sedieť
-  s poľom `WITHOUT_SUBSCRIPTION` v `components/landing-pricing.tsx`.
+  je, trénerovi nie. **HOTOVÉ od 2026-09-30:** zápis zastavuje
+  `requireWriteAccess`, analytiku `getPaidFeatureAccess` (`lib/subscription.ts`) —
+  a tá musí sedieť s poľom `WITHOUT_SUBSCRIPTION` v `components/landing-pricing.tsx`,
+  kde je analytika jediná čítacia položka s krížikom.
 - **Skúšobná doba 14 dní** beží už dnes, bez karty.
 - **Rodič/hráč/manažér platí nič.** Je to funkcia, ktorá drží trénera pri
   appke, nie samostatný produkt.
@@ -333,10 +334,12 @@ predáva prehľadom týždňa, nie zamknutím tejto informácie.
 
 ### 8.4 Čo sa musí postaviť
 
-1. **Stráž na ČÍTANIE** — nová vec (§8.3). Rodičovské stránky (`app/parent/**`)
-   a `lib/actions/parent-data.ts` musia pred vydaním dát overiť predplatné.
-   Ide o **server komponenty**, nie server actions, takže sa nedá použiť
-   `requireWriteAccess` — treba obdobu, napr. `requireViewAccess()`.
+1. **Stráž na ČÍTANIE** — nová vec (§8.3). **POSTAVENÁ 2026-09-30** ako
+   `getPaidFeatureAccess` v `lib/subscription.ts`: volajú ju priamo **server
+   komponenty** (`app/parent/calendar`, `app/parent/analytics/**` a trénerova
+   `app/analytics/**`), nie server actions, takže `requireWriteAccess` sa
+   použiť nedal. Načítavače v `lib/actions/parent-data.ts` vlastnú stráž
+   nepotrebujú — nie sú to server actions a volá ich len už ustrážená stránka.
 2. **Skúšobná doba už existuje aj pre nich** — `profiles.trial_ends_at` má
    default `now() + 14 dní` pre **každý** účet bez rozdielu roly, takže nový
    rodič má 14 dní automaticky a netreba na to nič robiť.
@@ -410,11 +413,19 @@ zmena ceny je zmena jedného súboru (a Stripe), nie deviatich prekladov.
   vydá — plošný sľub na webe by bol nepravdivý. Rodičovský stĺpec sa preto
   volá **„Bez predplatného"**, nie „Zadarmo".
 
-**Čo zatiaľ NIE JE pravda a treba to vedieť:** tabuľka na `/cennik-hrac`
-sľubuje, že analytika je za platbou. **Appka to ešte nevynucuje** — stráž na
-čítanie (`requireViewAccess`, §8.4 bod 1) sa postaví so Stripe. Dovtedy
-stránka opisuje cieľový stav. Rovnako nikde nie je tlačidlo „Predplatiť":
-obe stránky vedú na registráciu, lebo pokladňa neexistuje.
+**HOTOVÉ od 2026-09-30:** obe tabuľky sľubujú, že analytika je za platbou, a
+appka to už vynucuje — stráž na čítanie (`getPaidFeatureAccess`, §8.4 bod 1)
+drží trénerovi analytiku a sledujúcemu kalendár aj analytiku. Kým nie sú
+nastavené Stripe kľúče, je všetko otvorené, takže sa nikomu nič nezoberie
+skôr, než má ako zaplatiť.
+
+**Ostáva jediné, čo tabuľka sľubuje navyše: hĺbka histórie 6 vs 24 mesiacov**
+(§8.3). Je to vlastná úloha, lebo pri nej sa staršie záznamy naozaj **mažú** —
+prvé automatické mazanie v appke, a to nad kópiami záznamov o deťoch.
+
+**Tlačidlo „Predplatiť" na verejnom webe zámerne nie je** — obe stránky vedú
+na registráciu. Pokladňa je až za prihlásením (`/subscribe` pre trénera,
+`/parent/subscribe` pre sledujúceho): kto ešte nemá účet, nemá čo predplácať.
 
 ---
 

@@ -17,6 +17,7 @@ import {
   showsStrokes,
 } from "@/lib/discipline";
 import { PlayerSwitcher } from "@/components/player-switcher";
+import { getPaidFeatureAccess } from "@/lib/subscription";
 import { CategoryCharts } from "./category-charts";
 import { CategoryShareChart } from "./category-share-chart";
 
@@ -71,6 +72,7 @@ export default async function AnalyticsPage({
 
   const t = await getTranslations("Analytics");
   const tCommon = await getTranslations("Common");
+  const tSubscribe = await getTranslations("Subscribe");
   const RANGE_OPTIONS: { value: PeriodRangeType; label: string }[] = [
     { value: "last12", label: t("rangeLast12") },
     { value: "week", label: t("rangeWeek") },
@@ -93,6 +95,54 @@ export default async function AnalyticsPage({
 
   if (!user) {
     redirect("/login");
+  }
+
+  // ANALYTIKA JE JEDINÁ ČÍTACIA ČASŤ TRÉNEROVEJ APPKY ZA PREDPLATNÝM — presne
+  // to sľubuje cenník na landingu (`pricingCompareRows`, pole
+  // `WITHOUT_SUBSCRIPTION`). Zoznam tréningov, detail, kalendár, hráči aj
+  // vlastné kódy cvičení ostávajú otvorené; dôvod aj federačnú výnimku
+  // vysvetľuje `getPaidFeatureAccess`. Bez napojeného Stripe je všetko
+  // otvorené.
+  //
+  // Zisťuje sa to PRED dotazmi — zamknutý tréner nemá prečo spúšťať tri
+  // analytické dotazy, ktorých výsledok aj tak neuvidí.
+  const access = await getPaidFeatureAccess(supabase, user.id);
+
+  if (!access.unlocked) {
+    // ZAMKNUTÉ, NIE SKRYTÉ (CLAUDE.md, „Ceny na verejnom webe"): záložka
+    // v spodnej lište ostáva a vedie sem. Preto sa sem ani nepresmerúva na
+    // `/subscribe` — kto klikol na „Analytics", má najprv dostať odpoveď,
+    // čo tam je, nie cenník bez vysvetlenia.
+    return (
+      <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold text-foreground ">
+            {t("title")}
+          </h1>
+          <Link
+            href="/"
+            className="text-sm font-medium text-muted underline "
+          >
+            {tCommon("back")}
+          </Link>
+        </div>
+
+        <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4">
+          <p className="text-sm font-medium text-foreground">
+            {tSubscribe("coach.lockedTitle")}
+          </p>
+          <p className="text-sm text-muted">
+            {tSubscribe("coach.lockedIntro")}
+          </p>
+          <Link
+            href="/subscribe"
+            className="self-start rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+          >
+            {tSubscribe("cta")}
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   const { start, end, label } = await getPeriodRange(range, value);

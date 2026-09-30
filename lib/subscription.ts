@@ -9,7 +9,9 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
  * `getSelectedPlayer()` pri vybranom hráčovi).
  *
  * Model: 14 dní skúšobnej doby, potom platené. Po uplynutí účet **číta ďalej**
- * (história, analytika, hráči), ale **nezapisuje** — o svoju prácu nepríde.
+ * (história, hráči, kalendár), ale **nezapisuje** — o svoju prácu nepríde.
+ * **Jedinou čítacou výnimkou je analytika**, ktorú cenník predáva ako platenú;
+ * stráži ju `getPaidFeatureAccess` nižšie, nie `canWrite`.
  *
  * Federačný tréner sa paywallu netýka: organizácia platí faktúrou za sedadlá
  * (§5.9), takže jej zamestnancovi nemá čo blokovať osobné predplatné.
@@ -257,23 +259,35 @@ export async function requirePlayerSlot(
 }
 
 /**
- * Má sledujúci (rodič, manažér, hráč) otvorené platené časti — kalendár
- * a analytiku?
+ * Má účet otvorené platené časti, ktoré sa len **čítajú**?
+ *
+ * Dve miesta, jedna podmienka — obe sľubuje cenník na verejnom webe:
+ * - **sledujúci** (rodič, manažér, hráč): kalendár a analytika
+ *   (`docs/cennik-navrh.md` §8.3, tabuľka „Bez predplatného");
+ * - **tréner**: analytika (`pricingCompareRows` v `messages/en/landing.json`,
+ *   pole `WITHOUT_SUBSCRIPTION` v `components/landing-pricing.tsx`).
  *
  * **Je to tá istá podmienka ako `canWrite`, ale iný význam.** Sledujúci
- * nikdy nič nezapisuje, takže sa u neho tým istým stavom účtu riadi ČÍTANIE.
- * Preto vlastná funkcia a nie `canWrite` priamo: volajúci by pri čítaní
- * nemal pýtať právo na zápis a čitateľ kódu by hádal, či to nie je omyl.
+ * nikdy nič nezapisuje a tréner si analytiku nekupuje preto, aby do nej
+ * písal — v oboch prípadoch tým istým stavom účtu riadime ČÍTANIE. Preto
+ * vlastná funkcia a nie `canWrite` priamo: volajúci by pri čítaní nemal
+ * pýtať právo na zápis a čitateľ kódu by hádal, či to nie je omyl.
+ *
+ * **Trénerovi sa tým zamyká JEDINE analytika.** Zoznam tréningov, detail,
+ * kalendár, hráči aj vlastné kódy cvičení ostávajú otvorené — paywall nesmie
+ * pôsobiť ako zabavenie dát (CLAUDE.md, „Skúšobná doba a predplatné").
  *
  * Trial platí aj tu — cenník sľubuje „prvých 14 dní na vyskúšanie, potom sa
- * platí, rovnako ako u trénera" a `profiles.trial_ends_at` má každý účet.
+ * platí" a `profiles.trial_ends_at` má každý účet bez rozdielu roly.
+ * Federačného trénera drží nad vodou `coveredByOrganization` v
+ * `getSubscription`: za sedadlo platí organizácia faktúrou.
  *
  * **BEZ NAPOJENÉHO STRIPE JE VŠETKO OTVORENÉ, a to je zámer.** Keby stráže
  * platili aj tam, kde sa zaplatiť NEDÁ, vzali by sme ľuďom kalendár bez toho,
  * aby mali ako ho získať späť. Rovnaký princíp ako na stránke pokladne, ktorá
  * sa bez kľúčov tvári, že neexistuje.
  */
-export async function getFollowerAccess(
+export async function getPaidFeatureAccess(
   supabase: SupabaseServerClient,
   userId: string,
   now: Date = new Date(),

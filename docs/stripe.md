@@ -121,12 +121,17 @@ viď etapu 2), nezapínať ďalšie platobné metódy (začína sa kartami), nez
    `profiles.player_limit`**. Appka tým **prvýkrát drží `service_role` kľúč** —
    inak by si zápis „zaplatené" nemohla dovoliť (`authenticated` nemá na
    `profiles` UPDATE, a to je zámer).
-7. **Stráže, ktoré cenník sľubuje.** Web dnes sľubuje viac, než appka vynucuje:
+7. **Stráže, ktoré cenník sľubuje.** Web sľuboval viac, než appka vynucovala:
    trénerovi analytiku za predplatným, sledujúcemu kalendár a analytiku a hĺbku
-   histórie 6 vs 24 mesiacov. Musí sedieť s poľom `WITHOUT_SUBSCRIPTION`
+   histórie 6 vs 24 mesiacov. Musia sedieť s poľom `WITHOUT_SUBSCRIPTION`
    v [`components/landing-pricing.tsx`](../components/landing-pricing.tsx) a
-   v [`app/cennik-hrac/page.tsx`](../app/cennik-hrac/page.tsx). **Je to najväčší
-   kus práce v etape** a dá sa odložiť do etapy 3.
+   s tabuľkou v [`app/cennik-hrac/page.tsx`](../app/cennik-hrac/page.tsx).
+   **HOTOVÉ 2026-09-30 sú prvé dve** — jedna stráž `getPaidFeatureAccess`
+   v [`lib/subscription.ts`](../lib/subscription.ts) na oboch stranách
+   (overuje `paywall.js` §2b a `http-parent.js`). **Ostáva hĺbka histórie**,
+   a to je vlastná úloha: cenník pri nej tvrdí, že staršie záznamy sa MAŽÚ,
+   nie skrývajú — prvé automatické mazanie v appke, nad kópiami záznamov
+   o deťoch. Prvý záznam vypadne z okna až okolo januára 2027.
 8. **Overenie** miestnymi sadami (`paywall.js`, `browser-coach.js`) plus nové
    scenáre na celú cestu platby.
 
@@ -224,7 +229,10 @@ dôvod tlačiť do ročnej platby**, čo cenník už robí (ročná je predvolen
 - **Hladina hráčov po zaplatení.** Nastavuje ju webhook sám podľa kúpenej
   ceny — číslo je v metadátach produktu (`plaw_player_limit`), nie v tabuľke
   v kóde webhooku.
-- **Či sa bod 7 (stráže) robí hneď, alebo až v etape 3** — stále otvorené.
+- **Či sa bod 7 (stráže) robí hneď, alebo až v etape 3** — rozhodnuté
+  2026-09-30: **hneď**, lebo bez toho by verejný cenník v deň spustenia
+  sľuboval platený prístup, ktorý je zadarmo. Okrem hĺbky histórie, tá ostáva
+  na neskôr.
 
 ---
 

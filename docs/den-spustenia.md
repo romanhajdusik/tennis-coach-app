@@ -28,9 +28,10 @@ dokument je zoznam toho, čo sa musí stať v samotný deň — nič viac.
 
 ### 1. Pushnúť pripravený commit
 
-Commit s podmienkami (dátum účinnosti + vypustená veta o pozvánke) čaká
-nepushnutý. Ide von **PRVÝ**, aby v momente otvorenia registrácie už boli
-podmienky správne.
+Nepushnutých commitov čaká viac; medzi nimi ten s podmienkami (dátum
+účinnosti + vypustená veta o pozvánke). Jeden `push` pošle všetky naraz a ide
+von **PRVÝ**, teda pred premennými nižšie — aby v momente otvorenia
+registrácie už boli podmienky správne.
 
 ```bash
 git push origin master
@@ -96,6 +97,6 @@ Po uložení premenných Vercel nasadí znova. **Až týmto sa spúšťa.**
 - Čitateľské stránky podmienok (artefakty) a Google Docs nesú staré znenie —
   prestavať a nahrať znova.
 - Prihlásenie v novom štýle z redizajnu.
-- Stráže, ktoré cenník sľubuje (bod 7 v `docs/stripe.md`): analytika za
-  predplatným u trénera, kalendár a analytika u sledujúceho, hĺbka histórie
-  6 vs 24 mesiacov.
+- **Hĺbka histórie sledujúceho 6 vs 24 mesiacov** (posledný zvyšok bodu 7
+  v `docs/stripe.md`). Ostatné stráže, ktoré cenník sľubuje, sú od 2026-09-30
+  hotové. Neblokuje: prvý záznam vypadne z okna až okolo januára 2027.

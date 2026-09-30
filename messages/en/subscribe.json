@@ -23,6 +23,10 @@
     "alreadySubscribed": "You already have an active subscription.",
     "unknownPlan": "That plan does not exist."
   },
+  "coach": {
+    "lockedTitle": "Analytics comes with a subscription",
+    "lockedIntro": "Breakdowns, percentages and comparison over time need an active subscription. Your practices, players, calendar and drill codes stay open without one."
+  },
   "follower": {
     "title": "Subscribe",
     "intro": "One subscription follows one player. Without it you keep the practice list and every practice detail — the subscription adds the calendar and the analytics.",

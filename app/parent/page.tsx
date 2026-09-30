@@ -13,7 +13,7 @@ import {
 } from "@/lib/calendar-window";
 import { ConnectForm } from "./connect-form";
 import { DisconnectSection } from "./disconnect-section";
-import { getFollowerAccess } from "@/lib/subscription";
+import { getPaidFeatureAccess } from "@/lib/subscription";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -62,7 +62,7 @@ export default async function ParentDashboardPage({
   // Kalendar a analytika su plateny obsah. Zistuje sa to aj tu, nielen na
   // tych strankach — odkaz na zamknutu funkciu ma byt vidiet ako zamknuty,
   // nie viest na presmerovanie.
-  const access = await getFollowerAccess(supabase, user.id);
+  const access = await getPaidFeatureAccess(supabase, user.id);
 
   const { data: connection } = await supabase
     .from("player_connections")

@@ -423,7 +423,7 @@ async function main() {
     // Stav predplatneho sa vracia na vychodiskovy pri kazdom seede —
     // rovnako ako u samostatneho trenera vyssie, a z rovnakeho dovodu.
     // KALENDAR A ANALYTIKA SU U SLEDUJUCEHO PLATENE (od 2026-09-30,
-    // `getFollowerAccess`), takze uctu s vyprsanou skusobnou dobou sa
+    // `getPaidFeatureAccess`), takze uctu s vyprsanou skusobnou dobou sa
     // prestanu vykreslovat. Trigger `handle_new_user` da novemu uctu trial
     // na 14 dni a ten po mesiaci ticho vyprsi — sady `http-parent.js` potom
     // padali na presmerovani do pokladne namiesto toho, co maju testovat.

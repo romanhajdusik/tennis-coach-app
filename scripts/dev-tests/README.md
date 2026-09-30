@@ -29,7 +29,7 @@ počty pre daný beh, aby testy nezáviseli od hodiny spustenia).
 | `http-director.js` | Smerovanie podľa roly, obsah pultu, drill-in, tenant izolácia, **nastavenia** (šéftréner dostane zásady pre organizácie, federačný tréner trénerské znenie) |
 | `rls-org.js` | RLS federačnej vrstvy: dohľad, read-only director, členstvo, sedadlá, kódy, preradenie hráča, životný cyklus členstva, skupinový tréning naprieč trénermi |
 | `rls-solo.js` | RLS samostatného (1:1) režimu: zdieľanie smie viesť len na vlastného hráča, odvolanie sa nedá obísť, kód uplatní len prihlásený, rodičovi ostáva jeho prístup |
-| `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
+| `paywall.js` | Skúšobná doba: pruh, čítanie po jej uplynutí, **§2b analytika za predplatným** (zamknutá, nie presmerovaná — a po `complimentary` zasa otvorená), `complimentary`, výnimka pre org trénera, neprepísateľné predplatné |
 | `browser-coach.js` | Ťuk na tréning prepne hráča, nástenka neupozorňuje na zanedbaného hráča, grafy v analytike, paywall odmietne zápis, cenová hladina počtu hráčov, presun a zrušenie naplánovaného tréningu v oboch režimoch, obnova hesla až po prihlásenie novým heslom (§12) |
 | `browser-director.js` | Onboarding end-to-end (kód → pripojenie → člen v pulte), porovnanie, šírky, odchod trénera a prevzatie jeho hráčov, návrat a trvalé zmazanie člena |
 | `fitness.js` | **Kondičné nasadenie** — 10 zameraní, prázdne sloty kódov, chýbajúce pole charakteru, trvanie 60, analytika bez odhadu úderov, žiadna tenisová landing, kondička kód prepojenia VYDÁVA, a §6 — tenisový **súhrn opačným smerom** bez kódov cvičení a poznámok |

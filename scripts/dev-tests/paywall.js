@@ -78,10 +78,33 @@ async function main() {
       "pruh oznámi koniec skúšobnej doby",
       /free trial has ended/i.test(textOf(home.body)),
     );
-    for (const path of ["/players", "/sessions", "/calendar", "/analytics/Forehand"]) {
+    for (const path of ["/players", "/sessions", "/calendar"]) {
       const page = await request(path, { host: APP_HOST, cookies });
       check(`${path} sa stále číta`, page.status === 200, "status " + page.status);
     }
+
+    section("2b) …okrem analytiky, tú cenník sľubuje za predplatné");
+    // Jediná výnimka z „nezaplatené = čítaj, ale nezapisuj": pole
+    // WITHOUT_SUBSCRIPTION v components/landing-pricing.tsx má analytiku
+    // ako jedinú ČÍTACIU položku s krížikom.
+    let analytics = await request("/analytics/Forehand", {
+      host: APP_HOST,
+      cookies,
+    });
+    check(
+      "stránka sa otvorí, nepresmerúva sa",
+      analytics.status === 200,
+      "status " + analytics.status,
+    );
+    check(
+      "…ale je zamknutá a ponúka predplatné",
+      /Analytics comes with a subscription/i.test(textOf(analytics.body)),
+      textOf(analytics.body).slice(0, 160),
+    );
+    check(
+      "grafy sa nevykreslia",
+      !/Last 12 months/i.test(textOf(analytics.body)),
+    );
 
     section("3) Zaplatené alebo prístup od nás");
     await setSubscription(coach.id, "complimentary", past);
@@ -90,6 +113,15 @@ async function main() {
     check(
       "complimentary prebije uplynutý trial a pruh mlčí",
       !/free trial/i.test(textOf(home.body)),
+    );
+    analytics = await request("/analytics/Forehand", {
+      host: APP_HOST,
+      cookies,
+    });
+    check(
+      "analytika je zasa otvorená",
+      /Last 12 months/i.test(textOf(analytics.body)),
+      textOf(analytics.body).slice(0, 160),
     );
 
     section("4) Federačného trénera sa paywall netýka");
@@ -101,6 +133,15 @@ async function main() {
       "žiadny pruh — platí faktúra organizácie",
       !/free trial/i.test(textOf(orgHome.body)),
       textOf(orgHome.body).slice(0, 140),
+    );
+    const orgAnalytics = await request("/analytics/Forehand", {
+      host: ORG_HOST,
+      cookies: orgCookies,
+    });
+    check(
+      "analytika mu ostáva otvorená aj s vypršaným trialom",
+      /Last 12 months/i.test(textOf(orgAnalytics.body)),
+      textOf(orgAnalytics.body).slice(0, 160),
     );
 
     section("5) Účet si predplatné neprepíše sám");
