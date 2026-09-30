@@ -19,26 +19,31 @@ dokument je zoznam toho, čo sa musí stať v samotný deň — nič viac.
 - **Webhook** `P.L.A.W app` je `Active` na `https://www.plaw.win/api/stripe/webhook`,
   počúva tri udalosti, payload **Snapshot**.
 - **Verejný názov účtu** je `P.L.A.W Sports`, popis na výpise `PLAWSPORTS`.
-- **Podmienky sú úplné** — dátum účinnosti doplnený, veta o pozvánke vypustená,
-  žiadne žlté miesto. Čaká to v commite, ktorý sa v deň spustenia pushne.
+- **Podmienky sú úplné a NA PRODUKCII** — dátum účinnosti doplnený, veta
+  o pozvánke vypustená, žiadne žlté miesto. Pushnuté 30. 9. (`d2d617d`),
+  čitateľské stránky ich čítajú priamo z `docs/podmienky-*.md`, takže sa
+  znenie nemá ako rozísť.
+- **Stráže, ktoré cenník sľubuje**, sú hotové okrem hĺbky histórie (`d2d617d`):
+  trénerovi je analytika za predplatným, sledujúcemu kalendár aj analytika.
 
 ---
 
-## Postup (asi 15 minút)
+## Postup (asi 10 minút — krok 1 je už hotový)
 
-### 1. Pushnúť pripravený commit
+### 1. Pushnúť pripravený commit — HOTOVÉ 30. 9. 2026
 
-Nepushnutých commitov čaká viac; medzi nimi ten s podmienkami (dátum
-účinnosti + vypustená veta o pozvánke). Jeden `push` pošle všetky naraz a ide
-von **PRVÝ**, teda pred premennými nižšie — aby v momente otvorenia
-registrácie už boli podmienky správne.
+Všetko pripravené je už na produkcii (`a6538d3..d2d617d`, päť commitov,
+vrátane podmienok). Dalo sa to spraviť o deň skôr práve preto, že **web je
+stále `noindex` a registrácia je zatvorená** — navonok sa tým nezmenilo nič.
+
+Keby medzitým pribudol ďalší commit, platí pôvodné pravidlo: ide von **PRVÝ**,
+pred premennými nižšie.
 
 ```bash
 git push origin master
 ```
 
-Vercel nasadí sám, do minúty. Web je stále `noindex` a registrácia zatvorená —
-zatiaľ sa navonok nič nezmení.
+Vercel nasadí sám, do minúty.
 
 ### 2. Štyri premenné na Verceli
 
@@ -46,7 +51,6 @@ Projekt `tennis-coach-app` → Settings → Environment Variables, **Production*
 
 | Premenná | Hodnota |
 |---|---|
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `pk_live_…` (Stripe → API keys) |
 | `STRIPE_SECRET_KEY` | **`rk_live_…`** — obmedzený kľúč „P.L.A.W app" |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_…` (Stripe → Webhooks → P.L.A.W app → **Reveal secret**) |
 | `PLAW_INDEXING` | `true` |
@@ -54,6 +58,12 @@ Projekt `tennis-coach-app` → Settings → Environment Variables, **Production*
 
 **Tajný kľúč nie je `sk_live_`, ale `rk_live_`** — je to zámer, obmedzený kľúč
 nesmie hýbať peniazmi z účtu.
+
+**Publikovateľný kľúč (`pk_live_…`) sem NEPATRÍ** — appka ho nikde nečíta
+(overené 2026-09-30, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` nie je v kóde ani
+raz). Pokladňa je serverové presmerovanie na Stripe Checkout, v prehliadači
+žiadny Stripe.js nebeží. Do tabuľky sa dostal omylom; nastaviť ho nič nepokazí,
+len to nič nerobí.
 
 **Podpisový kľúč webhooku sa dá zobraziť opakovane**, nemusel sa nikde
 uschovávať.
