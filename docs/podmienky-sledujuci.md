@@ -1,6 +1,10 @@
 # Podmienky používania — sledujúci (`plaw.click`)
 
-> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ). **Schválené je ZNENIE, nie účinnosť** — orgán alternatívneho riešenia sporov je **doplnený 2026-09-25: Slovenská obchodná inšpekcia**; v hranatých zátvorkách ostávajú už len údaje druhej strany a dátumy. Pre rodiča, manažéra a hráča, ktorý sleduje vlastné
+> **Stav: SCHVÁLENÉ 2026-09-23** (obe znenia; schválil používateľ).
+> **ÚČINNOSŤ DOPLNENÁ 2026-09-30: podmienky platia od 1. októbra 2026**, čím
+> sú **všetky žlté miesta vyplnené** — v zverejnenej časti nezostala ani jedna
+> hranatá zátvorka. Orgán alternatívneho riešenia sporov je doplnený od
+> 2026-09-25 (Slovenská obchodná inšpekcia). Pre rodiča, manažéra a hráča, ktorý sleduje vlastné
 > tréningy. Súbor obsahuje obe znenia: **anglické je ZÁVÄZNÉ**, slovenské je
 > preklad — preto je angličtina prvá. Obchodné rozhodnutia sú prevzaté
 > z trénerských podmienok, kde sa prechádzali po jednom
@@ -239,7 +243,7 @@ on and follow it through.
 
 **support@plawsports.com**
 
-**These terms are effective from [date].**
+**These terms are effective from 1 October 2026.**
 
 ---
 ---
@@ -440,7 +444,7 @@ Napíš nám aj tak — posunieme to ďalej a dotiahneme.
 
 **support@plawsports.com**
 
-**Tieto podmienky platia od [dátum].**
+**Tieto podmienky platia od 1. októbra 2026.**
 
 ---
 

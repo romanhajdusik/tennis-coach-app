@@ -7,13 +7,14 @@
 > prvá. Držať ich spolu je zámer, aby bolo pri každej úprave vidieť, či sa
 > nerozišli.
 >
-> **Schválené je ZNENIE, nie účinnosť.** Orgán alternatívneho riešenia sporov
-> (§13) je **doplnený 2026-09-25: Slovenská obchodná inšpekcia** (určil
-> používateľ, adresa overená na soi.sk). Otvorené ostávajú dve miesta: dátum
-> účinnosti (§14, bude to deň spustenia) a veta „registrácia je momentálne na
-> pozvánku" (§3), ktorá po spustení prestane platiť. **Pri ich doplnení sa mení
-> len to, čo je tu vymenované** — ostatný text je odsúhlasený a neprepisuje sa
-> bez nového rozhodnutia.
+> **ÚČINNOSŤ DOPLNENÁ 2026-09-30: podmienky platia od 1. októbra 2026.**
+> Tým sú **VŠETKY žlté miesta vyplnené a dokument je po prvý raz úplný** —
+> v zverejnenej časti nezostala ani jedna hranatá zátvorka. Doplnil sa dátum
+> účinnosti (§14) a **vypadla veta o registrácii na pozvánku** (§3), ktorá
+> dňom spustenia prestala platiť. Orgán alternatívneho riešenia sporov (§13)
+> je doplnený od 2026-09-25 (Slovenská obchodná inšpekcia).
+> **Menilo sa len to, čo je tu vymenované** — ostatný text je odsúhlasený
+> a neprepisuje sa bez nového rozhodnutia.
 >
 > **PREPÍSANÉ 2026-09-29 kvôli Managed Payments** (rozhodnutie z 2026-09-28,
 > odôvodnenie v [stripe.md](stripe.md)): predávajúcim voči zákazníkovi je
@@ -80,9 +81,6 @@ else has access to it, write to us.
 
 Use **truthful details** when registering — a name and an email address where we
 can reach you.
-
-**Registration is currently by invitation.** Without a valid code no account is
-created.
 
 **An account is either independent or belongs to an organisation.** If you join a
 club, federation or academy, the players and their documentation belong to that
@@ -267,7 +265,7 @@ on and follow it through.
 
 **support@plawsports.com**
 
-**These terms are effective from [date].**
+**These terms are effective from 1 October 2026.**
 
 ---
 ---
@@ -313,8 +311,6 @@ niekto iný, napíš nám.
 
 Pri registrácii uvádzaj **pravdivé údaje** — meno a e-mail, na ktorom ťa
 zastihneme.
-
-**Registrácia je momentálne na pozvánku.** Bez platného kódu účet nevznikne.
 
 **Účet je buď nezávislý, alebo patrí organizácii.** Ak vstúpiš do klubu, zväzu
 alebo akadémie, hráči a ich dokumentácia patria tej organizácii. Kto robí oboje,
@@ -492,7 +488,7 @@ Napíš nám aj tak — posunieme to ďalej a dotiahneme.
 
 **support@plawsports.com**
 
-**Tieto podmienky platia od [dátum].**
+**Tieto podmienky platia od 1. októbra 2026.**
 
 ---
 
