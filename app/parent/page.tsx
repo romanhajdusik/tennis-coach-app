@@ -13,6 +13,7 @@ import {
 } from "@/lib/calendar-window";
 import { ConnectForm } from "./connect-form";
 import { DisconnectSection } from "./disconnect-section";
+import { getFollowerAccess } from "@/lib/subscription";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -47,6 +48,7 @@ export default async function ParentDashboardPage({
   const t = await getTranslations("Parent.dashboard");
   const tCommon = await getTranslations("Common");
   const tCalendar = await getTranslations("Calendar");
+  const tSubscribe = await getTranslations("Subscribe");
   const format = await getFormatter();
   const supabase = await createClient();
   const {
@@ -56,6 +58,11 @@ export default async function ParentDashboardPage({
   if (!user) {
     redirect("/parent/login");
   }
+
+  // Kalendar a analytika su plateny obsah. Zistuje sa to aj tu, nielen na
+  // tych strankach — odkaz na zamknutu funkciu ma byt vidiet ako zamknuty,
+  // nie viest na presmerovanie.
+  const access = await getFollowerAccess(supabase, user.id);
 
   const { data: connection } = await supabase
     .from("player_connections")
@@ -191,20 +198,50 @@ export default async function ParentDashboardPage({
             {t("connectedTo", { name: connectedPlayerName ?? "" })}
           </p>
 
+          {/* ZAMKNUTE, NIE SKRYTE (CLAUDE.md, „Ceny na verejnom webe"):
+              sledujuci ma vidiet, co za predplatne dostane. Skryty odkaz
+              nic nepredava a pôsobi, akoby funkcia neexistovala. */}
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/parent/calendar"
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
-            >
-              {t("calendar")}
-            </Link>
-            <Link
-              href="/parent/analytics/Forehand"
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
-            >
-              {t("analytics")}
-            </Link>
+            {access.unlocked ? (
+              <>
+                <Link
+                  href="/parent/calendar"
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
+                >
+                  {t("calendar")}
+                </Link>
+                <Link
+                  href="/parent/analytics/Forehand"
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground "
+                >
+                  {t("analytics")}
+                </Link>
+              </>
+            ) : (
+              <>
+                <span className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-muted">
+                  {t("calendar")} · {tSubscribe("follower.locked")}
+                </span>
+                <span className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-muted">
+                  {t("analytics")} · {tSubscribe("follower.locked")}
+                </span>
+              </>
+            )}
           </div>
+
+          {!access.unlocked && (
+            <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3">
+              <p className="text-sm text-muted">
+                {tSubscribe("follower.lockedIntro")}
+              </p>
+              <Link
+                href="/parent/subscribe"
+                className="self-start rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+              >
+                {tSubscribe("cta")}
+              </Link>
+            </div>
+          )}
 
           <section className="flex flex-col gap-3">
             <h2 className="text-sm font-medium text-muted ">

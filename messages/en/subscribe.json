@@ -22,5 +22,15 @@
     "notForThisAccount": "This account does not pay for P.L.A.W.",
     "alreadySubscribed": "You already have an active subscription.",
     "unknownPlan": "That plan does not exist."
+  },
+  "follower": {
+    "title": "Subscribe",
+    "intro": "One subscription follows one player. Without it you keep the practice list and every practice detail — the subscription adds the calendar and the analytics.",
+    "activeTitle": "You already have a subscription.",
+    "activeText": "The calendar and the analytics are open to you.",
+    "perDay": "{amount} cents a day.",
+    "locked": "Part of the subscription",
+    "lockedIntro": "The calendar and the analytics come with a subscription. The practice list and every detail stay yours without one.",
+    "seePricing": "See what is included"
   }
 }

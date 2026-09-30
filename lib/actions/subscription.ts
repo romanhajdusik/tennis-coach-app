@@ -4,7 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { requestOrigin } from "@/lib/request-origin";
 import { getSubscription } from "@/lib/subscription";
 import { COACH_TIERS } from "@/lib/landing-pricing";
-import { isKnownCoachLookupKey } from "@/lib/stripe-plans";
+import {
+  isFollowerLookupKey,
+  isKnownCoachLookupKey,
+} from "@/lib/stripe-plans";
 import {
   createCheckoutSession,
   createPortalSession,
@@ -46,17 +49,26 @@ export async function startCheckout(
     .eq("id", user.id)
     .maybeSingle();
 
-  // Predplatné je trénerský produkt. Sledujúci má vlastnú cenu a vlastnú
-  // stráž (na ČÍTANIE, nie na zápis) — tá sa rieši samostatne.
-  if (profile?.role !== "coach") {
+  // Dva rôzne produkty za jednou akciou. Rozhoduje ROLA ÚČTU, nie to, čo
+  // poslal prehliadač — inak by si sledujúci kúpil trénerskú hladinu (lacnejšie
+  // za viac) alebo naopak. Kľúč z prehliadača sa preto overuje proti zoznamu
+  // TEJ roly, ktorú má účet naozaj.
+  const isCoach = profile?.role === "coach";
+  const isFollower =
+    profile?.role === "parent" ||
+    profile?.role === "manager" ||
+    profile?.role === "player";
+
+  if (!isCoach && !isFollower) {
     return { error: "notForThisAccount" };
   }
 
   const subscription = await getSubscription(supabase, user.id);
 
   // Za federačného trénera platí organizácia faktúrou mimo appky (§5.9).
-  // Keby si predplatné kúpil sám, platil by dvakrát za to isté.
-  if (subscription.coveredByOrganization) {
+  // Keby si predplatné kúpil sám, platil by dvakrát za to isté. Sledujúceho
+  // sa to netýka — ten do organizácie nepatrí.
+  if (isCoach && subscription.coveredByOrganization) {
     return { error: "notForThisAccount" };
   }
 
@@ -66,11 +78,19 @@ export async function startCheckout(
     return { error: "alreadySubscribed" };
   }
 
-  const tier = COACH_TIERS.find((candidate) =>
-    isKnownCoachLookupKey(lookupKey, [candidate.players]),
-  );
+  // Hladinu má len tréner. Sledujúci sleduje vždy jedného hráča, takže mu
+  // žiadna neprislúcha a do metadát sa nedostane (viď `CheckoutSessionInput`).
+  let playerLimit: number | undefined;
 
-  if (!tier) {
+  if (isCoach) {
+    const tier = COACH_TIERS.find((candidate) =>
+      isKnownCoachLookupKey(lookupKey, [candidate.players]),
+    );
+    if (!tier) {
+      return { error: "unknownPlan" };
+    }
+    playerLimit = tier.players;
+  } else if (!isFollowerLookupKey(lookupKey)) {
     return { error: "unknownPlan" };
   }
 
@@ -88,17 +108,20 @@ export async function startCheckout(
   // než odkiaľ odišiel (a cookies sú host-only, takže odhlásená).
   const origin = await requestOrigin();
 
+  // Sledujúci žije na `/parent`, tréner na `/subscribe`. Vrátiť rodiča do
+  // trénerskej časti by znamenalo, že po zaplatení skončí na stránke, na
+  // ktorú nemá prístup.
+  const back = isCoach ? "/subscribe" : "/parent/subscribe";
+
   try {
     const url = await createCheckoutSession({
       priceId,
       userId: user.id,
       customerEmail: user.email,
-      successUrl: `${origin}/subscribe?paid=1`,
-      cancelUrl: `${origin}/subscribe`,
-      // Hladinu nesie platba v metadátach, aby ju webhook nemusel doťahovať
-      // späť zo Stripe. Číslo je z `COACH_TIERS`, teda z rovnakého zdroja ako
-      // cena — nie z toho, čo poslal prehliadač.
-      playerLimit: tier.players,
+      successUrl: `${origin}${back}?paid=1`,
+      cancelUrl: `${origin}${back}`,
+      playerLimit,
+      role: isCoach ? "coach" : "follower",
     });
     return { url };
   } catch (error) {

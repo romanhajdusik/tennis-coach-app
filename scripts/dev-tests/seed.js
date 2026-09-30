@@ -419,6 +419,23 @@ async function main() {
 
   if (demoCoach) {
     const parent = await ensureUser(PARENT, "Rodic Testovaci");
+
+    // Stav predplatneho sa vracia na vychodiskovy pri kazdom seede —
+    // rovnako ako u samostatneho trenera vyssie, a z rovnakeho dovodu.
+    // KALENDAR A ANALYTIKA SU U SLEDUJUCEHO PLATENE (od 2026-09-30,
+    // `getFollowerAccess`), takze uctu s vyprsanou skusobnou dobou sa
+    // prestanu vykreslovat. Trigger `handle_new_user` da novemu uctu trial
+    // na 14 dni a ten po mesiaci ticho vyprsi — sady `http-parent.js` potom
+    // padali na presmerovani do pokladne namiesto toho, co maju testovat.
+    // `complimentary` je pristup zadarmo od nas, teda presne to, co testovaci
+    // ucet potrebuje; samotny paywall ma vlastnu sadu.
+    await db.from("profiles").upsert({
+      id: parent.id,
+      role: "parent",
+      email: PARENT,
+      full_name: "Rodic Testovaci",
+      subscription_status: "complimentary",
+    });
     const { data: demoPlayer } = await db
       .from("players")
       .select("id")

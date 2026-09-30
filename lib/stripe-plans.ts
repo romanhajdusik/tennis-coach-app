@@ -43,3 +43,16 @@ export function isKnownCoachLookupKey(value: string, players: readonly number[])
     ),
   );
 }
+
+/**
+ * Smie pokladňa prijať tento kľúč ako cenu pre SLEDUJÚCEHO?
+ *
+ * Rovnaký dôvod ako pri trénerských hladinách: prehliadač posiela `lookup_key`
+ * a bez tohto zoznamu by si ktokoľvek poslal ľubovoľný kľúč z účtu — napríklad
+ * trénerský, ktorý je lacnejší za viac obsahu.
+ */
+export function isFollowerLookupKey(value: string) {
+  return BILLING_INTERVALS.some(
+    (interval) => priceLookupKey(FOLLOWER_PRODUCT_ID, interval) === value,
+  );
+}

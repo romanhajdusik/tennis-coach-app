@@ -93,8 +93,17 @@ export type CheckoutSessionInput = {
    * nevzniká tu: berie sa z `lib/landing-pricing.ts`, teda z toho istého
    * zdroja ako cena na webe a ako metadáta produktu, ktoré zakladá
    * `scripts/stripe/setup-products.js`.
+   *
+   * **Sledujuci ju NEMA** a je preto nepovinna: sleduje vzdy jedneho hraca,
+   * takze mu ziadna hladina neprislucha. Webhook `player_limit` zapise len
+   * vtedy, ked v metadatach naozaj je (`readMeta` v jeho route).
    */
-  playerLimit: number;
+  playerLimit?: number;
+  /**
+   * Co sa predava. Ide do metadat, aby bolo priamo v Stripe vidiet, ci
+   * platba patri trenerovi alebo sledujucemu — bez dohladavania v nasej DB.
+   */
+  role: "coach" | "follower";
 };
 
 /**
@@ -112,6 +121,7 @@ export async function createCheckoutSession({
   successUrl,
   cancelUrl,
   playerLimit,
+  role,
 }: CheckoutSessionInput) {
   // Tie isté metadáta sa píšu na platbu AJ na vzniknuté predplatné. Nie je to
   // duplicita pre istotu: `checkout.session.completed` nesie metadáta platby,
@@ -119,8 +129,10 @@ export async function createCheckoutSession({
   // Bez oboch by webhook pri niektorej udalosti nevedel, komu patrí.
   const meta = {
     plaw_user_id: userId,
-    plaw_role: "coach",
-    plaw_player_limit: String(playerLimit),
+    plaw_role: role,
+    ...(playerLimit === undefined
+      ? {}
+      : { plaw_player_limit: String(playerLimit) }),
   };
 
   const session = await stripeRequest("POST", "/checkout/sessions", {

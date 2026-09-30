@@ -20,6 +20,7 @@ import {
 } from "@/lib/discipline";
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
+import { getFollowerAccess } from "@/lib/subscription";
 
 const RANGE_VALUES: PeriodRangeType[] = [
   "last12",
@@ -91,6 +92,15 @@ export default async function ParentAnalyticsPage({
 
   if (!user) {
     redirect("/parent/login");
+  }
+
+  // Kalendar a analytika su plateny obsah (cennik na plaw.click). Sledujuci
+  // nikdy nic nezapisuje, takze tu ten isty stav uctu riadi CITANIE —
+  // dovod je v `getFollowerAccess`. Bez napojeneho Stripe je vsetko otvorene.
+  const access = await getFollowerAccess(supabase, user.id);
+
+  if (!access.unlocked) {
+    redirect("/parent/subscribe");
   }
 
   const { data: connection } = await supabase

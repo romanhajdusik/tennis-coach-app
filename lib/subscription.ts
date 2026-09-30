@@ -1,4 +1,5 @@
 import type { createClient } from "@/lib/supabase/server";
+import { isStripeConfigured } from "./stripe";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -253,4 +254,42 @@ export async function requirePlayerSlot(
   // PREKROČIL, tu o to, či by ju pridanie ďalšieho prekročilo.
   const active = await countActivePersonalPlayers(supabase, userId);
   return active >= playerLimit ? PLAYER_LIMIT_REACHED : null;
+}
+
+/**
+ * Má sledujúci (rodič, manažér, hráč) otvorené platené časti — kalendár
+ * a analytiku?
+ *
+ * **Je to tá istá podmienka ako `canWrite`, ale iný význam.** Sledujúci
+ * nikdy nič nezapisuje, takže sa u neho tým istým stavom účtu riadi ČÍTANIE.
+ * Preto vlastná funkcia a nie `canWrite` priamo: volajúci by pri čítaní
+ * nemal pýtať právo na zápis a čitateľ kódu by hádal, či to nie je omyl.
+ *
+ * Trial platí aj tu — cenník sľubuje „prvých 14 dní na vyskúšanie, potom sa
+ * platí, rovnako ako u trénera" a `profiles.trial_ends_at` má každý účet.
+ *
+ * **BEZ NAPOJENÉHO STRIPE JE VŠETKO OTVORENÉ, a to je zámer.** Keby stráže
+ * platili aj tam, kde sa zaplatiť NEDÁ, vzali by sme ľuďom kalendár bez toho,
+ * aby mali ako ho získať späť. Rovnaký princíp ako na stránke pokladne, ktorá
+ * sa bez kľúčov tvári, že neexistuje.
+ */
+export async function getFollowerAccess(
+  supabase: SupabaseServerClient,
+  userId: string,
+  now: Date = new Date(),
+): Promise<{
+  unlocked: boolean;
+  onTrial: boolean;
+  trialDaysLeft: number | null;
+}> {
+  if (!isStripeConfigured()) {
+    return { unlocked: true, onTrial: false, trialDaysLeft: null };
+  }
+
+  const subscription = await getSubscription(supabase, userId, now);
+  return {
+    unlocked: subscription.canWrite,
+    onTrial: subscription.onTrial,
+    trialDaysLeft: subscription.trialDaysLeft,
+  };
 }

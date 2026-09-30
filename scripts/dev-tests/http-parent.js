@@ -137,6 +137,74 @@ async function main() {
     const cookies = await authCookies(PARENT);
     const path = "/parent/analytics/Forehand";
 
+  section("0c) Kalendár a analytika sú za predplatným (od 2026-09-30)");
+  // Cenník na plaw.click ich sľubuje ako platené. Do 2026-09-30 ich mal
+  // sledujúci zadarmo — appka nevynucovala nič a zaplatiť sa ani nedalo.
+  //
+  // Sada si stav účtu PREPÍNA a na konci ho vracia na `complimentary`,
+  // teda na to, čo dáva seed. Keby to nechala inak, padali by na tom
+  // všetky ostatné sekcie tohto súboru.
+  const platenych = ["/parent/calendar", "/parent/analytics/Forehand"];
+
+  await db
+    .from("profiles")
+    .update({ subscription_status: "canceled" })
+    .eq("email", PARENT);
+
+  for (const cesta of platenych) {
+    const res = await request(cesta, { host: APP_HOST, cookies: followerCookies });
+    check(
+      `${cesta} bez predplatného vedie do pokladne`,
+      res.status === 307 && (res.headers.location ?? "").includes("/parent/subscribe"),
+      `status ${res.status}, location ${res.headers.location}`,
+    );
+  }
+
+  const zamknuty = rendered(
+    (await request("/parent", { host: APP_HOST, cookies: followerCookies })).body,
+  );
+  // ZAMKNUTÉ, NIE SKRYTÉ — sledujúci má vidieť, čo za predplatné dostane.
+  check(
+    "prehľad ukáže zámok, nie odkazy",
+    !zamknuty.includes('href="/parent/calendar"') &&
+      !zamknuty.includes('href="/parent/analytics/Forehand"'),
+  );
+  check(
+    "prehľad ponúkne predplatné",
+    zamknuty.includes('href="/parent/subscribe"'),
+  );
+
+  const pokladna = await request("/parent/subscribe", {
+    host: APP_HOST,
+    cookies: followerCookies,
+  });
+  check("pokladňa pre sledujúceho sa vykreslí", pokladna.status === 200);
+  const pokladnaHtml = rendered(pokladna.body);
+  // Mesačná cena sa vykreslí až po prepnutí (klientský komponent), takže sa
+  // na serveri kontroluje len predvolená ROČNÁ — tá je predvolená zámerne,
+  // rovnako ako v cenníku na webe.
+  check(
+    "ponúka ročnú cenu z cenníka",
+    pokladnaHtml.includes("€49.90"),
+  );
+  check(
+    "a prepínač na mesačnú",
+    pokladnaHtml.includes("Monthly") && pokladnaHtml.includes("Yearly"),
+  );
+
+  await db
+    .from("profiles")
+    .update({ subscription_status: "complimentary" })
+    .eq("email", PARENT);
+
+  const odomknuty = rendered(
+    (await request("/parent", { host: APP_HOST, cookies: followerCookies })).body,
+  );
+  check(
+    "s prístupom sú odkazy späť",
+    odomknuty.includes('href="/parent/calendar"') &&
+      odomknuty.includes('href="/parent/analytics/Forehand"'),
+  );
     section("1) Bez súhlasu vlastníka dát blok nie je");
     const before = await request(path, { host: APP_HOST, cookies });
     const beforeText = textOf(before.body);
