@@ -52,7 +52,11 @@ async function main() {
     console.error("\n  STRIPE_SECRET_KEY nie je v .env.local — sada preskočená.\n");
     process.exit(1);
   }
-  if (secret.startsWith("sk_live_")) {
+  // Pozna sa podla `_live_`, NIE podla `sk_live_`: ked sa klucu neudelia
+  // plne prava, Stripe vyda OBMEDZENY kluc a ten zacina `rk_live_`.
+  // Povodna podmienka ho nezachytila, takze by sa sada spustila proti
+  // ostremu uctu a zakladala v nom skutocne pokladne (2026-09-30).
+  if (secret.includes("_live_")) {
     console.error("\n  OSTRÝ kľúč. Sada zakladá platby — spúšťaj ju len testovacím.\n");
     process.exit(1);
   }

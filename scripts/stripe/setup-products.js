@@ -48,7 +48,13 @@ if (!KEY) throw new Error("STRIPE_SECRET_KEY chýba v .env.local");
 
 // Ostrý kľúč znamená skutočné peniaze. Skript je ten istý pre obe polovice
 // účtu (to je zámer), ale do ostrej sa nesmie dostať omylom — preto zámok.
-const LIVE = KEY.startsWith("sk_live_");
+//
+// POZNAVA SA PODLA `_live_`, NIE PODLA `sk_live_`. Ked sa klucu neudelia
+// plne prava (a nemaju sa - nas nesmie hybat peniazmi), Stripe vyda
+// OBMEDZENY kluc, ktory zacina `rk_live_`. Povodna podmienka ho
+// nezachytila, takze zamok by sa vobec nezapol a skript by do ostreho
+// uctu zapisoval bez potvrdenia (2026-09-30).
+const LIVE = KEY.includes("_live_");
 if (LIVE && process.env.PLAW_STRIPE_LIVE !== "ano") {
   throw new Error(
     "OSTRÝ kľúč. Ak to je naozaj deň spustenia, spusti s PLAW_STRIPE_LIVE=ano",
