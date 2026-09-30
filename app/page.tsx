@@ -24,6 +24,7 @@ import { PlayerSwitcher } from "@/components/player-switcher";
 import { TodayBoard } from "@/components/today-board";
 import { TagIcon } from "@/components/landing-icons";
 import { LogoutIcon, SettingsIcon } from "@/components/nav-icons";
+import { publicRobots } from "@/lib/seo";
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
@@ -48,7 +49,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: t.metaTitle,
       description: t.metaDescription,
-      robots: { index: false, follow: false },
+      robots: publicRobots(),
       ...ogMetadata({
         face: "parent",
         title: t.metaTitle,
@@ -64,7 +65,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: t.metaTitle,
       description: t.metaDescription,
-      robots: { index: false, follow: false },
+      robots: publicRobots(),
       ...ogMetadata({
         face: "org",
         title: t.metaTitle,
@@ -82,7 +83,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: tCommon("appTitle"),
       description: tCommon("appDescription"),
-      robots: { index: false, follow: false },
+      robots: publicRobots(),
       ...ogMetadata({
         face: ogFaceOf(host),
         title: tCommon("appTitle"),
@@ -95,7 +96,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t.heroTitle,
     description: t.heroSubtitle,
-    robots: { index: false, follow: false },
+    robots: publicRobots(),
     ...ogMetadata({
       face: "coach",
       title: t.heroTitle,

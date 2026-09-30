@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
 import { loadLegalDoc } from "@/lib/legal-docs";
+import { publicRobots } from "@/lib/seo";
 
 // Zásady ochrany údajov pre zväz, klub a akadémiu. Žijú na `plaw.online`, kde
 // je aj stránka `/federacie` — tam ich číta ich publikum.
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy — P.L.A.W",
   description:
     "How P.L.A.W handles personal data for federations, clubs and academies.",
-  robots: { index: false, follow: false },
+  robots: publicRobots(),
 };
 
 export default async function ZasadyOrganizaciaPage() {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
 import { loadLegalDoc } from "@/lib/legal-docs";
+import { publicRobots } from "@/lib/seo";
 
 // Zásady ochrany osobných údajov pre trénera — pozri komentár v `/podmienky`.
 // Pre sledujúceho a pre organizáciu budú vlastné stránky na ich doménach,
@@ -8,7 +9,7 @@ import { loadLegalDoc } from "@/lib/legal-docs";
 export const metadata: Metadata = {
   title: "Privacy Policy — P.L.A.W",
   description: "How P.L.A.W handles personal data of coaches and their players.",
-  robots: { index: false, follow: false },
+  robots: publicRobots(),
 };
 
 export default async function ZasadyPage() {

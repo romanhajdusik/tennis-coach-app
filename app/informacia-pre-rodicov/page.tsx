@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
 import { loadParentNotice } from "@/lib/legal-docs";
+import { publicRobots } from "@/lib/seo";
 
 // Text, ktorý tréner odovzdáva rodičovi. Nie je to dokument, ktorý viaže
 // čitateľa — je to hotový text na odovzdanie, aby tréner nemusel informačnú
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   title: "Information for parents — P.L.A.W",
   description:
     "A ready-made notice a coach can hand to a parent about how their child's training records are kept.",
-  robots: { index: false, follow: false },
+  robots: publicRobots(),
 };
 
 export default async function InformaciaPreRodicovPage() {

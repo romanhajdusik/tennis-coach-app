@@ -10,6 +10,7 @@ import {
   UsersIcon,
 } from "@/components/landing-icons";
 import { Wordmark } from "@/components/wordmark";
+import { publicRobots } from "@/lib/seo";
 
 /**
  * Verejná stránka o federačnom (B2B) režime — informačná, **bez prihlásenia
@@ -44,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t.metaTitle,
     description: t.metaDescription,
     // Noindex ako zvyšok verejného webu, kým nie je spustený naostro.
-    robots: { index: false, follow: false },
+    robots: publicRobots(),
   };
 }
 

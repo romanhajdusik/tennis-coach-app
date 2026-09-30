@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
 import { loadLegalDoc } from "@/lib/legal-docs";
+import { publicRobots } from "@/lib/seo";
 
 // Podmienky pre sledujúceho (rodič, manažér, hráč). Žijú na `plaw.click` —
 // doméne ich publika, viď `CANONICAL_ORIGINS` v `proxy.ts`. Text sa číta zo
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   title: "Terms of Use — P.L.A.W",
   description:
     "Terms of use for parents, managers and players who follow a player's training.",
-  robots: { index: false, follow: false },
+  robots: publicRobots(),
 };
 
 export default async function PodmienkyHracPage() {

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { loadNavodMessages } from "@/lib/landing-locale";
 import { Wordmark } from "@/components/wordmark";
+import { publicRobots } from "@/lib/seo";
 
 // Návod je verejná stránka — texty berie z tej istej vrstvy ako landing
 // (messages/en, mimo appkového next-intl). Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
@@ -11,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t.metaTitle,
     description: t.metaDescription,
-    robots: { index: false, follow: false },
+    robots: publicRobots(),
   };
 }
 

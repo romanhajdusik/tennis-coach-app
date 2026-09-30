@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
 import { loadLegalDoc } from "@/lib/legal-docs";
+import { publicRobots } from "@/lib/seo";
 
 // Podmienky používania pre trénera. Text sa číta zo schváleného dokumentu
 // `docs/podmienky-trener.md` — nekopíruje sa sem ani do `messages/`, aby sa
@@ -9,7 +10,7 @@ import { loadLegalDoc } from "@/lib/legal-docs";
 export const metadata: Metadata = {
   title: "Terms of Use — P.L.A.W",
   description: "Terms of use of the P.L.A.W application for coaches.",
-  robots: { index: false, follow: false },
+  robots: publicRobots(),
 };
 
 export default async function PodmienkyPage() {

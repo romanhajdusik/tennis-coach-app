@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { loadNavodHracMessages } from "@/lib/landing-locale";
 import { Wordmark } from "@/components/wordmark";
+import { publicRobots } from "@/lib/seo";
 
 // Krátky verejný návod pre pripojeného hráča/rodiča/manažéra (druhá strana
 // appky). Tá istá textová vrstva aj tmavá téma ako trénerský návod
@@ -11,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t.metaTitle,
     description: t.metaDescription,
-    robots: { index: false, follow: false },
+    robots: publicRobots(),
   };
 }
 

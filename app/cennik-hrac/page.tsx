@@ -8,6 +8,7 @@ import {
   formatEur,
 } from "@/lib/landing-pricing";
 import { Wordmark } from "@/components/wordmark";
+import { publicRobots } from "@/lib/seo";
 
 // Cenník pre hráča, rodiča a manažéra. Zámerne SAMOSTATNÁ stránka, nie sekcia
 // landingu — dôvod je pri type správ v `lib/landing-locale.ts`.
@@ -36,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t.metaTitle,
     description: t.metaDescription,
-    robots: { index: false, follow: false },
+    robots: publicRobots(),
   };
 }
 
