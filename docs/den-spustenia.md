@@ -1,5 +1,11 @@
 # Deň spustenia — 1. októbra 2026
 
+> **VYKONANÉ 1. 10. 2026.** P.L.A.W je spustený: premenné sú na Verceli,
+> nasadenie prebehlo, všetkých päť kontrol prešlo a **prvá ostrá platba
+> naozaj zapísala predplatné do databázy**. Dokument ostáva ako záznam
+> a ako predloha pre spustenie ďalších disciplín. Čo sa v deň spustenia
+> ukázalo inak, než tu stálo, je dopísané pri príslušných krokoch.
+
 Krátky postup na spustenie consumer produktu (`plaw.win` + `plaw.click`).
 **Federácia sa nespúšťa** — zmluvy a zásady pre organizácie čakajú na prvý
 zväz a spustenie neblokujú.
@@ -66,7 +72,14 @@ raz). Pokladňa je serverové presmerovanie na Stripe Checkout, v prehliadači
 len to nič nerobí.
 
 **Podpisový kľúč webhooku sa dá zobraziť opakovane**, nemusel sa nikde
-uschovávať.
+uschovávať. Je v detaile cieľa „P.L.A.W app" pod **Signing secret → Reveal**.
+
+**OBMEDZENÝ KĽÚČ SA ZOBRAZIŤ NEDÁ (zistené 1. 10. 2026).** Stripe ukáže
+hodnotu tajného kľúča jediný raz, pri vytvorení; v ponuke `…` pri ňom je
+„Copy key ID", čo je identifikátor, nie kľúč. Rieši to **Rotate key** v tej
+istej ponuke: vyrobí novú hodnotu toho istého kľúča (meno aj práva ostanú)
+a tú ukáže. Starému nastav expiráciu **Now** — pred spustením nie je nikde
+nasadený. **Novú hodnotu ulož do Vercelu skôr, než okno zatvoríš.**
 
 ### 3. Overiť jednu premennú, ktorá tam už má byť
 
@@ -77,7 +90,18 @@ zaplatí a appka ho nepustí. Zvonka sa to zistiť nedá (webhook odmietne
 nepodpísanú požiadavku skôr, než na Supabase siahne), preto sa to musí
 pozrieť očami.
 
-Po uložení premenných Vercel nasadí znova. **Až týmto sa spúšťa.**
+**POZOR, TOTO BOLO V NÁVODE ZLE (opravené 1. 10. 2026): Vercel po uložení
+premenných NENASADÍ sám.** Premenné sa priložia až k novému nasadeniu, staré
+beží ďalej s tým, čo malo pri builde — Vercel to aj sám hlási hláškou „A new
+deployment is needed for changes to take effect". Nasadiť treba ručne:
+
+**Deployments** → posledné produkčné nasadenie → `…` → **Redeploy** →
+**odškrtnúť „Use existing Build Cache"** (niektoré stránky sa vyrábajú pri
+builde a z cache by prišli ešte spred premenných) → potvrdiť.
+
+**Až týmto sa spúšťa.** Nasadzuj jediný raz, keď je hotových všetkých päť
+premenných — inak sa appka spustí do polovice (platby žijú, registrácia
+zatvorená).
 
 ### 4. Overiť naostro
 
@@ -85,10 +109,27 @@ Po uložení premenných Vercel nasadí znova. **Až týmto sa spúšťa.**
 - `www.plaw.win/register` — formulár **nesmie** pýtať promo kód ako povinný
 - `www.plaw.win/podmienky` — má stáť „effective from 1 October 2026" a **nikde**
   veta o registrácii na pozvánku
+- **`/zasady`, `/zasady-hrac` aj `/zasady-organizacia`** — dátum účinnosti.
+  **Pribudlo 1. 10. 2026:** dátum sa v septembri doplnil len do podmienok a na
+  zásady sa zabudlo, takže na nich v deň spustenia stálo žltým „effective from
+  [date]". Opravené commitom `d4269a8`. **Pozeraj VŠETKÝCH PÄŤ právnych
+  stránok, nie dve** — žlté miesto je čokoľvek v hranatých zátvorkách, viď
+  `lib/legal-docs.ts`.
 - `www.plaw.win/login` — musí ostať `noindex` (appka sa neindexuje nikdy)
-- **Skúšobná platba naostro** najlacnejšou hladinou (6,90 €), potom v Stripe
-  vrátiť peniaze. Overuje sa tým to jediné, čo sa inak overiť nedá: že webhook
-  s ostrým podpisovým kľúčom naozaj zapíše predplatné.
+- **Platba naostro.** Overuje sa tým to jediné, čo sa inak overiť nedá: že
+  webhook s ostrým podpisovým kľúčom naozaj zapíše predplatné. Appka to
+  potvrdí sama — keď na `/subscribe` po návrate z pokladne ukáže „máš
+  predplatné", znamená to, že stav v databáze zmenil webhook.
+
+  **Ako sa to spravilo 1. 10. 2026: user si predplatné kúpil normálne, na
+  vlastný účet, a nechal si ho.** Pôvodný plán („zaplatiť najlacnejšiu hladinu
+  a vrátiť peniaze") je horší — vrátenie peňazí samo predplatné nezruší, a keď
+  sa zruší, účet spadne do stavu „zrušené" a prestane zapisovať. Testovací účet
+  je druhá možnosť, ale nákup naostro overí to isté a nič sa po ňom neupratuje.
+
+  **Hladinu vyber podľa počtu AKTÍVNYCH hráčov.** Webhook zapíše `player_limit`
+  podľa kúpenej ceny a prepíše tým, čo účet mal. Účet nad svojou hladinou
+  **nezapisuje vôbec**, nielen že nepridá hráča.
 
 ---
 
