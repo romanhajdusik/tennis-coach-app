@@ -178,7 +178,7 @@ If anything material changes — a new provider is added or the retention period
 change — we will tell you by email or in the app. Quietly rewriting the page is not
 enough, and we do not do it.
 
-**This policy is effective from [date].**
+**This policy is effective from 1 October 2026.**
 
 ---
 ---
@@ -338,7 +338,7 @@ Ak sa niečo podstatné zmení — pribudne nový poskytovateľ alebo sa zmenia 
 dáme ti vedieť e-mailom alebo priamo v aplikácii. Ticho prepísať stránku nestačí
 a nerobíme to.
 
-**Tieto zásady platia od [dátum].**
+**Tieto zásady platia od 1. októbra 2026.**
 
 ---
 ---

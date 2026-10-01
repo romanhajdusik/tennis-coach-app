@@ -164,7 +164,7 @@ If anything material changes — a new subprocessor, a change of location, a cha
 of retention periods — we will inform you in advance by email, in line with the
 data processing agreement.
 
-**This policy is effective from [date].**
+**This policy is effective from 1 October 2026.**
 
 ---
 ---
@@ -311,7 +311,7 @@ Ak sa niečo podstatné zmení — pribudne ďalší sprostredkovateľ, zmení s
 údajov alebo lehoty — budeme vás informovať vopred e-mailom, v súlade so zmluvou
 o spracúvaní.
 
-**Tieto zásady platia od [dátum].**
+**Tieto zásady platia od 1. októbra 2026.**
 
 ---
 ---
