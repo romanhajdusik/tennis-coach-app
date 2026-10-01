@@ -133,6 +133,32 @@ export async function LandingPage() {
         </div>
       </section>
 
+      {/* Úvodná fotka ako POZADIE aj na počítači (user, 2026-10-01). Do
+          vtedy bola len na telefóne — testeri ju 2026-09-21 navrhli ako
+          náhradu pruhu s logom a na širokej obrazovke ju nechali preč.
+          **Na telefóne sa týmto nemení NIČ:** obal aj obe vrstvy sú md:,
+          teda pod tabletom sa nevykreslia. Obal je samostatný preto, aby sa
+          fotka roztiahla cez celú šírku — sekcia s textom je max-w-3xl
+          a pozadie v nej by bolo panel na stred, nie pozadie. */}
+      <div className="flex w-full flex-col items-center md:relative md:isolate md:overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/hero/court-portrait.webp"
+          alt=""
+          aria-hidden
+          width={1080}
+          height={1910}
+          className="absolute inset-0 -z-20 hidden h-full w-full object-cover object-[50%_74%] md:block"
+        />
+        {/* Rovný závoj, nie gradient ako na telefóne: tam je text hore a dole,
+            tu vypĺňa celú výšku, takže by sa v priehľadnom strede stratil.
+            Výrez je posunutý na 74 % výšky fotky, nie na spodok — pri spodku
+            ostala v zábere len prázdna plocha kurtu, lopta bola nad ním. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 hidden bg-background/35 md:block"
+        />
+
       <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-16 pt-12 text-center sm:px-6 sm:pb-24 md:pt-24">
         {/* Len od `md` vyššie — na telefóne nesie značku nápis na úvodnej fotke
             a druhý by bol hneď pod ním. */}
@@ -156,7 +182,7 @@ export async function LandingPage() {
                     {point.title}
                   </h2>
                 )}
-                <p className="text-base text-balance text-muted sm:text-lg">
+                <p className="text-base text-balance text-muted sm:text-lg md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
                   {point.text}
                 </p>
               </div>
@@ -202,6 +228,7 @@ export async function LandingPage() {
           </Link>
         </div>
       </section>
+      </div>
 
       <section className="w-full max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">

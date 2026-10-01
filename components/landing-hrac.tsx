@@ -84,6 +84,28 @@ export async function LandingHrac() {
         </div>
       </header>
 
+      {/* Úvodná fotka ako pozadie, rovnako ako na trénerskom landingu
+          (user, 2026-10-01). **Len od tabletu vyššie** — na telefóne sa
+          nevykreslí a úvod ostáva presne taký, aký bol. Obal je samostatný
+          preto, aby sa fotka roztiahla cez celú šírku: sekcia s textom je
+          max-w-3xl a pozadie v nej by bolo panel na stred. */}
+      <div className="flex w-full flex-col items-center md:relative md:isolate md:overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/hero/court-portrait.webp"
+          alt=""
+          aria-hidden
+          width={1080}
+          height={1910}
+          className="absolute inset-0 -z-20 hidden h-full w-full object-cover object-[50%_74%] md:block"
+        />
+        {/* Výrez na 74 % výšky drží v zábere loptu aj čiaru kurtu; pri
+            zarovnaní na spodok ostane len prázdna plocha. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 hidden bg-background/35 md:block"
+        />
+
       <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-14 pt-14 text-center sm:px-6 sm:pb-20 sm:pt-20">
         {/* Veľký nápis v úvode — tá istá podoba značky, akú vidí človek pred
             prihlásením v appke a na rozcestníku. */}
@@ -95,7 +117,7 @@ export async function LandingHrac() {
         <h1 className="text-3xl font-bold tracking-tight text-balance text-foreground sm:text-4xl">
           {t.heroTitle}
         </h1>
-        <p className="max-w-xl text-base text-balance text-muted sm:text-lg">
+        <p className="max-w-xl text-base text-balance text-muted sm:text-lg md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
           {t.heroSubtitle}
         </p>
         <div className="flex flex-wrap justify-center gap-3 pt-2">
@@ -113,6 +135,7 @@ export async function LandingHrac() {
           </Link>
         </div>
       </section>
+      </div>
 
       <section
         id="ako-to-funguje"
