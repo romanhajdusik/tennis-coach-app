@@ -7,6 +7,7 @@ import { getSubscription } from "@/lib/subscription";
 import { COACH_TIERS, formatEur } from "@/lib/landing-pricing";
 import { coachProductId, priceLookupKey } from "@/lib/stripe-plans";
 import { isStripeConfigured } from "@/lib/stripe";
+import { getDeploymentDiscipline } from "@/lib/discipline";
 import { PlanPicker, type PlanOption } from "./plan-picker";
 
 // Výber cenovej hladiny a vstup do pokladne Stripe. Vedie sem tlačidlo
@@ -72,8 +73,13 @@ export default async function SubscribePage({
   // akoby sa platba nestala (zistené pri prvej skutočnej testovacej platbe).
   const alreadyPaying = subscription.status === "active";
 
+  // Produkty disciplíny NASADENIA, nie `getDiscipline()`: federačný tréner
+  // sem nesmie (vyššie), takže ostáva samostatný režim, kde disciplínu určuje
+  // nasadenie — a pokladňa (`startCheckout`) sa pýta rovnako.
+  const discipline = getDeploymentDiscipline();
+
   const plans: PlanOption[] = COACH_TIERS.map((tier) => {
-    const product = coachProductId(tier.players);
+    const product = coachProductId(tier.players, discipline);
     return {
       players: tier.players,
       featured: Boolean(tier.featured),

@@ -113,6 +113,25 @@ async function main() {
     (loggedInHome.body.match(/<html[^>]*>/) ?? [""])[0],
   );
 
+  section("1d) Predplatné sa v kondičke predáva ako KONDIČNÉ");
+  // Každá disciplína má v Stripe vlastné produkty (od 2026-10-02). Ponuka
+  // nesie `lookup_key` v dátach pre klientsky výber plánu, takže je v HTML.
+  // Bez Stripe kľúča v `.env.local` stránka neexistuje (404) — vtedy niet čo
+  // overovať a sekcia to povie, namiesto falošného FAIL.
+  const subscribe = await request("/subscribe", { host: APP_HOST, cookies });
+  if (subscribe.status === 404) {
+    check("Stripe nie je v .env.local nastavený — sekcia preskočená", true);
+  } else {
+    check(
+      "ponúka kondičné ceny (plaw_fitness_coach_…)",
+      /plaw_fitness_coach_\d+_(month|year)ly/.test(subscribe.body),
+    );
+    check(
+      "neponúka tenisové ceny (plaw_coach_…)",
+      !/plaw_coach_\d+_(month|year)ly/.test(subscribe.body),
+    );
+  }
+
   section("2) Kódy cvičení = 10 kondičných zameraní");
   const codes = await request("/drill-codes", { host: APP_HOST, cookies });
   const codesText = textOf(codes.body);

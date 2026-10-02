@@ -10,13 +10,28 @@
  * (ten plní aj verejný web); tu je len identita plánu.
  */
 
+import type { DisciplineId } from "@/lib/disciplines/types";
+
 export type BillingInterval = "month" | "year";
 
 export const BILLING_INTERVALS: readonly BillingInterval[] = ["month", "year"];
 
-/** Produkt trénerskej hladiny. `players` = koľko hráčov naraz aktívnych. */
-export function coachProductId(players: number) {
-  return `plaw_coach_${players}`;
+/**
+ * Produkt trénerskej hladiny. `players` = koľko hráčov naraz aktívnych.
+ *
+ * **Každá disciplína má vlastné produkty** (rozhodnuté 2026-08-16, docs
+ * `cennik-navrh.md` §6 bod 2; zavedené 2026-10-02) s rovnakými cenami — aby
+ * bolo v Stripe vidno, koľko zarobila ktorá appka, a aby zákazník v pokladni
+ * videl, za čo platí. Disciplína je povinná, rovnako ako všade inde.
+ *
+ * **Tenis si necháva ID bez prefixu** (`plaw_coach_3`): tak vznikol pred
+ * spustením a viažu sa naň ostré predplatné. ID produktu sa v Stripe nedá
+ * zmeniť, názov áno.
+ */
+export function coachProductId(players: number, discipline: DisciplineId) {
+  return discipline === "tennis"
+    ? `plaw_coach_${players}`
+    : `plaw_${discipline}_coach_${players}`;
 }
 
 /** Produkt pre sledujúceho (hráč, rodič, manažér) — vždy jeden hráč. */
@@ -35,11 +50,20 @@ export function priceLookupKey(productId: string, interval: BillingInterval) {
  * Kľúče, ktoré smie pokladňa prijať od prehliadača. Bez tohto zoznamu by si
  * ktokoľvek poslal ľubovoľný `lookup_key` — vrátane cudzieho alebo takého,
  * ktorý raz v účte pribudne na inú vec.
+ *
+ * Overuje sa proti hladinám TEJ disciplíny, v ktorej appke tréner platí —
+ * inak by si v kondičke kúpil tenisový produkt a v Stripe by sa tržby
+ * pomiešali.
  */
-export function isKnownCoachLookupKey(value: string, players: readonly number[]) {
+export function isKnownCoachLookupKey(
+  value: string,
+  players: readonly number[],
+  discipline: DisciplineId,
+) {
   return players.some((count) =>
     BILLING_INTERVALS.some(
-      (interval) => priceLookupKey(coachProductId(count), interval) === value,
+      (interval) =>
+        priceLookupKey(coachProductId(count, discipline), interval) === value,
     ),
   );
 }

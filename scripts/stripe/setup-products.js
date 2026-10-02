@@ -114,17 +114,32 @@ async function main() {
     pathToFileURL(path.join(ROOT, "lib", "landing-pricing.ts")).href
   );
 
+  // ID produktu skladá TÁ ISTÁ funkcia, ktorou ho hľadá pokladňa — inak by
+  // sa pri ďalšej disciplíne rozišli a pokladňa by hľadala neexistujúcu cenu.
+  const { coachProductId } = await import(
+    pathToFileURL(path.join(ROOT, "lib", "stripe-plans.ts")).href
+  );
+
+  // Každá disciplína má vlastné produkty s rovnakými cenami (docs
+  // `cennik-navrh.md` §6 bod 2): v Stripe je tak vidno, koľko zarobila ktorá
+  // appka, a zákazník v pokladni vidí, za čo platí. Šport preto nesie aj
+  // NÁZOV — ten sa v Stripe dá meniť kedykoľvek, ID nie.
+  const disciplines = [
+    { id: "tennis", label: "Tennis", coach: "a tennis coach" },
+    { id: "fitness", label: "Fitness", coach: "a strength and conditioning coach" },
+  ];
+
   const plans = [
-    ...COACH_TIERS.map((tier) => ({
-      id: `plaw_coach_${tier.players}`,
-      name: `P.L.A.W — Coach, ${tier.players} players`,
+    ...disciplines.flatMap((discipline) => COACH_TIERS.map((tier) => ({
+      id: coachProductId(tier.players, discipline.id),
+      name: `P.L.A.W ${discipline.label} — Coach, ${tier.players} players`,
       // Popis hovorí VÝSLOVNE, že predávame softvér a nie tréning. Managed
       // Payments je len pre plne automatizovaný digitálny produkt a Stripe
       // z neho vylučuje služby s ľudským zásahom, „napríklad živý tréning
       // jeden na jedného". Nás sa to netýka — tréning robí tréner svojmu
       // hráčovi mimo appky —, ale názov „Coach" sa dá pri rýchlom čítaní
       // pochopiť inak, a mýlka by znamenala spätnú daňovú povinnosť.
-      description: `Software subscription (SaaS) for a tennis coach — plan, log and analyse practices for up to ${tier.players} active players. Coaching services are not included.`,
+      description: `Software subscription (SaaS) for ${discipline.coach} — plan, log and analyse practices for up to ${tier.players} active players. Coaching services are not included.`,
       // Tréner je podnikateľ, sledujúci spotrebiteľ. Rozdiel medzi „business"
       // a „personal use" má význam len pri predaji do USA, ale zaradenie má
       // byť pravdivé.
@@ -132,10 +147,14 @@ async function main() {
       // Hladinu číta pri platbe webhook a zapisuje ju do `profiles.player_limit`
       // (docs/stripe.md). Preto patrí k cene, nie do tabuľky v kóde webhooku —
       // inak by sa pri pridaní hladiny museli meniť dve miesta.
-      metadata: { plaw_player_limit: String(tier.players), plaw_role: "coach" },
+      metadata: {
+        plaw_player_limit: String(tier.players),
+        plaw_role: "coach",
+        plaw_discipline: discipline.id,
+      },
       monthly: tier.monthly,
       yearly: tier.yearly,
-    })),
+    }))),
     {
       id: "plaw_follower",
       name: "P.L.A.W — Player, parent or manager",

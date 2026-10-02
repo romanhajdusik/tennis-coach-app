@@ -104,6 +104,12 @@ export type CheckoutSessionInput = {
    * platba patri trenerovi alebo sledujucemu — bez dohladavania v nasej DB.
    */
   role: "coach" | "follower";
+  /**
+   * V ktorej appke sa platilo. Len na čítanie v Stripe (rovnako ako `role`) —
+   * webhook ju nečíta, lebo predplatné patrí ÚČTU a ten je spoločný pre obe
+   * nasadenia. Nepovinná kvôli testom, ktoré pokladňu zakladajú priamo.
+   */
+  discipline?: string;
 };
 
 /**
@@ -122,6 +128,7 @@ export async function createCheckoutSession({
   cancelUrl,
   playerLimit,
   role,
+  discipline,
 }: CheckoutSessionInput) {
   // Tie isté metadáta sa píšu na platbu AJ na vzniknuté predplatné. Nie je to
   // duplicita pre istotu: `checkout.session.completed` nesie metadáta platby,
@@ -130,6 +137,7 @@ export async function createCheckoutSession({
   const meta = {
     plaw_user_id: userId,
     plaw_role: role,
+    ...(discipline === undefined ? {} : { plaw_discipline: discipline }),
     ...(playerLimit === undefined
       ? {}
       : { plaw_player_limit: String(playerLimit) }),

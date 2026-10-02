@@ -276,13 +276,17 @@ async function main() {
     }
   }
 
-  section("4) Ceny v Stripe existujú a sedia na cent");
+  section("4) Ceny v Stripe existujú a sedia na cent — pre každú disciplínu");
+  // Kondičné nasadenie má vlastné produkty s rovnakými sumami. Overujú sa
+  // tu, lebo kondičný dev server táto sada nespúšťa — bez toho by chýbajúca
+  // kondičná cena vyšla najavo až pri pokuse zaplatiť na fitness doméne.
+  for (const discipline of ["tennis", "fitness"])
   for (const tier of COACH_TIERS) {
     for (const [interval, eur] of [
       ["month", tier.monthly],
       ["year", tier.yearly],
     ]) {
-      const key = priceLookupKey(coachProductId(tier.players), interval);
+      const key = priceLookupKey(coachProductId(tier.players, discipline), interval);
       const found = await (
         await fetch(
           `https://api.stripe.com/v1/prices?lookup_keys[]=${key}&limit=1&active=true`,
@@ -310,7 +314,7 @@ async function main() {
   process.env.STRIPE_SECRET_KEY = secret;
 
   const topTier = COACH_TIERS[COACH_TIERS.length - 1];
-  const lookupKey = priceLookupKey(coachProductId(topTier.players), "year");
+  const lookupKey = priceLookupKey(coachProductId(topTier.players, "tennis"), "year");
   const priceId = await findPriceIdByLookupKey(lookupKey);
   check(`cena ${lookupKey} sa nájde podľa lookup_key`, Boolean(priceId));
 

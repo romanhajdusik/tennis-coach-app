@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requestOrigin } from "@/lib/request-origin";
 import { getSubscription } from "@/lib/subscription";
 import { COACH_TIERS } from "@/lib/landing-pricing";
+import { getDeploymentDiscipline } from "@/lib/discipline";
 import {
   isFollowerLookupKey,
   isKnownCoachLookupKey,
@@ -82,9 +83,15 @@ export async function startCheckout(
   // žiadna neprislúcha a do metadát sa nedostane (viď `CheckoutSessionInput`).
   let playerLimit: number | undefined;
 
+  // Disciplína NASADENIA — v ktorej appke tréner platí. Federačný tréner sem
+  // nedôjde (vyššie), takže členstvo ju meniť nemôže. Kľúč z prehliadača sa
+  // overuje proti hladinám tejto disciplíny, aby si v kondičke nekúpil
+  // tenisový produkt.
+  const discipline = getDeploymentDiscipline();
+
   if (isCoach) {
     const tier = COACH_TIERS.find((candidate) =>
-      isKnownCoachLookupKey(lookupKey, [candidate.players]),
+      isKnownCoachLookupKey(lookupKey, [candidate.players], discipline),
     );
     if (!tier) {
       return { error: "unknownPlan" };
@@ -122,6 +129,7 @@ export async function startCheckout(
       cancelUrl: `${origin}${back}`,
       playerLimit,
       role: isCoach ? "coach" : "follower",
+      discipline,
     });
     return { url };
   } catch (error) {
