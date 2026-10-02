@@ -60,3 +60,22 @@ function formatDecimal(value: number) {
 export function centsPerPlayerDay(annualTotal: number, players: number) {
   return formatDecimal((annualTotal / 365 / players) * 100);
 }
+
+/**
+ * Dlaždice trénerského cenníka, naformátované pre `LandingPricing`. Volá ju
+ * tenisový aj kondičný landing — sumy sú rovnaké (docs `cennik-navrh.md`
+ * §6 bod 2), takže výpočet má byť tiež jeden. `playerCounts` sú štítky
+ * z textov stránky („3 active players"), lebo pluralita je vec jazyka.
+ */
+export function coachTierViews(playerCounts: readonly string[]) {
+  return COACH_TIERS.map((tier, index) => ({
+    players: playerCounts[index],
+    monthly: formatEur(tier.monthly),
+    yearly: formatEur(tier.yearly),
+    yearlyPerMonth: formatEur(tier.yearly / 12),
+    monthlyYearTotal: formatEur(tier.monthly * 12),
+    centsMonthly: centsPerPlayerDay(tier.monthly * 12, tier.players),
+    centsYearly: centsPerPlayerDay(tier.yearly, tier.players),
+    featured: tier.featured === true,
+  }));
+}

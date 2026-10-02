@@ -9,11 +9,13 @@ import { logout } from "@/lib/actions/auth";
 import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { LandingPage } from "@/components/landing-page";
 import { DisciplineIntro } from "@/components/discipline-intro";
+import { LandingFitness } from "@/components/landing-fitness";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
 import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
 import { ogFaceOf, ogMetadata } from "@/lib/og";
 import {
+  loadLandingFitnessMessages,
   loadLandingHracMessages,
   loadLandingMessages,
   loadRozcestnikMessages,
@@ -78,7 +80,21 @@ export async function generateMetadata(): Promise<Metadata> {
   // dali do karty prehliadača cudziu vetu („Practices under control. Right
   // there on the court."). Tá dostane neutrálny názov appky — ten istý, aký
   // nesie ikona na ploche.
-  if ((await getDiscipline()) !== "tennis") {
+  const discipline = await getDiscipline();
+  if (discipline === "fitness") {
+    const t = await loadLandingFitnessMessages();
+    return {
+      title: t.metaTitle,
+      description: t.metaDescription,
+      robots: publicRobots(),
+      ...ogMetadata({
+        face: ogFaceOf(host),
+        title: t.metaTitle,
+        description: t.metaDescription,
+      }),
+    };
+  }
+  if (discipline !== "tennis") {
     const tCommon = await getTranslations("Common");
     return {
       title: tCommon("appTitle"),
@@ -150,10 +166,16 @@ export default async function Home() {
     // Landing je marketing TENISOVÉHO produktu (jeho názov, screenshoty
     // z kurtu, cenník). Iná disciplína ju nesmie vykresliť ani omylom —
     // kondičný tréner na `fitness.plawsports.com` sem chodí pracovať,
-    // nie čítať o tenise. Vlastný marketing kondička nemá, dostane len
-    // úvodnú obrazovku bez sľubov (fotka + prihlásenie), ak ju konfigurácia
-    // disciplíny má; inak ide rovno na prihlásenie ako do 2026-09-21.
+    // nie čítať o tenise. Kondička má vlastný krátky landing (nižšie);
+    // iná disciplína by dostala úvodnú obrazovku bez sľubov, ak ju
+    // konfigurácia má, inak prihlásenie.
     const config = await getDisciplineConfig();
+    // Kondička má od 2026-10-02 vlastný krátky landing s cenníkom — dovtedy
+    // len úvodnú obrazovku bez sľubov, takže kondičný tréner cenu nevidel
+    // nikde. Ostatné disciplíny (dnes žiadna) majú úvod alebo prihlásenie.
+    if (config.id === "fitness") {
+      return <LandingFitness config={config} />;
+    }
     if (config.id !== "tennis") {
       if (config.intro) {
         return (

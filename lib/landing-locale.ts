@@ -303,3 +303,27 @@ export async function loadRozcestnikMessages(): Promise<RozcestnikMessages> {
   const messages = await import("../messages/en/rozcestnik.json");
   return messages.default as RozcestnikMessages;
 }
+
+// Landing KONDIČKY na `fitness.plawsports.com` (od 2026-10-02). Do vtedy
+// kondička vlastný marketing nemala, len úvodnú obrazovku bez sľubov — a
+// kondičný tréner sa tak o cene nedozvedel nikde.
+//
+// Nesie len to, čím sa líši od tenisu (úvod, tri body, titulky). **Cenník
+// berie riadky a štítky z `landing.json`** (`loadLandingMessages`): sľub
+// „čo dostaneš bez predplatného" je pre obe disciplíny ten istý a stráži ho
+// jedno pole `WITHOUT_SUBSCRIPTION` — dve kópie textu by sa rozišli.
+export type LandingFitnessMessages = {
+  metaTitle: string;
+  metaDescription: string;
+  heroSubtitle: string;
+  pointsTitle: string;
+  points: { title: string; text: string }[];
+  pricingTitle: string;
+  pricingSubtitle: string;
+  footerTagline: string;
+};
+
+export async function loadLandingFitnessMessages(): Promise<LandingFitnessMessages> {
+  const messages = await import("../messages/en/landing-fitness.json");
+  return messages.default as LandingFitnessMessages;
+}

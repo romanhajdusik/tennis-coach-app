@@ -71,10 +71,37 @@ async function main() {
     "vedie na prihlásenie aj registráciu",
     /href="\/login"/.test(home.body) && /href="\/register"/.test(home.body),
   );
+  // Od 2026-10-02 má kondička vlastný krátky landing S CENNÍKOM. Tenisový
+  // marketing sa tu ale stále vykresliť nesmie: štítok „Tennis", screenshoty
+  // z tenisovej appky ani odkaz pre rodiča na plaw.click (menuje tenis).
   check(
-    "žiadny tenisový marketing (štítok, cenník)",
-    !/\bTennis\b|€/.test(homeText),
+    "žiadny tenisový marketing (štítok, screenshoty, plaw.click)",
+    !/\bTennis\b/.test(homeText) &&
+      !home.body.includes("/screenshots/") &&
+      !home.body.includes("plaw.click"),
     homeText.slice(0, 200),
+  );
+  const { COACH_TIERS, formatEur } = await import(
+    require("node:url").pathToFileURL(
+      require("node:path").join(__dirname, "..", "..", "lib", "landing-pricing.ts"),
+    ).href
+  );
+  check(
+    "cenník ukazuje všetky tri hladiny, mesačne aj ročne",
+    COACH_TIERS.every(
+      (tier) =>
+        home.body.includes(formatEur(tier.monthly)) &&
+        home.body.includes(formatEur(tier.yearly)),
+    ),
+  );
+  check(
+    "pod fotkou je odkaz na cenník a cenník má kotvu",
+    /href="#cennik"/.test(home.body) && /id="cennik"/.test(home.body),
+  );
+  check(
+    "titulok stránky je kondičný",
+    /<title>[^<]*P\.L\.A\.W Fitness[^<]*<\/title>/.test(home.body),
+    (home.body.match(/<title>[^<]*<\/title>/) ?? [""])[0],
   );
 
   const cookies = await authCookies("demo@plaw.win");

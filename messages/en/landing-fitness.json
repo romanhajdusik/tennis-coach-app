@@ -1,0 +1,23 @@
+{
+  "metaTitle": "P.L.A.W Fitness — a training diary for fitness coaches in racket sports",
+  "metaDescription": "Plan, log and analyze fitness sessions for racket-sport players. Your own exercises, clear charts, and a link to the player's tennis coach.",
+  "heroSubtitle": "A training diary for fitness coaches in racket sports.",
+  "pointsTitle": "What P.L.A.W Fitness does",
+  "points": [
+    {
+      "title": "Your own exercises",
+      "text": "Ten focus areas, from endurance and strength to mobility and regeneration. In each one you write down your own exercises — no templates pushed on you."
+    },
+    {
+      "title": "See where the time goes",
+      "text": "Charts show how each player's training time splits across focus areas, and how it compares with the previous period."
+    },
+    {
+      "title": "Work alongside the tennis coach",
+      "text": "Give the player's tennis coach a link code and they see your sessions, read-only. If they choose, you see a summary of their court work in return."
+    }
+  ],
+  "pricingTitle": "Pricing",
+  "pricingSubtitle": "14 days to try it out, then it's paid. Every plan includes every feature — the only difference is how many players you keep active at once.",
+  "footerTagline": "P.L.A.W Fitness — a training diary for fitness coaches in racket sports"
+}

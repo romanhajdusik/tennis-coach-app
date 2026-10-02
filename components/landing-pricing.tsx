@@ -46,9 +46,13 @@ export type PricingLabels = {
    * /cennik-hrac: kto sem zablúdil, má najprv vidieť, čo dostane — cena je
    * odtiaľ jeden klik. Trénerské a sledujúce ceny tak navyše naďalej nestoja
    * vedľa seba, čo je zámer z docs/cennik-navrh.md §8.2.
+   *
+   * **Nepovinné:** kondička ich neposiela (od 2026-10-02). plaw.click menuje
+   * tenis a rodič kondičné tréningy nevidí, takže by odkaz sľuboval viac,
+   * než appka dá.
    */
-  followerText: string;
-  followerCta: string;
+  followerText?: string;
+  followerCta?: string;
   cta: string;
 };
 
@@ -199,15 +203,17 @@ export function LandingPricing({
           {labels.cta}
         </Link>
         <p className="text-xs text-muted">{labels.vat}</p>
-        <p className="text-sm text-muted">
-          {labels.followerText}{" "}
-          <Link
-            href={PARENT_ORIGIN}
-            className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
-          >
-            {labels.followerCta}
-          </Link>
-        </p>
+        {labels.followerText && labels.followerCta ? (
+          <p className="text-sm text-muted">
+            {labels.followerText}{" "}
+            <Link
+              href={PARENT_ORIGIN}
+              className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
+            >
+              {labels.followerCta}
+            </Link>
+          </p>
+        ) : null}
       </div>
     </>
   );

@@ -3,11 +3,12 @@ import { getTranslations } from "next-intl/server";
 import { Wordmark } from "@/components/wordmark";
 
 /**
- * Úvodná obrazovka nasadenia BEZ vlastného landingu (dnes kondička na
+ * Úvodná obrazovka disciplíny bez tenisového landingu (kondička na
  * `fitness.plawsports.com`, od 2026-09-21) — fotka, názov appky a dve
- * tlačidlá. **Zámerne bez marketingu:** žiadne funkcie, ceny ani sľuby.
- * Landing je marketing tenisového produktu a pre kondičku by bol nepravdivý;
- * pred touto obrazovkou šiel odhlásený rovno na prihlásenie.
+ * tlačidlá. Od 2026-10-02 je to **vrch kondičného landingu**
+ * (`components/landing-fitness.tsx`): dostane vetu pod štítok a odkaz na
+ * cenník nižšie. Oboje je nepovinné — bez nich je to pôvodná obrazovka bez
+ * sľubov.
  *
  * Rozloženie aj stmavenie (`.hero-scrim` v globals.css) sú tie isté ako úvod
  * tenisového landingu na telefóne, aby obe appky pôsobili ako súrodenci.
@@ -21,10 +22,19 @@ export async function DisciplineIntro({
   photo,
   label,
   domain,
+  subtitle,
+  more,
 }: {
   photo: string;
   label: string;
   domain: string;
+  /** Jedna veta pod štítkom — čo appka je. */
+  subtitle?: string;
+  /**
+   * Odkaz na obsah pod fotkou. Fotka zaberá celú obrazovku, takže bez neho
+   * nie je vidno, že stránka pokračuje.
+   */
+  more?: { href: string; label: string };
 }) {
   const t = await getTranslations("Home");
 
@@ -62,6 +72,11 @@ export async function DisciplineIntro({
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {label}
         </span>
+        {subtitle ? (
+          <p className="mt-1 max-w-xs text-sm text-balance text-foreground/85">
+            {subtitle}
+          </p>
+        ) : null}
       </div>
 
       <div className="flex w-full max-w-sm flex-col gap-3">
@@ -89,6 +104,14 @@ export async function DisciplineIntro({
         >
           {t("login")}
         </Link>
+        {more ? (
+          <a
+            href={more.href}
+            className="mt-1 text-sm font-medium text-foreground/80 underline underline-offset-4 transition-colors hover:text-foreground"
+          >
+            {more.label}
+          </a>
+        ) : null}
       </div>
     </section>
   );

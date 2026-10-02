@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { loadLandingMessages } from "@/lib/landing-locale";
 import { LandingPricing } from "@/components/landing-pricing";
-import {
-  COACH_TIERS,
-  centsPerPlayerDay,
-  formatEur,
-} from "@/lib/landing-pricing";
+import { coachTierViews } from "@/lib/landing-pricing";
 import {
   CalendarIcon,
   ChartBarIcon,
@@ -36,16 +32,7 @@ export async function LandingPage() {
   const t = await loadLandingMessages();
   // Ceny formátuje server, v prehliadači sa prepína len obdobie. Počet hráčov
   // je reťazec z textov, nie číslo — vetu o pluralite nesie text stránky.
-  const tiers = COACH_TIERS.map((tier, index) => ({
-    players: t.pricingPlayerCounts[index],
-    monthly: formatEur(tier.monthly),
-    yearly: formatEur(tier.yearly),
-    yearlyPerMonth: formatEur(tier.yearly / 12),
-    monthlyYearTotal: formatEur(tier.monthly * 12),
-    centsMonthly: centsPerPlayerDay(tier.monthly * 12, tier.players),
-    centsYearly: centsPerPlayerDay(tier.yearly, tier.players),
-    featured: tier.featured === true,
-  }));
+  const tiers = coachTierViews(t.pricingPlayerCounts);
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">

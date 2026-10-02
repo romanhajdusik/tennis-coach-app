@@ -126,7 +126,7 @@ async function main() {
   // NÁZOV — ten sa v Stripe dá meniť kedykoľvek, ID nie.
   const disciplines = [
     { id: "tennis", label: "Tennis", coach: "a tennis coach" },
-    { id: "fitness", label: "Fitness", coach: "a strength and conditioning coach" },
+    { id: "fitness", label: "Fitness", coach: "a fitness coach" },
   ];
 
   const plans = [
