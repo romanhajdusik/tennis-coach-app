@@ -68,6 +68,34 @@ export function isKnownCoachLookupKey(
   );
 }
 
+/** Disciplíny, ktoré majú v Stripe vlastné trénerské produkty. */
+const SOLD_DISCIPLINES: readonly DisciplineId[] = ["tennis", "fitness"];
+
+/**
+ * Koľko hráčov patrí k cene s týmto `lookup_key` — alebo `null`, keď to nie
+ * je trénerská cena (sledujúci, neznámy kľúč).
+ *
+ * **Prečo to webhook potrebuje (oprava 2026-10-03):** pri zmene plánu
+ * v zákazníckom portáli Stripe vymení CENU predplatného, ale jeho METADÁTA
+ * nechá tak, ako ich zapísala pokladňa. Hladina čítaná z metadát by tak
+ * ostala pôvodná — tréner by platil za 6 hráčov a appka by mu dovolila 3
+ * (alebo naopak). Rozhoduje preto cena, ktorá sa naozaj platí.
+ *
+ * Kľúč sa neparsuje regulárnym výrazom, ale porovná so všetkými známymi —
+ * rovnaká zásada ako pri `isKnownCoachLookupKey`.
+ */
+export function playerLimitOfLookupKey(
+  value: string,
+  players: readonly number[],
+): number | null {
+  for (const discipline of SOLD_DISCIPLINES) {
+    for (const count of players) {
+      if (isKnownCoachLookupKey(value, [count], discipline)) return count;
+    }
+  }
+  return null;
+}
+
 /**
  * Smie pokladňa prijať tento kľúč ako cenu pre SLEDUJÚCEHO?
  *

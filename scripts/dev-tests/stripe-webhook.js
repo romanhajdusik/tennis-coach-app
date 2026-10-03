@@ -163,14 +163,42 @@ async function main() {
     );
     check("hladina je 6 hráčov", activated.player_limit === 6, String(activated.player_limit));
 
-    section("3) Zmena plánu prepíše hladinu, zrušenie ju NEZNÍŽI");
-    const upgraded = event("customer.subscription.updated", {
+    section("3) Zmena plánu prepíše hladinu podľa CENY, zrušenie ju NEZNÍŽI");
+    // Takto vyzerá skutočná zmena plánu v portáli: metadáta predplatného
+    // ostanú z pokladne (6), vymení sa len cena. Do 2026-10-03 tu test
+    // posielal metadáta s novou hladinou — to Stripe nerobí, takže test
+    // prechádzal, hoci appka nechávala trénerovi starú hladinu.
+    const withPrice = (lookupKey) => ({
       id: "sub_test_fake",
       status: "active",
-      metadata: { plaw_user_id: account.id, plaw_role: "coach", plaw_player_limit: "12" },
+      metadata: { plaw_user_id: account.id, plaw_role: "coach", plaw_player_limit: "6" },
+      items: { data: [{ price: { id: "price_test_fake", lookup_key: lookupKey } }] },
     });
+    const upgraded = event("customer.subscription.updated", withPrice("plaw_coach_12_monthly"));
     await post(upgraded, sign(upgraded, SECRET));
-    check("po prechode na vyššiu hladinu je 12", (await profile()).player_limit === 12);
+    check(
+      "prechod na 12 (metadáta stále hovoria 6) → hladina 12",
+      (await profile()).player_limit === 12,
+    );
+
+    const downgraded = event("customer.subscription.updated", withPrice("plaw_fitness_coach_3_yearly"));
+    await post(downgraded, sign(downgraded, SECRET));
+    check(
+      "prechod na kondičnú 3 → hladina 3",
+      (await profile()).player_limit === 3,
+    );
+
+    // Cena, ktorú nepoznáme, hladinu nezmení na nezmysel — platí záloha
+    // z metadát.
+    const unknown = event("customer.subscription.updated", withPrice("niekto_iny_price"));
+    await post(unknown, sign(unknown, SECRET));
+    check(
+      "neznáma cena → záloha z metadát (6)",
+      (await profile()).player_limit === 6,
+    );
+
+    const upgradedAgain = event("customer.subscription.updated", withPrice("plaw_coach_12_yearly"));
+    await post(upgradedAgain, sign(upgradedAgain, SECRET));
 
     const canceled = event("customer.subscription.deleted", {
       id: "sub_test_fake",

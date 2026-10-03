@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { verifyWebhookEvent } from "@/lib/stripe";
+import { playerLimitOfLookupKey } from "@/lib/stripe-plans";
+import { COACH_TIERS } from "@/lib/landing-pricing";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 
 /**
@@ -91,8 +93,22 @@ function outcomeFor(event: Stripe.Event): Outcome {
     event.type === "customer.subscription.deleted"
   ) {
     const subscription = event.data.object as Stripe.Subscription;
-    const { userId, playerLimit } = readMeta(subscription.metadata);
+    const meta = readMeta(subscription.metadata);
+    const userId = meta.userId;
     if (!userId) return null;
+
+    // Hladinu určuje CENA, ktorá sa platí, nie metadáta. Pri zmene plánu
+    // v portáli Stripe vymení cenu, ale metadáta nechá z pokladne — appka
+    // by tak trénerovi, ktorý prešiel z 3 na 6 hráčov, nechala limit 3.
+    // Metadáta ostávajú len zálohou pre cenu, ktorú nepoznáme.
+    const lookupKey = subscription.items?.data?.[0]?.price?.lookup_key;
+    const playerLimit =
+      (lookupKey
+        ? playerLimitOfLookupKey(
+            lookupKey,
+            COACH_TIERS.map((tier) => tier.players),
+          )
+        : null) ?? meta.playerLimit;
 
     const status =
       event.type === "customer.subscription.deleted"
