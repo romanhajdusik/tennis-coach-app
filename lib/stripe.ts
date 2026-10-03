@@ -178,9 +178,17 @@ export async function createPortalSession(
   customerId: string,
   returnUrl: string,
 ) {
+  // Každá appka má vlastné nastavenie portálu (od 2026-10-03): zoznam plánov,
+  // medzi ktorými sa dá prepínať, je v Stripe súčasťou nastavenia portálu,
+  // a v spoločnom by tenisový tréner videl aj kondičné plány a naopak.
+  // Premenná je nastavená len v nasadení, ktoré NEpoužíva predvolený portál
+  // (dnes kondička, `plaw-fitness`); bez nej Stripe otvorí predvolený.
+  const configuration = process.env.STRIPE_PORTAL_CONFIGURATION;
+
   const session = await stripeRequest("POST", "/billing_portal/sessions", {
     customer: customerId,
     return_url: returnUrl,
+    ...(configuration ? { configuration } : {}),
   });
 
   return session.url as string;
