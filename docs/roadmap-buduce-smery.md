@@ -1079,6 +1079,91 @@ do `organizations` — kým tam nie je, appka sa správa presne ako predtým.
 
 ---
 
+## 6. HRÁČSKY DENNÍK — hráč si zapisuje tréningy sám (návrh 2026-10-05, PRIORITA)
+
+**Stav: návrh, nekóduje sa.** User ho označil za prioritu — požiadavka od
+hráčov bola veľká.
+
+### 6.1 Zámer (slová usera)
+
+Hráč, ktorého tréner digitál odmieta, si chce tréningy zapisovať sám: použije
+cvičenia, ktoré na tréningoch robia, a získa vlastný digitálny denník aj
+analytiku. **„Hráč, ktorý myslí profesionálne, si má tréning zapisovať — má
+potom svoje analýzy a tréner má svoje."**
+
+**Hráči federácie sú hlavný dôvod.** Vo federácii vlastní dáta organizácia
+(§5.4) a rodičovská vrstva tam nie je (§5.6). Hráčsky denník je pre nich
+**jediná cesta, ako vlastniť svoje dáta a ukázať ich rodičovi**.
+
+### 6.2 Rozhodnutia usera (2026-10-05)
+
+1. **Hráčov a trénerov denník sú ZÁMERNE ODDELENÉ.** Nič sa nespája do
+   jedného pohľadu a hráč nevidí trénerove tréningy vo svojom denníku. Dva
+   účty (zapisujúci a sledujúci) sú v poriadku.
+2. **Každý si tréning zapisuje sám.** Kópia tréningu spoluhráčovi („hrali sme
+   spolu") sa **nerobí** — navrhol som ju ako možnosť, user ju zamietol.
+3. Zapisujúci hráč **smie vydať kód rodičovi** (sleduje jeho denník len na
+   čítanie) a **prijať kód od kondičného trénera** (prepojenie kariet ako
+   tenis ↔ kondička, §2.3).
+4. Záznamy patria hráčovi a ostávajú mu. Bez predplatného platí to, čo pri
+   trénerovi: história, zoznam, detail, kalendár a kódy cvičení zadarmo,
+   zápis a analytika len s predplatným.
+
+### 6.3 Návrh: žiadna nová appka ani schéma
+
+Zapisujúci hráč je **trénerský účet s jediným hráčom, ktorým je on sám**.
+Zápis, kalendár, analytika, kódy cvičení, kód pre rodiča aj prepojenie
+s kondičkou tak fungujú hneď. Rovnaké pravidlo ako pri športoch: engine sa
+neforkuje.
+
+Prečo to sedí bez veľkých zásahov:
+- `profiles.player_limit` je **predvolene 1** a pri jedinom hráčovi sa
+  prepínač ani roster nevykreslia — appka už dnes vyzerá ako denník jedného
+  človeka.
+- Vlastníctvo je to isté ako pri trénerovi: kto zapísal, tomu dáta patria.
+- **Jeden šport = jeden účet** (§1.1 otázka č. 1) platí aj tu: hráč padelu má
+  padelový denník na `padel.plawsports.com`.
+- Hráč federácie v P.L.A.W účet nemá, takže samostatný hráčsky účet nenaráža
+  na `one_active_membership_per_user`. Federácia jeho denník nevidí a on
+  nevidí jej dáta.
+
+### 6.4 Čo treba postaviť
+
+1. **Označenie účtu.** Účet musí vedieť, že je hráčsky denník, aby appka
+   menila texty a nepredávala mu hladiny 3/6/12. Odporúčam **nový stĺpec**
+   (napr. `profiles.account_kind = 'self'`) namiesto novej hodnoty v `role`
+   — `role = 'coach'` čítajú RLS aj appka na mnohých miestach a nová rola by
+   znamenala prejsť všetky. Hodnota `role = 'player'` už existuje a znamená
+   **sledujúceho** hráča, tá sa nemení.
+2. **Karta hráča vzniká sama pri registrácii** (jeho meno), aby nebol krok
+   „pridaj hráča". Hladina je pevne 1, účet si ju nezdvihne.
+3. **Registrácia:** nová voľba „Player — my own practice diary" popri
+   tréner / rodič / manažér / hráč-sledujúci.
+4. **Texty:** všade, kde appka hovorí „your players", „coach" a pod., má mať
+   hráčsky účet vlastné znenie.
+5. **Stripe:** vlastný produkt na šport (napr. `plaw_padel_self`), mechanizmus
+   `SOLD_DISCIPLINES` z kroku 4 to unesie.
+6. **Verejný web:** landing hráča/rodiča (`plaw.click`) a landingy športov
+   dostanú vstup „No coach on P.L.A.W? Keep your own diary." — po anglicky ako
+   všetok marketing.
+
+### 6.5 Otvorené otázky (pýtať sa po jednej)
+
+1. **Vek — najdôležitejšia.** Registrácia dnes vyžaduje 16+ (účet je zmluva,
+   maloletý ju sám neuzavrie). Veľa hráčov sú juniori. **Odporúčam: účet
+   juniora zakladá rodič** (on je zmluvná strana a platí), junior ho používa.
+   Tak ostáva pravidlo 16+ nedotknuté a zásady ochrany údajov netreba meniť
+   zásadne. Rozhodnúť **pred** stavbou, nie po nej.
+2. **Cena.** Logicky ako sledujúci (6,90 € / 49,90 €), čo je zhodou aj cena
+   trénerskej hladiny pre 3 hráčov. Obchodné rozhodnutie usera.
+3. **Disciplíny:** len športy na kurte, alebo aj kondička (hráč si zapisuje
+   posilňovňu)? Návrh: v1 len kurt.
+4. **Prechod:** ak hráč neskôr začne trénovať sám iných, môže sa hráčsky účet
+   zmeniť na trénerský, alebo si založí nový? Návrh: nový (jednoduchšie,
+   dáta ostanú oddelené ako v bode 6.2.1).
+
+---
+
 ## Prierezové princípy celého ekosystému
 
 - **Spoločné Supabase Auth** drží celý ekosystém — jeden účet hráča naprieč všetkým
