@@ -1170,6 +1170,11 @@ Prečo to sedí bez veľkých zásahov:
 4. **Prechod:** ak hráč neskôr začne trénovať sám iných, môže sa hráčsky účet
    zmeniť na trénerský, alebo si založí nový? Návrh: nový (jednoduchšie,
    dáta ostanú oddelené ako v bode 6.2.1).
+   **ROZHODNUTÉ 2026-10-05: nový trénerský účet.** Premena hráčskeho účtu na
+   trénerský sa nestavia; hráčsky denník ostáva, ako je.
+
+**Všetky štyri otázky sú rozhodnuté (2026-10-05) — návrh je pripravený na
+stavbu podľa §6.4.**
 
 ---
 
