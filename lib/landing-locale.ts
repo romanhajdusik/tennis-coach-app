@@ -338,3 +338,12 @@ export async function loadLandingPadelMessages(): Promise<LandingPadelMessages> 
   const messages = await import("../messages/en/landing-padel.json");
   return messages.default as LandingPadelMessages;
 }
+
+// Landing BEDMINTONU na `badminton.plawsports.com` (od 2026-10-05) — vlastný,
+// rovnako ako padel.
+export type LandingBadmintonMessages = LandingFitnessMessages;
+
+export async function loadLandingBadmintonMessages(): Promise<LandingBadmintonMessages> {
+  const messages = await import("../messages/en/landing-badminton.json");
+  return messages.default as LandingBadmintonMessages;
+}

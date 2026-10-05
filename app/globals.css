@@ -51,6 +51,7 @@
 --------------------------------------------------------------------------- */
 html[data-app="fitness"],
 html[data-app="padel"],
+html[data-app="badminton"],
 html[data-app="org"] {
   --color-background: #1e1e21;
   --color-surface: #27262b;
@@ -72,6 +73,15 @@ html[data-app="padel"] {
   --color-primary: #f28c28;
   --color-primary-hover: #f5a04a;
   --color-primary-foreground: #2a1405;
+}
+
+/* Bedminton = zelená (rozhodol user 2026-10-05). Čistá zelená zámerne medzi
+   limetkovým tenisom a tyrkysovou kondičkou, aby sa od oboch odlíšila.
+   Text na ploche 7.4:1, plocha voči pozadiu 7.4:1. */
+html[data-app="badminton"] {
+  --color-primary: #3ec46d;
+  --color-primary-hover: #55cf80;
+  --color-primary-foreground: #06240f;
 }
 
 html[data-app="org"] {

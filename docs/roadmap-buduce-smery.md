@@ -252,6 +252,10 @@ nesmú zmeniť.
    oranžová `#f28c28` (`data-app="padel"`), web len po anglicky. Ešte chýba
    OG náhľad padelu (`lib/og.ts` mu dnes dá tenisový) a hostiteľ
    v `lib/public-face.ts` — oboje s nasadením (krok 5).
+   **Bedminton hotový** rovnako (`components/landing-badminton.tsx`,
+   `messages/en/landing-badminton.json`, texty schválil user): bez fotky,
+   zelená `#3ec46d` (zámerne medzi limetkovým tenisom a tyrkysovou
+   kondičkou). Pickleball landing zatiaľ nemá.
 5. **Sledujúci (rodič/hráč)** — `plaw.click` dnes menuje tenis. Dostane
    padelový rodič rovnakú vrstvu? Neblokuje prvú vlnu.
 6. **Federácia pre iný šport** — org subdomény sú `<slug>.plaw.win`

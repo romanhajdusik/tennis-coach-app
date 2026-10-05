@@ -11,6 +11,7 @@ import { LandingPage } from "@/components/landing-page";
 import { DisciplineIntro } from "@/components/discipline-intro";
 import { LandingFitness } from "@/components/landing-fitness";
 import { LandingPadel } from "@/components/landing-padel";
+import { LandingBadminton } from "@/components/landing-badminton";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
 import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
@@ -19,6 +20,7 @@ import {
   loadLandingFitnessMessages,
   loadLandingHracMessages,
   loadLandingPadelMessages,
+  loadLandingBadmintonMessages,
   loadLandingMessages,
   loadRozcestnikMessages,
 } from "@/lib/landing-locale";
@@ -83,11 +85,17 @@ export async function generateMetadata(): Promise<Metadata> {
   // there on the court."). Tá dostane neutrálny názov appky — ten istý, aký
   // nesie ikona na ploche.
   const discipline = await getDiscipline();
-  if (discipline === "fitness" || discipline === "padel") {
+  if (
+    discipline === "fitness" ||
+    discipline === "padel" ||
+    discipline === "badminton"
+  ) {
     const t =
       discipline === "padel"
         ? await loadLandingPadelMessages()
-        : await loadLandingFitnessMessages();
+        : discipline === "badminton"
+          ? await loadLandingBadmintonMessages()
+          : await loadLandingFitnessMessages();
     return {
       title: t.metaTitle,
       description: t.metaDescription,
@@ -182,9 +190,12 @@ export default async function Home() {
       return <LandingFitness config={config} />;
     }
     // Padel má od 2026-10-05 vlastný landing — každý šport svoj, nie spoločný
-    // (rozhodol user). Badminton a pickleball ho zatiaľ nemajú.
+    // (rozhodol user). Pickleball ho zatiaľ nemá.
     if (config.id === "padel") {
       return <LandingPadel config={config} />;
+    }
+    if (config.id === "badminton") {
+      return <LandingBadminton config={config} />;
     }
     if (config.id !== "tennis") {
       if (config.intro) {
