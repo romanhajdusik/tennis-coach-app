@@ -79,7 +79,9 @@ export default async function DirectorDrillCodesPage({
               }
             >
               {isCourtDiscipline(id)
-                ? t("disciplineTennis")
+                ? t("disciplineCourt", {
+                    sport: disciplineConfig(id).label,
+                  })
                 : t("disciplineFitness")}
             </Link>
           ))}

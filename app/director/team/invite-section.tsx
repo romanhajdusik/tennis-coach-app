@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   FITNESS_DISCIPLINE_ID,
+  disciplineConfig,
   isCourtDiscipline,
   isDisciplineId,
 } from "@/lib/disciplines/registry";
@@ -62,6 +63,10 @@ export function InviteSection({
   courtDiscipline: DisciplineId;
 }) {
   const t = useTranslations("Director.team");
+  // Šport zväzu menom („Tennis coach", „Padel coach"), nie „court".
+  const courtLabel = t("disciplineCourt", {
+    sport: disciplineConfig(courtDiscipline).label,
+  });
   const [inviteState, inviteAction, invitePending] = useActionState<
     InviteFormState,
     FormData
@@ -104,7 +109,7 @@ export function InviteSection({
               defaultValue={courtDiscipline}
               className="rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground"
             >
-              <option value={courtDiscipline}>{t("disciplineTennis")}</option>
+              <option value={courtDiscipline}>{courtLabel}</option>
               <option value={FITNESS_DISCIPLINE_ID}>
                 {t("disciplineFitness")}
               </option>
@@ -143,7 +148,7 @@ export function InviteSection({
                     <span className="block text-xs text-muted">
                       {isFitness(invite.discipline)
                         ? t("disciplineFitness")
-                        : t("disciplineTennis")}
+                        : courtLabel}
                     </span>
                   </span>
                   <span className="flex flex-none gap-2">
@@ -189,7 +194,7 @@ export function InviteSection({
                       : `${
                           isFitness(member.discipline)
                             ? t("disciplineFitness")
-                            : t("disciplineTennis")
+                            : courtLabel
                         } · ${t("playersCount", { count: member.playerCount })}`}
                   </span>
                 </span>

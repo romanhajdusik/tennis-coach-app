@@ -34,8 +34,8 @@
       "playerNotInOrg": "This player does not belong to the organization.",
       "failed": "Failed to reassign the player."
     },
-    "disciplineTennis": "court",
-    "disciplineFitness": "fitness"
+    "disciplineCourt": "{sport}",
+    "disciplineFitness": "Fitness"
   },
   "team": {
     "link": "Coaches and seats",
@@ -77,14 +77,14 @@
       "deleteFailed": "Failed to delete the coach."
     },
     "disciplineLabel": "Discipline",
-    "disciplineTennis": "Court coach",
+    "disciplineCourt": "{sport} coach",
     "disciplineFitness": "Fitness coach"
   },
   "drillCodes": {
     "link": "Drill codes",
     "description": "The federation standard for all coaches in {organization}. Coaches only use these codes — thanks to that, analytics is comparable across the whole organization.",
     "disciplineHeading": "Discipline",
-    "disciplineTennis": "Court",
+    "disciplineCourt": "{sport}",
     "disciplineFitness": "Fitness"
   },
   "compare": {
@@ -120,8 +120,8 @@
     "totalDuration": "Total duration: {minutes} min",
     "back": "Back to the player"
   },
-  "disciplineTennis": "Court",
+  "disciplineCourt": "{sport}",
   "disciplineFitness": "Fitness",
-  "loadSplit": "Last 30 days: {court} min court · {fitness} min fitness",
+  "loadSplit": "Last 30 days: {court} min {sport} · {fitness} min fitness",
   "settings": "Settings"
 }

@@ -118,9 +118,9 @@ async function main() {
   check(
     "ukazuje prideleného trénera",
     // Za menom je od migrácie 20260815090000 aj disciplína („Andrea Prva —
-    // court"): preradenie sa týka len jednej disciplíny, takže výber musí
+    // Tennis", do 2026-10-05 „court"): preradenie sa týka len jednej disciplíny, takže výber musí
     // povedať, ktorú mení.
-    /<option[^>]*\sselected[^>]*>(Andrea Prva|Boris Druhy) — (court|fitness)</.test(
+    /<option[^>]*\sselected[^>]*>(Andrea Prva|Boris Druhy) — (Tennis|Fitness)</.test(
       detail.body,
     ),
     detailText.slice(0, 250),
@@ -168,6 +168,21 @@ async function main() {
     "hráč org nie je dostupný z cudzej subdomény",
     foreign.status === 307 || foreign.status === 404,
     "status " + foreign.status,
+  );
+
+  section("6) Pult menuje šport zväzu, nie „court\" (od 2026-10-05)");
+  // Rozhodol user: šéftréner má vidieť „Tennis coach", v padelovom zväze
+  // „Padel coach". „Court" je len vnútorné rozlíšenie v kóde (kind).
+  const team = textOf((await request("/director/team", { cookies: director })).body);
+  check("pri trénerovi stojí „Tennis coach\"", /Tennis coach/.test(team), team.slice(0, 200));
+  const dashText = textOf((await request("/director", { cookies: director })).body);
+  const codesText = textOf(
+    (await request("/director/drill-codes", { cookies: director })).body,
+  );
+  check(
+    "slovo „court\" sa v pulte nevypisuje",
+    !/\bcourt\b/i.test(team + dashText + codesText),
+    ((team + dashText + codesText).match(/.{40}\bcourt\b.{40}/i) ?? [""])[0],
   );
 
   report();

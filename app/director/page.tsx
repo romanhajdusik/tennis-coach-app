@@ -6,7 +6,7 @@ import {
   coachIdFor,
   type DirectorPlayer,
 } from "@/lib/org/director";
-import { isCourtDiscipline } from "@/lib/disciplines/registry";
+import { disciplineConfig, isCourtDiscipline } from "@/lib/disciplines/registry";
 import { requireDirector } from "./guard";
 import { AssignPlayer } from "./assign-player";
 import {
@@ -52,13 +52,16 @@ export default async function DirectorPage() {
   // Kurt vs kondícia vedľa seba — to je hodnota, ktorú pult federácii dáva
   // a ktorú tréner ani jednej disciplíny sám nevidí (§2.2). Vypisuje sa len
   // tam, kde je čo porovnávať; hráč bez kondície by inak dostal riadok s nulou.
+  // Šport zväzu menom („Tennis", „Padel") — šéftréner nemá vidieť „court".
+  const sport = disciplineConfig(org.courtDiscipline).label;
+
   const loadSplits = new Map<string, string>();
   for (const entry of dashboard.players) {
     const { court, fitness } = entry.minutesByKind;
     if (court === 0 && fitness === 0) continue;
     loadSplits.set(
       entry.player.id,
-      t("loadSplit", { court, fitness }),
+      t("loadSplit", { court, fitness, sport: sport.toLowerCase() }),
     );
   }
 
@@ -186,7 +189,7 @@ export default async function DirectorPage() {
                       {coach.discipline &&
                         `${
                           isCourtDiscipline(coach.discipline)
-                            ? t("disciplineTennis")
+                            ? t("disciplineCourt", { sport })
                             : t("disciplineFitness")
                         } · `}
                       {t("coachSummary", { players: coach.players.length })}
