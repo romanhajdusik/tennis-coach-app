@@ -33,6 +33,7 @@ import { TodayBoard } from "@/components/today-board";
 import { TagIcon } from "@/components/landing-icons";
 import { LogoutIcon, SettingsIcon } from "@/components/nav-icons";
 import { publicRobots } from "@/lib/seo";
+import { isSelfDiary } from "@/lib/self-diary";
 
 // Marketingová landing page je jediná verejná stránka appky — root layout
 // má defaultne robots noindex (appka je inak celá za prihlásením). Appka je
@@ -250,10 +251,14 @@ export default async function Home() {
       {showBoard ? (
         <>
           <TodayBoard org={org} />
-          <PlayerSwitcher
-            heading={t("players")}
-            singlePlaceholder={t("playerPlaceholder")}
-          />
+          {/* Hráčsky denník (docs §6) má jedinú kartu — seba. Prepínač
+              s ním samým a prázdnym miestom pre ďalšieho by klamal. */}
+          {!(await isSelfDiary()) && (
+            <PlayerSwitcher
+              heading={t("players")}
+              singlePlaceholder={t("playerPlaceholder")}
+            />
+          )}
         </>
       ) : (
         <p className="text-sm text-muted">

@@ -25,6 +25,7 @@ import { AddPlayerForm } from "./add-player-form";
 import { EditPlayerForm } from "./edit-player-form";
 import { SharePlayerSection } from "./share-player-section";
 import { LinkPlayerSection } from "./link-player-section";
+import { isSelfDiary } from "@/lib/self-diary";
 
 export default async function PlayersPage() {
   const t = await getTranslations("Players");
@@ -122,6 +123,11 @@ export default async function PlayersPage() {
   // odmietol. `null` = federačný tréner, toho sa hladina netýka.
   const limitState = await getPlayerLimitState(supabase, user.id);
 
+  // Hráčsky denník (docs §6): jediná karta je hráč sám. Stránka je preto jeho
+  // profil — bez pridávania, archivácie a počítadla hladiny, ale so zdieľaním
+  // pre rodiča a prepojením s kondičným trénerom.
+  const selfDiary = await isSelfDiary();
+
   // Roster = federačný tréner s viacerými pridelenými hráčmi (1:N). Až tam
   // dávajú stavy „X dní bez tréningu" zmysel, preto sa dopočítavajú len preň.
   const isRoster = activePlayers.length > 1;
@@ -149,16 +155,20 @@ export default async function PlayersPage() {
   return (
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-foreground ">{t("title")}</h1>
+        <h1 className="text-xl font-semibold text-foreground ">
+          {selfDiary ? t("self.title") : t("title")}
+        </h1>
         <Link href="/" className="text-sm font-medium text-muted underline ">
           {tCommon("back")}
         </Link>
       </div>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-muted ">
-          {isRoster ? t("rosterHeading") : t("activePlayerHeading")}
-        </h2>
+        {!selfDiary && (
+          <h2 className="text-sm font-medium text-muted ">
+            {isRoster ? t("rosterHeading") : t("activePlayerHeading")}
+          </h2>
+        )}
 
         {overview && (
           <div className="grid grid-cols-3 gap-2">
@@ -237,14 +247,16 @@ export default async function PlayersPage() {
                             </button>
                           </form>
                         ))}
-                      <form action={deactivatePlayer.bind(null, player.id)}>
-                        <button
-                          type="submit"
-                          className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium "
-                        >
-                          {t("archive")}
-                        </button>
-                      </form>
+                      {!selfDiary && (
+                        <form action={deactivatePlayer.bind(null, player.id)}>
+                          <button
+                            type="submit"
+                            className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium "
+                          >
+                            {t("archive")}
+                          </button>
+                        </form>
+                      )}
                     </div>
                   </div>
 
@@ -252,12 +264,14 @@ export default async function PlayersPage() {
                     playerId={player.id}
                     name={player.name}
                     birthYear={player.birth_year}
+                    selfDiary={selfDiary}
                   />
 
                   {!org && (
                     <SharePlayerSection
                       playerId={player.id}
                       connection={connectionByPlayer.get(player.id) ?? null}
+                      selfDiary={selfDiary}
                     />
                   )}
 
@@ -266,6 +280,7 @@ export default async function PlayersPage() {
                       playerId={player.id}
                       link={linkByPlayer.get(player.id) ?? null}
                       role={cardLinkRole}
+                      selfDiary={selfDiary}
                     />
                   )}
                 </li>
@@ -282,7 +297,7 @@ export default async function PlayersPage() {
             čom je, skôr než mu zakladanie hráča odmietne server. Federačného
             trénera sa netýka (platí organizácia), a to sa pýtame členstva, nie
             hostname: RLS mu jeho org hráčov vydá aj mimo org subdomény. */}
-        {limitState && (
+        {limitState && !selfDiary && (
           <p className="text-xs text-muted">
             {t("limit.counter", {
               count: limitState.active,
@@ -297,9 +312,9 @@ export default async function PlayersPage() {
         )}
       </section>
 
-      <AddPlayerForm />
+      {!selfDiary && <AddPlayerForm />}
 
-      {archivedPlayers.length > 0 && (
+      {!selfDiary && archivedPlayers.length > 0 && (
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-medium text-muted ">
             {t("archiveHeading")}

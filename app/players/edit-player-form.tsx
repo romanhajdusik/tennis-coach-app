@@ -13,12 +13,16 @@ export function EditPlayerForm({
   playerId,
   name,
   birthYear,
+  selfDiary = false,
 }: {
   playerId: string;
   name: string;
   birthYear: number | null;
+  /** Hráčsky denník (docs §6) — upravuje sám seba, nie „hráča". */
+  selfDiary?: boolean;
 }) {
   const t = useTranslations("Players.editForm");
+  const tSelf = useTranslations("Players.self");
   const [state, formAction, pending] = useActionState(
     updatePlayer.bind(null, playerId),
     undefined,
@@ -28,7 +32,7 @@ export function EditPlayerForm({
   return (
     <details className="border-t border-border pt-3">
       <summary className="cursor-pointer text-sm font-medium text-muted ">
-        {t("heading")}
+        {selfDiary ? tSelf("editHeading") : t("heading")}
       </summary>
       <form action={formAction} className="mt-3 flex flex-col gap-3">
         <div className="flex flex-col gap-1">

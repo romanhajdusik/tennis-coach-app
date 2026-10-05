@@ -494,6 +494,7 @@ export type Database = {
           id: string
           player_limit: number
           role: string
+          self_diary: boolean
           stripe_customer_id: string | null
           subscription_status: string
           trial_ends_at: string
@@ -507,6 +508,7 @@ export type Database = {
           id: string
           player_limit?: number
           role?: string
+          self_diary?: boolean
           stripe_customer_id?: string | null
           subscription_status?: string
           trial_ends_at?: string
@@ -520,6 +522,7 @@ export type Database = {
           id?: string
           player_limit?: number
           role?: string
+          self_diary?: boolean
           stripe_customer_id?: string | null
           subscription_status?: string
           trial_ends_at?: string

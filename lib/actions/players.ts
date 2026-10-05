@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requirePlayerSlot, requireWriteAccess } from "@/lib/subscription";
+import { isSelfDiary } from "@/lib/self-diary";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgMembership } from "@/lib/org/membership";
 
@@ -74,6 +75,12 @@ export async function createPlayer(
   const blocked = await requireWriteAccess(supabase, user.id);
   if (blocked) {
     return { error: (await getTranslations("Common"))(blocked) };
+  }
+
+  // Hráčsky denník má jedinú kartu — hráča samého (docs §6). Druhá by z neho
+  // spravila trénera bez trénerského predplatného.
+  if (await isSelfDiary()) {
+    return { error: t("selfDiaryOneCard") };
   }
 
   // Koľko hráčov smie mať účet naraz aktívnych, je cenová hladina — rozhoduje
@@ -196,6 +203,12 @@ export async function deactivatePlayer(playerId: string) {
     return;
   }
 
+  // Hráčsky denník svoju jedinú kartu archivovať nesmie: uvoľnil by si miesto
+  // pre cudzieho hráča (docs §6). Tlačidlo sa mu ani nevykreslí.
+  if (await isSelfDiary()) {
+    return;
+  }
+
   const scope = await ownPlayerScope(user.id);
 
   await supabase
@@ -219,6 +232,11 @@ export async function activatePlayer(playerId: string) {
 
   // Neplatiaci účet číta ďalej, ale nezapisuje (lib/subscription.ts).
   if (await requireWriteAccess(supabase, user.id)) {
+    return;
+  }
+
+  // Hráčsky denník archív nemá (archivovať nesmie, viď vyššie).
+  if (await isSelfDiary()) {
     return;
   }
 

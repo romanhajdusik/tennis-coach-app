@@ -34,12 +34,16 @@ export function LinkPlayerSection({
   playerId,
   link,
   role,
+  selfDiary = false,
 }: {
   playerId: string;
   link: CardLink;
   role: "owner" | "viewer";
+  /** Hráčsky denník (docs §6) — kód zadáva hráč od SVOJHO kondičného trénera. */
+  selfDiary?: boolean;
 }) {
   const t = useTranslations("Players.link");
+  const tSelf = useTranslations("Players.self");
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
   const [claimState, claimAction, isClaiming] = useActionState<
@@ -100,7 +104,7 @@ export function LinkPlayerSection({
   return (
     <details className="border-t border-border pt-3">
       <summary className="flex cursor-pointer flex-wrap items-center gap-2 text-sm font-medium text-muted">
-        {t("heading")}
+        {selfDiary ? tSelf("linkHeading") : t("heading")}
         {isActive && (
           <span className="text-xs font-medium text-emerald-400">
             ✓ {t("activeStatus")}
@@ -115,7 +119,11 @@ export function LinkPlayerSection({
 
       <div className="flex flex-col gap-2 pt-3">
         <p className="text-sm text-muted">
-          {role === "owner" ? t("ownerDescription") : t("viewerDescription")}
+          {role === "owner"
+            ? t("ownerDescription")
+            : selfDiary
+              ? tSelf("linkViewerDescription")
+              : t("viewerDescription")}
         </p>
 
         {/* Vlastník dát: vydá kód a pošle ho druhému trénerovi. */}

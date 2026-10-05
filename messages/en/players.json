@@ -1,5 +1,12 @@
 {
   "title": "Players",
+  "self": {
+    "title": "My profile",
+    "editHeading": "Edit my details",
+    "shareDescription": "Generate a code and send it to your parent or manager (SMS, WhatsApp...). They enter it once in their own app and will see your practices and analytics.",
+    "linkHeading": "Link with your fitness coach",
+    "linkViewerDescription": "Enter the code you got from your fitness coach. Their sessions will show up in your calendar, read-only — you can see them, but not change them."
+  },
   "activePlayerHeading": "Active player",
   "rosterHeading": "My players",
   "switcherHeading": "Viewing",
@@ -81,6 +88,7 @@
     "revokeButton": "Unlink"
   },
   "errors": {
+    "selfDiaryOneCard": "Your diary is just for you — it can't have other players.",
     "missingName": "Enter the player's name.",
     "invalidBirthYear": "Enter a valid year of birth.",
     "createFailed": "Failed to create the player.",

@@ -14,7 +14,10 @@ import { getOrgMembership } from "@/lib/org/membership";
  * disciplíny — vo federácii ju appka pozná až z členstva, takže sa musí
  * poskladať na serveri, nie v komponente lišty.
  */
-export async function getCoachNav(): Promise<{ analyticsHref: string } | null> {
+export async function getCoachNav(): Promise<{
+  analyticsHref: string;
+  selfDiary: boolean;
+} | null> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -26,7 +29,7 @@ export async function getCoachNav(): Promise<{ analyticsHref: string } | null> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, self_diary")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -39,5 +42,9 @@ export async function getCoachNav(): Promise<{ analyticsHref: string } | null> {
   }
 
   const { defaultCategory } = await getDisciplineConfig();
-  return { analyticsHref: `/analytics/${encodeURIComponent(defaultCategory)}` };
+  return {
+    analyticsHref: `/analytics/${encodeURIComponent(defaultCategory)}`,
+    // Hráčsky denník (docs §6) má v lište „Profile" namiesto „Players".
+    selfDiary: profile.self_diary === true,
+  };
 }

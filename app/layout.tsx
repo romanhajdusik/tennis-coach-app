@@ -74,7 +74,10 @@ export default async function RootLayout({
             {/* Trénerovi robí „domov" spodná lišta; ostatným (rodič,
                 šéftréner, odhlásený) ostáva plávajúce tlačidlo. */}
             {coachNav ? (
-              <BottomNav analyticsHref={coachNav.analyticsHref} />
+              <BottomNav
+                analyticsHref={coachNav.analyticsHref}
+                selfDiary={coachNav.selfDiary}
+              />
             ) : (
               <HomeButton />
             )}

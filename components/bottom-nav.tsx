@@ -34,7 +34,14 @@ const HIDDEN_PREFIXES = ["/parent", "/director", "/auth"];
  * Kreslí aj vlastnú **medzeru** na konci stránky, aby lišta neprekryla
  * posledný riadok obsahu; výšku drží `--bottom-nav-h` v globals.css.
  */
-export function BottomNav({ analyticsHref }: { analyticsHref: string }) {
+export function BottomNav({
+  analyticsHref,
+  selfDiary = false,
+}: {
+  analyticsHref: string;
+  /** Hráčsky denník (docs §6): „Players" je preňho jeho profil. */
+  selfDiary?: boolean;
+}) {
   const pathname = usePathname();
   const t = useTranslations("Home");
   const tCommon = useTranslations("Common");
@@ -50,7 +57,7 @@ export function BottomNav({ analyticsHref }: { analyticsHref: string }) {
     { href: "/", label: tCommon("home"), Icon: HomeNavIcon, active: pathname === "/" },
     {
       href: "/players",
-      label: t("players"),
+      label: selfDiary ? t("profile") : t("players"),
       Icon: PlayersNavIcon,
       active: pathname.startsWith("/players"),
     },

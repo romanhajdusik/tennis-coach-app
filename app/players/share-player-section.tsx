@@ -31,11 +31,15 @@ const ROLE_LABEL_KEYS: Record<string, string> = {
 export function SharePlayerSection({
   playerId,
   connection,
+  selfDiary = false,
 }: {
   playerId: string;
   connection: Connection;
+  /** Hráčsky denník (docs §6) — kód posiela hráč o sebe, nie tréner o hráčovi. */
+  selfDiary?: boolean;
 }) {
   const t = useTranslations("Players.share");
+  const tSelf = useTranslations("Players.self");
   const tRole = useTranslations("Auth.register");
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
@@ -84,7 +88,9 @@ export function SharePlayerSection({
       </summary>
 
       <div className="flex flex-col gap-2 pt-3">
-        <p className="text-sm text-muted ">{t("description")}</p>
+        <p className="text-sm text-muted ">
+          {selfDiary ? tSelf("shareDescription") : t("description")}
+        </p>
         {/* Tréner rozhoduje o údajoch dieťaťa, takže musí vedieť, že kódom ich
             odovzdáva natrvalo: zrušenie prepojenia zastaví pribúdanie nových
             záznamov, ale doteraz skopírované sledujúcemu ostávajú. */}
