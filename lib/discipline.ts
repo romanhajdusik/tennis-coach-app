@@ -77,35 +77,17 @@ export function disciplineConfig(id: DisciplineId): DisciplineConfig {
 }
 
 /**
- * Ktorej disciplíne patrí zameranie. Katalógy zameraní sú disjunktné (tenis
- * `Forehand…`, kondička `ENDURANCE…`), takže je odpoveď jednoznačná.
+ * Je hodnota známa disciplína? Na overenie vstupu zvonka — adresy pultu
+ * (`?discipline=`) a viazaného argumentu `saveOrgDrillCodes`.
  *
- * Slúži jedinému účelu: **riadiaci pult analyzuje disciplínu, ktorú sám
- * „nerobí"**. Šéftréner nemá disciplínu (vidí obe) a stránka analytiky sa
- * otvára nad konkrétnym zameraním, takže je zameranie jediné, čo o disciplíne
- * niečo hovorí. Nie je to obchádzka pravidla „disciplínu neodvodzuj z trénera
- * ani z hráča" — tie zakazujú odvodenie od OSÔB, tu ide o vlastnosť dát.
- *
- * **Keby raz dve disciplíny mali rovnako pomenované zameranie, prestane to
- * platiť** a pult bude musieť disciplínu dostať v adrese.
+ * **Disciplína sa NEODVODZUJE zo zamerania** (do 2026-10-05 to robila
+ * `disciplineOfCategory()`): padel bude mať `Forehand` ako tenis, takže názov
+ * zamerania disciplínu neurčuje. Kto analyzuje alebo ukladá disciplínu, ktorú
+ * sám „nerobí" (šéftréner), ju dostáva výslovne — v adrese alebo v argumente
+ * (docs/roadmap-buduce-smery.md §1.1).
  */
-export function disciplineOfCategory(category: string): DisciplineId | null {
-  const match = Object.values(DISCIPLINES).find((config) =>
-    config.categories.includes(category),
-  );
-  return match?.id ?? null;
-}
-
-/**
- * Pozná zameranie ktorákoľvek disciplína? Šéftréner federácie nastavuje
- * štandard kódov pre OBE (kondičný tréner v jeho organizácii ich potrebuje
- * tiež), takže sa jeho vstup nesmie overovať proti jednej disciplíne — sám
- * pritom žiadnu „nerobí".
- */
-export function isCategoryOfAnyDiscipline(category: string): boolean {
-  return Object.values(DISCIPLINES).some((config) =>
-    config.categories.includes(category),
-  );
+export function isDisciplineId(value: unknown): value is DisciplineId {
+  return typeof value === "string" && Object.hasOwn(DISCIPLINES, value);
 }
 
 /**

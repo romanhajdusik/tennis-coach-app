@@ -62,6 +62,131 @@ Odporúčané: **A** (sedí k „appky sa predávajú samostatne": rovnaký engi
 SportConfig na nasadenie). **Vyvarovať sa:** kopírovať celý repo na každý šport
 (oprava bugu × N kópií = údržbové peklo).
 
+### 1.1 PADEL, BADMINTON, PICKLEBALL — návrh na odsúhlasenie (2026-10-05)
+
+**Rozhodnuté userom (2026-10-05):**
+
+- Tri nové appky: `padel.plawsports.com`, `badminton.plawsports.com`,
+  `pickleball.plawsports.com`. Sú to **tri nasadenia tohto repa** (cesta A
+  vyššie), nie kópie — rovnako ako kondička na `fitness.plawsports.com`.
+- Každý šport má **9 zameraní**. Presné názvy zatiaľ nie sú, takže dostanú
+  dočasné mená (`FOCUS 1`…`FOCUS 9`) a premenujú sa migráciou, keď ich user
+  povie — rovnako ako kondičkové `YOUR 1`/`YOUR 2` v `20260822090000`.
+- Pri 9 zameraniach je generálny graf **stĺpcový** (`shareChart: "bars"`),
+  koláč paleta neunesie (§2.0, validátor).
+- **Rovnaký názov zamerania vo viacerých športoch je v poriadku** (padel bude
+  mať `Forehand` ako tenis). Názov sa NEprefixuje (`padel-forehand`) — rozlišuje
+  ho štítok disciplíny pri riadku. User to odsúhlasil.
+
+#### Model: šport = ďalšia disciplína
+
+Padel, badminton a pickleball sa zavedú ako **nové hodnoty `DisciplineId`**,
+nie ako nová os „šport" vedľa disciplíny. Všetko, čím sa dnes líši tenis od
+kondičky (zamerania, kódy cvičení, štítok na tréningu, vlastné produkty
+v Stripe, nasadenie podľa premennej, disciplína členstva vo federácii, strana
+pri prepojení kariet), sa líši aj medzi tenisom a padelom. Druhá os by
+zdvojila každé z týchto miest bez toho, aby niečo pridala.
+
+Rozlíšiť treba len dve **skupiny**: **kurtové disciplíny** (tenis, padel,
+badminton, pickleball — údery, charakter, `cardLink: "viewer"`) a **kondičku**
+(jedna spoločná pre všetky, `cardLink: "owner"`, §2.1). Dnešný kód na veľa
+miestach predpokladá „druhá disciplína = tá zvyšná z dvoch"
+(`mine === "tennis" ? "fitness" : "tennis"` v `getLinkedDisciplineShares`); to sa
+prepíše na „druhá strana prepojenia = kondička, alebo kurtová disciplína
+z riadku prepojenia" (`player_links.source_discipline` už existuje).
+
+#### Prekážka č. 1: zamerania nie sú unikátne naprieč disciplínami
+
+Appka dnes stojí na predpoklade, že názov zamerania jednoznačne určuje
+disciplínu. S padelovým `Forehand` prestane platiť:
+
+- **`drill_codes`** nemá stĺpec disciplíny — kódy sú unikátne podľa
+  `(coach_id, category, slot)` a vo federácii `(organization_id, category,
+  slot)`. Tenisový a padelový `Forehand` toho istého šéftrénera by sa
+  prepisovali. → **pribudne `drill_codes.discipline`** (backfill podľa toho,
+  do ktorého katalógu zameranie dnes patrí — sú disjunktné, takže je to
+  jednoznačné), unikátne indexy dostanú disciplínu.
+- **`drill_codes_category_check`** je jeden zoznam všetkých zameraní.
+  → kontrola sa zmení na **dvojicu** (disciplína, zameranie), aby `Forehand`
+  prešiel pri tenise aj padeli, ale `FOCUS 3` pri tenise nie.
+- **`disciplineOfCategory()`** (pult si odvodzuje disciplínu zo zamerania
+  v adrese) a **`isCategoryOfAnyDiscipline()`** — návod v ich komentári to
+  predvída: pult dostane **disciplínu v adrese** (`?discipline=`, rovnako ako
+  už mal `/director/drill-codes`) a obe funkcie zaniknú.
+- `session_drills.category` a rodičovské kópie CHECK nemajú a analytika
+  filtruje tréningy podľa `sessions.discipline` už dnes, takže tie sa nemenia.
+
+#### Prekážka č. 2: zoznam disciplín je natvrdo na dvoch úrovniach
+
+- **Databáza — šesť CHECK-ov `in ('tennis', 'fitness')`:**
+  `sessions.discipline`, `organization_members.discipline`,
+  `player_assignments.discipline`, `metrics_and_tests.discipline`,
+  `player_links.source_discipline` a nový `drill_codes.discipline`.
+  Rozšíria sa jednou migráciou. Funkcie, ktoré disciplínu len prenášajú
+  (`assign_player_to_coach`, `copy_session_to_org_player`, `claim_player_link`),
+  ostanú.
+- **Kód — asi 25 miest** s vetvením „buď tenis, alebo kondička", napr.
+  `lib/org/membership.ts` (`OrgDiscipline`), `lib/org/director.ts`,
+  `app/director/**` (pevné zoznamy `["tennis", "fitness"]`, prepínače
+  s dvoma textami), `lib/actions/organization-members.ts`,
+  `lib/actions/parent-data.ts`, `lib/stripe-plans.ts` (`SOLD_DISCIPLINES`),
+  `app/page.tsx` a `app/layout.tsx` (landing / úvod / farba appky),
+  `lib/og.ts`, `lib/public-face.ts` (`FITNESS_HOSTS`), `proxy.ts`.
+  Všetky sa prepíšu tak, aby čítali **zoznam disciplín z konfigurácie**
+  (`DISCIPLINES` v `lib/discipline.ts`), nie aby k dvom vetvám pribudli ďalšie
+  tri. `getDeploymentDiscipline()` prijme ľubovoľnú známu hodnotu, neznáma
+  ostáva tenis.
+
+#### Poradie krokov
+
+Každý krok je samostatne nasaditeľný a tenis ani kondička sa počas neho
+nesmú zmeniť.
+
+1. **Disciplína pri kódoch cvičení** — migrácia `drill_codes.discipline` +
+   kontrola dvojíc + pult s disciplínou v adrese. Žiadny nový šport ešte
+   nevidno; je to len odstránenie predpokladu unikátnych zameraní. Migrácia
+   ide na prod PRED pushom (rovnaké pravidlo ako §2.3a).
+   **Postavené 2026-10-05** (migrácia `20261005090000_drill_codes_discipline`):
+   stĺpec bez predvolenej hodnoty, CHECK nad dvojicou, unikáty
+   `drill_codes_coach_slot` a `drill_codes_organization_slot` s disciplínou,
+   `disciplineOfCategory`/`isCategoryOfAnyDiscipline` nahradila
+   `isDisciplineId`, pult nesie `?discipline=`. Overené lokálne: rls-org 76,
+   browser-director 48, browser-coach 83, fitness 48, card-links 49,
+   http-coach 41, http-director 31, security-boundaries 32, rls-solo 17 —
+   všetko 0 FAIL, plus `npm run build`.
+2. **Zoznam disciplín z konfigurácie** — CHECK-y v DB a ~25 miest v kóde.
+   Stále žiadny nový šport, len sa z „dvoch" stane „ľubovoľný počet".
+3. **Tri konfigurácie** — `lib/disciplines/{padel,badminton,pickleball}.ts`
+   s 9 dočasnými zameraniami, texty, farba appky, úvodná obrazovka. Overí sa
+   lokálne s `NEXT_PUBLIC_PLAW_DISCIPLINE=padel`.
+4. **Stripe** — vlastné produkty pre každý šport
+   (`plaw_padel_coach_3`…, mechanizmus z 2026-10-02 to už vie).
+5. **Nasadenie** — tri Vercel projekty, CNAME, premenné; postup podľa
+   [`nasadenie-kondicky.md`](nasadenie-kondicky.md).
+
+#### Otvorené otázky pre usera (pýtať sa po jednej, keď na ne príde rad)
+
+1. **Človek, ktorý trénuje tenis aj padel — jeden účet, alebo dva?** Dnes
+   jeden účet = jeden roster a jedno predplatné (`profiles.player_limit`)
+   a nič nebráni prihlásiť sa ním na inú doménu. S kondičkou to v praxi
+   nevadilo (iný človek), pri tenise a padeli je to bežné. Najjednoduchšie
+   je „jeden šport = jeden účet" (druhý e-mail), rovnako ako „buď nezávislý,
+   alebo zamestnanec" (§5.8). Rozhodnúť **pred krokom 2**.
+2. **Zameranie úderov a charakter:** majú nové športy charakter
+   (offensive/neutral/defensive) a odhad počtu úderov ako tenis? Kým sa
+   nevie, návrh je charakter áno, odhad úderov `null` (analytika o úderoch
+   mlčí — prvotriedny stav, §Disciplína v CLAUDE.md). Rozhodnúť pred krokom 3.
+3. **Ceny** — rovnaké ako tenis a kondička? Pred krokom 4.
+4. **Landing s cenníkom alebo len úvodná obrazovka?** Kondička má od
+   2026-10-02 krátky landing, ktorý smie byť na produkcii len vtedy, keď sa
+   v danej appke naozaj dá zaplatiť. Pred krokom 5.
+5. **Sledujúci (rodič/hráč)** — `plaw.click` dnes menuje tenis. Dostane
+   padelový rodič rovnakú vrstvu? Neblokuje prvú vlnu.
+6. **Federácia pre iný šport** — org subdomény sú `<slug>.plaw.win`
+   (tenisová doména) a pult pozná jednu kurtovú disciplínu
+   (`COURT_DISCIPLINE`). V prvej vlne len samostatný režim; federačné časti
+   sa v krokoch 1–2 iba nesmú rozbiť.
+
 ---
 
 ## 2. Kondičná appka (samostatná doména, 1:N)

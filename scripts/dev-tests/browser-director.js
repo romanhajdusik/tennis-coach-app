@@ -150,12 +150,12 @@ async function main() {
   await director.waitForTimeout(2500);
   const { data: saved } = await db
     .from("drill_codes")
-    .select("coach_id, organization_id")
+    .select("coach_id, organization_id, discipline")
     .eq("code", "FED-TEST")
     .maybeSingle();
   check(
-    "štandard sa uložil ako org riadok",
-    !!saved && saved.coach_id === null && !!saved.organization_id,
+    "štandard sa uložil ako org riadok tenisovej disciplíny",
+    !!saved && saved.coach_id === null && !!saved.organization_id && saved.discipline === "tennis",
     JSON.stringify(saved),
   );
   await coach.goto(`${BASE}/drill-codes`);
@@ -473,6 +473,23 @@ async function main() {
       /STRENGTH/.test(fitnessView) && !/Backhand/.test(fitnessView),
     );
     check("a kondičné dáta hráča", /END-1/.test(fitnessView));
+    // Disciplína je od 2026-10-05 v adrese, nie odvodená zo zamerania (padel
+    // bude mať `Forehand` ako tenis) — každý odkaz ju preto musí niesť ďalej.
+    check(
+      "adresa nesie zvolenú disciplínu",
+      new URL(director.url()).searchParams.get("discipline") === "fitness",
+      director.url(),
+    );
+    await director.click("a:has-text('STRENGTH')");
+    await director.waitForURL((url) => /STRENGTH/.test(url.pathname), {
+      timeout: 20000,
+    });
+    await director.waitForTimeout(1500);
+    const strengthView = await browserText(director);
+    check(
+      "ďalšie zameranie ostane v kondičke",
+      /ENDURANCE/.test(strengthView) && !/Backhand/.test(strengthView),
+    );
     // Kondička odhad úderov nepočíta vôbec — pult sa preto musí pýtať
     // konfigurácie PREZERANEJ disciplíny, nie svojej.
     check(

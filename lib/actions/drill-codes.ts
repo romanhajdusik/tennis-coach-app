@@ -7,8 +7,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
 import {
+  disciplineConfig,
   getDisciplineConfig,
-  isCategoryOfAnyDiscipline,
+  isDisciplineId,
   type DisciplineConfig,
 } from "@/lib/discipline";
 
@@ -16,10 +17,6 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 // Počet slotov je rovnaký v každej disciplíne (tenis aj kondička 20).
 const SLOT_COUNT = 20;
-
-async function isKnownCategory(category: string): Promise<boolean> {
-  return (await getDisciplineConfig()).categories.includes(category);
-}
 
 /**
  * Vlastník kódov cvičení: v org režime organizácia (federačný štandard, §5.5),
@@ -38,6 +35,10 @@ async function drillCodeOwnerFilter(userId: string) {
  * `discipline` sa dá podať zvonka: šéftréner nastavuje štandard aj pre
  * disciplínu, ktorú sám nerobí, takže predvolené kódy sa nesmú brať z jeho
  * vlastnej konfigurácie — dostal by prázdno.
+ *
+ * Číta sa vždy aj podľa disciplíny, nielen podľa zamerania: rovnako pomenované
+ * zameranie môže mať viac disciplín (padel aj tenis majú `Forehand`) a štandard
+ * šéftrénera pokrýva všetky.
  */
 export async function getDrillCodeSlots(
   supabase: SupabaseServerClient,
@@ -46,19 +47,19 @@ export async function getDrillCodeSlots(
   discipline?: DisciplineConfig,
 ): Promise<string[]> {
   const owner = await drillCodeOwnerFilter(userId);
+  const config = discipline ?? (await getDisciplineConfig());
 
   const { data } = await supabase
     .from("drill_codes")
     .select("slot, code")
     .eq(owner.column, owner.value)
+    .eq("discipline", config.id)
     .eq("category", category);
 
   const slots = Array.from({ length: SLOT_COUNT }, () => "");
 
   if (!data || data.length === 0) {
-    const defaults = (discipline ?? (await getDisciplineConfig())).drills[
-      category
-    ] ?? [];
+    const defaults = config.drills[category] ?? [];
     defaults.forEach((code, index) => {
       if (index < SLOT_COUNT) slots[index] = code;
     });
@@ -78,11 +79,13 @@ export async function getDrillOptionsByCategory(
   userId: string,
 ): Promise<Record<string, string[]>> {
   const owner = await drillCodeOwnerFilter(userId);
+  const discipline = await getDisciplineConfig();
 
   const { data } = await supabase
     .from("drill_codes")
     .select("category, slot, code")
     .eq(owner.column, owner.value)
+    .eq("discipline", discipline.id)
     .order("slot", { ascending: true });
 
   const rowsByCategory = new Map<string, { slot: number; code: string | null }[]>();
@@ -92,7 +95,6 @@ export async function getDrillOptionsByCategory(
     rowsByCategory.set(row.category, rows);
   }
 
-  const discipline = await getDisciplineConfig();
   const result: Record<string, string[]> = {};
   for (const category of discipline.categories) {
     const rows = rowsByCategory.get(category);
@@ -116,7 +118,9 @@ export async function saveDrillCodes(
 ): Promise<DrillCodesFormState> {
   const t = await getTranslations("DrillCodes.errors");
 
-  if (!(await isKnownCategory(category))) {
+  // Tréner ukladá vždy do disciplíny, ktorú robí — z prehliadača ju neberieme.
+  const discipline = await getDisciplineConfig();
+  if (!discipline.categories.includes(category)) {
     return { error: t("invalidCategory") };
   }
 
@@ -153,6 +157,7 @@ export async function saveDrillCodes(
 
   const rows = Array.from({ length: SLOT_COUNT }, (_, index) => ({
     coach_id: user.id,
+    discipline: discipline.id,
     category,
     slot: index + 1,
     code: codes[index] || null,
@@ -160,7 +165,7 @@ export async function saveDrillCodes(
 
   const { error } = await supabase
     .from("drill_codes")
-    .upsert(rows, { onConflict: "coach_id,category,slot" });
+    .upsert(rows, { onConflict: "coach_id,discipline,category,slot" });
 
   if (error) {
     return { error: t("saveFailed") };
@@ -178,17 +183,25 @@ export async function saveDrillCodes(
  * Prečo to vôbec existuje: bez jednotných kódov by sa agregát v pulte nedal
  * poskladať — každý tréner by mal vlastné a analytika naprieč federáciou by
  * nebola porovnateľná.
+ *
+ * **Disciplína prichádza ako argument** (viazaný vo formulári), nie zo
+ * zamerania: šéftréner štandardizuje kódy pre všetky disciplíny organizácie,
+ * sám žiadnu „nerobí", a rovnako pomenované zameranie môže mať viac
+ * disciplín. Hodnota je zo strany klienta, takže sa overí proti konfigurácii
+ * — dvojicu (disciplína, zameranie) navyše stráži CHECK v databáze.
  */
 export async function saveOrgDrillCodes(
+  disciplineId: string,
   category: string,
   _prevState: DrillCodesFormState,
   formData: FormData,
 ): Promise<DrillCodesFormState> {
   const t = await getTranslations("DrillCodes.errors");
 
-  // Šéftréner štandardizuje kódy pre OBE disciplíny — jeho vlastná (tenis)
-  // by kondičné zamerania zamietla.
-  if (!isCategoryOfAnyDiscipline(category)) {
+  if (
+    !isDisciplineId(disciplineId) ||
+    !disciplineConfig(disciplineId).categories.includes(category)
+  ) {
     return { error: t("invalidCategory") };
   }
 
@@ -211,6 +224,7 @@ export async function saveOrgDrillCodes(
   const rows = Array.from({ length: SLOT_COUNT }, (_, index) => ({
     organization_id: org.id,
     coach_id: null,
+    discipline: disciplineId,
     category,
     slot: index + 1,
     code: codes[index] || null,
@@ -218,7 +232,7 @@ export async function saveOrgDrillCodes(
 
   const { error } = await supabase
     .from("drill_codes")
-    .upsert(rows, { onConflict: "organization_id,category,slot" });
+    .upsert(rows, { onConflict: "organization_id,discipline,category,slot" });
 
   if (error) {
     return { error: t("saveFailed") };

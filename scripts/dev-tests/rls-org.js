@@ -154,16 +154,16 @@ async function main() {
   const dirCode = await director
     .from("drill_codes")
     .upsert(
-      { organization_id: org.id, coach_id: null, category: "Volley", slot: 1, code: "RLS-VOL" },
-      { onConflict: "organization_id,category,slot" },
+      { organization_id: org.id, coach_id: null, discipline: "tennis", category: "Volley", slot: 1, code: "RLS-VOL" },
+      { onConflict: "organization_id,discipline,category,slot" },
     )
     .select("id");
   check("šéftréner uloží federačný kód", (dirCode.data ?? []).length === 1, dirCode.error?.message);
   const coachCode = await coach
     .from("drill_codes")
     .upsert(
-      { organization_id: org.id, coach_id: null, category: "Volley", slot: 1, code: "HACK" },
-      { onConflict: "organization_id,category,slot" },
+      { organization_id: org.id, coach_id: null, discipline: "tennis", category: "Volley", slot: 1, code: "HACK" },
+      { onConflict: "organization_id,discipline,category,slot" },
     )
     .select("id");
   check("tréner federačný kód nezmení", coachCode.error !== null || (coachCode.data ?? []).length === 0);
@@ -175,6 +175,19 @@ async function main() {
     .eq("slot", 1)
     .maybeSingle();
   check("v DB ostal kód od šéftrénera", stored?.code === "RLS-VOL", JSON.stringify(stored));
+  // Zameranie sa overuje v DVOJICI s disciplínou (20261005090000): rovnaký
+  // názov smie byť vo viacerých disciplínach, ale len v tej, ktorej katalóg
+  // ho pozná. Bez toho by sa dal uložiť tenisový kód pod kondičné zameranie.
+  const crossed = await director
+    .from("drill_codes")
+    .insert({ organization_id: org.id, coach_id: null, discipline: "tennis", category: "ENDURANCE", slot: 2, code: "RLS-X" })
+    .select("id");
+  check("zameranie cudzej disciplíny DB odmietne", crossed.error !== null, JSON.stringify(crossed.data));
+  const noDiscipline = await director
+    .from("drill_codes")
+    .insert({ organization_id: org.id, coach_id: null, category: "Volley", slot: 3, code: "RLS-X" })
+    .select("id");
+  check("kód bez disciplíny DB odmietne", noDiscipline.error !== null, JSON.stringify(noDiscipline.data));
 
   section("8) Tenant izolácia");
   const { data: otherOrg } = await db
@@ -564,6 +577,7 @@ async function main() {
   // upratanie
   await db.from("organization_members").delete().eq("invite_code", "RLS-TEST1");
   await db.from("drill_codes").delete().eq("code", "RLS-VOL");
+  await db.from("drill_codes").delete().eq("code", "RLS-X");
 
   report();
 }

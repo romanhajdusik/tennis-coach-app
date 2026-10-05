@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
+import { COURT_DISCIPLINE } from "@/lib/org/director";
 import {
   getDefaultPeriodValue,
   getPeriodRange,
@@ -12,7 +13,7 @@ import {
 } from "@/lib/actions/analytics";
 import {
   disciplineConfig,
-  disciplineOfCategory,
+  isDisciplineId,
   showsStrokesIn,
   type DisciplineId,
 } from "@/lib/discipline";
@@ -65,23 +66,28 @@ export default async function DirectorPlayerAnalyticsPage({
   searchParams,
 }: {
   params: Promise<{ id: string; category: string }>;
-  searchParams: Promise<{ range?: string; value?: string }>;
+  searchParams: Promise<{ discipline?: string; range?: string; value?: string }>;
 }) {
   const { id, category: rawCategory } = await params;
   // Next.js v tomto projekte dynamické segmenty nedekóduje — bez toho by
   // kategória s medzerou („GAME DRILLS", „CORE MUSCLES") nikdy nesedela.
   const category = decodeURIComponent(rawCategory);
 
-  // **Pult sa neriadi disciplínou appky, ale zameraním, ktoré si šéftréner
-  // otvoril.** Sám žiadnu disciplínu „nerobí" (vidí obe) a hráč môže mať
-  // tréningy oboch, takže `getDisciplineConfig()` by tu bola nesprávna
-  // odpoveď: kondičné zameranie by odmietla ako neznáme a kondičným dátam by
-  // dopočítala tenisové sadzby úderov.
-  const viewedId = disciplineOfCategory(category);
-  if (!viewedId) {
+  const search = await searchParams;
+
+  // **Pult sa neriadi disciplínou appky, ale tou, ktorú si šéftréner zvolil
+  // (`?discipline=`).** Sám žiadnu „nerobí" a hráč môže mať tréningy
+  // viacerých, takže `getDisciplineConfig()` by tu bola nesprávna odpoveď:
+  // kondičné zameranie by odmietla ako neznáme a kondičným dátam by
+  // dopočítala tenisové sadzby úderov. Zo zamerania sa disciplína odvodiť
+  // nedá — padel bude mať `Forehand` ako tenis. Bez parametra je to kurt.
+  const viewedId = isDisciplineId(search.discipline)
+    ? search.discipline
+    : COURT_DISCIPLINE;
+  const discipline = disciplineConfig(viewedId);
+  if (!discipline.categories.includes(category)) {
     notFound();
   }
-  const discipline = disciplineConfig(viewedId);
 
   const t = await getTranslations("Analytics");
   const tPlayer = await getTranslations("Director.player");
@@ -97,7 +103,6 @@ export default async function DirectorPlayerAnalyticsPage({
     notFound();
   }
 
-  const search = await searchParams;
   const range: PeriodRangeType =
     search.range && isPeriodRangeType(search.range)
       ? search.range
@@ -109,6 +114,7 @@ export default async function DirectorPlayerAnalyticsPage({
     supabase,
     player,
     category,
+    viewedId,
     start,
     end,
   );
@@ -119,13 +125,15 @@ export default async function DirectorPlayerAnalyticsPage({
     player.id,
     start,
     end,
-    disciplineOfCategory(category) ?? "tennis",
+    viewedId,
   );
   const previousYearValue = getPreviousYearValue(range, value);
 
   const basePath = `/director/players/${player.id}/analytics`;
-  const periodQuery = (r: PeriodRangeType, v: string) =>
-    `range=${r}&value=${encodeURIComponent(v)}`;
+  // Každý odkaz nesie disciplínu — bez nej by sa stránka vrátila na kurt.
+  const query = (d: DisciplineId, r: PeriodRangeType, v: string) =>
+    `discipline=${d}&range=${r}&value=${encodeURIComponent(v)}`;
+  const periodQuery = (r: PeriodRangeType, v: string) => query(viewedId, r, v);
 
   return (
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-5xl flex-col gap-6 px-4 py-8">
@@ -155,7 +163,7 @@ export default async function DirectorPlayerAnalyticsPage({
           return (
             <Link
               key={option}
-              href={`${basePath}/${encodeURIComponent(config.defaultCategory)}?${periodQuery(range, value)}`}
+              href={`${basePath}/${encodeURIComponent(config.defaultCategory)}?${query(option, range, value)}`}
               className={tabClass(option === viewedId)}
             >
               {config.label}
@@ -200,6 +208,7 @@ export default async function DirectorPlayerAnalyticsPage({
         {/* Kĺzavé okno nemá čo vyberať — je vždy „posledných 12 mesiacov". */}
         {range !== "last12" && (
         <form method="get" className="flex items-center gap-2">
+          <input type="hidden" name="discipline" value={viewedId} />
           <input type="hidden" name="range" value={range} />
           {range === "week" && (
             <input

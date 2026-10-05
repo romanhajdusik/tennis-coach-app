@@ -40,6 +40,7 @@ export type Database = {
           coach_id: string | null
           code: string | null
           created_at: string
+          discipline: string
           id: string
           organization_id: string | null
           slot: number
@@ -50,6 +51,7 @@ export type Database = {
           coach_id?: string | null
           code?: string | null
           created_at?: string
+          discipline: string
           id?: string
           organization_id?: string | null
           slot: number
@@ -60,6 +62,7 @@ export type Database = {
           coach_id?: string | null
           code?: string | null
           created_at?: string
+          discipline?: string
           id?: string
           organization_id?: string | null
           slot?: number

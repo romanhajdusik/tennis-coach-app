@@ -79,11 +79,13 @@ export default async function DirectorDrillCodesPage({
 
       {discipline.categories.map((category, index) => (
         <DrillCodeForm
-          key={category}
+          // Kľúč nesie aj disciplínu: rovnako pomenované zameranie dvoch
+          // disciplín by si inak pri prepnutí nechalo stav formulára.
+          key={`${selected}:${category}`}
           category={category}
           initialSlots={slotsByCategory[index]}
           groups={discipline.analytics.groupedCategories[category]}
-          owner="organization"
+          organizationDiscipline={selected}
         />
       ))}
     </div>

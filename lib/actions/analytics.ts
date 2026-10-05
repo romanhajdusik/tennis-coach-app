@@ -6,7 +6,6 @@ import {
   getDiscipline,
   getDisciplineConfig,
   disciplineConfig,
-  disciplineOfCategory,
   type DisciplineConfig,
   type DisciplineId,
 } from "@/lib/discipline";
@@ -376,17 +375,18 @@ export async function getPlayerCategoryAnalytics(
   supabase: SupabaseServerClient,
   player: { id: string; birth_year: number | null },
   category: string,
+  analysed: DisciplineId,
   start: Date,
   end: Date,
 ): Promise<{ byCode: CodeStat[]; byCharacter: CharacterStat[] }> {
-  // Pult analyzuje disciplínu ZAMERANIA, na ktoré sa práve pozerá — sám
-  // žiadnu „nerobí" a hráč môže mať tréningy oboch.
+  // Pult analyzuje disciplínu, ktorú si šéftréner zvolil (`analysed` z adresy)
+  // — sám žiadnu „nerobí" a hráč môže mať tréningy viacerých. Zo zamerania sa
+  // odvodiť nedá: padel bude mať `Forehand` ako tenis.
   //
   // **Tou istou disciplínou sa musí aj počítať**, nielen filtrovať: sadzby
   // úderov, charakter aj zoskupenia kódov sú jej vlastnosťou. Šéftrénerovi by
   // inak appka pri kondičnom zameraní dopočítala tenisový odhad úderov —
   // kondička ho nemá mať vôbec.
-  const analysed = await analysedDiscipline(category);
   const sessionIds = await getPlayerSessionIdsInPeriod(
     supabase,
     player.id,
@@ -432,6 +432,7 @@ export async function getPlayersCategoryAnalytics(
   supabase: SupabaseServerClient,
   players: { id: string; birth_year: number | null }[],
   category: string,
+  analysed: DisciplineId,
   start: Date,
   end: Date,
 ): Promise<Map<string, PlayerAnalytics>> {
@@ -444,11 +445,9 @@ export async function getPlayersCategoryAnalytics(
     return result;
   }
 
-  // Aj tu sa filtruje disciplína zamerania: porovnanie stavia stĺpce vedľa
+  // Aj tu sa filtruje zvolená disciplína: porovnanie stavia stĺpce vedľa
   // seba a jeden hráč s kondičnou prípravou by inak mal iné percentá než
   // ostatní bez toho, aby to bolo z grafu vidieť.
-  const analysed = await analysedDiscipline(category);
-
   const { data: sessions } = await supabase
     .from("sessions")
     .select("id, player_id, planned_data, actual_data")
@@ -541,17 +540,6 @@ export async function getPlayerCategoryMinuteShares(
     .eq("status", "played");
 
   return aggregateCategoryShares(drills ?? []);
-}
-
-/**
- * Ktorou disciplínou sa má analyzovať toto zameranie.
- *
- * Zameranie je jediné, čo o disciplíne v pulte hovorí — šéftréner žiadnu
- * „nerobí" a hráč môže mať tréningy oboch. Mimo pultu vyjde to isté ako
- * disciplína appky, takže je bezpečné použiť to všade rovnako.
- */
-async function analysedDiscipline(category: string): Promise<DisciplineId> {
-  return disciplineOfCategory(category) ?? (await getDiscipline());
 }
 
 /**

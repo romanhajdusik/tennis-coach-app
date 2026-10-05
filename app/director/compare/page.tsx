@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, getTimeZone } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
-import { getDirectorDashboard } from "@/lib/org/director";
+import { getDirectorDashboard, COURT_DISCIPLINE } from "@/lib/org/director";
 import {
   getDefaultPeriodValue,
   getPeriodRange,
@@ -12,15 +12,13 @@ import {
 } from "@/lib/actions/analytics";
 import {
   disciplineConfig,
-  disciplineOfCategory,
+  isDisciplineId,
   showsStrokesIn,
   type DisciplineId,
 } from "@/lib/discipline";
 
 /** Obe disciplíny v pevnom poradí — kurt prvý, je to hlavná os federácie. */
 const ALL_DISCIPLINES: DisciplineId[] = ["tennis", "fitness"];
-/** Predvolené zameranie porovnania: pult sa otvára na kurte. */
-const TENNIS_DEFAULT_CATEGORY = disciplineConfig("tennis").defaultCategory;
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -88,6 +86,7 @@ export default async function DirectorComparePage({
   searchParams: Promise<{
     by?: string;
     group?: string;
+    discipline?: string;
     category?: string;
     range?: string;
     value?: string;
@@ -98,16 +97,18 @@ export default async function DirectorComparePage({
   const { supabase, org } = await requireDirector();
   const search = await searchParams;
 
-  // Disciplína sa aj tu riadi ZAMERANÍM, nie nasadením — porovnanie je pult,
-  // a ten sa pozerá na obe (viď `/director/players/[id]/analytics`).
+  // Disciplína je aj tu VOĽBA šéftrénera v adrese, nie nasadenie ani zameranie
+  // (viď `/director/players/[id]/analytics`). Bez nej sa pult otvára na kurte.
+  const viewedId = isDisciplineId(search.discipline)
+    ? search.discipline
+    : COURT_DISCIPLINE;
+  const discipline = disciplineConfig(viewedId);
   const category = search.category
     ? decodeURIComponent(search.category)
-    : TENNIS_DEFAULT_CATEGORY;
-  const viewedId = disciplineOfCategory(category);
-  if (!viewedId) {
+    : discipline.defaultCategory;
+  if (!discipline.categories.includes(category)) {
     notFound();
   }
-  const discipline = disciplineConfig(viewedId);
 
   // Vyhodnotené raz, mimo cyklu cez hráčov — `await` sa do `.map()` nezmestí
   // a odpoveď je pre všetky stĺpce rovnaká.
@@ -153,12 +154,20 @@ export default async function DirectorComparePage({
     supabase,
     players.map((entry) => entry.player),
     category,
+    viewedId,
     start,
     end,
   );
 
   const query = (next: Partial<Record<string, string>>) => {
-    const params = new URLSearchParams({ by, group, category, range, value });
+    const params = new URLSearchParams({
+      by,
+      group,
+      discipline: viewedId,
+      category,
+      range,
+      value,
+    });
     for (const [key, entry] of Object.entries(next)) {
       if (entry !== undefined) params.set(key, entry);
     }
@@ -232,7 +241,10 @@ export default async function DirectorComparePage({
           return (
             <Link
               key={option}
-              href={query({ category: config.defaultCategory })}
+              href={query({
+                discipline: option,
+                category: config.defaultCategory,
+              })}
               className={tabClass(option === viewedId)}
             >
               {config.label}

@@ -4,26 +4,31 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { saveDrillCodes, saveOrgDrillCodes } from "@/lib/actions/drill-codes";
 import { splitSlotsIntoGroups, type AnalyticsCodeGroup } from "@/lib/drill-options";
+import type { DisciplineId } from "@/lib/disciplines/types";
 
 export function DrillCodeForm({
   category,
   initialSlots,
   groups,
   readOnly = false,
-  owner = "coach",
+  organizationDiscipline,
 }: {
   category: string;
   initialSlots: string[];
   groups?: AnalyticsCodeGroup[];
   /** V org režime kódy nastavuje šéftréner federácie — tréner ich len číta (§5.5). */
   readOnly?: boolean;
-  /** Čie kódy sa ukladajú: trénerove osobné, alebo štandard organizácie. */
-  owner?: "coach" | "organization";
+  /**
+   * Zadaná = ukladá sa štandard ORGANIZÁCIE pre túto disciplínu (šéftréner,
+   * ktorý sám žiadnu „nerobí"). Bez nej trénerove osobné kódy v disciplíne
+   * jeho appky.
+   */
+  organizationDiscipline?: DisciplineId;
 }) {
   const t = useTranslations("DrillCodes");
-  const saveForCategory = (
-    owner === "organization" ? saveOrgDrillCodes : saveDrillCodes
-  ).bind(null, category);
+  const saveForCategory = organizationDiscipline
+    ? saveOrgDrillCodes.bind(null, organizationDiscipline, category)
+    : saveDrillCodes.bind(null, category);
   const [state, formAction, pending] = useActionState(
     saveForCategory,
     undefined,
