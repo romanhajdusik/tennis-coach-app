@@ -72,7 +72,7 @@ async function main() {
   const { COACH_TIERS, formatEur } = await import(
     pathToFileURL(path.join(ROOT, "lib", "landing-pricing.ts")).href
   );
-  const { coachProductId, priceLookupKey } = await import(
+  const { coachProductId, priceLookupKey, SOLD_DISCIPLINES } = await import(
     pathToFileURL(path.join(ROOT, "lib", "stripe-plans.ts")).href
   );
 
@@ -280,7 +280,7 @@ async function main() {
   // Kondičné nasadenie má vlastné produkty s rovnakými sumami. Overujú sa
   // tu, lebo kondičný dev server táto sada nespúšťa — bez toho by chýbajúca
   // kondičná cena vyšla najavo až pri pokuse zaplatiť na fitness doméne.
-  for (const discipline of ["tennis", "fitness"])
+  for (const discipline of SOLD_DISCIPLINES)
   for (const tier of COACH_TIERS) {
     for (const [interval, eur] of [
       ["month", tier.monthly],

@@ -202,6 +202,15 @@ nesmú zmeniť.
    ostatné sady 0 FAIL, plus build.
 4. **Stripe** — vlastné produkty pre každý šport
    (`plaw_padel_coach_3`…, mechanizmus z 2026-10-02 to už vie).
+   **Postavené 2026-10-05, BEZ migrácie:** `SOLD_DISCIPLINES`
+   v `lib/stripe-plans.ts` je exportovaný a má všetky tri športy (webhook
+   z neho berie hladinu pri zmene plánu v portáli), `setup-products.js` ich
+   zakladá s názvom „P.L.A.W Padel — Coach, N players" a spadne, keď sa jeho
+   zoznam rozíde so `SOLD_DISCIPLINES`. V testovacom Stripe založených 9
+   produktov a 18 cien; sada `stripe.js` overuje ceny všetkých disciplín
+   (53 OK, 0 FAIL). **V ostrom Stripe ešte NIE** — to je súčasť dňa
+   spustenia daného športu, spolu s vlastným portálom („Padel", …,
+   `STRIPE_PORTAL_CONFIGURATION`) a kľúčom pre jeho Vercel projekt (krok 5).
 5. **Nasadenie** — tri Vercel projekty, CNAME, premenné; postup podľa
    [`nasadenie-kondicky.md`](nasadenie-kondicky.md).
 
@@ -228,6 +237,8 @@ nesmú zmeniť.
    tenis), **odhad úderov zatiaľ NIE** (`strokes: null`) — user ešte nevie
    sadzby; doplní sa konfiguráciou, keď ich povie, bez migrácie.
 3. **Ceny** — rovnaké ako tenis a kondička? Pred krokom 4.
+   **ROZHODNUTÉ 2026-10-05: rovnaké.** Jeden cenník (`lib/landing-pricing.ts`)
+   pre všetky športy, v Stripe len vlastné produkty na šport.
 4. **Landing s cenníkom alebo len úvodná obrazovka?** Kondička má od
    2026-10-02 krátky landing, ktorý smie byť na produkcii len vtedy, keď sa
    v danej appke naozaj dá zaplatiť. Pred krokom 5.

@@ -116,7 +116,7 @@ async function main() {
 
   // ID produktu skladá TÁ ISTÁ funkcia, ktorou ho hľadá pokladňa — inak by
   // sa pri ďalšej disciplíne rozišli a pokladňa by hľadala neexistujúcu cenu.
-  const { coachProductId } = await import(
+  const { coachProductId, SOLD_DISCIPLINES } = await import(
     pathToFileURL(path.join(ROOT, "lib", "stripe-plans.ts")).href
   );
 
@@ -126,8 +126,21 @@ async function main() {
   // NÁZOV — ten sa v Stripe dá meniť kedykoľvek, ID nie.
   const disciplines = [
     { id: "tennis", label: "Tennis", coach: "a tennis coach" },
+    { id: "padel", label: "Padel", coach: "a padel coach" },
+    { id: "badminton", label: "Badminton", coach: "a badminton coach" },
+    { id: "pickleball", label: "Pickleball", coach: "a pickleball coach" },
     { id: "fitness", label: "Fitness", coach: "a fitness coach" },
   ];
+
+  // Zoznam predávaných disciplín žije v `lib/stripe-plans.ts` (číta ho aj
+  // webhook); názvy sú tu, lebo appka ich nepotrebuje. Keby sa zoznamy
+  // rozišli, šport by v pokladni hľadal produkt, ktorý skript nezaložil.
+  const ids = disciplines.map((discipline) => discipline.id).sort().join(",");
+  if (ids !== [...SOLD_DISCIPLINES].sort().join(",")) {
+    throw new Error(
+      `Disciplíny v skripte (${ids}) nesedia so SOLD_DISCIPLINES v lib/stripe-plans.ts`,
+    );
+  }
 
   const plans = [
     ...disciplines.flatMap((discipline) => COACH_TIERS.map((tier) => ({

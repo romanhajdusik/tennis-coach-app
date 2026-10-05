@@ -68,8 +68,22 @@ export function isKnownCoachLookupKey(
   );
 }
 
-/** Disciplíny, ktoré majú v Stripe vlastné trénerské produkty. */
-const SOLD_DISCIPLINES: readonly DisciplineId[] = ["tennis", "fitness"];
+/**
+ * Disciplíny, ktoré majú v Stripe vlastné trénerské produkty. Číta to webhook
+ * (`playerLimitOfLookupKey`), skript, ktorý produkty zakladá, aj sada
+ * `stripe.js` — šport, ktorý tu chýba, by v pokladni síce zaplatil, ale
+ * zmenu plánu v portáli by mu webhook nezapísal.
+ *
+ * Padel, bedminton a pickleball majú od 2026-10-05 **rovnaké ceny** ako tenis
+ * a kondička (rozhodol user, docs `roadmap-buduce-smery.md` §1.1 otázka č. 3).
+ */
+export const SOLD_DISCIPLINES: readonly DisciplineId[] = [
+  "tennis",
+  "padel",
+  "badminton",
+  "pickleball",
+  "fitness",
+];
 
 /**
  * Koľko hráčov patrí k cene s týmto `lookup_key` — alebo `null`, keď to nie
