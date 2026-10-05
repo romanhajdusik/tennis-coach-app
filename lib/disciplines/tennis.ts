@@ -8,6 +8,8 @@ import type { DisciplineConfig } from "@/lib/disciplines/types";
 export const TENNIS_DISCIPLINE: DisciplineConfig = {
   id: "tennis",
 
+  kind: "court",
+
   label: "Tennis",
 
   domain: "plaw.win",

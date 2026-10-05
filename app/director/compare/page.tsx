@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, getTimeZone } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
-import { getDirectorDashboard, COURT_DISCIPLINE } from "@/lib/org/director";
+import { getDirectorDashboard } from "@/lib/org/director";
 import {
   getDefaultPeriodValue,
   getPeriodRange,
@@ -12,13 +12,9 @@ import {
 } from "@/lib/actions/analytics";
 import {
   disciplineConfig,
-  isDisciplineId,
+  orgDisciplines,
   showsStrokesIn,
-  type DisciplineId,
 } from "@/lib/discipline";
-
-/** Obe disciplíny v pevnom poradí — kurt prvý, je to hlavná os federácie. */
-const ALL_DISCIPLINES: DisciplineId[] = ["tennis", "fitness"];
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -98,10 +94,11 @@ export default async function DirectorComparePage({
   const search = await searchParams;
 
   // Disciplína je aj tu VOĽBA šéftrénera v adrese, nie nasadenie ani zameranie
-  // (viď `/director/players/[id]/analytics`). Bez nej sa pult otvára na kurte.
-  const viewedId = isDisciplineId(search.discipline)
-    ? search.discipline
-    : COURT_DISCIPLINE;
+  // (viď `/director/players/[id]/analytics`): šport zväzu alebo kondička,
+  // bez nej sa pult otvára na kurte.
+  const offered = orgDisciplines(org.courtDiscipline);
+  const viewedId =
+    offered.find((id) => id === search.discipline) ?? org.courtDiscipline;
   const discipline = disciplineConfig(viewedId);
   const category = search.category
     ? decodeURIComponent(search.category)
@@ -121,7 +118,12 @@ export default async function DirectorComparePage({
   const value = search.value ?? getDefaultPeriodValue(range);
 
   const timeZone = await getTimeZone();
-  const dashboard = await getDirectorDashboard(supabase, org.id, timeZone);
+  const dashboard = await getDirectorDashboard(
+    supabase,
+    org.id,
+    org.courtDiscipline,
+    timeZone,
+  );
 
   // Ročníky, ktoré sa v organizácii reálne vyskytujú (bez „nezadaný").
   const years = [
@@ -236,7 +238,7 @@ export default async function DirectorComparePage({
       {/* Prepínač disciplíny — rovnaký ako v analytike hráča. Vedie na prvé
           zameranie druhej disciplíny, zvyšok voľby (skupina, obdobie) ostáva. */}
       <div className="flex flex-wrap items-center gap-2">
-        {ALL_DISCIPLINES.map((option) => {
+        {offered.map((option) => {
           const config = disciplineConfig(option);
           return (
             <Link

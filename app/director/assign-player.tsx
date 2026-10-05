@@ -6,6 +6,7 @@ import {
   assignPlayer,
   type AssignFormState,
 } from "@/lib/actions/player-assignment";
+import { isCourtDiscipline, isDisciplineId } from "@/lib/disciplines/registry";
 
 export type AssignableCoach = {
   userId: string;
@@ -61,7 +62,8 @@ export function AssignPlayer({
           {coaches.map((coach) => (
             <option key={coach.userId} value={coach.userId}>
               {`${coach.name} — ${
-                coach.discipline === "fitness"
+                isDisciplineId(coach.discipline) &&
+                !isCourtDiscipline(coach.discipline)
                   ? t("disciplineFitness")
                   : t("disciplineTennis")
               }`}

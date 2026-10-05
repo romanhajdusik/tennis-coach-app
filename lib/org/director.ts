@@ -2,6 +2,7 @@ import type { createClient } from "@/lib/supabase/server";
 import { getRosterOverview, type RosterEntry } from "@/lib/players/roster";
 import type { ActivePlayer } from "@/lib/players/selected";
 import type { OrgDiscipline } from "@/lib/org/membership";
+import { isCourtDiscipline, isDisciplineId } from "@/lib/disciplines/registry";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -20,9 +21,6 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
  * kurt aj kondíciu vedľa seba.
  */
 
-/** Disciplína, ktorá v organizácii znamená „tréning na kurte". */
-export const COURT_DISCIPLINE: OrgDiscipline = "tennis";
-
 export type PlayerAssignment = {
   coachId: string;
   discipline: OrgDiscipline;
@@ -30,8 +28,12 @@ export type PlayerAssignment = {
 
 export type DirectorPlayer = RosterEntry & {
   assignments: PlayerAssignment[];
-  /** Odtrénované minúty za sledované okno, po disciplínach. */
-  minutesByDiscipline: Record<OrgDiscipline, number>;
+  /**
+   * Odtrénované minúty za sledované okno — kurt (šport zväzu) vs kondícia.
+   * Po DRUHU, nie po id disciplíny: zväz má jeden šport, takže sú to vždy
+   * presne dve čísla.
+   */
+  minutesByKind: MinutesByKind;
 };
 
 export type DirectorCoach = {
@@ -60,8 +62,10 @@ type AssignmentRow = {
   discipline: string;
 };
 
-function emptyMinutes(): Record<OrgDiscipline, number> {
-  return { tennis: 0, fitness: 0 };
+export type MinutesByKind = { court: number; fitness: number };
+
+function emptyMinutes(): MinutesByKind {
+  return { court: 0, fitness: 0 };
 }
 
 /**
@@ -83,6 +87,8 @@ export function coachIdFor(
 export async function getDirectorDashboard(
   supabase: SupabaseServerClient,
   organizationId: string,
+  /** Šport zväzu (`OrgContext.courtDiscipline`) — „tréning na kurte". */
+  courtDiscipline: OrgDiscipline,
   timeZone: string,
   now: Date = new Date(),
 ): Promise<DirectorDashboard> {
@@ -102,7 +108,7 @@ export async function getDirectorDashboard(
     supabase,
     players,
     timeZone,
-    COURT_DISCIPLINE,
+    courtDiscipline,
     now,
   );
 
@@ -113,7 +119,9 @@ export async function getDirectorDashboard(
 
   const assignmentsByPlayer = new Map<string, PlayerAssignment[]>();
   for (const row of (assignmentRows ?? []) as AssignmentRow[]) {
-    const discipline = row.discipline === "fitness" ? "fitness" : "tennis";
+    const discipline = isDisciplineId(row.discipline)
+      ? row.discipline
+      : courtDiscipline;
     assignmentsByPlayer.set(row.player_id, [
       ...(assignmentsByPlayer.get(row.player_id) ?? []),
       { coachId: row.coach_id, discipline },
@@ -125,7 +133,7 @@ export async function getDirectorDashboard(
   const entries: DirectorPlayer[] = overview.entries.map((entry) => ({
     ...entry,
     assignments: assignmentsByPlayer.get(entry.player.id) ?? [],
-    minutesByDiscipline: minutesByPlayer.get(entry.player.id) ?? emptyMinutes(),
+    minutesByKind: minutesByPlayer.get(entry.player.id) ?? emptyMinutes(),
   }));
 
   // Členstvo + mená. Profily členov smie šéftréner čítať cez policy
@@ -140,9 +148,9 @@ export async function getDirectorDashboard(
     .filter((member) => member.role === "coach" && member.user_id)
     .map((member) => ({
       userId: member.user_id as string,
-      discipline: (member.discipline === "fitness"
-        ? "fitness"
-        : "tennis") as OrgDiscipline,
+      discipline: isDisciplineId(member.discipline)
+        ? member.discipline
+        : courtDiscipline,
     }));
 
   const coachIds = activeCoaches.map((coach) => coach.userId);
@@ -171,7 +179,7 @@ export async function getDirectorDashboard(
       // Pozornosť je vec kurtu, takže kondičnému trénerovi sa nezobrazuje —
       // nie je to jeho zodpovednosť a nemá s tým čo robiť.
       attentionCount:
-        discipline === COURT_DISCIPLINE
+        discipline === courtDiscipline
           ? assigned.filter((entry) => entry.attention !== "ok").length
           : 0,
     };
@@ -231,8 +239,8 @@ async function getMinutesByPlayer(
   supabase: SupabaseServerClient,
   players: ActivePlayer[],
   now: Date,
-): Promise<Map<string, Record<OrgDiscipline, number>>> {
-  const result = new Map<string, Record<OrgDiscipline, number>>();
+): Promise<Map<string, MinutesByKind>> {
+  const result = new Map<string, MinutesByKind>();
 
   if (players.length === 0) {
     return result;
@@ -253,13 +261,15 @@ async function getMinutesByPlayer(
     .gte("planned_data->>date", windowStart);
 
   for (const row of data ?? []) {
-    const discipline: OrgDiscipline =
-      row.discipline === "fitness" ? "fitness" : "tennis";
+    const kind =
+      isDisciplineId(row.discipline) && !isCourtDiscipline(row.discipline)
+        ? "fitness"
+        : "court";
     const totals = result.get(row.player_id) ?? emptyMinutes();
     for (const drill of row.session_drills ?? []) {
       // Neodohrané a nahradené cvičenia sa nepočítajú — rovnako ako v analytike.
       if (drill.status !== "played") continue;
-      totals[discipline] += drill.duration_minutes ?? 0;
+      totals[kind] += drill.duration_minutes ?? 0;
     }
     result.set(row.player_id, totals);
   }

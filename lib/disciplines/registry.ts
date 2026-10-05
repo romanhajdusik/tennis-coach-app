@@ -14,6 +14,21 @@ export const DISCIPLINES: Record<DisciplineId, DisciplineConfig> = {
   fitness: FITNESS_DISCIPLINE,
 };
 
+/** Všetky disciplíny v poradí konfigurácie (kurtové prvé, kondička posledná). */
+export const DISCIPLINE_IDS = Object.keys(DISCIPLINES) as DisciplineId[];
+
+/**
+ * Kondička — jediná disciplína druhu `fitness`, spoločná pre všetky raketové
+ * športy. Pomenovaná konštanta namiesto reťazca rozsypaného po kóde.
+ */
+export const FITNESS_DISCIPLINE_ID: DisciplineId = "fitness";
+
+/**
+ * Predvolený šport na kurte: tam, kde chýba alebo je neznámy (prod beží bez
+ * premennej, stará organizácia bez `sport`), je to tenis — pôvodná appka.
+ */
+const DEFAULT_COURT_DISCIPLINE: DisciplineId = "tennis";
+
 /**
  * Disciplína NASADENIA. `NEXT_PUBLIC_*`, lebo ju pri builde treba vložiť do
  * balíka; musí sa čítať týmto celým zápisom, dynamický prístup sa nevloží.
@@ -22,9 +37,33 @@ export const DISCIPLINES: Record<DisciplineId, DisciplineConfig> = {
  * tejto premennej a nesmie sa zmeniť tým, že ju niekto zabudne nastaviť.
  */
 export function getDeploymentDiscipline(): DisciplineId {
-  return process.env.NEXT_PUBLIC_PLAW_DISCIPLINE === "fitness"
-    ? "fitness"
-    : "tennis";
+  const value = process.env.NEXT_PUBLIC_PLAW_DISCIPLINE;
+  return isDisciplineId(value) ? value : DEFAULT_COURT_DISCIPLINE;
+}
+
+/** Je disciplína šport na kurte (nie kondička)? */
+export function isCourtDiscipline(id: DisciplineId): boolean {
+  return DISCIPLINES[id].kind === "court";
+}
+
+/**
+ * Šport na kurte organizácie z `organizations.sport`. Zväz je vždy jeden šport
+ * (rozhodnuté pri stavbe federácií) — jeho pult a pozvánky preto ponúkajú
+ * práve **tento šport + kondičku**, nikdy iný šport (user 2026-10-05).
+ * Neznáma hodnota = tenis.
+ */
+export function orgCourtDiscipline(sport: string | null | undefined): DisciplineId {
+  return isDisciplineId(sport) && isCourtDiscipline(sport)
+    ? sport
+    : DEFAULT_COURT_DISCIPLINE;
+}
+
+/**
+ * Disciplíny, ktoré dáva zmysel ponúknuť v organizácii: jej šport a kondička,
+ * v tomto poradí (kurt je hlavná os federácie).
+ */
+export function orgDisciplines(courtDiscipline: DisciplineId): DisciplineId[] {
+  return [courtDiscipline, FITNESS_DISCIPLINE_ID];
 }
 
 /** Konfigurácia konkrétnej disciplíny — pre riadky s vlastným štítkom. */

@@ -85,7 +85,7 @@ export default async function DirectorPlayerPage({
     .eq("player_id", player.id);
 
   const courtCoachId =
-    (playerAssignments ?? []).find((row) => row.discipline === "tennis")
+    (playerAssignments ?? []).find((row) => row.discipline === org.courtDiscipline)
       ?.coach_id ?? null;
 
   const currentCoach =

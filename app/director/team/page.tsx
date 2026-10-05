@@ -131,6 +131,7 @@ export default async function DirectorTeamPage() {
         inactive={inactive}
         seatsUsed={seatsUsed}
         seatLimit={organization?.seat_limit ?? 0}
+        courtDiscipline={org.courtDiscipline}
       />
     </div>
   );

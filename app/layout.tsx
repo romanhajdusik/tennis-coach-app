@@ -36,9 +36,13 @@ export async function generateMetadata(): Promise<Metadata> {
  * (odtiene a dôvod sú v `globals.css`). Federáciu treba pýtať z org kontextu,
  * nie z disciplíny: je to tá istá tenisová appka, len na org subdoméne.
  */
-async function appVariant(): Promise<"org" | "fitness" | undefined> {
+async function appVariant(): Promise<string | undefined> {
   if (await getOrgContext()) return "org";
-  return (await getDiscipline()) === "fitness" ? "fitness" : undefined;
+  // Tenis je predvolený vzhľad (bez atribútu); každá iná disciplína dostane
+  // vlastné id a jej odtiene patria do `globals.css`. Bez nich ostane
+  // predvolená farba — nič sa nerozbije, len appka nie je odlíšená.
+  const discipline = await getDiscipline();
+  return discipline === "tennis" ? undefined : discipline;
 }
 
 export default async function RootLayout({

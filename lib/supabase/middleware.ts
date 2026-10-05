@@ -18,6 +18,7 @@ export async function updateSession(
     requestHeaders.set(ORG_HEADERS.slug, org.slug);
     // Názov môže mať diakritiku, HTTP hlavičky sú ASCII.
     requestHeaders.set(ORG_HEADERS.name, encodeURIComponent(org.name));
+    requestHeaders.set(ORG_HEADERS.sport, org.courtDiscipline);
   }
 
   let response = NextResponse.next({ request: { headers: requestHeaders } });

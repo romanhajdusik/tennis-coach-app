@@ -6,6 +6,8 @@ import {
   getDiscipline,
   getDisciplineConfig,
   disciplineConfig,
+  isDisciplineId,
+  FITNESS_DISCIPLINE_ID,
   type DisciplineConfig,
   type DisciplineId,
 } from "@/lib/discipline";
@@ -563,6 +565,32 @@ export async function getPlayerCategoryMinuteShares(
  * `null` = nie je čo kresliť (žiadne prepojenie alebo v období nič), a vtedy
  * sa blok nevykreslí vôbec — prázdny graf by len zaberal miesto.
  */
+/**
+ * Šport na kurte, v ktorom má karta hráča tréningy (iné než `mine`). Kvôli
+ * „jeden šport = jeden účet" aj „zväz = jeden šport" je na karte najviac
+ * jeden, takže stačí prvý riadok.
+ *
+ * **Opačný smer v samostatnom režime cez ňu NEVIDÍ** — vydávajúca strana na
+ * cudzie tréningy prístup nemá (súhrn ide cez RPC). Vtedy vyjde tenis, ktorý
+ * je dnes jediný šport na kurte; krok 3 (docs §1.1) má preto rozšíriť
+ * `linked_player_category_minutes` o disciplínu v odpovedi.
+ */
+async function courtDisciplineOfCard(
+  supabase: SupabaseServerClient,
+  playerId: string,
+  mine: DisciplineId,
+): Promise<DisciplineId> {
+  const { data } = await supabase
+    .from("sessions")
+    .select("discipline")
+    .eq("player_id", playerId)
+    .neq("discipline", mine)
+    .limit(1)
+    .maybeSingle();
+
+  return isDisciplineId(data?.discipline) ? data.discipline : "tennis";
+}
+
 export async function getLinkedDisciplineShares(
   supabase: SupabaseServerClient,
   userId: string,
@@ -575,10 +603,16 @@ export async function getLinkedDisciplineShares(
     return null;
   }
 
-  const mine = await getDiscipline();
-  const other: DisciplineId = mine === "tennis" ? "fitness" : "tennis";
+  const mine = await getDisciplineConfig();
   const sourcePlayerId =
     (await getLinkedPlayerId(supabase, player.id)) ?? player.id;
+  // Druhá strana prepojenia: kurtový tréner má na druhej strane vždy kondičku;
+  // kondičný má na druhej strane ŠPORT NA KURTE, a ten sa nedá odvodiť z toho,
+  // že „nie je to kondička" (padel, bedminton…). Zistí sa z dát karty.
+  const other =
+    mine.kind === "court"
+      ? FITNESS_DISCIPLINE_ID
+      : await courtDisciplineOfCard(supabase, sourcePlayerId, mine.id);
 
   const shares = await getPlayerCategoryMinuteShares(
     supabase,
@@ -599,7 +633,7 @@ export async function getLinkedDisciplineShares(
   // Podmienka je konfiguračná, nie „ak je to kondička": súhrn smie prísť len
   // vydávajúcej strane a to isté sa pýta aj funkcia v databáze
   // (`source_coach_id = auth.uid()`).
-  if ((await getDisciplineConfig()).cardLink !== "owner") {
+  if (mine.cardLink !== "owner") {
     return null;
   }
 

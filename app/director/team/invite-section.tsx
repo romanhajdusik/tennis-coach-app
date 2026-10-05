@@ -3,6 +3,12 @@
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
+  FITNESS_DISCIPLINE_ID,
+  isCourtDiscipline,
+  isDisciplineId,
+} from "@/lib/disciplines/registry";
+import type { DisciplineId } from "@/lib/disciplines/types";
+import {
   createInvite,
   deleteMember,
   reactivateMember,
@@ -25,6 +31,11 @@ export type ActiveMember = {
   playerCount: number;
 };
 
+/** Kondičná disciplína? Všetko ostatné je kurt (šport zväzu). */
+function isFitness(discipline: string | null | undefined) {
+  return isDisciplineId(discipline) && !isCourtDiscipline(discipline);
+}
+
 /**
  * Správa členstva organizácie. Šéftréner tu spravuje ORGANIZAČNÚ
  * administratívu — read-only dohľad podľa §5.7 sa týka tréningových dát,
@@ -40,12 +51,15 @@ export function InviteSection({
   inactive,
   seatsUsed,
   seatLimit,
+  courtDiscipline,
 }: {
   pending: PendingInvite[];
   members: ActiveMember[];
   inactive: ActiveMember[];
   seatsUsed: number;
   seatLimit: number;
+  /** Šport zväzu — pozvánka ponúka len ten a kondičku (zväz = jeden šport). */
+  courtDiscipline: DisciplineId;
 }) {
   const t = useTranslations("Director.team");
   const [inviteState, inviteAction, invitePending] = useActionState<
@@ -87,11 +101,13 @@ export function InviteSection({
             </span>
             <select
               name="discipline"
-              defaultValue="tennis"
+              defaultValue={courtDiscipline}
               className="rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground"
             >
-              <option value="tennis">{t("disciplineTennis")}</option>
-              <option value="fitness">{t("disciplineFitness")}</option>
+              <option value={courtDiscipline}>{t("disciplineTennis")}</option>
+              <option value={FITNESS_DISCIPLINE_ID}>
+                {t("disciplineFitness")}
+              </option>
             </select>
           </label>
           <button
@@ -125,7 +141,7 @@ export function InviteSection({
                       {invite.code}
                     </code>
                     <span className="block text-xs text-muted">
-                      {invite.discipline === "fitness"
+                      {isFitness(invite.discipline)
                         ? t("disciplineFitness")
                         : t("disciplineTennis")}
                     </span>
@@ -171,7 +187,7 @@ export function InviteSection({
                     {member.role === "director"
                       ? t("roleDirector")
                       : `${
-                          member.discipline === "fitness"
+                          isFitness(member.discipline)
                             ? t("disciplineFitness")
                             : t("disciplineTennis")
                         } · ${t("playersCount", { count: member.playerCount })}`}

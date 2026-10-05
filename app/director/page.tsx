@@ -4,9 +4,9 @@ import { logout } from "@/lib/actions/auth";
 import {
   getDirectorDashboard,
   coachIdFor,
-  COURT_DISCIPLINE,
   type DirectorPlayer,
 } from "@/lib/org/director";
+import { isCourtDiscipline } from "@/lib/disciplines/registry";
 import { requireDirector } from "./guard";
 import { AssignPlayer } from "./assign-player";
 import {
@@ -33,7 +33,12 @@ export default async function DirectorPage() {
   const { supabase, org } = await requireDirector();
   const timeZone = await getTimeZone();
 
-  const dashboard = await getDirectorDashboard(supabase, org.id, timeZone);
+  const dashboard = await getDirectorDashboard(
+    supabase,
+    org.id,
+    org.courtDiscipline,
+    timeZone,
+  );
 
   // Texty stavov sa skladajú vopred — `map()` v JSX nevie čakať na preklady.
   const labels = new Map<string, { last: string; next: string }>();
@@ -49,11 +54,11 @@ export default async function DirectorPage() {
   // tam, kde je čo porovnávať; hráč bez kondície by inak dostal riadok s nulou.
   const loadSplits = new Map<string, string>();
   for (const entry of dashboard.players) {
-    const { tennis, fitness } = entry.minutesByDiscipline;
-    if (tennis === 0 && fitness === 0) continue;
+    const { court, fitness } = entry.minutesByKind;
+    if (court === 0 && fitness === 0) continue;
     loadSplits.set(
       entry.player.id,
-      t("loadSplit", { court: tennis, fitness }),
+      t("loadSplit", { court, fitness }),
     );
   }
 
@@ -66,7 +71,7 @@ export default async function DirectorPage() {
     .map((coach) => ({
       userId: coach.userId as string,
       name: coach.name,
-      discipline: coach.discipline ?? "tennis",
+      discipline: coach.discipline ?? org.courtDiscipline,
     }));
 
   return (
@@ -144,7 +149,7 @@ export default async function DirectorPage() {
                   coachName={
                     dashboard.coaches.find(
                       (coach) =>
-                        coach.userId === coachIdFor(entry, COURT_DISCIPLINE),
+                        coach.userId === coachIdFor(entry, org.courtDiscipline),
                     )?.name ?? t("formerCoach")
                   }
                 />
@@ -180,15 +185,15 @@ export default async function DirectorPage() {
                     <span className="block text-xs text-muted">
                       {coach.discipline &&
                         `${
-                          coach.discipline === "fitness"
-                            ? t("disciplineFitness")
-                            : t("disciplineTennis")
+                          isCourtDiscipline(coach.discipline)
+                            ? t("disciplineTennis")
+                            : t("disciplineFitness")
                         } · `}
                       {t("coachSummary", { players: coach.players.length })}
                       {/* Stav pozornosti je vec KURTU — kondičnému trénerovi sa
                           nezobrazuje, dni bez tréningu na kurte nie sú jeho
                           zodpovednosť. */}
-                      {coach.discipline !== "fitness" && (
+                      {(!coach.discipline || isCourtDiscipline(coach.discipline)) && (
                         <>
                           {" · "}
                           {coach.attentionCount > 0

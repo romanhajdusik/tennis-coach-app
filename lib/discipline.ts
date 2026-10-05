@@ -7,9 +7,14 @@ import {
 } from "@/lib/disciplines/registry";
 
 export {
+  DISCIPLINE_IDS,
+  FITNESS_DISCIPLINE_ID,
   disciplineConfig,
   getDeploymentDiscipline,
+  isCourtDiscipline,
   isDisciplineId,
+  orgCourtDiscipline,
+  orgDisciplines,
 } from "@/lib/disciplines/registry";
 
 /**

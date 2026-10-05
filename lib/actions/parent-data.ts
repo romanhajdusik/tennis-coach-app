@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { getDisciplineConfig, type DisciplineId } from "@/lib/discipline";
+import {
+  getDisciplineConfig,
+  isDisciplineId,
+  type DisciplineId,
+} from "@/lib/discipline";
 import {
   ageStrokeFactor,
   aggregateCategoryShares,
@@ -160,7 +164,7 @@ export async function getFollowerLinkedShares(
   // Vracia sa ako `text`, tak sa zúži na známu hodnotu — neznámu radšej
   // zahodíme, než by sme podľa nej hľadali konfiguráciu.
   const discipline = data[0].discipline;
-  if (discipline !== "tennis" && discipline !== "fitness") {
+  if (!isDisciplineId(discipline)) {
     return null;
   }
 

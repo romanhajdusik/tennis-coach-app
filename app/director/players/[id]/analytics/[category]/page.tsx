@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
-import { COURT_DISCIPLINE } from "@/lib/org/director";
 import {
   getDefaultPeriodValue,
   getPeriodRange,
@@ -13,13 +12,11 @@ import {
 } from "@/lib/actions/analytics";
 import {
   disciplineConfig,
-  isDisciplineId,
+  orgDisciplines,
   showsStrokesIn,
   type DisciplineId,
 } from "@/lib/discipline";
 
-/** Obe disciplíny v pevnom poradí — kurt prvý, je to hlavná os federácie. */
-const ALL_DISCIPLINES: DisciplineId[] = ["tennis", "fitness"];
 import { CategoryCharts } from "@/app/analytics/[category]/category-charts";
 import { CategoryShareChart } from "@/app/analytics/[category]/category-share-chart";
 
@@ -74,16 +71,18 @@ export default async function DirectorPlayerAnalyticsPage({
   const category = decodeURIComponent(rawCategory);
 
   const search = await searchParams;
+  const { supabase, org } = await requireDirector();
 
   // **Pult sa neriadi disciplínou appky, ale tou, ktorú si šéftréner zvolil
   // (`?discipline=`).** Sám žiadnu „nerobí" a hráč môže mať tréningy
   // viacerých, takže `getDisciplineConfig()` by tu bola nesprávna odpoveď:
   // kondičné zameranie by odmietla ako neznáme a kondičným dátam by
   // dopočítala tenisové sadzby úderov. Zo zamerania sa disciplína odvodiť
-  // nedá — padel bude mať `Forehand` ako tenis. Bez parametra je to kurt.
-  const viewedId = isDisciplineId(search.discipline)
-    ? search.discipline
-    : COURT_DISCIPLINE;
+  // nedá — padel bude mať `Forehand` ako tenis. Ponúka sa len šport zväzu a
+  // kondička (zväz = jeden šport); bez parametra je to kurt.
+  const offered = orgDisciplines(org.courtDiscipline);
+  const viewedId =
+    offered.find((id) => id === search.discipline) ?? org.courtDiscipline;
   const discipline = disciplineConfig(viewedId);
   if (!discipline.categories.includes(category)) {
     notFound();
@@ -91,7 +90,6 @@ export default async function DirectorPlayerAnalyticsPage({
 
   const t = await getTranslations("Analytics");
   const tPlayer = await getTranslations("Director.player");
-  const { supabase, org } = await requireDirector();
 
   const { data: player } = await supabase
     .from("players")
@@ -158,7 +156,7 @@ export default async function DirectorPlayerAnalyticsPage({
           Prepnutie vedie na PRVÉ zameranie druhej disciplíny, obdobie sa
           zachová — porovnáva sa tým istým oknom. */}
       <div className="flex flex-wrap items-center gap-2">
-        {ALL_DISCIPLINES.map((option) => {
+        {offered.map((option) => {
           const config = disciplineConfig(option);
           return (
             <Link

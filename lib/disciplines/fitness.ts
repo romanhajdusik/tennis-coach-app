@@ -13,6 +13,8 @@ import type { DisciplineConfig } from "@/lib/disciplines/types";
 export const FITNESS_DISCIPLINE: DisciplineConfig = {
   id: "fitness",
 
+  kind: "fitness",
+
   label: "Fitness",
 
   domain: "fitness.plawsports.com",

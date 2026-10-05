@@ -2,7 +2,11 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
 import { getDrillCodeSlots } from "@/lib/actions/drill-codes";
-import { disciplineConfig, type DisciplineId } from "@/lib/discipline";
+import {
+  disciplineConfig,
+  isCourtDiscipline,
+  orgDisciplines,
+} from "@/lib/discipline";
 import { DrillCodeForm } from "@/app/drill-codes/drill-code-form";
 
 /**
@@ -22,11 +26,14 @@ export default async function DirectorDrillCodesPage({
   const tTeam = await getTranslations("Director.team");
   const { supabase, org, userId } = await requireDirector();
 
-  // Šéftréner nastavuje štandard pre OBE disciplíny — kondičný tréner v jeho
-  // organizácii kódy potrebuje tiež, ale sám ich meniť nesmie (§5.5). Sám
-  // pritom žiadnu disciplínu „nerobí", takže si ju tu vyberá.
-  const selected: DisciplineId =
-    (await searchParams).discipline === "fitness" ? "fitness" : "tennis";
+  // Šéftréner nastavuje štandard pre OBE disciplíny zväzu — jeho šport a
+  // kondičku. Kondičný tréner v jeho organizácii kódy potrebuje tiež, ale sám
+  // ich meniť nesmie (§5.5). Sám pritom žiadnu disciplínu „nerobí", takže si
+  // ju tu vyberá; iný šport než zväzu sa ponúknuť nedá.
+  const offered = orgDisciplines(org.courtDiscipline);
+  const requested = (await searchParams).discipline;
+  const selected =
+    offered.find((id) => id === requested) ?? org.courtDiscipline;
   const discipline = disciplineConfig(selected);
 
   const slotsByCategory = await Promise.all(
@@ -61,7 +68,7 @@ export default async function DirectorDrillCodesPage({
           {t("disciplineHeading")}
         </h2>
         <div className="flex flex-wrap gap-2">
-          {(["tennis", "fitness"] as const).map((id) => (
+          {offered.map((id) => (
             <Link
               key={id}
               href={`/director/drill-codes?discipline=${id}`}
@@ -71,7 +78,9 @@ export default async function DirectorDrillCodesPage({
                   : "rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground"
               }
             >
-              {id === "fitness" ? t("disciplineFitness") : t("disciplineTennis")}
+              {isCourtDiscipline(id)
+                ? t("disciplineTennis")
+                : t("disciplineFitness")}
             </Link>
           ))}
         </div>

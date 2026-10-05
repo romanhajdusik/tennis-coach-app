@@ -1,4 +1,6 @@
 import { headers } from "next/headers";
+import { orgCourtDiscipline } from "@/lib/disciplines/registry";
+import type { DisciplineId } from "@/lib/disciplines/types";
 
 /**
  * Organizácia (federácia/klub/akadémia), do ktorej patrí aktuálna požiadavka —
@@ -9,6 +11,11 @@ export type OrgContext = {
   id: string;
   slug: string;
   name: string;
+  /**
+   * Šport zväzu na kurte (`organizations.sport`). Zväz je vždy jeden šport,
+   * takže pult a pozvánky ponúkajú len tento šport a kondičku.
+   */
+  courtDiscipline: DisciplineId;
 };
 
 /**
@@ -23,6 +30,7 @@ export const ORG_HEADERS = {
   id: "x-plaw-org-id",
   slug: "x-plaw-org-slug",
   name: "x-plaw-org-name",
+  sport: "x-plaw-org-sport",
 } as const;
 
 /** Prečíta org kontext v Server Component / server action. Null = samostatný režim. */
@@ -39,5 +47,10 @@ export async function getOrgContext(): Promise<OrgContext | null> {
 
   // Názov organizácie môže mať diakritiku, HTTP hlavičky sú ASCII — proxy ho
   // preto posiela percent-enkódovaný.
-  return { id, slug, name: decodeURIComponent(name) };
+  return {
+    id,
+    slug,
+    name: decodeURIComponent(name),
+    courtDiscipline: orgCourtDiscipline(headerList.get(ORG_HEADERS.sport)),
+  };
 }

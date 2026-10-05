@@ -41,6 +41,17 @@ export type StrokesConfig = {
 export type DisciplineConfig = {
   id: DisciplineId;
   /**
+   * `court` = šport na kurte (tenis, neskôr padel, bedminton, pickleball) —
+   * každý je samostatné nasadenie a federácia má práve jeden (`organizations.
+   * sport`). `fitness` = kondička, jedna spoločná pre všetky raketové športy.
+   *
+   * Tam, kde kód potreboval „tú druhú z dvoch disciplín" (prepojenie kariet,
+   * pult federácie, kurt vs kondícia), sa pýta na DRUH, nie na konkrétne id —
+   * inak by padel spadol do vetvy „nie je to tenis, takže kondička"
+   * (docs/roadmap-buduce-smery.md §1.1, krok 2).
+   */
+  kind: "court" | "fitness";
+  /**
    * Ľudský názov disciplíny. Vypisuje sa tam, kde vedľa seba stoja tréningy
    * z dvoch disciplín (cudzí tréning v kalendári, jeho read-only detail) —
    * inak by tréner nevedel, čím sa od jeho vlastných líšia.

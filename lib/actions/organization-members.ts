@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgRole } from "@/lib/org/membership";
+import { orgDisciplines } from "@/lib/disciplines/registry";
 import { generateAccessCode } from "@/lib/access-code";
 
 export type InviteFormState = { error?: string } | undefined;
@@ -103,14 +104,17 @@ export async function createInvite(
   const { supabase, org } = await requireDirectorOrg();
 
   // Disciplína je vlastnosťou ČLENSTVA (docs §2.2) — pozvánka teda určuje aj
-  // to, akú podobu appky pozvaný dostane. Neznáma hodnota = tenis, rovnaké
-  // pravidlo ako všade inde: chýbajúca disciplína nikdy nesmie znamenať „žiadna".
+  // to, akú podobu appky pozvaný dostane. Ponúka sa len šport zväzu a kondička
+  // (zväz je vždy jeden šport); čokoľvek iné = šport zväzu — chýbajúca
+  // disciplína nikdy nesmie znamenať „žiadna" ani cudzí šport.
   //
   // Po prijatí sa už zmeniť nedá (trigger `enforce_membership_rules`), lebo by
   // sa členstvo rozišlo s priradeniami hráčov. Kto zmení disciplínu, dostane
   // novú pozvánku.
+  const offered = orgDisciplines(org.courtDiscipline);
+  const requested = formData.get("discipline");
   const discipline =
-    formData.get("discipline") === "fitness" ? "fitness" : "tennis";
+    offered.find((id) => id === requested) ?? org.courtDiscipline;
 
   // Kolízia kódu je nepravdepodobná, ale unique index ju zachytí — skúsime
   // niekoľkokrát namiesto toho, aby onboarding spadol na náhode.

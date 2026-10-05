@@ -1,13 +1,19 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { isDisciplineId } from "@/lib/disciplines/registry";
+import type { DisciplineId } from "@/lib/disciplines/types";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 /** Rola účtu v jeho organizácii. `null` = samostatný tréner (bez členstva). */
 export type OrgRole = "director" | "coach";
 
-/** Disciplína člena — určuje, čo tréner vo federácii zapisuje (docs §2.2). */
-export type OrgDiscipline = "tennis" | "fitness";
+/**
+ * Disciplína člena — určuje, čo tréner vo federácii zapisuje (docs §2.2).
+ * V praxi šport zväzu alebo kondička (`orgDisciplines()`), typovo ktorákoľvek
+ * disciplína.
+ */
+export type OrgDiscipline = DisciplineId;
 
 export type OrgMembership = {
   organizationId: string;
@@ -55,7 +61,9 @@ export const getOrgMembership = cache(async (): Promise<OrgMembership | null> =>
   return {
     organizationId: data.organization_id,
     role: data.role as OrgRole,
-    discipline: data.discipline === "fitness" ? "fitness" : "tennis",
+    // Stĺpec má CHECK na známe disciplíny, takže neznáma hodnota nepríde;
+    // keby predsa, je to tenis — rovnaké pravidlo ako všade inde.
+    discipline: isDisciplineId(data.discipline) ? data.discipline : "tennis",
   };
 });
 

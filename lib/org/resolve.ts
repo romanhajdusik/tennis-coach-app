@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import type { Database } from "@/lib/database.types";
 import type { OrgContext } from "@/lib/org/context";
+import { orgCourtDiscipline } from "@/lib/disciplines/registry";
 
 /**
  * Multi-tenant mapovanie hostname → organizácia (§5.2).
@@ -88,7 +89,12 @@ export async function resolveOrgBySlug(slug: string): Promise<OrgContext | null>
 
   const row = error ? null : data?.[0];
   const org: OrgContext | null = row
-    ? { id: row.id, slug: row.slug, name: row.name }
+    ? {
+        id: row.id,
+        slug: row.slug,
+        name: row.name,
+        courtDiscipline: orgCourtDiscipline(row.sport),
+      }
     : null;
 
   // Chybu (výpadok DB) necachujeme nakrátko ako neexistujúcu organizáciu —

@@ -168,6 +168,19 @@ nesmú zmeniť.
    (nová §5), browser-coach 83, browser-director 48, rls-org 76, card-links 49,
    public-web 82, http-parent 23, paywall 18, promo-codes 20, password-reset 24,
    security-boundaries 32, rls-solo 17 — 0 FAIL, plus `npm run build`.
+   **2b — kód bez dvojice „tenis/kondička" (postavené 2026-10-05, BEZ
+   migrácie):** konfigurácia má `kind: "court" | "fitness"`; kde kód hľadal
+   „tú druhú z dvoch", pýta sa na druh. **Pult a pozvánky ponúkajú len šport
+   zväzu + kondičku** (upresnil user: zväz je vždy jeden šport, šéftréner
+   nevyberá medzi tenisom a padelom) — šport zväzu ide z `organizations.sport`
+   cez `OrgContext.courtDiscipline` (hlavička `x-plaw-org-sport`), `COURT_DISCIPLINE`
+   zanikla, pult počíta minúty `{ court, fitness }`. **DB CHECK-y sa presunuli
+   do kroku 3** — bez konfigurácie nového športu nemajú čo povoliť, a krok 3
+   migráciu potrebuje aj tak. Do nej patria aj: `linked_player_category_minutes`
+   má vracať disciplínu (kondičná strana v samostatnom režime ju inak nezistí,
+   `courtDisciplineOfCard` dnes padá na tenis), `assign_new_org_player` má pri
+   chýbajúcom členstve brať šport zväzu namiesto `'tennis'` a `handle_new_user`
+   má poznať nové disciplíny. Overené: všetkých 12 sád 0 FAIL, plus build.
 3. **Tri konfigurácie** — `lib/disciplines/{padel,badminton,pickleball}.ts`
    s 9 dočasnými zameraniami, texty, farba appky, úvodná obrazovka. Overí sa
    lokálne s `NEXT_PUBLIC_PLAW_DISCIPLINE=padel`.
