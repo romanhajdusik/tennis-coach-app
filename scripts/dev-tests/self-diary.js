@@ -50,6 +50,42 @@ let fails = 0; const check = (n, ok, d = "") => { console.log((ok ? "OK   " : "F
   const e3 = await anon.from("profiles").update({ self_diary: true }).eq("id", c).select();
   const after = (await admin.from("profiles").select("self_diary").eq("id", c).single()).data;
   check("prihlásený si self_diary neprepne", after.self_diary === false, JSON.stringify(e3));
+  // 7) Prepojenia (docs §6.2 bod 3) — rovnaké cesty, aké volajú server akcie
+  //    `generateConnectCode`/`claimConnection` a `generateCardLinkCode`/`claimCardLink`.
+  const as = async (email) => {
+    const client = createClient(st.API_URL, st.ANON_KEY, { auth: { persistSession: false } });
+    const { error } = await client.auth.signInWithPassword({ email, password: "heslo12345" });
+    if (error) throw error;
+    return client;
+  };
+  const selfClient = await as(`self-${stamp}@test.local`);
+  const ownCard = (await selfClient.from("players").select("id").eq("coach_id", a).single()).data;
+
+  //    a) rodič zadá kód od hráča
+  const connectCode = `S${String(stamp).slice(-7)}`;
+  const ins = await selfClient.from("player_connections").insert({
+    coach_id: a, player_id: ownCard.id, connect_code: connectCode, status: "pending",
+  });
+  check("hráč vydá kód pre rodiča", !ins.error, ins.error?.message);
+  const parentClient = await as(`par-${stamp}@test.local`);
+  const claim = await parentClient.rpc("claim_player_connection", { p_code: connectCode });
+  const conn = (await admin.from("player_connections").select("status,parent_id").eq("connect_code", connectCode).single()).data;
+  check("rodič sa kódom pripojí", !claim.error && conn?.status === "active" && conn?.parent_id === d, claim.error?.message ?? JSON.stringify(conn));
+
+  //    b) hráč zadá kód od kondičného trénera
+  const fitCard = (await admin.from("players").insert({ coach_id: b, name: "Jana (fitness)" }).select("id").single()).data;
+  const fitClient = await as(`self-fit-${stamp}@test.local`);
+  const linkCode = `L${String(stamp).slice(-7)}`;
+  const link = await fitClient.from("player_links").insert({
+    source_player_id: fitCard.id, source_coach_id: b, source_discipline: "fitness", link_code: linkCode,
+  });
+  check("kondičný tréner vydá kód", !link.error, link.error?.message);
+  const linkClaim = await selfClient.rpc("claim_player_link", {
+    p_code: linkCode, p_player_id: ownCard.id, p_discipline: "tennis",
+  });
+  const linkRow = (await admin.from("player_links").select("target_player_id,status").eq("link_code", linkCode).single()).data;
+  check("hráč sa prepojí s kondičkou", !linkClaim.error && linkRow?.target_player_id === ownCard.id, linkClaim.error?.message ?? JSON.stringify(linkRow));
+
   for (const id of [a, b, c, d]) await admin.auth.admin.deleteUser(id);
   console.log(`\nVýsledok: ${fails ? fails + " FAIL" : "0 FAIL"}`);
 })().catch((e) => { console.error(e); process.exit(1); });
