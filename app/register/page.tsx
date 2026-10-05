@@ -1,4 +1,5 @@
 import { RegisterForm } from "./register-form";
+import { getDeploymentDiscipline, isCourtDiscipline } from "@/lib/discipline";
 
 /**
  * Registrácia. Od 2026-08-16 sa nezatvára úplne — beží buď verejne
@@ -11,10 +12,16 @@ import { RegisterForm } from "./register-form";
  */
 export default function RegisterPage() {
   const promoRequired = process.env.REGISTRATION_ENABLED !== "true";
+  // Hráčsky denník len na kurte (docs §6.5 otázka č. 3) — kondičné nasadenie
+  // tú voľbu vôbec neponúkne.
+  const selfDiaryAvailable = isCourtDiscipline(getDeploymentDiscipline());
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-4 ">
-      <RegisterForm promoRequired={promoRequired} />
+      <RegisterForm
+        promoRequired={promoRequired}
+        selfDiaryAvailable={selfDiaryAvailable}
+      />
     </div>
   );
 }

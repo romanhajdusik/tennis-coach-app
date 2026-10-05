@@ -5,7 +5,13 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { register } from "@/lib/actions/auth";
 
-export function RegisterForm({ promoRequired }: { promoRequired: boolean }) {
+export function RegisterForm({
+  promoRequired,
+  selfDiaryAvailable,
+}: {
+  promoRequired: boolean;
+  selfDiaryAvailable: boolean;
+}) {
   const t = useTranslations("Auth.register");
   const [state, formAction, pending] = useActionState(register, undefined);
   // Sledujúci má INÉ podmienky aj zásady než tréner (je vždy spotrebiteľ),
@@ -97,7 +103,13 @@ export function RegisterForm({ promoRequired }: { promoRequired: boolean }) {
             <option value="coach">{t("roleCoach")}</option>
             <option value="parent">{t("roleParent")}</option>
             <option value="manager">{t("roleManager")}</option>
-            <option value="player">{t("rolePlayer")}</option>
+            <option value="player">{t("rolePlayerFollowing")}</option>
+            {/* Hráčsky denník (docs §6): hráč si zapisuje sám. Technicky
+                trénerský účet s jedinou kartou — server z hodnoty `self`
+                spraví `role = 'coach'` + `self_diary`. */}
+            {selfDiaryAvailable && (
+              <option value="self">{t("roleSelf")}</option>
+            )}
           </select>
         </div>
         <div className="flex flex-col gap-1">

@@ -4,7 +4,10 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requestOrigin } from "@/lib/request-origin";
-import { getDeploymentDiscipline } from "@/lib/disciplines/registry";
+import {
+  getDeploymentDiscipline,
+  isCourtDiscipline,
+} from "@/lib/disciplines/registry";
 
 /**
  * `redirectTo` = prihlásenie prešlo a formulár má otvoriť túto cestu ÚPLNÝM
@@ -90,9 +93,18 @@ export async function register(
     return { error: t("missingRegisterFields") };
   }
 
-  if (!["coach", "parent", "manager", "player"].includes(role)) {
+  if (!["coach", "parent", "manager", "player", "self"].includes(role)) {
     return { error: t("invalidRole") };
   }
+
+  // Hráčsky denník (docs §6) je trénerský účet s jedinou kartou, ktorou je
+  // hráč sám — v databáze `role = 'coach'` + `self_diary`. Len na kurte;
+  // kondičné nasadenie ho neponúka a databáza by ho aj tak odmietla.
+  const selfDiary = role === "self";
+  if (selfDiary && !isCourtDiscipline(getDeploymentDiscipline())) {
+    return { error: t("invalidRole") };
+  }
+  const accountRole = selfDiary ? "coach" : role;
 
   // Vek sa overuje na serveri, nie len atribútom `required` vo formulári —
   // ten sa dá obísť a registrácia je verejná cesta. Nie je to súhlas so
@@ -139,14 +151,15 @@ export async function register(
       // sa len zamkol v cudzej appke.
       data: {
         full_name: fullName,
-        role,
+        role: accountRole,
         promo_code: promoCode || null,
-        discipline: role === "coach" ? getDeploymentDiscipline() : null,
+        discipline: accountRole === "coach" ? getDeploymentDiscipline() : null,
+        self_diary: selfDiary,
       },
       // Potvrdzovací mail vedie späť na TENTO host (appka beží na viacerých),
       // rovnaká úvaha ako pri obnove hesla.
       emailRedirectTo: `${origin}/auth/confirm?next=${encodeURIComponent(
-        role === "coach" ? "/" : "/parent",
+        accountRole === "coach" ? "/" : "/parent",
       )}`,
     },
   });
@@ -161,7 +174,7 @@ export async function register(
     return { checkEmail: true };
   }
 
-  redirect(role === "coach" ? "/" : "/parent");
+  redirect(accountRole === "coach" ? "/" : "/parent");
 }
 
 export async function logout(redirectTo: string = "/login") {
