@@ -12,6 +12,7 @@ import { DisciplineIntro } from "@/components/discipline-intro";
 import { LandingFitness } from "@/components/landing-fitness";
 import { LandingPadel } from "@/components/landing-padel";
 import { LandingBadminton } from "@/components/landing-badminton";
+import { LandingPickleball } from "@/components/landing-pickleball";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
 import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
@@ -21,6 +22,7 @@ import {
   loadLandingHracMessages,
   loadLandingPadelMessages,
   loadLandingBadmintonMessages,
+  loadLandingPickleballMessages,
   loadLandingMessages,
   loadRozcestnikMessages,
 } from "@/lib/landing-locale";
@@ -88,14 +90,17 @@ export async function generateMetadata(): Promise<Metadata> {
   if (
     discipline === "fitness" ||
     discipline === "padel" ||
-    discipline === "badminton"
+    discipline === "badminton" ||
+    discipline === "pickleball"
   ) {
     const t =
       discipline === "padel"
         ? await loadLandingPadelMessages()
         : discipline === "badminton"
           ? await loadLandingBadmintonMessages()
-          : await loadLandingFitnessMessages();
+          : discipline === "pickleball"
+            ? await loadLandingPickleballMessages()
+            : await loadLandingFitnessMessages();
     return {
       title: t.metaTitle,
       description: t.metaDescription,
@@ -190,12 +195,15 @@ export default async function Home() {
       return <LandingFitness config={config} />;
     }
     // Padel má od 2026-10-05 vlastný landing — každý šport svoj, nie spoločný
-    // (rozhodol user). Pickleball ho zatiaľ nemá.
+    // (rozhodol user). Rovnako bedminton a pickleball.
     if (config.id === "padel") {
       return <LandingPadel config={config} />;
     }
     if (config.id === "badminton") {
       return <LandingBadminton config={config} />;
+    }
+    if (config.id === "pickleball") {
+      return <LandingPickleball config={config} />;
     }
     if (config.id !== "tennis") {
       if (config.intro) {

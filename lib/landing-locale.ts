@@ -347,3 +347,12 @@ export async function loadLandingBadmintonMessages(): Promise<LandingBadmintonMe
   const messages = await import("../messages/en/landing-badminton.json");
   return messages.default as LandingBadmintonMessages;
 }
+
+// Landing PICKLEBALLU na `pickleball.plawsports.com` (od 2026-10-05) —
+// vlastný, rovnako ako padel a bedminton.
+export type LandingPickleballMessages = LandingFitnessMessages;
+
+export async function loadLandingPickleballMessages(): Promise<LandingPickleballMessages> {
+  const messages = await import("../messages/en/landing-pickleball.json");
+  return messages.default as LandingPickleballMessages;
+}

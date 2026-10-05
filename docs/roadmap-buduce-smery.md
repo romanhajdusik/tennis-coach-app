@@ -255,7 +255,9 @@ nesmú zmeniť.
    **Bedminton hotový** rovnako (`components/landing-badminton.tsx`,
    `messages/en/landing-badminton.json`, texty schválil user): bez fotky,
    zelená `#3ec46d` (zámerne medzi limetkovým tenisom a tyrkysovou
-   kondičkou). Pickleball landing zatiaľ nemá.
+   kondičkou). **Pickleball hotový** rovnako (`components/landing-pickleball.tsx`,
+   `messages/en/landing-pickleball.json`, schválil user): bez fotky, ružová
+   `#f472b6`.
 5. **Sledujúci (rodič/hráč)** — `plaw.click` dnes menuje tenis. Dostane
    padelový rodič rovnakú vrstvu? Neblokuje prvú vlnu.
 6. **Federácia pre iný šport** — org subdomény sú `<slug>.plaw.win`

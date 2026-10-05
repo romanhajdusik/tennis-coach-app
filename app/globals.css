@@ -52,6 +52,7 @@
 html[data-app="fitness"],
 html[data-app="padel"],
 html[data-app="badminton"],
+html[data-app="pickleball"],
 html[data-app="org"] {
   --color-background: #1e1e21;
   --color-surface: #27262b;
@@ -82,6 +83,14 @@ html[data-app="badminton"] {
   --color-primary: #3ec46d;
   --color-primary-hover: #55cf80;
   --color-primary-foreground: #06240f;
+}
+
+/* Pickleball = ružová (rozhodol user 2026-10-05). Text na ploche 6.8:1,
+   plocha voči pozadiu 6.3:1. */
+html[data-app="pickleball"] {
+  --color-primary: #f472b6;
+  --color-primary-hover: #f78bc4;
+  --color-primary-foreground: #2b0a1a;
 }
 
 html[data-app="org"] {
