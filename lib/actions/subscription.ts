@@ -8,6 +8,7 @@ import { getDeploymentDiscipline } from "@/lib/discipline";
 import {
   isFollowerLookupKey,
   isKnownCoachLookupKey,
+  isSelfDiaryLookupKey,
 } from "@/lib/stripe-plans";
 import {
   createCheckoutSession,
@@ -46,7 +47,7 @@ export async function startCheckout(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, self_diary")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -55,6 +56,9 @@ export async function startCheckout(
   // za viac) alebo naopak. Kľúč z prehliadača sa preto overuje proti zoznamu
   // TEJ roly, ktorú má účet naozaj.
   const isCoach = profile?.role === "coach";
+  // Hráčsky denník (docs §6) je trénerský účet, ale kupuje SVOJ produkt —
+  // trénerská hladina by mu dala miesto pre ďalších hráčov.
+  const isSelfDiary = isCoach && profile?.self_diary === true;
   const isFollower =
     profile?.role === "parent" ||
     profile?.role === "manager" ||
@@ -89,7 +93,12 @@ export async function startCheckout(
   // tenisový produkt.
   const discipline = getDeploymentDiscipline();
 
-  if (isCoach) {
+  if (isSelfDiary) {
+    if (!isSelfDiaryLookupKey(lookupKey, discipline)) {
+      return { error: "unknownPlan" };
+    }
+    playerLimit = 1;
+  } else if (isCoach) {
     const tier = COACH_TIERS.find((candidate) =>
       isKnownCoachLookupKey(lookupKey, [candidate.players], discipline),
     );
@@ -128,7 +137,7 @@ export async function startCheckout(
       successUrl: `${origin}${back}?paid=1`,
       cancelUrl: `${origin}${back}`,
       playerLimit,
-      role: isCoach ? "coach" : "follower",
+      role: isSelfDiary ? "self" : isCoach ? "coach" : "follower",
       discipline,
     });
     return { url };
@@ -172,7 +181,7 @@ export async function openBillingPortal(): Promise<
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("stripe_customer_id")
+    .select("stripe_customer_id, self_diary")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -188,6 +197,7 @@ export async function openBillingPortal(): Promise<
     const url = await createPortalSession(
       profile.stripe_customer_id,
       `${origin}/settings`,
+      { selfDiary: profile.self_diary === true },
     );
     return { url };
   } catch (error) {

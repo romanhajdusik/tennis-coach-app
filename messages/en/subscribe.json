@@ -27,6 +27,11 @@
     "lockedTitle": "Analytics comes with a subscription",
     "lockedIntro": "Breakdowns, percentages and comparison over time need an active subscription. Your practices, players, calendar and drill codes stay open without one."
   },
+  "self": {
+    "intro": "Your own practice diary: log your practices, see your analytics, and share them with your parent or fitness coach.",
+    "plan": "Your practice diary",
+    "activeText": "Logging and analytics are open to you."
+  },
   "follower": {
     "title": "Subscribe",
     "intro": "One subscription follows one player. Without it you keep the practice list and every practice detail — the subscription adds the calendar and the analytics.",

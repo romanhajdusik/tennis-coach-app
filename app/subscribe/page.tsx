@@ -4,8 +4,16 @@ import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSubscription } from "@/lib/subscription";
-import { COACH_TIERS, formatEur } from "@/lib/landing-pricing";
-import { coachProductId, priceLookupKey } from "@/lib/stripe-plans";
+import {
+  COACH_TIERS,
+  SELF_DIARY_PRICE,
+  formatEur,
+} from "@/lib/landing-pricing";
+import {
+  coachProductId,
+  priceLookupKey,
+  selfDiaryProductId,
+} from "@/lib/stripe-plans";
 import { isStripeConfigured } from "@/lib/stripe";
 import { getDeploymentDiscipline } from "@/lib/discipline";
 import { PlanPicker, type PlanOption } from "./plan-picker";
@@ -46,7 +54,7 @@ export default async function SubscribePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, self_diary")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -78,27 +86,52 @@ export default async function SubscribePage({
   // nasadenie — a pokladňa (`startCheckout`) sa pýta rovnako.
   const discipline = getDeploymentDiscipline();
 
-  const plans: PlanOption[] = COACH_TIERS.map((tier) => {
-    const product = coachProductId(tier.players, discipline);
-    return {
-      players: tier.players,
-      featured: Boolean(tier.featured),
-      price: {
-        month: formatEur(tier.monthly),
-        year: formatEur(tier.yearly),
-      },
-      lookupKey: {
-        month: priceLookupKey(product, "month"),
-        year: priceLookupKey(product, "year"),
-      },
-    };
-  });
+  // Hráčsky denník (docs §6) si kupuje SVOJ produkt — jediná ponuka, bez
+  // hladín. Pokladňa ho k trénerským ani nepustí (`startCheckout`).
+  const selfDiary = profile.self_diary === true;
+  const selfProduct = selfDiaryProductId(discipline);
+
+  const plans: PlanOption[] = selfDiary
+    ? [
+        {
+          players: 1,
+          label: t("self.plan"),
+          featured: true,
+          price: {
+            month: formatEur(SELF_DIARY_PRICE.monthly),
+            year: formatEur(SELF_DIARY_PRICE.yearly),
+          },
+          lookupKey: {
+            month: priceLookupKey(selfProduct, "month"),
+            year: priceLookupKey(selfProduct, "year"),
+          },
+        },
+      ]
+    : COACH_TIERS.map((tier) => {
+        const product = coachProductId(tier.players, discipline);
+        return {
+          players: tier.players,
+          featured: Boolean(tier.featured),
+          price: {
+            month: formatEur(tier.monthly),
+            year: formatEur(tier.yearly),
+          },
+          lookupKey: {
+            month: priceLookupKey(product, "month"),
+            year: priceLookupKey(product, "year"),
+          },
+        };
+      });
 
   return (
     <div className="mx-auto flex w-full min-w-0 max-w-md flex-col gap-5 p-4">
       <header className="flex flex-col gap-1">
         <h1 className="text-xl font-bold text-foreground">{t("title")}</h1>
-        {!alreadyPaying && <p className="text-sm text-muted">{t("intro")}</p>}
+        {!alreadyPaying && (
+          <p className="text-sm text-muted">
+            {selfDiary ? t("self.intro") : t("intro")}
+          </p>
+        )}
       </header>
 
       {paid === "1" && !alreadyPaying && (
@@ -112,7 +145,9 @@ export default async function SubscribePage({
         <div className="flex flex-col gap-2 rounded-2xl border border-primary bg-surface p-5">
           <p className="font-semibold text-foreground">{t("activeTitle")}</p>
           <p className="text-sm text-muted">
-            {t("activeText", { count: subscription.playerLimit })}
+            {selfDiary
+              ? t("self.activeText")
+              : t("activeText", { count: subscription.playerLimit })}
           </p>
           {/* Zmena a zrušenie sa robia v zákazníckom portáli Stripe a ten má
               dvere v nastaveniach — nie tu, aby neboli dve. Do 2026-09-28 tu

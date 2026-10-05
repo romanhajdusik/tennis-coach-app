@@ -50,6 +50,15 @@ let fails = 0; const check = (n, ok, d = "") => { console.log((ok ? "OK   " : "F
   const e3 = await anon.from("profiles").update({ self_diary: true }).eq("id", c).select();
   const after = (await admin.from("profiles").select("self_diary").eq("id", c).single()).data;
   check("prihlásený si self_diary neprepne", after.self_diary === false, JSON.stringify(e3));
+
+  // 6b) Hladina denníka ostáva 1, aj keď ju zapíše webhook (service_role) —
+  //     trigger `profiles_self_diary_single_player`. Trénerovi sa nemení.
+  await admin.from("profiles").update({ player_limit: 6 }).eq("id", a);
+  const clamped = (await admin.from("profiles").select("player_limit").eq("id", a).single()).data;
+  check("denníku sa hladina nezdvihne nad 1", clamped.player_limit === 1, JSON.stringify(clamped));
+  await admin.from("profiles").update({ player_limit: 6 }).eq("id", c);
+  const coachLimit = (await admin.from("profiles").select("player_limit").eq("id", c).single()).data;
+  check("trénerovi sa hladina zdvihne normálne", coachLimit.player_limit === 6, JSON.stringify(coachLimit));
   // 7) Prepojenia (docs §6.2 bod 3) — rovnaké cesty, aké volajú server akcie
   //    `generateConnectCode`/`claimConnection` a `generateCardLinkCode`/`claimCardLink`.
   const as = async (email) => {

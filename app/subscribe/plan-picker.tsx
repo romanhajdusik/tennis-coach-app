@@ -7,6 +7,8 @@ import type { BillingInterval } from "@/lib/stripe-plans";
 
 export type PlanOption = {
   players: number;
+  /** Vlastný názov ponuky namiesto „N players" (hráčsky denník, docs §6). */
+  label?: string;
   featured: boolean;
   /** Už naformátovaná suma — čísla prídu zo servera, klient ich nepočíta. */
   price: Record<BillingInterval, string>;
@@ -78,7 +80,7 @@ export function PlanPicker({ plans }: { plans: PlanOption[] }) {
         >
           <div className="flex items-baseline justify-between gap-3">
             <span className="font-semibold text-foreground">
-              {t("players", { count: plan.players })}
+              {plan.label ?? t("players", { count: plan.players })}
             </span>
             <span className="text-right">
               <span className="text-xl font-bold text-foreground">

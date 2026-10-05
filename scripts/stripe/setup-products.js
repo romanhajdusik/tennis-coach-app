@@ -110,13 +110,18 @@ async function main() {
   // verejný web (`lib/landing-pricing.ts`). Node vie `.ts` spustiť priamo.
   // `pathToFileURL` je povinné: na Windows by absolútna cesta `C:\…` skončila
   // na ESM loaderi ako neznáma schéma „c:".
-  const { COACH_TIERS, FOLLOWER_PRICE } = await import(
+  const { COACH_TIERS, FOLLOWER_PRICE, SELF_DIARY_PRICE } = await import(
     pathToFileURL(path.join(ROOT, "lib", "landing-pricing.ts")).href
   );
 
   // ID produktu skladá TÁ ISTÁ funkcia, ktorou ho hľadá pokladňa — inak by
   // sa pri ďalšej disciplíne rozišli a pokladňa by hľadala neexistujúcu cenu.
-  const { coachProductId, SOLD_DISCIPLINES } = await import(
+  const {
+    coachProductId,
+    SOLD_DISCIPLINES,
+    SELF_DIARY_DISCIPLINES,
+    selfDiaryProductId,
+  } = await import(
     pathToFileURL(path.join(ROOT, "lib", "stripe-plans.ts")).href
   );
 
@@ -168,6 +173,24 @@ async function main() {
       monthly: tier.monthly,
       yearly: tier.yearly,
     }))),
+    // Hráčsky denník (docs/roadmap-buduce-smery.md §6) — hráč si zapisuje
+    // sám. Vlastný produkt na šport na kurte, cena ako sledujúci. Je to
+    // SPOTREBITEĽ, preto daňový kód ako pri sledujúcom, nie trénerský.
+    ...disciplines
+      .filter((discipline) => SELF_DIARY_DISCIPLINES.includes(discipline.id))
+      .map((discipline) => ({
+        id: selfDiaryProductId(discipline.id),
+        name: `P.L.A.W ${discipline.label} — Player's own practice diary`,
+        description: `Software subscription (SaaS) for a ${discipline.label.toLowerCase()} player — log your own practices and see your analytics. Coaching services are not included.`,
+        taxCode: "txcd_10103000",
+        metadata: {
+          plaw_player_limit: "1",
+          plaw_role: "self",
+          plaw_discipline: discipline.id,
+        },
+        monthly: SELF_DIARY_PRICE.monthly,
+        yearly: SELF_DIARY_PRICE.yearly,
+      })),
     {
       id: "plaw_follower",
       name: "P.L.A.W — Player, parent or manager",

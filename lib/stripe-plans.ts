@@ -107,7 +107,43 @@ export function playerLimitOfLookupKey(
       if (isKnownCoachLookupKey(value, [count], discipline)) return count;
     }
   }
+  // Hráčsky denník má vždy jednu kartu — seba (docs §6).
+  if (SELF_DIARY_DISCIPLINES.some((d) => isSelfDiaryLookupKey(value, d))) {
+    return 1;
+  }
   return null;
+}
+
+/**
+ * Disciplíny, v ktorých sa predáva HRÁČSKY DENNÍK (docs §6) — len kurt,
+ * kondičku hráčovi zapisuje jeho kondičný tréner (§6.5 otázka č. 3).
+ */
+export const SELF_DIARY_DISCIPLINES: readonly DisciplineId[] = [
+  "tennis",
+  "padel",
+  "badminton",
+  "pickleball",
+];
+
+/**
+ * Produkt hráčskeho denníka. Vlastný na šport, rovnako ako trénerské — v Stripe
+ * je tak vidno, koľko zarobila ktorá appka. Prefix nesie aj tenis: tu nie je
+ * staré ID, na ktoré by sa viazali predplatné.
+ */
+export function selfDiaryProductId(discipline: DisciplineId) {
+  return `plaw_${discipline}_self`;
+}
+
+/**
+ * Smie pokladňa prijať tento kľúč pre HRÁČSKY DENNÍK v tejto disciplíne?
+ * Hráčsky denník je technicky trénerský účet — bez vlastného zoznamu by si
+ * kúpil trénerskú hladinu pre viac hráčov, a tréner naopak jeho produkt.
+ */
+export function isSelfDiaryLookupKey(value: string, discipline: DisciplineId) {
+  return BILLING_INTERVALS.some(
+    (interval) =>
+      priceLookupKey(selfDiaryProductId(discipline), interval) === value,
+  );
 }
 
 /**

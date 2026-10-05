@@ -34,6 +34,11 @@ export const COACH_TIERS: readonly CoachTier[] = [
 // Suma je zhodná s najnižšou trénerskou hladinou (3 hráči) — je to zámer.
 export const FOLLOWER_PRICE = { monthly: 6.9, yearly: 49.9 } as const;
 
+// Hráčsky denník — hráč si zapisuje sám (docs/roadmap-buduce-smery.md §6).
+// Rovnaká suma ako sledujúci (rozhodol user 2026-10-05, §6.5 otázka č. 2),
+// preto odkaz, nie druhé číslo, ktoré by sa raz rozišlo.
+export const SELF_DIARY_PRICE = FOLLOWER_PRICE;
+
 // Verejný web je jednojazyčný (viď lib/landing-locale.ts), takže je formát
 // pevne anglický — „€6.90", nie „6,90 €".
 export function formatEur(amount: number) {

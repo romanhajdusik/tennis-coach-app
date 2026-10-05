@@ -69,10 +69,19 @@ async function main() {
   }
   check("appka odpovedá", probe.status === 200);
 
-  const { COACH_TIERS, formatEur } = await import(
+  const { COACH_TIERS, SELF_DIARY_PRICE, formatEur } = await import(
     pathToFileURL(path.join(ROOT, "lib", "landing-pricing.ts")).href
   );
-  const { coachProductId, priceLookupKey, SOLD_DISCIPLINES } = await import(
+  const {
+    coachProductId,
+    priceLookupKey,
+    SOLD_DISCIPLINES,
+    SELF_DIARY_DISCIPLINES,
+    selfDiaryProductId,
+    isSelfDiaryLookupKey,
+    isKnownCoachLookupKey,
+    playerLimitOfLookupKey,
+  } = await import(
     pathToFileURL(path.join(ROOT, "lib", "stripe-plans.ts")).href
   );
 
@@ -303,6 +312,44 @@ async function main() {
       );
     }
   }
+
+  section("4b) Hráčsky denník — ceny a oddelenie od trénerských plánov");
+  // Hráčsky denník je technicky trénerský účet (docs §6). Keby pokladňa
+  // zamenila kľúče, kúpil by si hladinu pre viac hráčov, alebo tréner jeho
+  // lacný produkt. Overuje sa logika, ktorú volá `startCheckout`, aj webhook.
+  for (const discipline of SELF_DIARY_DISCIPLINES) {
+    for (const [interval, eur] of [
+      ["month", SELF_DIARY_PRICE.monthly],
+      ["year", SELF_DIARY_PRICE.yearly],
+    ]) {
+      const key = priceLookupKey(selfDiaryProductId(discipline), interval);
+      const found = await (
+        await fetch(
+          `https://api.stripe.com/v1/prices?lookup_keys[]=${key}&limit=1&active=true`,
+          { headers: { Authorization: `Bearer ${secret}` } },
+        )
+      ).json();
+      const price = found.data?.[0];
+      check(
+        `${key} = ${eur} €`,
+        price?.unit_amount === Math.round(eur * 100) &&
+          price?.currency === "eur" &&
+          price?.recurring?.interval === interval,
+        price ? `${price.unit_amount} ${price.currency}` : "cena neexistuje",
+      );
+    }
+  }
+  const selfKey = priceLookupKey(selfDiaryProductId("tennis"), "year");
+  const coachKey = priceLookupKey(coachProductId(3, "tennis"), "year");
+  const players = COACH_TIERS.map((tier) => tier.players);
+  check("kľúč denníka nie je trénerský", !isKnownCoachLookupKey(selfKey, players, "tennis"));
+  check("trénerský kľúč nie je denník", !isSelfDiaryLookupKey(coachKey, "tennis"));
+  check("denník z iného športu neprejde", !isSelfDiaryLookupKey(selfKey, "padel"));
+  check("webhook dá denníku 1 hráča", playerLimitOfLookupKey(selfKey, players) === 1);
+  check(
+    "kondička hráčsky denník nepredáva",
+    !SELF_DIARY_DISCIPLINES.includes("fitness"),
+  );
 
   section("5) Pokladňa naozaj vznikne");
   // Server action sa cez holé HTTP zavolať nedá, takže sa volá tá istá

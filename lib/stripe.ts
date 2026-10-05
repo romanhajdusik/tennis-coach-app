@@ -103,7 +103,7 @@ export type CheckoutSessionInput = {
    * Co sa predava. Ide do metadat, aby bolo priamo v Stripe vidiet, ci
    * platba patri trenerovi alebo sledujucemu — bez dohladavania v nasej DB.
    */
-  role: "coach" | "follower";
+  role: "coach" | "follower" | "self";
   /**
    * V ktorej appke sa platilo. Len na čítanie v Stripe (rovnako ako `role`) —
    * webhook ju nečíta, lebo predplatné patrí ÚČTU a ten je spoločný pre obe
@@ -177,13 +177,20 @@ export async function createCheckoutSession({
 export async function createPortalSession(
   customerId: string,
   returnUrl: string,
+  { selfDiary = false }: { selfDiary?: boolean } = {},
 ) {
   // Každá appka má vlastné nastavenie portálu (od 2026-10-03): zoznam plánov,
   // medzi ktorými sa dá prepínať, je v Stripe súčasťou nastavenia portálu,
   // a v spoločnom by tenisový tréner videl aj kondičné plány a naopak.
   // Premenná je nastavená len v nasadení, ktoré NEpoužíva predvolený portál
   // (dnes kondička, `plaw-fitness`); bez nej Stripe otvorí predvolený.
-  const configuration = process.env.STRIPE_PORTAL_CONFIGURATION;
+  //
+  // Hráčsky denník (docs §6) má v tom istom nasadení VLASTNÝ portál: v trénerskom
+  // by si vedel prepnúť na hladinu pre viac hráčov (databáza mu ju aj tak
+  // zrazí na 1, ale platil by za nič). Bez vlastného ostáva trénerský portál.
+  const configuration =
+    (selfDiary ? process.env.STRIPE_PORTAL_SELF_CONFIGURATION : undefined) ??
+    process.env.STRIPE_PORTAL_CONFIGURATION;
 
   const session = await stripeRequest("POST", "/billing_portal/sessions", {
     customer: customerId,
