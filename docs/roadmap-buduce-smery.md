@@ -1162,6 +1162,11 @@ Prečo to sedí bez veľkých zásahov:
    ako sledujúci (`FOLLOWER_PRICE` v `lib/landing-pricing.ts`).
 3. **Disciplíny:** len športy na kurte, alebo aj kondička (hráč si zapisuje
    posilňovňu)? Návrh: v1 len kurt.
+   **ROZHODNUTÉ 2026-10-05: LEN KURT, natrvalo, nie len v1.** User: appka je
+   pre súťažných a profi hráčov, tí majú kondičných trénerov a kondičné
+   aktivity konzultujú s nimi; kondičný tréner si ich zaznamená a hráč ich
+   vidí cez prepojený účet (kód). Hráčsky denník na kondičnom nasadení
+   neexistuje.
 4. **Prechod:** ak hráč neskôr začne trénovať sám iných, môže sa hráčsky účet
    zmeniť na trénerský, alebo si založí nový? Návrh: nový (jednoduchšie,
    dáta ostanú oddelené ako v bode 6.2.1).
