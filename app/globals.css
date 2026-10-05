@@ -50,6 +50,7 @@
    disciplíny.
 --------------------------------------------------------------------------- */
 html[data-app="fitness"],
+html[data-app="padel"],
 html[data-app="org"] {
   --color-background: #1e1e21;
   --color-surface: #27262b;
@@ -63,6 +64,14 @@ html[data-app="fitness"] {
   --color-primary: #20a99b;
   --color-primary-hover: #2bb3a3;
   --color-primary-foreground: #04221f;
+}
+
+/* Padel = oranžová (rozhodol user 2026-10-05). Text na ploche 7.1:1,
+   plocha voči pozadiu 6.8:1. */
+html[data-app="padel"] {
+  --color-primary: #f28c28;
+  --color-primary-hover: #f5a04a;
+  --color-primary-foreground: #2a1405;
 }
 
 html[data-app="org"] {

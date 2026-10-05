@@ -327,3 +327,14 @@ export async function loadLandingFitnessMessages(): Promise<LandingFitnessMessag
   const messages = await import("../messages/en/landing-fitness.json");
   return messages.default as LandingFitnessMessages;
 }
+
+// Landing PADELU na `padel.plawsports.com` (od 2026-10-05). **Každý šport má
+// vlastný landing** (rozhodol user — spoločný landing pre všetky športy
+// zamietol), takže aj vlastné texty; tvar je dnes zhodný s kondičkou, preto
+// ten istý typ. Cenník rovnako ako kondička berie z `landing.json`.
+export type LandingPadelMessages = LandingFitnessMessages;
+
+export async function loadLandingPadelMessages(): Promise<LandingPadelMessages> {
+  const messages = await import("../messages/en/landing-padel.json");
+  return messages.default as LandingPadelMessages;
+}

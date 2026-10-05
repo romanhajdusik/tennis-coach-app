@@ -242,6 +242,16 @@ nesmú zmeniť.
 4. **Landing s cenníkom alebo len úvodná obrazovka?** Kondička má od
    2026-10-02 krátky landing, ktorý smie byť na produkcii len vtedy, keď sa
    v danej appke naozaj dá zaplatiť. Pred krokom 5.
+   **ROZHODNUTÉ 2026-10-05: landing s cenníkom, KAŽDÝ ŠPORT VLASTNÝ.**
+   Spoločný landing pre všetky športy (prerobiť ten kondičkový) user
+   zamietol; landing kondičky sa nemení. Pripravuje sa hneď, lebo bez
+   `PLAW_INDEXING` je web `noindex`. **Rozcestník všetkých športov bude
+   `plawsports.com`** (jednoduchý; plánujú sa aj ďalšie individuálne športy),
+   `plaw.online` možno pre federácie. **Padel hotový** (`components/landing-padel.tsx`,
+   `messages/en/landing-padel.json`, texty schválil user): zatiaľ bez fotky,
+   oranžová `#f28c28` (`data-app="padel"`), web len po anglicky. Ešte chýba
+   OG náhľad padelu (`lib/og.ts` mu dnes dá tenisový) a hostiteľ
+   v `lib/public-face.ts` — oboje s nasadením (krok 5).
 5. **Sledujúci (rodič/hráč)** — `plaw.click` dnes menuje tenis. Dostane
    padelový rodič rovnakú vrstvu? Neblokuje prvú vlnu.
 6. **Federácia pre iný šport** — org subdomény sú `<slug>.plaw.win`

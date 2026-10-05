@@ -25,7 +25,11 @@ export async function DisciplineIntro({
   subtitle,
   more,
 }: {
-  photo: string;
+  /**
+   * `null` = šport ešte nemá vlastnú fotku (padel od 2026-10-05). Úvod je
+   * potom len tmavé pozadie — fotka z iného športu by klamala.
+   */
+  photo: string | null;
   label: string;
   domain: string;
   /** Jedna veta pod štítkom — čo appka je. */
@@ -40,17 +44,21 @@ export async function DisciplineIntro({
 
   return (
     <section className="relative isolate flex min-h-svh w-full min-w-0 flex-col items-center justify-between overflow-hidden px-4 pb-10 pt-20 text-center">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={photo}
-        alt=""
-        aria-hidden
-        fetchPriority="high"
-        width={1080}
-        height={1910}
-        className="absolute inset-x-0 top-0 -z-20 h-[86%] w-full object-cover object-bottom md:object-center"
-      />
-      <div aria-hidden className="hero-scrim absolute inset-x-0 top-0 -z-10 h-[86%]" />
+      {photo && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={photo}
+            alt=""
+            aria-hidden
+            fetchPriority="high"
+            width={1080}
+            height={1910}
+            className="absolute inset-x-0 top-0 -z-20 h-[86%] w-full object-cover object-bottom md:object-center"
+          />
+          <div aria-hidden className="hero-scrim absolute inset-x-0 top-0 -z-10 h-[86%]" />
+        </>
+      )}
 
       {/* Adresa nasadenia úplne hore (user, 2026-09-21) — nech je hneď
           jasné, v ktorej appke človek je. Nad nápisom ostáva `pt-20`, takže

@@ -10,6 +10,7 @@ import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { LandingPage } from "@/components/landing-page";
 import { DisciplineIntro } from "@/components/discipline-intro";
 import { LandingFitness } from "@/components/landing-fitness";
+import { LandingPadel } from "@/components/landing-padel";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
 import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
@@ -17,6 +18,7 @@ import { ogFaceOf, ogMetadata } from "@/lib/og";
 import {
   loadLandingFitnessMessages,
   loadLandingHracMessages,
+  loadLandingPadelMessages,
   loadLandingMessages,
   loadRozcestnikMessages,
 } from "@/lib/landing-locale";
@@ -81,8 +83,11 @@ export async function generateMetadata(): Promise<Metadata> {
   // there on the court."). Tá dostane neutrálny názov appky — ten istý, aký
   // nesie ikona na ploche.
   const discipline = await getDiscipline();
-  if (discipline === "fitness") {
-    const t = await loadLandingFitnessMessages();
+  if (discipline === "fitness" || discipline === "padel") {
+    const t =
+      discipline === "padel"
+        ? await loadLandingPadelMessages()
+        : await loadLandingFitnessMessages();
     return {
       title: t.metaTitle,
       description: t.metaDescription,
@@ -175,6 +180,11 @@ export default async function Home() {
     // nikde. Ostatné disciplíny (dnes žiadna) majú úvod alebo prihlásenie.
     if (config.id === "fitness") {
       return <LandingFitness config={config} />;
+    }
+    // Padel má od 2026-10-05 vlastný landing — každý šport svoj, nie spoločný
+    // (rozhodol user). Badminton a pickleball ho zatiaľ nemajú.
+    if (config.id === "padel") {
+      return <LandingPadel config={config} />;
     }
     if (config.id !== "tennis") {
       if (config.intro) {
