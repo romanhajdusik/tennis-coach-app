@@ -208,6 +208,9 @@ nesmú zmeniť.
    (offensive/neutral/defensive) a odhad počtu úderov ako tenis? Kým sa
    nevie, návrh je charakter áno, odhad úderov `null` (analytika o úderoch
    mlčí — prvotriedny stav, §Disciplína v CLAUDE.md). Rozhodnúť pred krokom 3.
+   **ROZHODNUTÉ 2026-10-05: charakter ÁNO** (offensive/neutral/defensive ako
+   tenis), **odhad úderov zatiaľ NIE** (`strokes: null`) — user ešte nevie
+   sadzby; doplní sa konfiguráciou, keď ich povie, bez migrácie.
 3. **Ceny** — rovnaké ako tenis a kondička? Pred krokom 4.
 4. **Landing s cenníkom alebo len úvodná obrazovka?** Kondička má od
    2026-10-02 krátky landing, ktorý smie byť na produkcii len vtedy, keď sa
