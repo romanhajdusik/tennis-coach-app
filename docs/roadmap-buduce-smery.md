@@ -1158,6 +1158,8 @@ Prečo to sedí bez veľkých zásahov:
    platí), junior ho používa. Pravidlo 16+ pri registrácii sa nemení.
 2. **Cena.** Logicky ako sledujúci (6,90 € / 49,90 €), čo je zhodou aj cena
    trénerskej hladiny pre 3 hráčov. Obchodné rozhodnutie usera.
+   **ROZHODNUTÉ 2026-10-05: 6,90 € / mesiac alebo 49,90 € / rok**, rovnako
+   ako sledujúci (`FOLLOWER_PRICE` v `lib/landing-pricing.ts`).
 3. **Disciplíny:** len športy na kurte, alebo aj kondička (hráč si zapisuje
    posilňovňu)? Návrh: v1 len kurt.
 4. **Prechod:** ak hráč neskôr začne trénovať sám iných, môže sa hráčsky účet
