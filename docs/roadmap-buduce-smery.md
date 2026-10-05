@@ -1147,6 +1147,35 @@ Prečo to sedí bez veľkých zásahov:
    dostanú vstup „No coach on P.L.A.W? Keep your own diary." — po anglicky ako
    všetok marketing.
 
+### 6.4a STAV STAVBY (2026-10-06, pauza — pokračovať odtiaľto)
+
+**Hotové lokálne, NEPUSHNUTÉ** (`e9749fe`, `5105d39`, `95d7440`, `c7c5dd9`):
+- **Body 1–3 a 5 z §6.4:** `profiles.self_diary` + CHECK (len tréner na
+  kurte), `handle_new_user` založí kartu a nemíňa promo kód, registrácia
+  s voľbou „Player (my own practice diary)" (na kondičke nie), `isSelfDiary()`
+  v `lib/self-diary.ts`, /players = „My profile" bez pridávania a archivácie,
+  lišta „Profile", domov bez prepínača, serverové stráže v
+  `lib/actions/players.ts`.
+- **Stripe:** produkty `plaw_<šport>_self` (zatiaľ len TESTOVACÍ režim),
+  pokladňa oddeľuje denník od trénerských hladín, /subscribe jedna ponuka,
+  portál `STRIPE_PORTAL_SELF_CONFIGURATION`, trigger drží `player_limit = 1`.
+- **Overené:** sada `self-diary.js` (registrácia, poistky, rodič, kondička,
+  hladina), stripe 66, browser-coach 83, http-coach 44, fitness 52 a ostatné
+  sady 0 FAIL; v prehliadači až po pokladňu Stripe.
+
+**Zostáva:**
+1. **Bod 6 — vstup na webe** (`plaw.click` + landingy športov). Ďalší krok.
+2. **Podmienky a zásady:** registrácia ukazuje hráčskemu denníku znenie
+   SLEDUJÚCEHO (spotrebiteľ), ktoré opisuje sledovanie, nie vlastný zápis —
+   doplniť pred spustením.
+3. **Deň spustenia, v tomto poradí:** migrácie `20261006090000` +
+   `20261006100000` v prod SQL Editore → `setup-products.js` ostrým kľúčom
+   (`PLAW_STRIPE_LIVE=ano`) → v Stripe portál „Self" (prepínanie len medzi
+   mesačným a ročným denníkom daného športu) → jeho ID ako
+   `STRIPE_PORTAL_SELF_CONFIGURATION` na Verceli → push.
+   **Nepushovať skôr:** voľba v registrácii by sa objavila bez ostrých
+   produktov a pokladňa by hráčovi spadla.
+
 ### 6.5 Otvorené otázky (pýtať sa po jednej)
 
 1. **Vek — najdôležitejšia.** Registrácia dnes vyžaduje 16+ (účet je zmluva,
