@@ -1154,6 +1154,8 @@ Prečo to sedí bez veľkých zásahov:
    juniora zakladá rodič** (on je zmluvná strana a platí), junior ho používa.
    Tak ostáva pravidlo 16+ nedotknuté a zásady ochrany údajov netreba meniť
    zásadne. Rozhodnúť **pred** stavbou, nie po nej.
+   **ROZHODNUTÉ 2026-10-05: účet juniora zakladá RODIČ** (zmluvná strana,
+   platí), junior ho používa. Pravidlo 16+ pri registrácii sa nemení.
 2. **Cena.** Logicky ako sledujúci (6,90 € / 49,90 €), čo je zhodou aj cena
    trénerskej hladiny pre 3 hráčov. Obchodné rozhodnutie usera.
 3. **Disciplíny:** len športy na kurte, alebo aj kondička (hráč si zapisuje
