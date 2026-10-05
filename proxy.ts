@@ -2,6 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { orgSlugFromHost, resolveOrgBySlug } from "@/lib/org/resolve";
 import {
+  getDeploymentDiscipline,
+  isDisciplineId,
+} from "@/lib/disciplines/registry";
+import type { DisciplineId } from "@/lib/disciplines/types";
+import {
   APP_ORIGIN,
   PARENT_ORIGIN,
   PUBLIC_ONLY_HOSTS,
@@ -194,8 +199,57 @@ export async function proxy(request: NextRequest) {
   }
 
   // plaw.win, *.vercel.app, localhost — samostatný (1:1) produkt.
-  const { response } = await updateSession(request);
+  const { response, supabase, user } = await updateSession(request);
+
+  // Stráž „jeden šport = jeden účet" (docs §1.1, migrácia 20261005100000).
+  // Rovnaký vzor ako stráž členstva na org subdoméne: len GET, obnova hesla
+  // prejde, session sa zahodí zmazaním cookies (nie signOut — prihlásenie
+  // toho istého účtu v jeho vlastnej appke ostáva nedotknuté).
+  const { pathname } = request.nextUrl;
+  if (user && request.method === "GET" && !PASSWORD_RESET_PATHS.has(pathname)) {
+    const home = await accountDisciplineElsewhere(supabase, user.id);
+    if (home) {
+      if (pathname === LOGIN_PATH) {
+        return clearAuthCookies(request, response);
+      }
+      const loginUrl = new URL(LOGIN_PATH, originOf(request));
+      loginUrl.searchParams.set("account", home);
+      return clearAuthCookies(request, NextResponse.redirect(loginUrl, 307));
+    }
+  }
+
   return response;
+}
+
+/**
+ * Patrí prihlásený trénerský účet INEJ appke? Vráti jej disciplínu, inak
+ * `null`.
+ *
+ * Bez tejto stráže by sa tenisový tréner prihlásil na kondičnej (neskôr
+ * padelovej) adrese a videl tam svojich tenisových hráčov — appka disciplínu
+ * berie z nasadenia, nie z účtu. Rodiča/hráča/manažéra sa to netýka (chodia
+ * len na `plaw.win`) a ani člena federácie: tomu disciplínu určuje členstvo.
+ */
+async function accountDisciplineElsewhere(
+  supabase: Awaited<ReturnType<typeof updateSession>>["supabase"],
+  userId: string,
+): Promise<DisciplineId | null> {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, discipline")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (
+    profile?.role !== "coach" ||
+    !isDisciplineId(profile.discipline) ||
+    profile.discipline === getDeploymentDiscipline()
+  ) {
+    return null;
+  }
+
+  const { data: orgId } = await supabase.rpc("current_org_id");
+  return orgId === null ? profile.discipline : null;
 }
 
 /**

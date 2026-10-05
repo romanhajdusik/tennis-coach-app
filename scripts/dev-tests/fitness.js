@@ -17,6 +17,8 @@ const {
   textOf,
   serviceClient,
   createChecks,
+  ensureFitnessCoach,
+  FITNESS_COACH_EMAIL,
 } = require("./helpers");
 
 const { check, section, report } = createChecks();
@@ -104,7 +106,50 @@ async function main() {
     (home.body.match(/<title>[^<]*<\/title>/) ?? [""])[0],
   );
 
-  const cookies = await authCookies("demo@plaw.win");
+  const db = serviceClient();
+  const { coach: fitnessCoach, player: fitnessPlayer } =
+    await ensureFitnessCoach(db);
+  const { data: allUsers } = await db.auth.admin.listUsers({ perPage: 1000 });
+  const demo = allUsers.users.find((u) => u.email === "demo@plaw.win");
+
+  section("1a) Tenisový účet sa v kondičke nedostane ďalej");
+  // Jeden šport = jeden účet (docs §1.1, migrácia 20261005100000). Do
+  // 2026-10-05 táto sada sama chodila po kondičke tenisovým `demo@plaw.win`
+  // a videla v nej jeho tenisových hráčov — presne to, čo stráž zatvára.
+  const tennisCookies = await authCookies("demo@plaw.win");
+  const foreign = await request("/", { host: APP_HOST, cookies: tennisCookies });
+  check(
+    "tenisový účet presmeruje na prihlásenie s odkazom na tenis",
+    foreign.status === 307 &&
+      /\/login\?account=tennis$/.test(foreign.headers.location ?? ""),
+    `${foreign.status} ${foreign.headers.location ?? ""}`,
+  );
+  check(
+    "a session na tejto adrese zahodí",
+    (foreign.headers["set-cookie"] ?? []).some((cookie) =>
+      /^sb-[^=]*auth-token[^=]*=;/.test(cookie),
+    ),
+    JSON.stringify(foreign.headers["set-cookie"] ?? []),
+  );
+  const foreignAction = await request("/players", {
+    host: APP_HOST,
+    cookies: tennisCookies,
+  });
+  check(
+    "ani priamo na appkovú stránku sa nedostane",
+    foreignAction.status === 307,
+    "status " + foreignAction.status,
+  );
+  const notice = textOf(
+    (await request("/login?account=tennis", { host: APP_HOST })).body,
+  );
+  check(
+    "prihlásenie povie, kam účet patrí",
+    /belongs to P\.L\.A\.W Tennis/.test(notice) && /plaw\.win/.test(notice),
+    notice.slice(0, 200),
+  );
+
+  const cookies = await authCookies(FITNESS_COACH_EMAIL);
 
   section("1b) Domov a spodná lišta patria TOMUTO nasadeniu");
   // Do 2026-09-21 sa pod názvom appky vypisovala adresa nasadenia (a bola raz
@@ -117,8 +162,8 @@ async function main() {
     /href="\/analytics\/ENDURANCE"/.test(loggedInHome.body),
     (loggedInHome.body.match(/href="\/analytics\/[^"]*"/) ?? ["žiadny odkaz"])[0],
   );
-  // Lookbehind kvôli tomu, že e-mail prihláseného (demo@plaw.win) tú istú
-  // doménu obsahuje legitímne — kontrolujeme vypísanú adresu, nie účet.
+  // Lookbehind kvôli e-mailom na tej istej doméne (do 2026-10-05 tu bol
+  // prihlásený demo@plaw.win) — kontrolujeme vypísanú adresu, nie účet.
   check(
     "nikde sa nevypisuje tenisová adresa",
     !/(?<![@\w.])plaw\.win/.test(loggedInText),
@@ -203,19 +248,25 @@ async function main() {
   );
 
   section("4) Formulár cvičenia: bez charakteru, s trvaním 60");
-  const db = serviceClient();
-  const { data: coach } = await db.auth.admin.listUsers({ perPage: 1000 });
-  const demo = coach.users.find((u) => u.email === "demo@plaw.win");
+  // Vlastný naplánovaný tréning kondičného trénera — seed ho nezakladá
+  // (fitness-coach v ňom nie je) a po sekcii sa zmaže.
   const { data: session } = await db
     .from("sessions")
+    .insert({
+      coach_id: fitnessCoach.id,
+      player_id: fitnessPlayer.id,
+      status: "planned",
+      discipline: "fitness",
+      planned_data: {
+        date: new Date(Date.now() + 86400000).toISOString(),
+        duration_minutes: 60,
+      },
+    })
     .select("id, discipline")
-    .eq("coach_id", demo.id)
-    .eq("status", "planned")
-    .limit(1)
-    .maybeSingle();
+    .single();
 
   if (!session) {
-    check("existuje naplánovaný tréning demo trénera", false, "žiadny nenájdený");
+    check("naplánovaný kondičný tréning sa založil", false, "insert zlyhal");
   } else {
     const detail = await request(`/sessions/${session.id}`, {
       host: APP_HOST,
@@ -233,6 +284,7 @@ async function main() {
       "zamerania vo formulári sú kondičné",
       detailText.includes("ENDURANCE") && !detailText.includes("Backhand"),
     );
+    await db.from("sessions").delete().eq("id", session.id);
   }
 
   section("5) Prepojenie kariet: kondička je VLASTNÍK dát, teda vydáva kód");
@@ -259,16 +311,11 @@ async function main() {
   section("6) Súhrn opačným smerom: len súčty, žiadne know-how");
   // Toto je jediné miesto, kde sa dá overiť VÝSLEDOK opačného smeru
   // (migrácia `20260824090000`): vydávajúcou stranou je kondičný tréner, takže
-  // blok sa vykreslí len v tomto nasadení. Prihlasuje sa preto `fitness-coach`,
-  // nie `demo@plaw.win` — ten má na kondičnom serveri tú istú tenisovú kartu
-  // a prepojiť kartu so sebou samou nejde.
+  // blok sa vykreslí len v tomto nasadení. Prihlasuje sa `fitness-coach` (ako
+  // v celej sade od 2026-10-05), druhou stranou je tenisová karta `demo`.
   //
   // Kontroluje sa oboje: že súčty prídu, aj že s nimi neprišli kódy cvičení
   // a poznámky — celá asymetria stojí a padá na tom druhom.
-  const { data: fitnessUsers } = await db.auth.admin.listUsers({ perPage: 1000 });
-  const fitnessCoach = fitnessUsers.users.find(
-    (user) => user.email === "fitness-coach@test.local",
-  );
   const { data: fitnessCard } = await db
     .from("players")
     .select("id")

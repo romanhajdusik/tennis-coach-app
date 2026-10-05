@@ -208,17 +208,28 @@ async function ensureFitnessCoach(db) {
       email: FITNESS_COACH_EMAIL,
       password: PASSWORD,
       email_confirm: true,
-      user_metadata: { full_name: "Fitness Coach", role: "coach" },
+      // Jeden šport = jeden účet (docs §1.1): účet patrí kondičke, inak by ho
+      // proxy na kondičnom nasadení odhlásila.
+      user_metadata: {
+        full_name: "Fitness Coach",
+        role: "coach",
+        discipline: "fitness",
+      },
     });
     if (error) throw new Error(`createUser: ${error.message}`);
     coach = data.user;
   }
 
   // Bez toho by účet po 14 dňoch prestal zapisovať a sada by padala na niečom,
-  // čo s prepojením kariet nesúvisí.
+  // čo s prepojením kariet nesúvisí. `discipline` pre účet založený pred
+  // 2026-10-05, keď ho trigger ešte nezapisoval.
   await db
     .from("profiles")
-    .update({ subscription_status: "complimentary", player_limit: 20 })
+    .update({
+      subscription_status: "complimentary",
+      player_limit: 20,
+      discipline: "fitness",
+    })
     .eq("id", coach.id);
 
   let { data: player } = await db

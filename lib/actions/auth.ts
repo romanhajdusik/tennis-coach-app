@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requestOrigin } from "@/lib/request-origin";
+import { getDeploymentDiscipline } from "@/lib/disciplines/registry";
 
 /**
  * `redirectTo` = prihlásenie prešlo a formulár má otvoriť túto cestu ÚPLNÝM
@@ -132,7 +133,16 @@ export async function register(
       // Kód putuje v metadátach — trigger `handle_new_user` si ho overí sám
       // a podľa neho nastaví predplatné. Podvrhnuté metadáta bez platného
       // kódu nedajú nič.
-      data: { full_name: fullName, role, promo_code: promoCode || null },
+      //
+      // Trénerský účet patrí disciplíne NASADENIA, na ktorom vznikol (jeden
+      // šport = jeden účet, docs §1.1). Podvrhnutá hodnota nedá nič — účet by
+      // sa len zamkol v cudzej appke.
+      data: {
+        full_name: fullName,
+        role,
+        promo_code: promoCode || null,
+        discipline: role === "coach" ? getDeploymentDiscipline() : null,
+      },
       // Potvrdzovací mail vedie späť na TENTO host (appka beží na viacerých),
       // rovnaká úvaha ako pri obnove hesla.
       emailRedirectTo: `${origin}/auth/confirm?next=${encodeURIComponent(

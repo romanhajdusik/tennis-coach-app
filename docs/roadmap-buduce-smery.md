@@ -156,6 +156,18 @@ nesmú zmeniť.
    všetko 0 FAIL, plus `npm run build`.
 2. **Zoznam disciplín z konfigurácie** — CHECK-y v DB a ~25 miest v kóde.
    Stále žiadny nový šport, len sa z „dvoch" stane „ľubovoľný počet".
+   **2a — účet patrí jednej disciplíne (postavené 2026-10-05,** migrácia
+   `20261005100000_profile_discipline`, otázka č. 1 nižšie): `profiles.discipline`
+   pre trénera, `handle_new_user` ju berie z metadát registrácie, stráž
+   v `proxy.ts` odhlási účet na cudzom nasadení a `/login?account=` povie, kam
+   patrí. Zoznam disciplín bez serverových závislostí je odteraz
+   `lib/disciplines/registry.ts` (číta ho proxy aj klient). **Backfill
+   z dát** (kondičné tréningy/kódy → kondička, inak tenis) sa pred spustením
+   na prode kontroluje zoznamom účtov. Overené: fitness 52 (nová §1a — sada
+   dovtedy sama chodila po kondičke tenisovým `demo@plaw.win`), http-coach 44
+   (nová §5), browser-coach 83, browser-director 48, rls-org 76, card-links 49,
+   public-web 82, http-parent 23, paywall 18, promo-codes 20, password-reset 24,
+   security-boundaries 32, rls-solo 17 — 0 FAIL, plus `npm run build`.
 3. **Tri konfigurácie** — `lib/disciplines/{padel,badminton,pickleball}.ts`
    s 9 dočasnými zameraniami, texty, farba appky, úvodná obrazovka. Overí sa
    lokálne s `NEXT_PUBLIC_PLAW_DISCIPLINE=padel`.
@@ -172,6 +184,13 @@ nesmú zmeniť.
    nevadilo (iný človek), pri tenise a padeli je to bežné. Najjednoduchšie
    je „jeden šport = jeden účet" (druhý e-mail), rovnako ako „buď nezávislý,
    alebo zamestnanec" (§5.8). Rozhodnúť **pred krokom 2**.
+   **ROZHODNUTÉ 2026-10-05: A — jeden šport = jeden účet.** Kto učí dva
+   športy, má dva účty (stačí `meno+padel@…`), každý so svojimi hráčmi
+   a predplatným. Zamietnutá možnosť B (jeden účet na všetky športy) by
+   znamenala deliť roster aj predplatné podľa športu. Appka musí účet na
+   cudzom nasadení zastaviť, inak by tenisový tréner na padelovej doméne
+   videl svojich tenisových hráčov. Platí aj pre kondičku (dnes to nevynucuje
+   nič).
 2. **Zameranie úderov a charakter:** majú nové športy charakter
    (offensive/neutral/defensive) a odhad počtu úderov ako tenis? Kým sa
    nevie, návrh je charakter áno, odhad úderov `null` (analytika o úderoch

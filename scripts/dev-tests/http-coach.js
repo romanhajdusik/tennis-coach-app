@@ -9,6 +9,9 @@ const {
   rendered,
   textOf,
   createChecks,
+  serviceClient,
+  ensureFitnessCoach,
+  FITNESS_COACH_EMAIL,
 } = require("./helpers");
 
 const { check, section, report } = createChecks();
@@ -193,6 +196,37 @@ async function main() {
     "tenisová appka nemá data-app (ostáva predvolená limetková)",
     !/<html[^>]*data-app=/.test(standalone.body),
     (standalone.body.match(/<html[^>]*>/) ?? [""])[0],
+  );
+
+  section("5) Kondičný účet sa v tenise nedostane ďalej");
+  // Jeden šport = jeden účet (docs §1.1). Opačný smer overuje fitness.js §1a.
+  await ensureFitnessCoach(serviceClient());
+  const fitnessCookies = await authCookies(FITNESS_COACH_EMAIL);
+  const foreign = await request("/", { host: APP_HOST, cookies: fitnessCookies });
+  check(
+    "kondičný účet presmeruje na prihlásenie s odkazom na kondičku",
+    foreign.status === 307 &&
+      /\/login\?account=fitness$/.test(foreign.headers.location ?? ""),
+    `${foreign.status} ${foreign.headers.location ?? ""}`,
+  );
+  const notice = textOf(
+    (await request("/login?account=fitness", { host: APP_HOST })).body,
+  );
+  check(
+    "prihlásenie povie, kam účet patrí",
+    /belongs to P\.L\.A\.W Fitness/.test(notice) &&
+      /fitness\.plawsports\.com/.test(notice),
+    notice.slice(0, 200),
+  );
+  // Rodič chodí len na plaw.win a disciplínu nemá — stráž sa ho netýka.
+  const parent = await request("/parent", {
+    host: APP_HOST,
+    cookies: await authCookies("parent-test@test.local"),
+  });
+  check(
+    "rodiča stráž nechá na pokoji",
+    parent.status === 200,
+    `${parent.status} ${parent.headers.location ?? ""}`,
   );
 
   report();

@@ -1,8 +1,16 @@
 import { cache } from "react";
 import { getOrgMembership } from "@/lib/org/membership";
 import type { DisciplineConfig, DisciplineId } from "@/lib/disciplines/types";
-import { TENNIS_DISCIPLINE } from "@/lib/disciplines/tennis";
-import { FITNESS_DISCIPLINE } from "@/lib/disciplines/fitness";
+import {
+  DISCIPLINES,
+  getDeploymentDiscipline,
+} from "@/lib/disciplines/registry";
+
+export {
+  disciplineConfig,
+  getDeploymentDiscipline,
+  isDisciplineId,
+} from "@/lib/disciplines/registry";
 
 /**
  * JEDINÝ ZDROJ PRAVDY o tom, ktorú disciplínu appka práve obsluhuje —
@@ -29,23 +37,8 @@ import { FITNESS_DISCIPLINE } from "@/lib/disciplines/fitness";
  * prečítať aj tam, kde ani jeden z týchto zdrojov nič nehovorí.
  */
 
-const DISCIPLINES: Record<DisciplineId, DisciplineConfig> = {
-  tennis: TENNIS_DISCIPLINE,
-  fitness: FITNESS_DISCIPLINE,
-};
-
-/**
- * Disciplína NASADENIA. `NEXT_PUBLIC_*`, lebo ju pri builde treba vložiť do
- * balíka; musí sa čítať týmto celým zápisom, dynamický prístup sa nevloží.
- *
- * Neznáma alebo chýbajúca hodnota = tenis: `plaw.win` beží v produkcii bez
- * tejto premennej a nesmie sa zmeniť tým, že ju niekto zabudne nastaviť.
- */
-export function getDeploymentDiscipline(): DisciplineId {
-  return process.env.NEXT_PUBLIC_PLAW_DISCIPLINE === "fitness"
-    ? "fitness"
-    : "tennis";
-}
+// Zoznam disciplín a disciplína nasadenia žijú v `lib/disciplines/registry.ts`
+// (bez serverových závislostí, číta ich aj `proxy.ts`); tu sú re-exportované.
 
 /**
  * Disciplína prihláseného. Vo federácii ju určuje ČLENSTVO, mimo nej nasadenie.
@@ -70,25 +63,6 @@ export const getDiscipline = cache(async (): Promise<DisciplineId> => {
 export const getDisciplineConfig = cache(
   async (): Promise<DisciplineConfig> => DISCIPLINES[await getDiscipline()],
 );
-
-/** Konfigurácia konkrétnej disciplíny — pre riadky s vlastným štítkom. */
-export function disciplineConfig(id: DisciplineId): DisciplineConfig {
-  return DISCIPLINES[id];
-}
-
-/**
- * Je hodnota známa disciplína? Na overenie vstupu zvonka — adresy pultu
- * (`?discipline=`) a viazaného argumentu `saveOrgDrillCodes`.
- *
- * **Disciplína sa NEODVODZUJE zo zamerania** (do 2026-10-05 to robila
- * `disciplineOfCategory()`): padel bude mať `Forehand` ako tenis, takže názov
- * zamerania disciplínu neurčuje. Kto analyzuje alebo ukladá disciplínu, ktorú
- * sám „nerobí" (šéftréner), ju dostáva výslovne — v adrese alebo v argumente
- * (docs/roadmap-buduce-smery.md §1.1).
- */
-export function isDisciplineId(value: unknown): value is DisciplineId {
-  return typeof value === "string" && Object.hasOwn(DISCIPLINES, value);
-}
 
 /**
  * Má sa v tomto zameraní zobraziť odhad počtu úderov? Nie, ak ho disciplína
