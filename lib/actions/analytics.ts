@@ -545,6 +545,31 @@ export async function getPlayerCategoryMinuteShares(
 }
 
 /**
+ * Šport na kurte, v ktorom má karta hráča tréningy (iné než `mine`). Kvôli
+ * „jeden šport = jeden účet" aj „zväz = jeden šport" je na karte najviac
+ * jeden, takže stačí prvý riadok.
+ *
+ * **Opačný smer v samostatnom režime cez ňu NEVIDÍ** — vydávajúca strana na
+ * cudzie tréningy prístup nemá; súhrn aj s disciplínou vracia RPC
+ * `linked_player_category_minutes` (od `20261005110000`).
+ */
+async function courtDisciplineOfCard(
+  supabase: SupabaseServerClient,
+  playerId: string,
+  mine: DisciplineId,
+): Promise<DisciplineId> {
+  const { data } = await supabase
+    .from("sessions")
+    .select("discipline")
+    .eq("player_id", playerId)
+    .neq("discipline", mine)
+    .limit(1)
+    .maybeSingle();
+
+  return isDisciplineId(data?.discipline) ? data.discipline : "tennis";
+}
+
+/**
  * Podiely zameraní v DRUHEJ disciplíne za to isté obdobie — vstup pre kondičný
  * prehľad dole v tenisovej analytike (docs §2.0, krok 5).
  *
@@ -565,32 +590,6 @@ export async function getPlayerCategoryMinuteShares(
  * `null` = nie je čo kresliť (žiadne prepojenie alebo v období nič), a vtedy
  * sa blok nevykreslí vôbec — prázdny graf by len zaberal miesto.
  */
-/**
- * Šport na kurte, v ktorom má karta hráča tréningy (iné než `mine`). Kvôli
- * „jeden šport = jeden účet" aj „zväz = jeden šport" je na karte najviac
- * jeden, takže stačí prvý riadok.
- *
- * **Opačný smer v samostatnom režime cez ňu NEVIDÍ** — vydávajúca strana na
- * cudzie tréningy prístup nemá (súhrn ide cez RPC). Vtedy vyjde tenis, ktorý
- * je dnes jediný šport na kurte; krok 3 (docs §1.1) má preto rozšíriť
- * `linked_player_category_minutes` o disciplínu v odpovedi.
- */
-async function courtDisciplineOfCard(
-  supabase: SupabaseServerClient,
-  playerId: string,
-  mine: DisciplineId,
-): Promise<DisciplineId> {
-  const { data } = await supabase
-    .from("sessions")
-    .select("discipline")
-    .eq("player_id", playerId)
-    .neq("discipline", mine)
-    .limit(1)
-    .maybeSingle();
-
-  return isDisciplineId(data?.discipline) ? data.discipline : "tennis";
-}
-
 export async function getLinkedDisciplineShares(
   supabase: SupabaseServerClient,
   userId: string,
@@ -650,7 +649,17 @@ export async function getLinkedDisciplineShares(
     return null;
   }
 
-  return { discipline: other, shares: aggregateCategoryShares(summary) };
+  // Šport druhej strany vracia funkcia — odtiaľto na jej tréningy nevidno, takže
+  // `other` tu nič nevie. Na karte je najviac jeden šport na kurte.
+  const summaryDiscipline = summary[0].discipline;
+  if (!isDisciplineId(summaryDiscipline)) {
+    return null;
+  }
+
+  return {
+    discipline: summaryDiscipline,
+    shares: aggregateCategoryShares(summary),
+  };
 }
 
 export async function getCategoryAnalytics(

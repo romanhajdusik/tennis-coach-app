@@ -257,6 +257,53 @@ async function ensureFitnessCoach(db) {
   return { coach, player };
 }
 
+/**
+ * Tréner nového športu na kurte (padel, bedminton, pickleball) a jeho karta
+ * hráča — idempotentne. Jeden šport = jeden účet (docs §1.1), takže každý šport
+ * má vlastný účet `<šport>-coach@test.local`.
+ */
+async function ensureCourtCoach(db, discipline) {
+  const email = `${discipline}-coach@test.local`;
+  const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
+  let coach = users.users.find((user) => user.email === email);
+
+  if (!coach) {
+    const { data, error } = await db.auth.admin.createUser({
+      email,
+      password: PASSWORD,
+      email_confirm: true,
+      user_metadata: { full_name: `${discipline} coach`, role: "coach", discipline },
+    });
+    if (error) throw new Error(`createUser: ${error.message}`);
+    coach = data.user;
+  }
+
+  await db
+    .from("profiles")
+    .update({ subscription_status: "complimentary", player_limit: 6, discipline })
+    .eq("id", coach.id);
+
+  const name = `Test Player (${discipline})`;
+  let { data: player } = await db
+    .from("players")
+    .select("id")
+    .eq("coach_id", coach.id)
+    .eq("name", name)
+    .maybeSingle();
+
+  if (!player) {
+    const { data, error } = await db
+      .from("players")
+      .insert({ coach_id: coach.id, name, birth_year: 2012, is_active: true })
+      .select("id")
+      .single();
+    if (error) throw new Error(`insert player: ${error.message}`);
+    player = data;
+  }
+
+  return { coach, player, email };
+}
+
 /** Jednoduchý zberač výsledkov — každý skript končí `report()`. */
 function createChecks() {
   let passed = 0;
@@ -304,6 +351,7 @@ module.exports = {
   chromiumArgs,
   browserLogin,
   ensureFitnessCoach,
+  ensureCourtCoach,
   FITNESS_COACH_EMAIL,
   FITNESS_PLAYER_NAME,
   createChecks,

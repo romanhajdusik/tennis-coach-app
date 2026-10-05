@@ -184,6 +184,22 @@ nesmú zmeniť.
 3. **Tri konfigurácie** — `lib/disciplines/{padel,badminton,pickleball}.ts`
    s 9 dočasnými zameraniami, texty, farba appky, úvodná obrazovka. Overí sa
    lokálne s `NEXT_PUBLIC_PLAW_DISCIPLINE=padel`.
+   **Postavené 2026-10-05** (migrácia `20261005110000_court_sports`): tri
+   športy zo spoločnej kostry `lib/disciplines/court-placeholder.ts`
+   (`FOCUS 1`…`FOCUS 9`, charakter áno, `strokes: null`, `bars`, bez
+   predvolených kódov, `cardLink: "viewer"`); migrácia rozšírila sedem CHECK-ov
+   o nové disciplíny, `drill_codes_category_check` o ich zamerania,
+   `handle_new_user` o ich mapovanie, `assign_new_org_player` berie pri
+   chýbajúcom členstve šport zväzu a `linked_player_category_minutes` vracia
+   disciplínu (zmenený návratový typ → drop/create, práva overené cez
+   `proacl`: len `authenticated`). Nová sada `scripts/dev-tests/court-sports.js`
+   (`SPORT=padel`, 18 kontrol). **Ešte NEROBÍ** (krok 5): vlastná farba
+   (`data-app="padel"` je nastavený, ale v `globals.css` nemá odtiene — appka
+   má zatiaľ tenisový vzhľad), úvodná obrazovka/landing (na `/` je
+   prihlásenie), hostiteľ v `lib/public-face.ts` (kanonizácia, OG náhľad).
+   Overené: court-sports 18 (padel), fitness 52, card-links 50, http-coach 44,
+   http-director 33, browser-coach 83, browser-director 48, rls-org 76 a
+   ostatné sady 0 FAIL, plus build.
 4. **Stripe** — vlastné produkty pre každý šport
    (`plaw_padel_coach_3`…, mechanizmus z 2026-10-02 to už vie).
 5. **Nasadenie** — tri Vercel projekty, CNAME, premenné; postup podľa

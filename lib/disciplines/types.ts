@@ -9,7 +9,12 @@
  * a pravidlá, nikdy nie vetvenie „ak je to kondička".
  */
 
-export type DisciplineId = "tennis" | "fitness";
+export type DisciplineId =
+  | "tennis"
+  | "padel"
+  | "badminton"
+  | "pickleball"
+  | "fitness";
 
 export type AnalyticsCodeGroup = { label: string; prefix: string };
 

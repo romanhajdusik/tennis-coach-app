@@ -1,6 +1,9 @@
 import type { DisciplineConfig, DisciplineId } from "@/lib/disciplines/types";
 import { TENNIS_DISCIPLINE } from "@/lib/disciplines/tennis";
 import { FITNESS_DISCIPLINE } from "@/lib/disciplines/fitness";
+import { PADEL_DISCIPLINE } from "@/lib/disciplines/padel";
+import { BADMINTON_DISCIPLINE } from "@/lib/disciplines/badminton";
+import { PICKLEBALL_DISCIPLINE } from "@/lib/disciplines/pickleball";
 
 /**
  * Zoznam disciplín a disciplína NASADENIA — bez akejkoľvek serverovej
@@ -10,7 +13,11 @@ import { FITNESS_DISCIPLINE } from "@/lib/disciplines/fitness";
  * re-exportuje.
  */
 export const DISCIPLINES: Record<DisciplineId, DisciplineConfig> = {
+  // Poradie: športy na kurte, kondička posledná.
   tennis: TENNIS_DISCIPLINE,
+  padel: PADEL_DISCIPLINE,
+  badminton: BADMINTON_DISCIPLINE,
+  pickleball: PICKLEBALL_DISCIPLINE,
   fitness: FITNESS_DISCIPLINE,
 };
 

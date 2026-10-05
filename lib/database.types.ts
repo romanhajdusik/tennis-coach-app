@@ -766,6 +766,7 @@ export type Database = {
         Args: { p_end: string; p_player_id: string; p_start: string }
         Returns: {
           category: string
+          discipline: string
           duration_minutes: number
         }[]
       }

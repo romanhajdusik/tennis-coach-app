@@ -407,12 +407,20 @@ async function main() {
         [...expected].every(([category, minutes]) => got.get(category) === minutes),
       `dostal ${JSON.stringify([...got])}, čakal ${JSON.stringify([...expected])}`,
     );
+    // Od 20261005110000 nesie aj disciplínu — kondičná strana inak nevie,
+    // ktorý šport na kurte súhrn ukazuje. Disciplína know-how nie je.
     check(
       "súhrn nenesie kódy cvičení ani poznámky",
       (summary.data ?? []).every(
-        (row) => Object.keys(row).join(",") === "category,duration_minutes",
+        (row) => Object.keys(row).join(",") === "discipline,category,duration_minutes",
       ),
       `stĺpce: ${Object.keys((summary.data ?? [])[0] ?? {}).join(",")}`,
+    );
+    check(
+      "súhrn povie, ktorý šport na kurte ukazuje (tu tenis)",
+      (summary.data ?? []).length > 0 &&
+        (summary.data ?? []).every((row) => row.discipline === "tennis"),
+      JSON.stringify(summary.data),
     );
 
     const stillNoSessions = await asFitness
