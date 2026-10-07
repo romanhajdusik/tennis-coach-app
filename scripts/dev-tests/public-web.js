@@ -109,15 +109,18 @@ async function main() {
 
   section("2) Domovská stránka hovorí k tomu, kto na ňu prišiel");
   const coachHome = textOf((await request("/", { host: APP })).body);
-  const publicHome = textOf((await request("/", { host: PUBLIC })).body);
+  const publicRoot = await request("/", { host: PUBLIC });
   const parentHome = textOf((await request("/", { host: PARENT })).body);
   check(
     "plaw.win = trénerský landing (je na ňom cenník trénera)",
     /players/i.test(coachHome) && /P\.L\.A\.W/.test(coachHome),
   );
+  // plaw.online je od 2026-10-07 len pre zväzy — `/` vedie na ich stránku.
   check(
-    "plaw.online = rozcestník (ponúka federácie)",
-    /federation|federácie/i.test(publicHome),
+    "plaw.online/ presmeruje na stránku pre zväzy",
+    publicRoot.status === 307 &&
+      (publicRoot.headers.location ?? "").endsWith("/federacie"),
+    `status ${publicRoot.status}, location ${publicRoot.headers.location}`,
   );
   check(
     "plaw.click = landing pre sledujúceho, bez B2B dverí",
@@ -244,12 +247,13 @@ async function main() {
   // že stránka značky NESIE a že obrázok na tej istej doméne NAOZAJ
   // odpovedá — `/og` nebolo v zozname povolených ciest a na plaw.click
   // aj plaw.online sa presmerovalo preč (opravené 2026-09-29).
-  for (const [host, face] of [
-    [APP, "coach"],
-    [PARENT, "parent"],
-    [PUBLIC, "org"],
+  for (const [host, face, path] of [
+    [APP, "coach", "/"],
+    [PARENT, "parent", "/"],
+    // Domovom plaw.online je od 2026-10-07 stránka pre zväzy.
+    [PUBLIC, "org", "/federacie"],
   ]) {
-    const page = await request("/", { host });
+    const page = await request(path, { host });
     const image = `${ORIGIN[host]}/og?face=${face}`;
     check(
       `${host} má og:image na vlastnej doméne`,

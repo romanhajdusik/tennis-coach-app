@@ -11,6 +11,7 @@ import {
 } from "@/components/landing-icons";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
+import { ogMetadata } from "@/lib/og";
 import { PublicAnalytics } from "@/components/public-analytics";
 
 /**
@@ -47,6 +48,13 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t.metaDescription,
     // Noindex ako zvyšok verejného webu, kým nie je spustený naostro.
     robots: publicRobots(),
+    // Od 2026-10-07 je to domov plaw.online (`/` sem presmeruje), takže
+    // náhľad odkazu na zväzovú doménu nesie práve táto stránka.
+    ...ogMetadata({
+      face: "org",
+      title: t.metaTitle,
+      description: t.metaDescription,
+    }),
   };
 }
 

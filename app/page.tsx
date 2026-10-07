@@ -13,11 +13,9 @@ import { LandingFitness } from "@/components/landing-fitness";
 import { LandingPadel } from "@/components/landing-padel";
 import { LandingBadminton } from "@/components/landing-badminton";
 import { LandingPickleball } from "@/components/landing-pickleball";
-import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
 import {
   isParentFaceHost,
-  isPublicFaceHost,
   isSportsHubHost,
 } from "@/lib/public-face";
 import { SportsHub } from "@/components/sports-hub";
@@ -30,7 +28,6 @@ import {
   loadLandingBadmintonMessages,
   loadLandingPickleballMessages,
   loadLandingMessages,
-  loadRozcestnikMessages,
   loadSportsHubMessages,
 } from "@/lib/landing-locale";
 import { getOrgContext } from "@/lib/org/context";
@@ -82,22 +79,6 @@ export async function generateMetadata(): Promise<Metadata> {
       robots: publicRobots(),
       ...ogMetadata({
         face: "parent",
-        title: t.metaTitle,
-        description: t.metaDescription,
-      }),
-    };
-  }
-
-  // Verejná tvár (plaw.online) má na `/` rozcestník, nie consumer landing —
-  // metadata musia sedieť s tým, čo sa naozaj vykreslí.
-  if (isPublicFaceHost(host)) {
-    const t = await loadRozcestnikMessages();
-    return {
-      title: t.metaTitle,
-      description: t.metaDescription,
-      robots: publicRobots(),
-      ...ogMetadata({
-        face: "org",
         title: t.metaTitle,
         description: t.metaDescription,
       }),
@@ -213,11 +194,6 @@ export default async function Home() {
     }
     if (isParentFaceHost(host)) {
       return withAnalytics(<LandingHrac />);
-    }
-    // Verejná tvár ponúka oba produkty ako rovnocenné dvere; consumer landing
-    // (funkcie, screenshoty, cenník) ostáva na plaw.win, kam prvé dvere vedú.
-    if (isPublicFaceHost(host)) {
-      return withAnalytics(<PublicFaceHome />);
     }
     // Landing je marketing TENISOVÉHO produktu (jeho názov, screenshoty
     // z kurtu, cenník). Iná disciplína ju nesmie vykresliť ani omylom —

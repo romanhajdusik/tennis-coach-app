@@ -1,12 +1,12 @@
 /**
- * plaw.online = samostatná **verejná tvár** projektu (marketing), plaw.win =
- * produkt. Rozdelenie robí `proxy.ts` podľa hostname, ale vedieť o ňom musí aj
- * `app/page.tsx`: na verejnej tvári je domovská stránka **rozcestník** medzi
- * dvoma produktmi, nie consumer landing.
+ * plaw.online = doména **ZVÄZOV** (od 2026-10-07 len pre ne, rozhodol user):
+ * stránka pre zväzy, kluby a akadémie (`/federacie`, kam `proxy.ts` presmeruje
+ * aj `/`) a zásady pre organizácie. Do 2026-10-07 tu bol rozcestník medzi
+ * produktmi — ten nahradil rozcestník športov na plawsports.com.
  *
- * Preto je zoznam hostiteľov tu a nie v `proxy.ts` — jeden zdroj pravdy pre
- * obe strany. `PUBLIC_ORIGIN` je adresa, na ktorú sa marketingové cesty
- * presmerujú z produktovej domény.
+ * Zoznam hostiteľov je tu a nie v `proxy.ts` — jeden zdroj pravdy pre proxy aj
+ * náhľad odkazu (`lib/og.ts`). `PUBLIC_ORIGIN` je adresa, na ktorú sa zväzové
+ * cesty presmerujú z produktovej domény.
  */
 export const PUBLIC_ONLY_HOSTS = new Set(["plaw.online", "www.plaw.online"]);
 

@@ -287,37 +287,6 @@ export async function loadFederacieMessages(): Promise<FederacieMessages> {
   return messages.default as FederacieMessages;
 }
 
-// Rozcestník na plaw.online (verejná tvár): **troje dvere** — tréner na
-// plaw.win, sledujúci (hráč, rodič, manažér) na plaw.click a federačná
-// stránka. Tretie dvere pribudli 2026-08-22 spolu s doménou plaw.click:
-// dovtedy viedli prvé dvere „tréner, hráč, rodič, manažér" všetkých na
-// trénerský marketing, čo pre sledujúceho nikdy nesedelo.
-
-export type RozcestnikMessages = {
-  metaTitle: string;
-  metaDescription: string;
-  title: string;
-  subtitle: string;
-  consumerTitle: string;
-  consumerText: string;
-  consumerCta: string;
-  followerTitle: string;
-  followerText: string;
-  followerCta: string;
-  orgTitle: string;
-  orgText: string;
-  orgCta: string;
-  guidesTitle: string;
-  guideCoach: string;
-  guidePlayer: string;
-  footerTagline: string;
-};
-
-export async function loadRozcestnikMessages(): Promise<RozcestnikMessages> {
-  const messages = await import("../messages/en/rozcestnik.json");
-  return messages.default as RozcestnikMessages;
-}
-
 // Rozcestník ŠPORTOV na `plawsports.com` (od 2026-10-07,
 // `components/sports-hub.tsx`). Názvy športov tu nie sú — idú z konfigurácie
 // disciplín, aby sa nový šport nemusel dopisovať na dvoch miestach.

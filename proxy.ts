@@ -177,6 +177,14 @@ export async function proxy(request: NextRequest) {
 
   if (PUBLIC_ONLY_HOSTS.has(host)) {
     const { pathname, search } = request.nextUrl;
+    // plaw.online je od 2026-10-07 LEN pre zväzy (rozhodol user) — domovom je
+    // stránka pre zväzy. Rozcestník medzi produktmi, ktorý tu bol, nahradil
+    // rozcestník športov na plawsports.com. Presmerovanie (nie druhá adresa
+    // tej istej stránky) drží pravidlo „jedna stránka = jedna adresa"
+    // a existujúce odkazy na /federacie fungujú ďalej.
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/federacie" + search, request.url), 307);
+    }
     // Verejné stránky nepotrebujú Supabase session (sú bez prihlásenia).
     if (PUBLIC_PATHS.has(pathname)) {
       return NextResponse.next();

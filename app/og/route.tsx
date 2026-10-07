@@ -6,7 +6,7 @@ import { FITNESS_DISCIPLINE } from "@/lib/disciplines/fitness";
 import {
   loadLandingHracMessages,
   loadLandingMessages,
-  loadRozcestnikMessages,
+  loadFederacieMessages,
   loadSportsHubMessages,
 } from "@/lib/landing-locale";
 
@@ -29,10 +29,9 @@ async function faceText(face: OgFace): Promise<{ eyebrow?: string; title: string
     return { eyebrow: t.eyebrow, title: t.heroTitle };
   }
   if (face === "org") {
-    // Rozcestník nemá štítok — jeho nadpis je samotný rozpis skratky a na
-    // karte unesie celú plochu sám.
-    const t = await loadRozcestnikMessages();
-    return { title: t.title };
+    // plaw.online je od 2026-10-07 len pre zväzy — náhľad nesie ich stránku.
+    const t = await loadFederacieMessages();
+    return { eyebrow: t.eyebrow, title: t.title };
   }
   if (face === "hub") {
     // Rozcestník športov — štítok je značka, nadpis výzva na výber.
