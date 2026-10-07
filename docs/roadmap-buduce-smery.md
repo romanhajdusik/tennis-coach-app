@@ -1164,10 +1164,12 @@ Prečo to sedí bez veľkých zásahov:
   sady 0 FAIL; v prehliadači až po pokladňu Stripe.
 
 **Zostáva:**
-1. **Bod 6 — vstup na webe** (`plaw.click` + landingy športov). Ďalší krok.
-2. **Podmienky a zásady:** registrácia ukazuje hráčskemu denníku znenie
-   SLEDUJÚCEHO (spotrebiteľ), ktoré opisuje sledovanie, nie vlastný zápis —
-   doplniť pred spustením.
+1. ~~**Bod 6 — vstup na webe**~~ — **HOTOVÉ 2026-10-07** (`764086f`):
+   „Keep your own training diary." na `plaw.click` a 4 landingoch športov,
+   `/register?role=self` predvolí denník.
+2. ~~**Podmienky a zásady**~~ — **HOTOVÉ 2026-10-07** (`1b19ce8`): §15 v oboch
+   dokumentoch sledujúceho, znenie schválil user; čitateľská stránka podmienok
+   prestavaná.
 3. **Deň spustenia, v tomto poradí:** migrácie `20261006090000` +
    `20261006100000` v prod SQL Editore → `setup-products.js` ostrým kľúčom
    (`PLAW_STRIPE_LIVE=ano`) → v Stripe portál „Self" (prepínanie len medzi
