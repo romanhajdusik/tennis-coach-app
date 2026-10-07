@@ -12,6 +12,7 @@ import {
   UsersIcon,
 } from "@/components/landing-icons";
 import { Wordmark } from "@/components/wordmark";
+import { ScrollLink } from "@/components/scroll-link";
 
 const FEATURE_ICONS = [
   CalendarIcon,
@@ -112,6 +113,28 @@ export async function LandingPage() {
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </Link>
+          {/* Človek z reklamy na Instagrame vidí na prvej obrazovke len
+              fotku, značku a tlačidlá — čo appka robí, je až pod ňou
+              (od 2026-10-07, po prvej kampani: 1 091 návštev, ~1 registrácia).
+              Tlačidlo ho tam posunie. */}
+          <ScrollLink
+            targetId="how-it-works"
+            className="flex items-center justify-center gap-2 rounded-full border border-primary/60 bg-background/50 px-5 py-3.5 text-base font-semibold text-foreground backdrop-blur-sm transition hover:bg-surface"
+          >
+            {t.ctaHowItWorks}
+            <svg
+              aria-hidden
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5"
+            >
+              <path d="M12 5v14M6 13l6 6 6-6" />
+            </svg>
+          </ScrollLink>
           <Link
             href="/login"
             className="rounded-full border border-foreground/25 bg-background/50 px-5 py-3.5 text-base font-medium text-foreground backdrop-blur-sm transition hover:bg-surface"
@@ -147,7 +170,10 @@ export async function LandingPage() {
           className="absolute inset-0 -z-10 hidden bg-background/35 md:block"
         />
 
-      <section className="flex w-full max-w-3xl flex-col items-center gap-6 px-4 pb-16 pt-12 text-center sm:px-6 sm:pb-24 md:pt-24">
+      <section
+        id="how-it-works"
+        className="flex w-full max-w-3xl scroll-mt-2 flex-col items-center gap-6 px-4 pb-16 pt-12 text-center sm:px-6 sm:pb-24 md:pt-24"
+      >
         {/* Len od `md` vyššie — na telefóne nesie značku nápis na úvodnej fotke
             a druhý by bol hneď pod ním. */}
         <Wordmark variant="hero" className="hidden md:inline-block" />

@@ -49,6 +49,8 @@ export async function loadLandingMessages() {
      */
     heroPoints?: { title: string; text: string }[];
     ctaPrimary: string;
+    /** Tlačidlo v úvode na telefóne, posunie na vysvetlenie (od 2026-10-07). */
+    ctaHowItWorks: string;
     ctaSecondary: string;
     guideLink: string;
     guideCoach: string;
