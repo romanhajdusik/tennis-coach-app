@@ -444,6 +444,14 @@ Na prihlásení (trénerskom aj rodičovskom) je „Forgot your password?" → `
 - `login`/`logout`/`register` v `lib/actions/auth.ts` berú `redirectTo` ako bindovaný parameter, aby fungovali pre oba vstupné body (`/login` → `/`, `/parent/login` → `/parent`) bez duplikovania auth logiky.
 - Platba za rodičovský prístup je zatiaľ nevyriešená (téma Fázy 3/Stripe) — rodič sa zatiaľ registruje zadarmo.
 
+## Meranie návštevnosti (od 2026-10-07)
+
+**Vercel Web Analytics, LEN na verejnom webe** ([`components/public-analytics.tsx`](components/public-analytics.tsx)): landing v odhlásenej vetve `app/page.tsx` (cez `withAnalytics`), `/navod`, `/navod-hrac`, `/cennik-hrac`, `/federacie` a `/register`. Dôvod: prvá kampaň na Instagrame priniesla 1 091 návštev a najviac jednu registráciu a web dovtedy nemeral nič, takže sa nedalo zistiť, kde ľudia odchádzajú.
+
+- **Do appky po prihlásení NEPATRÍ a nedávaj ho do `app/layout.tsx`** (rozhodol user): adresy v appke nesú ID hráčov a tréningov a odkaz na obnovu hesla jednorazový kľúč v query. `beforeSend` je druhá poistka — pustí len cesty zo zoznamu `PUBLIC_PATHS` a vždy zahodí query aj hash.
+- **Bez cookies a bez IP adries**, preto stále netreba cookie lištu. **Zásady to od 2026-10-07 hovoria v §9** (všetky tri — tréner, sledujúci, organizácia, EN aj SK). Dovtedy tam stálo „we have no analytics", takže **pri pridaní akéhokoľvek ďalšieho merania alebo pixelu (Meta Pixel) treba zásady prepísať znova** — Pixel navyše cookies používa a súhlas by si vyžiadal.
+- Meranie sa zapína aj vo Verceli (projekt → Analytics → Enable), bez toho skript nič neodošle.
+
 ## Internacionalizácia (i18n)
 
 - **Appka (produkt) je od 2026-07-28 výhradne anglická** (`next-intl`, `i18n/request.ts` — `locales = ["en"]`, `defaultLocale = "en"`, `getRequestConfig` vždy vráti `"en"`). Už **nemá prepínač jazyka ani slovenské preklady**: `components/locale-switcher.tsx` aj `lib/actions/locale.ts` boli odstránené, cookie `NEXT_LOCALE` sa už nečíta a appkové `messages/sk/*.json` boli zmazané. Slovenčina zostáva len na verejnom webe (landing/návody, vlastná vrstva nižšie) a v kóde/dokumentácii/commitoch — nie v produkte.

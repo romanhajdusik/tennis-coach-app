@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { loadNavodHracMessages } from "@/lib/landing-locale";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
+import { PublicAnalytics } from "@/components/public-analytics";
 
 // Krátky verejný návod pre pripojeného hráča/rodiča/manažéra (druhá strana
 // appky). Tá istá textová vrstva aj tmavá téma ako trénerský návod
@@ -151,6 +152,7 @@ export default async function NavodHracPage() {
           {t.crossLinkCta}
         </Link>
       </div>
+      <PublicAnalytics />
     </div>
   );
 }

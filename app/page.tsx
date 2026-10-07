@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
@@ -21,6 +21,7 @@ import {
   isSportsHubHost,
 } from "@/lib/public-face";
 import { SportsHub } from "@/components/sports-hub";
+import { PublicAnalytics } from "@/components/public-analytics";
 import { ogFaceOf, ogMetadata } from "@/lib/og";
 import {
   loadLandingFitnessMessages,
@@ -160,6 +161,17 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// Meranie návštevnosti len pre ODHLÁSENÉHO (verejný landing) — prihlásený
+// na `/` dostane nástenku a tá sa nemeria, viď `components/public-analytics.tsx`.
+function withAnalytics(page: ReactNode) {
+  return (
+    <>
+      {page}
+      <PublicAnalytics />
+    </>
+  );
+}
+
 export default async function Home() {
   const t = await getTranslations("Home");
   const org = await getOrgContext();
@@ -197,15 +209,15 @@ export default async function Home() {
     // plawsports.com = rozcestník športov (od 2026-10-07) — výber appky, nie
     // marketing žiadneho jedného športu.
     if (isSportsHubHost(host)) {
-      return <SportsHub />;
+      return withAnalytics(<SportsHub />);
     }
     if (isParentFaceHost(host)) {
-      return <LandingHrac />;
+      return withAnalytics(<LandingHrac />);
     }
     // Verejná tvár ponúka oba produkty ako rovnocenné dvere; consumer landing
     // (funkcie, screenshoty, cenník) ostáva na plaw.win, kam prvé dvere vedú.
     if (isPublicFaceHost(host)) {
-      return <PublicFaceHome />;
+      return withAnalytics(<PublicFaceHome />);
     }
     // Landing je marketing TENISOVÉHO produktu (jeho názov, screenshoty
     // z kurtu, cenník). Iná disciplína ju nesmie vykresliť ani omylom —
@@ -218,22 +230,22 @@ export default async function Home() {
     // len úvodnú obrazovku bez sľubov, takže kondičný tréner cenu nevidel
     // nikde. Ostatné disciplíny (dnes žiadna) majú úvod alebo prihlásenie.
     if (config.id === "fitness") {
-      return <LandingFitness config={config} />;
+      return withAnalytics(<LandingFitness config={config} />);
     }
     // Padel má od 2026-10-05 vlastný landing — každý šport svoj, nie spoločný
     // (rozhodol user). Rovnako bedminton a pickleball.
     if (config.id === "padel") {
-      return <LandingPadel config={config} />;
+      return withAnalytics(<LandingPadel config={config} />);
     }
     if (config.id === "badminton") {
-      return <LandingBadminton config={config} />;
+      return withAnalytics(<LandingBadminton config={config} />);
     }
     if (config.id === "pickleball") {
-      return <LandingPickleball config={config} />;
+      return withAnalytics(<LandingPickleball config={config} />);
     }
     if (config.id !== "tennis") {
       if (config.intro) {
-        return (
+        return withAnalytics(
           <DisciplineIntro
             photo={config.intro.photo}
             label={config.label}
@@ -243,7 +255,7 @@ export default async function Home() {
       }
       redirect("/login");
     }
-    return <LandingPage />;
+    return withAnalytics(<LandingPage />);
   }
 
   // Šéftréner federácie nemá pridelených hráčov — nástenka „Dnes" by mu

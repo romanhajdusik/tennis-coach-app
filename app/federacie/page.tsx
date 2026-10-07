@@ -11,6 +11,7 @@ import {
 } from "@/components/landing-icons";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
+import { PublicAnalytics } from "@/components/public-analytics";
 
 /**
  * Verejná stránka o federačnom (B2B) režime — informačná, **bez prihlásenia
@@ -205,6 +206,7 @@ export default async function FederaciePage() {
           Privacy
         </Link>
       </footer>
+      <PublicAnalytics />
     </div>
   );
 }

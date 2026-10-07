@@ -168,7 +168,11 @@ Personal Data Protection of the Slovak Republic, Hraničná 12, 820 07 Bratislav
 The application uses **only strictly necessary cookies**: sign-in, the selected
 player, the time zone and the language of the public site.
 
-**We have no analytics and no advertising or tracking scripts.** That is why we do
+**We have no advertising or tracking scripts.** On the public website only — not
+in the application after you sign in — we count visits with Vercel Web Analytics
+(which page was viewed, where the visitor came from, the country and the type of
+device), on the basis of our legitimate interest in improving the website. It uses
+no cookies, does not store IP addresses and keeps no profile of anyone. That is why we do
 not ask you for cookie consent and show no cookie banner — there is nothing to
 consent to.
 
@@ -179,6 +183,7 @@ change — we will tell you by email or in the app. Quietly rewriting the page i
 enough, and we do not do it.
 
 **This policy is effective from 1 October 2026.**
+Last updated 7 October 2026: website visit counting added to §9.
 
 ---
 ---
@@ -329,7 +334,11 @@ ochranu osobných údajov Slovenskej republiky, Hraničná 12, 820 07 Bratislava
 Aplikácia používa **len technicky nevyhnutné cookies**: prihlásenie, vybraný hráč,
 časové pásmo a jazyk verejného webu.
 
-**Nemáme žiadnu analytiku ani reklamné a sledovacie skripty.** Preto od teba
+**Nemáme žiadne reklamné ani sledovacie skripty.** Len na verejnom webe — nie
+v aplikácii po prihlásení — počítame návštevy cez Vercel Web Analytics (ktorá
+stránka sa zobrazila, odkiaľ návštevník prišiel, krajina a typ zariadenia), na
+základe nášho oprávneného záujmu zlepšovať web. Nepoužíva cookies, neukladá IP
+adresy a nevytvára o nikom profil. Preto od teba
 nepýtame súhlas s cookies a nezobrazujeme lištu — nie je na čo.
 
 ### 10. Zmeny týchto zásad
@@ -339,6 +348,7 @@ dáme ti vedieť e-mailom alebo priamo v aplikácii. Ticho prepísať stránku n
 a nerobíme to.
 
 **Tieto zásady platia od 1. októbra 2026.**
+Aktualizované 7. októbra 2026: do §9 pribudlo počítanie návštev webu.
 
 ---
 ---

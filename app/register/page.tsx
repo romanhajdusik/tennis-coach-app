@@ -1,5 +1,6 @@
 import { RegisterForm } from "./register-form";
 import { getDeploymentDiscipline, isCourtDiscipline } from "@/lib/discipline";
+import { PublicAnalytics } from "@/components/public-analytics";
 
 /**
  * Registrácia. Od 2026-08-16 sa nezatvára úplne — beží buď verejne
@@ -33,6 +34,7 @@ export default async function RegisterPage({
         selfDiaryAvailable={selfDiaryAvailable}
         initialRole={initialRole}
       />
+      <PublicAnalytics />
     </div>
   );
 }

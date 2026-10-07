@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { loadNavodMessages } from "@/lib/landing-locale";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
+import { PublicAnalytics } from "@/components/public-analytics";
 
 // Návod je verejná stránka — texty berie z tej istej vrstvy ako landing
 // (messages/en, mimo appkového next-intl). Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
@@ -151,6 +152,7 @@ export default async function NavodPage() {
           {t.crossLinkCta}
         </Link>
       </div>
+      <PublicAnalytics />
     </div>
   );
 }

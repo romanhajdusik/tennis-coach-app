@@ -9,6 +9,7 @@ import {
 } from "@/lib/landing-pricing";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
+import { PublicAnalytics } from "@/components/public-analytics";
 
 // Cenník pre hráča, rodiča a manažéra. Zámerne SAMOSTATNÁ stránka, nie sekcia
 // landingu — dôvod je pri type správ v `lib/landing-locale.ts`.
@@ -217,6 +218,7 @@ export default async function CennikHracPage() {
           {t.crossLinkCta}
         </Link>
       </div>
+      <PublicAnalytics />
     </div>
   );
 }
