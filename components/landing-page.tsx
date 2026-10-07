@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SelfDiaryInvite } from "@/components/self-diary-invite";
 import { loadLandingMessages } from "@/lib/landing-locale";
 import { LandingPricing } from "@/components/landing-pricing";
 import { coachTierViews } from "@/lib/landing-pricing";
@@ -310,6 +311,10 @@ export async function LandingPage() {
           }}
         />
       </section>
+
+      {/* Landing je pre trénera, ale chodia sem aj hráči — ten, ktorého tréner
+          P.L.A.W nepoužíva, si môže zapisovať sám (docs §6). */}
+      <SelfDiaryInvite t={t.selfDiary} />
 
       <section className="relative mt-6 w-full overflow-hidden bg-primary py-16 sm:py-20">
         <div

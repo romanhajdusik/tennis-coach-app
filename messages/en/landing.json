@@ -91,5 +91,11 @@
   "finalCtaTitle": "Raise the value of your coaching",
   "finalCtaSubtitle": "Show parents and clients that you approach preparation at a professional level — a digital practice log is now part of your service.",
   "finalCtaButton": "Create account",
-  "footerTagline": "P.L.A.W — a training log for tennis coaches"
+  "footerTagline": "P.L.A.W — a training log for tennis coaches",
+  "selfDiary": {
+    "title": "Are you a player? Keep your own training diary.",
+    "text": "If your coach does not use P.L.A.W, log your practices yourself — with the drills you really do — and see where your training time goes. Share it with your parent, or link it with your fitness coach.",
+    "price": "{monthly} a month or {yearly} a year. 14 days to try it out.",
+    "cta": "Start my own diary"
+  }
 }

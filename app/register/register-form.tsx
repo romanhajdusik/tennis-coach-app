@@ -8,9 +8,11 @@ import { register } from "@/lib/actions/auth";
 export function RegisterForm({
   promoRequired,
   selfDiaryAvailable,
+  initialRole = "coach",
 }: {
   promoRequired: boolean;
   selfDiaryAvailable: boolean;
+  initialRole?: "coach" | "self";
 }) {
   const t = useTranslations("Auth.register");
   const [state, formAction, pending] = useActionState(register, undefined);
@@ -18,7 +20,7 @@ export function RegisterForm({
   // takže odkazy pod formulárom sa riadia zvolenou rolou. Cesty sú relatívne:
   // znenie pre sledujúceho býva na plaw.click a proxy tam odkaz presmeruje
   // (`CANONICAL_ORIGINS`), takže sa tu nemusí písať doména.
-  const [role, setRole] = useState("coach");
+  const [role, setRole] = useState<string>(initialRole);
   const pravne =
     role === "coach"
       ? { terms: "/podmienky", privacy: "/zasady" }
@@ -95,7 +97,7 @@ export function RegisterForm({
           <select
             id="role"
             name="role"
-            defaultValue="coach"
+            defaultValue={initialRole}
             required
             onChange={(event) => setRole(event.target.value)}
             className="rounded-lg border border-border px-3 py-2 text-sm bg-input"

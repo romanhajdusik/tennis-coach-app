@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SelfDiaryInvite } from "@/components/self-diary-invite";
 import { getTranslations } from "next-intl/server";
 import {
   loadLandingPadelMessages,
@@ -108,6 +109,9 @@ export async function LandingPadel({
           }}
         />
       </section>
+
+      {/* Hráč, ktorého tréner P.L.A.W nepoužíva, si môže zapisovať sám (docs §6). */}
+      <SelfDiaryInvite t={t.selfDiary} />
 
       {/* Odkazy vedú na znenie pre TRÉNERA. Sú relatívne — proxy ich
           z padelovej domény presmeruje na ich jedinú adresu (CANONICAL_ORIGINS). */}

@@ -24,12 +24,25 @@
 // **Keby jazyky raz pribúdali, vracajú sa SEM** (loader + parameter), nie
 // vetvením po jednotlivých stránkach.
 
+/**
+ * Ponuka HRÁČSKEHO DENNÍKA na landingoch (`components/self-diary-invite.tsx`,
+ * docs §6.4 bod 6). Každý landing má vlastné znenie — každý šport svoj.
+ */
+export type SelfDiaryInviteMessages = {
+  title: string;
+  text: string;
+  /** `{monthly}` a `{yearly}` doplní komponent z `SELF_DIARY_PRICE`. */
+  price: string;
+  cta: string;
+};
+
 export async function loadLandingMessages() {
   const messages = await import("../messages/en/landing.json");
   return messages.default as {
     eyebrow: string;
     heroTitle: string;
     heroSubtitle: string;
+    selfDiary: SelfDiaryInviteMessages;
     /**
      * Tri heslá v hero (nadpis + veta). Nepovinné: bez nich komponent vykreslí
      * hero s `heroTitle`/`heroSubtitle`, ktorý nesie aj titulok stránky.
@@ -230,6 +243,7 @@ export type LandingHracMessages = {
   coachText: string;
   coachCta: string;
   footerTagline: string;
+  selfDiary: SelfDiaryInviteMessages;
 };
 
 export async function loadLandingHracMessages(): Promise<LandingHracMessages> {
@@ -332,7 +346,9 @@ export async function loadLandingFitnessMessages(): Promise<LandingFitnessMessag
 // vlastný landing** (rozhodol user — spoločný landing pre všetky športy
 // zamietol), takže aj vlastné texty; tvar je dnes zhodný s kondičkou, preto
 // ten istý typ. Cenník rovnako ako kondička berie z `landing.json`.
-export type LandingPadelMessages = LandingFitnessMessages;
+export type LandingPadelMessages = LandingFitnessMessages & {
+  selfDiary: SelfDiaryInviteMessages;
+};
 
 export async function loadLandingPadelMessages(): Promise<LandingPadelMessages> {
   const messages = await import("../messages/en/landing-padel.json");
@@ -341,7 +357,7 @@ export async function loadLandingPadelMessages(): Promise<LandingPadelMessages> 
 
 // Landing BEDMINTONU na `badminton.plawsports.com` (od 2026-10-05) — vlastný,
 // rovnako ako padel.
-export type LandingBadmintonMessages = LandingFitnessMessages;
+export type LandingBadmintonMessages = LandingPadelMessages;
 
 export async function loadLandingBadmintonMessages(): Promise<LandingBadmintonMessages> {
   const messages = await import("../messages/en/landing-badminton.json");
@@ -350,7 +366,7 @@ export async function loadLandingBadmintonMessages(): Promise<LandingBadmintonMe
 
 // Landing PICKLEBALLU na `pickleball.plawsports.com` (od 2026-10-05) —
 // vlastný, rovnako ako padel a bedminton.
-export type LandingPickleballMessages = LandingFitnessMessages;
+export type LandingPickleballMessages = LandingPadelMessages;
 
 export async function loadLandingPickleballMessages(): Promise<LandingPickleballMessages> {
   const messages = await import("../messages/en/landing-pickleball.json");

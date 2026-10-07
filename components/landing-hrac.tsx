@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SelfDiaryInvite } from "@/components/self-diary-invite";
 import { loadLandingHracMessages } from "@/lib/landing-locale";
 import { APP_ORIGIN } from "@/lib/public-face";
 import {
@@ -316,6 +317,9 @@ export async function LandingHrac() {
         </div>
         <p className="mt-3 text-center text-xs text-muted">{t.pricingVat}</p>
       </section>
+
+      {/* Hráč, ktorého tréner P.L.A.W nepoužíva, si môže zapisovať sám (docs §6). */}
+      <SelfDiaryInvite t={t.selfDiary} />
 
       <section className="relative mt-4 w-full overflow-hidden bg-primary py-14 sm:py-16">
         <div
