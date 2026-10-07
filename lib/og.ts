@@ -16,13 +16,15 @@ import {
   APP_ORIGIN,
   PARENT_ORIGIN,
   PUBLIC_ORIGIN,
+  SPORTS_HUB_ORIGIN,
   isFitnessHost,
   isParentFaceHost,
   isPublicFaceHost,
+  isSportsHubHost,
 } from "./public-face";
 
 /** Štyri verejné tváre, každá s vlastnou farbou aj vlastnou vetou. */
-export type OgFace = "coach" | "parent" | "org" | "fitness";
+export type OgFace = "coach" | "parent" | "org" | "fitness" | "hub";
 
 /**
  * Farby sú OPÍSANÉ z `app/globals.css`, nie dopočítané — obrázok sa kreslí
@@ -59,6 +61,13 @@ export const OG_FACE_STYLE: Record<
     muted: "#a3a2aa",
     domain: "fitness.plawsports.com",
   },
+  // Rozcestník športov nemá farbu žiadneho športu — neutrálna svetlá.
+  hub: {
+    background: "#1e1e21",
+    accent: "#ededee",
+    muted: "#a3a2aa",
+    domain: "plawsports.com",
+  },
 };
 
 /** Ktorá tvár beží na tomto hostiteľovi. Neznámy hostiteľ je tenisová appka. */
@@ -66,6 +75,7 @@ export function ogFaceOf(host: string | null | undefined): OgFace {
   if (isParentFaceHost(host)) return "parent";
   if (isPublicFaceHost(host)) return "org";
   if (isFitnessHost(host)) return "fitness";
+  if (isSportsHubHost(host)) return "hub";
   return "coach";
 }
 
@@ -85,7 +95,9 @@ export function ogImageUrl(face: OgFace) {
         ? PUBLIC_ORIGIN
         : face === "fitness"
           ? "https://fitness.plawsports.com"
-          : APP_ORIGIN;
+          : face === "hub"
+            ? SPORTS_HUB_ORIGIN
+            : APP_ORIGIN;
   return `${origin}/og?face=${face}`;
 }
 

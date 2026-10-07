@@ -15,7 +15,12 @@ import { LandingBadminton } from "@/components/landing-badminton";
 import { LandingPickleball } from "@/components/landing-pickleball";
 import { PublicFaceHome } from "@/components/public-face-home";
 import { LandingHrac } from "@/components/landing-hrac";
-import { isParentFaceHost, isPublicFaceHost } from "@/lib/public-face";
+import {
+  isParentFaceHost,
+  isPublicFaceHost,
+  isSportsHubHost,
+} from "@/lib/public-face";
+import { SportsHub } from "@/components/sports-hub";
 import { ogFaceOf, ogMetadata } from "@/lib/og";
 import {
   loadLandingFitnessMessages,
@@ -25,6 +30,7 @@ import {
   loadLandingPickleballMessages,
   loadLandingMessages,
   loadRozcestnikMessages,
+  loadSportsHubMessages,
 } from "@/lib/landing-locale";
 import { getOrgContext } from "@/lib/org/context";
 import { getOrgMembership, getOrgRole } from "@/lib/org/membership";
@@ -53,6 +59,20 @@ export async function generateMetadata(): Promise<Metadata> {
   // kontrolou disciplíny zámerne: tá stránka je bez tenisového slovníka, takže
   // platí pre sledujúceho tenistu aj kondičného hráča.
   const host = (await headers()).get("host");
+  // plawsports.com = rozcestník športov (od 2026-10-07).
+  if (isSportsHubHost(host)) {
+    const t = await loadSportsHubMessages();
+    return {
+      title: t.metaTitle,
+      description: t.metaDescription,
+      robots: publicRobots(),
+      ...ogMetadata({
+        face: "hub",
+        title: t.metaTitle,
+        description: t.metaDescription,
+      }),
+    };
+  }
   if (isParentFaceHost(host)) {
     const t = await loadLandingHracMessages();
     return {
@@ -174,6 +194,11 @@ export default async function Home() {
     // kontrolou disciplíny, lebo tá doména visí výhradne na tenisovom nasadení
     // — kondička vlastný marketing nemá a túto stránku by ani použiť nemohla,
     // odkedy menuje tenis (rodič kondičné tréningy nevidí, viď landing-locale).
+    // plawsports.com = rozcestník športov (od 2026-10-07) — výber appky, nie
+    // marketing žiadneho jedného športu.
+    if (isSportsHubHost(host)) {
+      return <SportsHub />;
+    }
     if (isParentFaceHost(host)) {
       return <LandingHrac />;
     }

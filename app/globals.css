@@ -53,6 +53,7 @@ html[data-app="fitness"],
 html[data-app="padel"],
 html[data-app="badminton"],
 html[data-app="pickleball"],
+html[data-app="hub"],
 html[data-app="org"] {
   --color-background: #1e1e21;
   --color-surface: #27262b;
@@ -91,6 +92,14 @@ html[data-app="pickleball"] {
   --color-primary: #f472b6;
   --color-primary-hover: #f78bc4;
   --color-primary-foreground: #2b0a1a;
+}
+
+/* Rozcestník športov (plawsports.com) — neutrálna svetlá, aby žiadny šport
+   nepôsobil ako hlavný. Text na ploche 14:1. */
+html[data-app="hub"] {
+  --color-primary: #ededee;
+  --color-primary-hover: #ffffff;
+  --color-primary-foreground: #1e1e21;
 }
 
 html[data-app="org"] {

@@ -38,6 +38,33 @@ export const PARENT_FACE_HOSTS = new Set(["plaw.click", "www.plaw.click"]);
 export const PARENT_ORIGIN = "https://plaw.click";
 
 /**
+ * plawsports.com = **ROZCESTNÍK P.L.A.W športov** (od 2026-10-07, rozhodol
+ * user): jednoduchá stránka, z ktorej sa ide do appky svojho športu. Športy
+ * sú jeho poddomény (`padel.plawsports.com`, `fitness.plawsports.com` …),
+ * tenis ostáva na `plaw.win`. Plánujú sa aj ďalšie individuálne športy,
+ * takže zoznam musí uniesť ľubovoľný počet (`components/sports-hub.tsx`).
+ *
+ * Funguje ako plaw.click — ten istý Vercel projekt, rozdelenie podľa
+ * hostname: `/` vykreslí rozcestník (`app/page.tsx`), všetko ostatné ide
+ * na plaw.win. Na doméne je aj pošta (`info@`, `support@` …) — web na nej
+ * poštu nemení, MX záznamy ostávajú.
+ */
+export const SPORTS_HUB_HOSTS = new Set([
+  "plawsports.com",
+  "www.plawsports.com",
+  // Len na vývoj: prehliadač posiela `*.localhost` na vlastný počítač, takže
+  // `http://plawsports.localhost:3000` ukáže rozcestník bez úpravy hosts.
+  // V produkcii túto adresu nikto nedosiahne.
+  ...(process.env.NODE_ENV === "development" ? ["plawsports.localhost"] : []),
+]);
+
+export const SPORTS_HUB_ORIGIN = "https://plawsports.com";
+
+export function isSportsHubHost(host: string | null | undefined) {
+  return SPORTS_HUB_HOSTS.has(normalizeHost(host));
+}
+
+/**
  * Kondičné nasadenie — NAŠE, ale nie je domovom žiadnej verejnej stránky.
  * Je to druhá appka nad tým istým kódom (`NEXT_PUBLIC_PLAW_DISCIPLINE`),
  * nie ďalšia verejná tvár: marketing nemá (landing by tu bol nepravdivý,
@@ -88,6 +115,7 @@ export function faceOriginOf(host: string | null | undefined) {
   const hostname = normalizeHost(host);
   if (PUBLIC_ONLY_HOSTS.has(hostname)) return PUBLIC_ORIGIN;
   if (PARENT_FACE_HOSTS.has(hostname)) return PARENT_ORIGIN;
+  if (SPORTS_HUB_HOSTS.has(hostname)) return SPORTS_HUB_ORIGIN;
   if (APP_HOSTS.has(hostname)) return APP_ORIGIN;
   return null;
 }

@@ -7,7 +7,9 @@ import { HomeButton } from "@/components/home-button";
 import { getCoachNav } from "@/lib/coach-nav";
 import { TimezoneDetector } from "@/components/timezone-detector";
 import { TrialBanner } from "@/components/trial-banner";
+import { headers } from "next/headers";
 import { getOrgContext } from "@/lib/org/context";
+import { isSportsHubHost } from "@/lib/public-face";
 import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { DisciplineProvider } from "@/lib/discipline-context";
 import "./globals.css";
@@ -38,6 +40,9 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 async function appVariant(): Promise<string | undefined> {
   if (await getOrgContext()) return "org";
+  // Rozcestník športov (plawsports.com) nemá farbu žiadneho športu — beží na
+  // tenisovom nasadení, takže by inak dostal limetkovú.
+  if (isSportsHubHost((await headers()).get("host"))) return "hub";
   // Tenis je predvolený vzhľad (bez atribútu); každá iná disciplína dostane
   // vlastné id a jej odtiene patria do `globals.css`. Bez nich ostane
   // predvolená farba — nič sa nerozbije, len appka nie je odlíšená.

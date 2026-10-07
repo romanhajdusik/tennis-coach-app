@@ -7,9 +7,10 @@ import {
   loadLandingHracMessages,
   loadLandingMessages,
   loadRozcestnikMessages,
+  loadSportsHubMessages,
 } from "@/lib/landing-locale";
 
-const FACES = new Set<OgFace>(["coach", "parent", "org", "fitness"]);
+const FACES = new Set<OgFace>(["coach", "parent", "org", "fitness", "hub"]);
 
 /** Rozpis skratky sa neprekladá — je viazaný na písmená P-L-A-W. */
 const ACRONYM = "Plan. Log. Analyze. Win.";
@@ -32,6 +33,11 @@ async function faceText(face: OgFace): Promise<{ eyebrow?: string; title: string
     // karte unesie celú plochu sám.
     const t = await loadRozcestnikMessages();
     return { title: t.title };
+  }
+  if (face === "hub") {
+    // Rozcestník športov — štítok je značka, nadpis výzva na výber.
+    const t = await loadSportsHubMessages();
+    return { eyebrow: "P.L.A.W Sports", title: t.title };
   }
   if (face === "fitness") {
     // Kondička nemá marketingový text; jej úvodná obrazovka ukazuje presne

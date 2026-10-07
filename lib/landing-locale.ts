@@ -318,6 +318,24 @@ export async function loadRozcestnikMessages(): Promise<RozcestnikMessages> {
   return messages.default as RozcestnikMessages;
 }
 
+// Rozcestník ŠPORTOV na `plawsports.com` (od 2026-10-07,
+// `components/sports-hub.tsx`). Názvy športov tu nie sú — idú z konfigurácie
+// disciplín, aby sa nový šport nemusel dopisovať na dvoch miestach.
+export type SportsHubMessages = {
+  metaTitle: string;
+  metaDescription: string;
+  title: string;
+  subtitle: string;
+  fitnessText: string;
+  comingSoon: string;
+  footerTagline: string;
+};
+
+export async function loadSportsHubMessages(): Promise<SportsHubMessages> {
+  const messages = await import("../messages/en/sports-hub.json");
+  return messages.default as SportsHubMessages;
+}
+
 // Landing KONDIČKY na `fitness.plawsports.com` (od 2026-10-02). Do vtedy
 // kondička vlastný marketing nemala, len úvodnú obrazovku bez sľubov — a
 // kondičný tréner sa tak o cene nedozvedel nikde.

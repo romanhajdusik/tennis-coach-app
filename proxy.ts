@@ -13,6 +13,7 @@ import {
   PUBLIC_ORIGIN,
   faceOriginOf,
   isFitnessHost,
+  isSportsHubHost,
   isParentFaceHost,
   normalizeHost,
 } from "@/lib/public-face";
@@ -50,6 +51,10 @@ const PARENT_FACE_PATHS = new Set([
   // Náhľadový obrázok — dôvod viď pri PUBLIC_PATHS.
   "/og",
 ]);
+
+// plawsports.com = rozcestník športov (od 2026-10-07). Je to len jedna stránka
+// a jej náhľadový obrázok — všetko ostatné patrí appke svojho športu.
+const SPORTS_HUB_PATHS = new Set(["/", "/og"]);
 
 // KAŽDÁ VEREJNÁ STRÁNKA MÁ PRÁVE JEDNU ADRESU (od 2026-08-24).
 //
@@ -187,6 +192,16 @@ export async function proxy(request: NextRequest) {
   if (isParentFaceHost(host)) {
     const { pathname, search } = request.nextUrl;
     if (PARENT_FACE_PATHS.has(pathname)) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL(pathname + search, APP_ORIGIN), 307);
+  }
+
+  // plawsports.com = rozcestník športov. Tá istá mechanika ako plaw.click:
+  // `/` vykreslí rozcestník (app/page.tsx), zvyšok ide na plaw.win.
+  if (isSportsHubHost(host)) {
+    const { pathname, search } = request.nextUrl;
+    if (SPORTS_HUB_PATHS.has(pathname)) {
       return NextResponse.next();
     }
     return NextResponse.redirect(new URL(pathname + search, APP_ORIGIN), 307);
