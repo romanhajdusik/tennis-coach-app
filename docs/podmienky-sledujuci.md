@@ -25,6 +25,12 @@
 > **Je to zmena ZNENIA schváleného dokumentu a potrebuje nové schválenie.**
 >
 > **Nezverejňuje sa** posledná časť „Poznámky k návrhu".
+>
+> **DOPLNENÉ 2026-10-07: nový §15 „Your own training diary" (hráčsky denník,
+> [roadmap §6](roadmap-buduce-smery.md)), Kontakt sa posunul na §16.** Znenie
+> schválil používateľ 2026-10-07 (obe jazyky). Platí len pre účet zvolený pri
+> registrácii ako hráčsky denník a nahrádza preň §4, §5 a §8. **Google Docs na
+> Drive túto zmenu nemajú.**
 
 ---
 
@@ -239,7 +245,30 @@ or a chargeback — is a dispute with Stripe, which sold you the subscription
 Authority is not the authority for it. Write to us all the same: we will pass it
 on and follow it through.
 
-### 15. Contact
+### 15. Your own training diary
+
+A player can also keep **their own training diary** and log their practices
+themselves. If you chose "Player (my own practice diary)" when registering, the
+points below apply to you **in place of sections 4, 5 and 8**. Everything else in
+these terms applies unchanged.
+
+- **You write the content, so you are responsible for it.** We do not check or
+  judge it.
+- **The diary has one player: you.** It cannot hold other players.
+- **Your records are kept under the same rules as a coach's:** a single practice
+  for at most 4 years, and if you stop logging, your records are deleted one year
+  after your last practice. We warn you in advance and offer a download. The 6- and
+  24-month windows in section 5 do not apply to the diary.
+- **Without a subscription** you keep the list of your practices, every practice
+  detail, the calendar and your drill codes. **Logging new practices and the
+  analytics** come with the subscription.
+- **You can share your diary** with a parent or manager through an access code, and
+  link it with your fitness coach. You can end either at any time.
+- **A player under 16** cannot have their own account. The diary is then created by
+  a parent or legal guardian, who is the party to this contract and pays for it.
+  The player uses it.
+
+### 16. Contact
 
 **support@plawsports.com**
 
@@ -440,7 +469,29 @@ o reklamáciu platby — je spor so Stripe, ktorý ti predplatné predal (§6), 
 sa podmienkami služby Link; Slovenská obchodná inšpekcia preň príslušná nie je.
 Napíš nám aj tak — posunieme to ďalej a dotiahneme.
 
-## 15. Kontakt
+## 15. Vlastný tréningový denník
+
+Hráč si môže viesť aj **vlastný tréningový denník** a zapisovať si tréningy sám. Ak
+si pri registrácii zvolil „Player (my own practice diary)", platia pre teba body
+nižšie **namiesto článkov 4, 5 a 8**. Všetko ostatné v týchto podmienkach platí bez
+zmeny.
+
+- **Obsah píšeš ty, takže za neho zodpovedáš ty.** My ho nekontrolujeme ani
+  nehodnotíme.
+- **Denník má jedného hráča: teba.** Iných hráčov v ňom mať nemôžeš.
+- **Záznamy uchovávame podľa rovnakých pravidiel ako trénerove:** jeden tréning
+  najviac 4 roky, a ak prestaneš zapisovať, záznamy zmažeme rok po poslednom
+  tréningu. Vopred ťa upozorníme a ponúkneme stiahnutie. Okná 6 a 24 mesiacov
+  z článku 5 sa na denník nevzťahujú.
+- **Bez predplatného** ti ostáva zoznam tréningov, detail každého tréningu, kalendár
+  a tvoje kódy cvičení. **Zapisovanie nových tréningov a analytika** sú súčasťou
+  predplatného.
+- **Denník môžeš zdieľať** s rodičom alebo manažérom cez prístupový kód a prepojiť
+  ho so svojím kondičným trénerom. Oboje môžeš kedykoľvek ukončiť.
+- **Hráč mladší ako 16 rokov** vlastný účet mať nemôže. Denník mu vtedy založí rodič
+  alebo zákonný zástupca, ktorý je zmluvnou stranou a platí ho. Hráč ho používa.
+
+## 16. Kontakt
 
 **support@plawsports.com**
 

@@ -10,6 +10,12 @@
 > teda zhruba tretina dokumentu.
 >
 > **Nezverejňuje sa** posledná časť „Poznámky k návrhu".
+>
+> **DOPLNENÉ 2026-10-07: nový §15 pre hráčsky denník** ([roadmap §6](roadmap-buduce-smery.md)),
+> znenie schválil používateľ 2026-10-07 (obe jazyky). Pri hráčskom denníku je
+> **prevádzkovateľom &Go, s.r.o.** — hráč zapisuje údaje sám o sebe, nie tréner
+> o hráčovi, takže tu nie je vzťah podľa čl. 28. **Google Docs na Drive túto
+> zmenu nemajú.**
 
 ---
 ---
@@ -189,6 +195,25 @@ If anything material changes — a new provider is added or the retention period
 change — we will tell you by email or in the app. Quietly rewriting the page is not
 enough, and we do not do it.
 
+### 15. If you keep your own training diary
+
+- **What we process:** what you log about your own practices (dates, times, focus
+  areas, drills, durations and your notes), and the name and year of birth on your
+  diary card.
+- **Why:** to provide the diary to you. **Legal basis: performance of our contract
+  with you.** We do nothing else with it: no advertising, no profiling, no selling.
+- **How long:** a single practice for at most 4 years; all your records one year
+  after your last practice, with a warning and a download offered first; an account
+  not signed into for 24 months is deleted after a warning.
+- **Who sees it:** only those you choose. A parent or manager you give a code to
+  receives copies, as described in this policy. If you link your diary with your
+  fitness coach, you see their sessions, and they see a summary of your work (focus
+  areas and minutes) only if you switch it on.
+- **Corrections:** you can correct your own entries in the app until you lock a
+  practice. For a locked one, write to us.
+- **Under 16:** the account is created by a parent or legal guardian, who exercises
+  these rights on the player's behalf.
+
 **This policy is effective from 1 October 2026.**
 
 ---
@@ -356,6 +381,25 @@ nepýtame súhlas s cookies a nezobrazujeme lištu — nie je na čo.
 Ak sa niečo podstatné zmení — pribudne nový poskytovateľ alebo sa zmenia lehoty —
 dáme ti vedieť e-mailom alebo priamo v aplikácii. Ticho prepísať stránku nestačí
 a nerobíme to.
+
+### 15. Ak si vedieš vlastný tréningový denník
+
+- **Čo spracúvame:** to, čo si zapíšeš o svojich tréningoch (dátumy, časy,
+  zamerania, cvičenia, trvanie a tvoje poznámky), a meno a rok narodenia na karte
+  denníka.
+- **Načo:** aby sme ti denník poskytli. **Právny základ: plnenie zmluvy s tebou.**
+  Nič iné s údajmi nerobíme: žiadna reklama, profilovanie ani predaj.
+- **Ako dlho:** jeden tréning najviac 4 roky; všetky záznamy rok po poslednom
+  tréningu, vopred s upozornením a ponukou stiahnutia; účet, do ktorého sa
+  24 mesiacov neprihlásiš, po upozornení zmažeme.
+- **Kto to vidí:** len tí, ktorých si vyberieš. Rodič alebo manažér, ktorému dáš
+  kód, dostáva kópie, ako opisujú tieto zásady. Ak denník prepojíš s kondičným
+  trénerom, ty vidíš jeho tréningy a on súhrn tvojej práce (zamerania a minúty)
+  iba vtedy, ak to zapneš.
+- **Opravy:** svoje záznamy si v appke opravíš sám, kým tréning neuzamkneš. Pri
+  uzamknutom nám napíš.
+- **Mladší ako 16:** účet zakladá rodič alebo zákonný zástupca a tieto práva
+  uplatňuje za hráča.
 
 **Tieto zásady platia od 1. októbra 2026.**
 
