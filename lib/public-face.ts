@@ -58,7 +58,9 @@ export const SPORTS_HUB_HOSTS = new Set([
   ...(process.env.NODE_ENV === "development" ? ["plawsports.localhost"] : []),
 ]);
 
-export const SPORTS_HUB_ORIGIN = "https://plawsports.com";
+// Hlavná je `www` (Vercel 2026-10-08, rovnako ako plaw.win/.click/.online):
+// apex na ňu ide 308, takže odkaz bez `www` by robil zbytočnú obchádzku.
+export const SPORTS_HUB_ORIGIN = "https://www.plawsports.com";
 
 export function isSportsHubHost(host: string | null | undefined) {
   return SPORTS_HUB_HOSTS.has(normalizeHost(host));
