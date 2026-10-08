@@ -1178,6 +1178,16 @@ Prečo to sedí bez veľkých zásahov:
    **Nepushovať skôr:** voľba v registrácii by sa objavila bez ostrých
    produktov a pokladňa by hráčovi spadla.
 
+   **SKUTOČNOSŤ (2026-10-07/08):** kód pushla 2026-10-07 o 23:22 paralelná
+   session (spolu s `bd50839`) **skôr než migrácie** — na produkcii padala
+   spodná lišta trénerov, pokladňa aj portál. Obe migrácie user spustil
+   2026-10-08 o 20:40 (overené `stlpec 1, trigger 1`), odvtedy produkcia
+   funguje. **Hráčsky denník je teda naostro viditeľný, ale zostáva:**
+   ostré produkty `setup-products.js` → portál „Self" v Stripe →
+   `STRIPE_PORTAL_SELF_CONFIGURATION` na Verceli + redeploy → skúška
+   pokladne hráčskeho denníka naostro. Kým to nie je, platba za denník
+   spadne na „unavailable" (14-dňový trial to kryje).
+
 ### 6.5 Otvorené otázky (pýtať sa po jednej)
 
 1. **Vek — najdôležitejšia.** Registrácia dnes vyžaduje 16+ (účet je zmluva,
