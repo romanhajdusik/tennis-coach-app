@@ -20,6 +20,9 @@
 //   node scripts/stripe/setup-products.js --apply    # zapíše
 //   node scripts/stripe/setup-products.js --apply --refresh
 //        # navyše archivuje ceny, ktorých suma už nesedí s cenníkom
+//   node scripts/stripe/setup-products.js --apply --only=plaw_tennis_self
+//        # len vymenované produkty (čiarkou) — keď sa v ostrom režime
+//        # spúšťa jeden šport a ostatné sa ešte nepredávajú
 const fs = require("node:fs");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
@@ -27,6 +30,11 @@ const { pathToFileURL } = require("node:url");
 const ROOT = path.join(__dirname, "..", "..");
 const APPLY = process.argv.includes("--apply");
 const REFRESH = process.argv.includes("--refresh");
+const ONLY = process.argv
+  .find((arg) => arg.startsWith("--only="))
+  ?.slice("--only=".length)
+  .split(",")
+  .filter(Boolean);
 
 /**
  * Prečíta `.env.local` bez ďalšej závislosti. Súbor je mimo gitu a drží tajný
@@ -207,7 +215,14 @@ async function main() {
     `\nStripe: ${LIVE ? "OSTRÝ REŽIM" : "testovací režim"}, ${APPLY ? "ZAPISUJEM" : "len výpis (pridaj --apply)"}\n`,
   );
 
-  for (const plan of plans) {
+  // Preklep v `--only` by inak prešiel ticho ako „nič na práci".
+  const unknown = (ONLY ?? []).filter((id) => !plans.some((plan) => plan.id === id));
+  if (unknown.length) {
+    throw new Error(`--only pozná len existujúce plány, nie: ${unknown.join(", ")}`);
+  }
+  const selected = ONLY ? plans.filter((plan) => ONLY.includes(plan.id)) : plans;
+
+  for (const plan of selected) {
     const fields = {
       name: plan.name,
       description: plan.description,
@@ -303,6 +318,9 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(`\nCHYBA: ${error.message}\n`);
+  // „fetch failed" sám o sebe nepovie nič — skutočný dôvod (sieť, certifikát,
+  // proxy) nesie `cause`.
+  const cause = error.cause ? ` (${error.cause.code ?? ""} ${error.cause.message ?? ""})` : "";
+  console.error(`\nCHYBA: ${error.message}${cause}\n`);
   process.exit(1);
 });
