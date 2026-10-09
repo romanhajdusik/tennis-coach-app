@@ -14,13 +14,23 @@ import type { SelfDiaryInviteMessages } from "@/lib/landing-locale";
  * relatívny: na `plaw.click` ho proxy presmeruje na appku (`plaw.win`) aj
  * s parametrom, na nasadení športu ostáva v tej istej appke.
  */
-export function SelfDiaryInvite({ t }: { t: SelfDiaryInviteMessages }) {
+export function SelfDiaryInvite({
+  t,
+  id,
+}: {
+  t: SelfDiaryInviteMessages;
+  /** Kotva, keď na ponuku odkazuje tlačidlo vyššie na stránke (plaw.click). */
+  id?: string;
+}) {
   const price = t.price
     .replace("{monthly}", formatEur(SELF_DIARY_PRICE.monthly))
     .replace("{yearly}", formatEur(SELF_DIARY_PRICE.yearly));
 
   return (
-    <section className="w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+    <section
+      id={id}
+      className="w-full max-w-3xl scroll-mt-20 px-4 py-10 sm:px-6 sm:py-14"
+    >
       <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface p-6 text-center sm:p-8">
         <h2 className="text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
           {t.title}

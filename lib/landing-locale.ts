@@ -221,6 +221,8 @@ export type LandingHracMessages = {
   heroSubtitle: string;
   ctaPrimary: string;
   ctaSecondary: string;
+  /** Odkaz pod každým tlačidlom v úvode — jeden text pre obe publiká. */
+  ctaHowItWorks: string;
   howTitle: string;
   howSubtitle: string;
   stepWord: string;

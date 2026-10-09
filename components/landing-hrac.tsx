@@ -121,19 +121,34 @@ export async function LandingHrac() {
         <p className="max-w-xl text-base text-balance text-muted sm:text-lg md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
           {t.heroSubtitle}
         </p>
-        <div className="flex flex-wrap justify-center gap-3 pt-2">
-          <Link
-            href="/parent/login"
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary-hover"
-          >
-            {t.ctaPrimary}
-          </Link>
-          <Link
-            href="#ako-to-funguje"
-            className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface"
-          >
-            {t.ctaSecondary}
-          </Link>
+        {/* Dve publiká plaw.click hneď v úvode (rozhodol user 2026-10-09):
+            sledujúci s kódom od trénera a hráč, ktorý si zapisuje sám. Každé
+            má pod tlačidlom vlastné „How it works": sledujúci tri kroky nižšie
+            na stránke, hráč návod pre denník (proxy ho pošle na appku). Druhé
+            tlačidlo posunie na ponuku denníka (cena, registrácia). */}
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-4 pt-2">
+          <div className="flex flex-col items-center gap-2">
+            <Link
+              href="/parent/login"
+              className="rounded-lg border border-transparent bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition hover:bg-primary-hover"
+            >
+              {t.ctaPrimary}
+            </Link>
+            <Link href="#ako-to-funguje" className="text-sm font-medium text-muted underline underline-offset-2 transition-colors hover:text-foreground md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
+              {t.ctaHowItWorks}
+            </Link>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <Link
+              href="#vlastny-dennik"
+              className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface"
+            >
+              {t.ctaSecondary}
+            </Link>
+            <Link href="/navod-self" className="text-sm font-medium text-muted underline underline-offset-2 transition-colors hover:text-foreground md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
+              {t.ctaHowItWorks}
+            </Link>
+          </div>
         </div>
       </section>
       </div>
@@ -319,7 +334,7 @@ export async function LandingHrac() {
       </section>
 
       {/* Hráč, ktorého tréner P.L.A.W nepoužíva, si môže zapisovať sám (docs §6). */}
-      <SelfDiaryInvite t={t.selfDiary} />
+      <SelfDiaryInvite t={t.selfDiary} id="vlastny-dennik" />
 
       <section className="relative mt-4 w-full overflow-hidden bg-primary py-14 sm:py-16">
         <div
