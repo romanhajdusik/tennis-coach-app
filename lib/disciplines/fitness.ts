@@ -128,7 +128,7 @@ export const FITNESS_DISCIPLINE: DisciplineConfig = {
       "Eye-foot coordination",
       "Dynamic balance",
       "Static balance",
-      "Special ability",
+      "Spatial ability",
       "Rhythm ability",
       "Timing ability",
       "Differentiation ability",
