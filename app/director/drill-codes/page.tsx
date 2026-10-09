@@ -8,6 +8,7 @@ import {
   orgDisciplines,
 } from "@/lib/discipline";
 import { DrillCodeForm } from "@/app/drill-codes/drill-code-form";
+import { glossaryEntries } from "@/components/drill-glossary";
 
 /**
  * Federačný štandard kódov cvičení — jediné miesto, kde má šéftréner zápis
@@ -96,6 +97,10 @@ export default async function DirectorDrillCodesPage({
           category={category}
           initialSlots={slotsByCategory[index]}
           groups={discipline.analytics.groupedCategories[category]}
+          glossary={glossaryEntries(
+            discipline.drills[category],
+            discipline.drillGlossary,
+          )}
           organizationDiscipline={selected}
         />
       ))}

@@ -114,6 +114,10 @@ export type NavodMessages = {
   ctaButton: string;
   crossLinkText: string;
   crossLinkCta: string;
+  // Len /navod (tréner): sekcia s významom predvolených kódov cvičení
+  // (od 2026-10-09). Samotné kódy a významy sú v konfigurácii disciplíny.
+  drillCodesTitle?: string;
+  drillCodesIntro?: string;
   // Len /navod-hrac: odkaz na cenník pre hráča, rodiča a manažéra.
   // Trénerský návod tieto kľúče nemá, preto sú nepovinné.
   pricingLinkText?: string;

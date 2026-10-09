@@ -86,6 +86,15 @@ export type DisciplineConfig = {
   defaultCategory: string;
   /** Predvolené kódy cvičení na zameranie, kým si tréner sloty nepomenuje. */
   drills: Record<string, string[]>;
+  /**
+   * Čo znamená predvolený kód (`FRH-CRS` → „Forehand cross-court"), od
+   * 2026-10-09. Ukazuje sa trénerovi na `/drill-codes` a v návode, aby skratky
+   * pochopil skôr, než ich začne zapisovať alebo prepisovať na vlastné.
+   * Vysvetľuje sa LEN predvolený zoznam — kód, ktorý si tréner sám vymyslel,
+   * appka nepozná. Rovnako ako kódy sú to dáta, nie UI text, takže sa
+   * neprekladajú. Bez neho sa vysvetlivky nevykreslia.
+   */
+  drillGlossary?: Record<string, string>;
   /** Ponuka trvania cvičenia v minútach. */
   durations: number[];
   character: CharacterConfig | null;

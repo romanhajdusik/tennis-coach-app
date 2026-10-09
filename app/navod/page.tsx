@@ -4,6 +4,8 @@ import { loadNavodMessages } from "@/lib/landing-locale";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
 import { PublicAnalytics } from "@/components/public-analytics";
+import { DrillGlossaryList, glossaryEntries } from "@/components/drill-glossary";
+import { DISCIPLINES } from "@/lib/disciplines/registry";
 
 // Návod je verejná stránka — texty berie z tej istej vrstvy ako landing
 // (messages/en, mimo appkového next-intl). Zámerne noindex, kým appka nie je verejne spustená (rovnako ako
@@ -19,6 +21,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function NavodPage() {
   const t = await loadNavodMessages();
+  // Návod na plaw.win je tenisový, takže ukazuje tenisové kódy natvrdo —
+  // nie disciplínu nasadenia (na kondičnej doméne sa návod nevykresľuje).
+  const tennis = DISCIPLINES.tennis;
+  const drillGroups = tennis.categories
+    .map((category) => ({
+      category,
+      entries: glossaryEntries(tennis.drills[category], tennis.drillGlossary),
+    }))
+    .filter((group) => group.entries.length > 0);
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">
@@ -96,6 +107,33 @@ export default async function NavodPage() {
           ))}
         </ol>
       </section>
+
+      {t.drillCodesTitle && drillGroups.length > 0 && (
+        <section
+          id="drill-codes"
+          className="w-full max-w-3xl scroll-mt-20 px-4 pt-10 sm:px-6 sm:pt-14"
+        >
+          <h2 className="mb-2 text-lg font-semibold tracking-tight text-foreground">
+            {t.drillCodesTitle}
+          </h2>
+          <p className="mb-5 text-sm leading-relaxed text-muted">
+            {t.drillCodesIntro}
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {drillGroups.map((group) => (
+              <div
+                key={group.category}
+                className="min-w-0 rounded-2xl border border-border bg-surface p-5"
+              >
+                <h3 className="mb-3 font-semibold text-foreground">
+                  {group.category}
+                </h3>
+                <DrillGlossaryList entries={group.entries} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
         <div className="rounded-2xl border border-border bg-surface p-6 sm:p-7">

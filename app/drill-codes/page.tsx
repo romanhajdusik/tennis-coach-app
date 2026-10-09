@@ -6,6 +6,7 @@ import { getDrillCodeSlots } from "@/lib/actions/drill-codes";
 import { getOrgContext } from "@/lib/org/context";
 import { getDisciplineConfig } from "@/lib/discipline";
 import { DrillCodeForm } from "./drill-code-form";
+import { glossaryEntries } from "@/components/drill-glossary";
 
 export default async function DrillCodesPage() {
   const discipline = await getDisciplineConfig();
@@ -52,6 +53,10 @@ export default async function DrillCodesPage() {
           category={category}
           initialSlots={slotsByCategory[index]}
           groups={discipline.analytics.groupedCategories[category]}
+          glossary={glossaryEntries(
+            discipline.drills[category],
+            discipline.drillGlossary,
+          )}
           readOnly={Boolean(org)}
         />
       ))}

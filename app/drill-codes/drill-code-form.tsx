@@ -5,17 +5,21 @@ import { useTranslations } from "next-intl";
 import { saveDrillCodes, saveOrgDrillCodes } from "@/lib/actions/drill-codes";
 import { splitSlotsIntoGroups, type AnalyticsCodeGroup } from "@/lib/drill-options";
 import type { DisciplineId } from "@/lib/disciplines/types";
+import { DrillGlossaryList } from "@/components/drill-glossary";
 
 export function DrillCodeForm({
   category,
   initialSlots,
   groups,
+  glossary = [],
   readOnly = false,
   organizationDiscipline,
 }: {
   category: string;
   initialSlots: string[];
   groups?: AnalyticsCodeGroup[];
+  /** Význam predvolených kódov zamerania; prázdny = vysvetlivky sa nevykreslia. */
+  glossary?: { code: string; meaning: string }[];
   /** V org režime kódy nastavuje šéftréner federácie — tréner ich len číta (§5.5). */
   readOnly?: boolean;
   /**
@@ -44,6 +48,18 @@ export function DrillCodeForm({
       <h2 className="text-sm font-medium text-foreground ">
         {category}
       </h2>
+      {/* Zbalené, aby formulár ostal krátky — kto skratkám rozumie, nemusí
+          ich prechádzať pri každom otvorení stránky. */}
+      {glossary.length > 0 && (
+        <details className="rounded-lg border border-border bg-background/40 px-3 py-2">
+          <summary className="cursor-pointer text-sm font-medium text-foreground">
+            {t("glossaryToggle")}
+          </summary>
+          <div className="pt-2">
+            <DrillGlossaryList entries={glossary} />
+          </div>
+        </details>
+      )}
       {groups ? (
         <div className="flex gap-3">
           {groups.map((group, groupIndex) => (

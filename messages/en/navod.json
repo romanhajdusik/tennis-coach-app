@@ -21,7 +21,11 @@
     },
     {
       "title": "Set up your drill codes",
-      "body": "The heart of the whole app. For each focus you get 20 slots to rename into your own drill shortcuts. Your analytics later break down exactly by these, so set them up first."
+      "body": "The heart of the whole app. For each focus you get 20 slots to rename into your own drill shortcuts. Your analytics later break down exactly by these, so set them up first.",
+      "link": {
+        "href": "#drill-codes",
+        "text": "See what the default codes mean"
+      }
     },
     {
       "title": "Plan a practice",
@@ -44,6 +48,8 @@
       "body": "Generate an access code and send it. The player, parent or manager gets their own view of the practice history — read-only."
     }
   ],
+  "drillCodesTitle": "Default drill codes",
+  "drillCodesIntro": "Every new account starts with these codes, so you can log a practice right away. Keep them, or rename any slot to your own shortcut — your analytics follow whatever codes you use.",
   "tipsTitle": "Good to know",
   "tips": [
     "Add the app to your phone's home screen and use it like a native app right on the court.",
