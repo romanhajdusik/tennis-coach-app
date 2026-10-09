@@ -26,7 +26,7 @@ export default async function NavodPage() {
   const tennis = DISCIPLINES.tennis;
   const drillGroups = tennis.categories.flatMap((category) => {
     const guide = drillGuide(tennis, category);
-    return guide ? [{ category, entries: guide.entries }] : [];
+    return guide ? [{ category, entries: guide }] : [];
   });
 
   return (

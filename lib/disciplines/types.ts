@@ -95,13 +95,6 @@ export type DisciplineConfig = {
    * neprekladajú. Bez neho sa vysvetlivky nevykreslia.
    */
   drillGlossary?: Record<string, string>;
-  /**
-   * UKÁŽKOVÉ kódy na zameranie pre disciplínu bez predvolených (kondička, od
-   * 2026-10-09). Do slotov sa NEPÍŠU — tréner ich vidí len ako príklad pri
-   * prázdnych slotoch, s vetou, že si cvičenia pomenuje po svojom (rozhodol
-   * user). Význam berú z `drillGlossary`.
-   */
-  drillExamples?: Record<string, string[]>;
   /** Ponuka trvania cvičenia v minútach. */
   durations: number[];
   character: CharacterConfig | null;

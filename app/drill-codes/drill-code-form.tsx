@@ -53,15 +53,15 @@ export function DrillCodeForm({
       {guide && (
         <details className="rounded-lg border border-border bg-background/40 px-3 py-2">
           <summary className="cursor-pointer text-sm font-medium text-foreground">
-            {guide.kind === "defaults" ? t("glossaryToggle") : t("examplesToggle")}
+            {t("glossaryToggle")}
           </summary>
           <div className="flex flex-col gap-2 pt-2">
             {/* Veta je povinná (rozhodol user 2026-10-09): kódy sú len
                 začiatok, každý tréner si cvičenia pomenuje po svojom. */}
             <p className="text-xs leading-5 text-muted">
-              {guide.kind === "defaults" ? t("glossaryNote") : t("examplesNote")}
+              {t("glossaryNote")}
             </p>
-            <DrillGlossaryList entries={guide.entries} />
+            <DrillGlossaryList entries={guide} />
           </div>
         </details>
       )}

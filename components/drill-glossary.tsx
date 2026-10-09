@@ -1,22 +1,17 @@
 import type { DisciplineConfig } from "@/lib/disciplines/types";
 
-export type DrillGuide = {
-  /**
-   * `defaults` = kódy, ktoré tréner v slotoch naozaj má (tenis); `examples` =
-   * len ukážka pri prázdnych slotoch (kondička). Rozlišuje sa preto, lebo
-   * pri ukážke musí byť jasne povedané, že sa do slotov nič nezapísalo
-   * a cvičenia si tréner pomenuje po svojom (rozhodol user 2026-10-09).
-   */
-  kind: "defaults" | "examples";
-  /** `meaning` chýba pri ukážke bez skratiek (kondička píše plné názvy). */
-  entries: { code: string; meaning?: string }[];
-};
+/**
+ * Predvolené kódy jedného zamerania a čo znamenajú (od 2026-10-09).
+ * `meaning` chýba, keď disciplína píše plné názvy namiesto skratiek
+ * (kondička) — vtedy sa ukážu len názvy.
+ */
+export type DrillGuide = { code: string; meaning?: string }[];
 
 /**
- * Zoznam „kód → čo znamená" (od 2026-10-09). Bez hookov, takže ho vie
- * vykresliť appková stránka s kódmi (klientsky formulár) aj verejný návod.
+ * Zoznam „kód → čo znamená". Bez hookov, takže ho vie vykresliť appková
+ * stránka s kódmi (klientsky formulár) aj verejný návod.
  */
-export function DrillGlossaryList({ entries }: { entries: DrillGuide["entries"] }) {
+export function DrillGlossaryList({ entries }: { entries: DrillGuide }) {
   // Bez významov je to len zoznam názvov — čipy sa čítajú lepšie než stĺpec.
   if (entries.every((entry) => !entry.meaning)) {
     return (
@@ -44,22 +39,12 @@ export function DrillGlossaryList({ entries }: { entries: DrillGuide["entries"] 
   );
 }
 
-/**
- * Vysvetlivky pre jedno zameranie: predvolené kódy, ak ich disciplína má,
- * inak ukážkové. `null` = disciplína k zameraniu nič nepozná.
- */
+/** Predvolené kódy zamerania; `null` = disciplína preň žiadne nemá. */
 export function drillGuide(
-  discipline: Pick<DisciplineConfig, "drills" | "drillExamples" | "drillGlossary">,
+  discipline: Pick<DisciplineConfig, "drills" | "drillGlossary">,
   category: string,
 ): DrillGuide | null {
-  const glossary = discipline.drillGlossary ?? {};
-  const defaults = discipline.drills[category] ?? [];
-  const kind = defaults.length > 0 ? "defaults" : "examples";
-  const codes = kind === "defaults" ? defaults : (discipline.drillExamples?.[category] ?? []);
-  // Predvolený kód bez významu sa nevypíše (vysvetlivka bez vysvetlenia);
-  // ukážka sa vypíše vždy, aj keď je to len názov.
-  const entries = codes
-    .filter((code) => kind === "examples" || glossary[code])
-    .map((code) => ({ code, meaning: glossary[code] }));
-  return entries.length > 0 ? { kind, entries } : null;
+  const codes = discipline.drills[category] ?? [];
+  if (codes.length === 0) return null;
+  return codes.map((code) => ({ code, meaning: discipline.drillGlossary?.[code] }));
 }

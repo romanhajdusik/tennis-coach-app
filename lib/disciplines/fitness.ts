@@ -51,14 +51,12 @@ export const FITNESS_DISCIPLINE: DisciplineConfig = {
 
   defaultCategory: "ENDURANCE",
 
-  // Kondička nemá predvolené kódy — tréner si všetkých 20 slotov na zameranie
-  // pomenuje sám na `/drill-codes`. Prázdny zoznam znamená 20 prázdnych slotov.
-  drills: {},
-
-  // Len UKÁŽKA pri prázdnych slotoch (od 2026-10-09). Zoznam dodal user —
-  // sú to slová, ktoré si do slotov píše kondičný tréner v praxi (plné názvy,
-  // nie skratky, preto bez `drillGlossary`). Opravené len preklepy.
-  drillExamples: {
+  // Predvolené cvičenia (od 2026-10-09, dovtedy 20 prázdnych slotov). Zoznam
+  // dodal user — plné názvy, ktoré kondičný tréner píše v praxi, nie skratky,
+  // preto bez `drillGlossary`. Opravené len preklepy. Rovnako ako pri tenise
+  // sú len príkladom: tréner ich prepíše na vlastné, a kto si zameranie už
+  // uložil, toho sa netýkajú (DB je po prvom uložení autoritatívna).
+  drills: {
     ENDURANCE: [
       "Continuous training",
       "Fartlek training",

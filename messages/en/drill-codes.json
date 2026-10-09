@@ -4,8 +4,6 @@
   "orgDescription": "These drill codes are the shared standard of {organization}. They are set by the head coach, so every coach records practices the same way and analytics stay comparable across the organization.",
   "glossaryToggle": "What the default (example only) codes mean",
   "glossaryNote": "These are only starter codes. Keep them, or rename any slot to your own drill — your analytics follow whatever codes you use.",
-  "examplesToggle": "Example drills",
-  "examplesNote": "Just examples to get you started — your slots stay empty. Name your drills your own way.",
   "save": "Save codes",
   "saving": "Saving...",
   "errors": {
