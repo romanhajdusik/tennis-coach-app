@@ -48,7 +48,7 @@
       "body": "Generate an access code and send it. The player, parent or manager gets their own view of the practice history — read-only."
     }
   ],
-  "drillCodesTitle": "Default drill codes",
+  "drillCodesTitle": "Default (example only) drill codes",
   "drillCodesIntro": "Every new account starts with these codes, so you can log a practice right away. They are only examples — every coach can use their own drills. Keep them, or rename any slot to your own shortcut; your analytics follow whatever codes you use.",
   "tipsTitle": "Good to know",
   "tips": [
