@@ -4,7 +4,7 @@ import { loadNavodMessages } from "@/lib/landing-locale";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
 import { PublicAnalytics } from "@/components/public-analytics";
-import { DrillGlossaryList, glossaryEntries } from "@/components/drill-glossary";
+import { DrillGlossaryList, drillGuide } from "@/components/drill-glossary";
 import { DISCIPLINES } from "@/lib/disciplines/registry";
 
 // Návod je verejná stránka — texty berie z tej istej vrstvy ako landing
@@ -24,12 +24,10 @@ export default async function NavodPage() {
   // Návod na plaw.win je tenisový, takže ukazuje tenisové kódy natvrdo —
   // nie disciplínu nasadenia (na kondičnej doméne sa návod nevykresľuje).
   const tennis = DISCIPLINES.tennis;
-  const drillGroups = tennis.categories
-    .map((category) => ({
-      category,
-      entries: glossaryEntries(tennis.drills[category], tennis.drillGlossary),
-    }))
-    .filter((group) => group.entries.length > 0);
+  const drillGroups = tennis.categories.flatMap((category) => {
+    const guide = drillGuide(tennis, category);
+    return guide ? [{ category, entries: guide.entries }] : [];
+  });
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center overflow-x-clip bg-background">

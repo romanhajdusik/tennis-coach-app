@@ -5,21 +5,21 @@ import { useTranslations } from "next-intl";
 import { saveDrillCodes, saveOrgDrillCodes } from "@/lib/actions/drill-codes";
 import { splitSlotsIntoGroups, type AnalyticsCodeGroup } from "@/lib/drill-options";
 import type { DisciplineId } from "@/lib/disciplines/types";
-import { DrillGlossaryList } from "@/components/drill-glossary";
+import { DrillGlossaryList, type DrillGuide } from "@/components/drill-glossary";
 
 export function DrillCodeForm({
   category,
   initialSlots,
   groups,
-  glossary = [],
+  guide = null,
   readOnly = false,
   organizationDiscipline,
 }: {
   category: string;
   initialSlots: string[];
   groups?: AnalyticsCodeGroup[];
-  /** Význam predvolených kódov zamerania; prázdny = vysvetlivky sa nevykreslia. */
-  glossary?: { code: string; meaning: string }[];
+  /** Vysvetlivky ku kódom zamerania (`drillGuide`); `null` = nevykreslia sa. */
+  guide?: DrillGuide | null;
   /** V org režime kódy nastavuje šéftréner federácie — tréner ich len číta (§5.5). */
   readOnly?: boolean;
   /**
@@ -50,13 +50,18 @@ export function DrillCodeForm({
       </h2>
       {/* Zbalené, aby formulár ostal krátky — kto skratkám rozumie, nemusí
           ich prechádzať pri každom otvorení stránky. */}
-      {glossary.length > 0 && (
+      {guide && (
         <details className="rounded-lg border border-border bg-background/40 px-3 py-2">
           <summary className="cursor-pointer text-sm font-medium text-foreground">
-            {t("glossaryToggle")}
+            {guide.kind === "defaults" ? t("glossaryToggle") : t("examplesToggle")}
           </summary>
-          <div className="pt-2">
-            <DrillGlossaryList entries={glossary} />
+          <div className="flex flex-col gap-2 pt-2">
+            {/* Veta je povinná (rozhodol user 2026-10-09): kódy sú len
+                začiatok, každý tréner si cvičenia pomenuje po svojom. */}
+            <p className="text-xs leading-5 text-muted">
+              {guide.kind === "defaults" ? t("glossaryNote") : t("examplesNote")}
+            </p>
+            <DrillGlossaryList entries={guide.entries} />
           </div>
         </details>
       )}
