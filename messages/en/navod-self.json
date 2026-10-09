@@ -1,0 +1,51 @@
+{
+  "metaTitle": "Guide for your own training diary — P.L.A.W",
+  "metaDescription": "How to keep your own training diary in P.L.A.W: sign up as a player, log your practices with your own drills and see where your training time goes.",
+  "eyebrow": "Player's own diary",
+  "title": "Keep your own training diary",
+  "subtitle": "For players whose coach does not use P.L.A.W — you log your practices yourself.",
+  "backToHome": "Back to home",
+  "stepWord": "Step",
+  "steps": [
+    {
+      "title": "Create your diary",
+      "body": "Sign up and pick \"Player (my own practice diary)\". The app is ready for you right away — your own card is already there. The first 14 days are a trial; after that the diary is paid."
+    },
+    {
+      "title": "Set up your drill codes",
+      "body": "For each focus you get 20 slots for your drills. The account starts with example codes, so you can log a practice right away — rename any slot to the drill you really do. Your analytics break down exactly by these codes.",
+      "link": {
+        "href": "#drill-codes",
+        "text": "See what the example codes mean"
+      }
+    },
+    {
+      "title": "Plan a practice",
+      "body": "Create a practice with a date, time and duration. You see it in your calendar right away."
+    },
+    {
+      "title": "Log what you did",
+      "body": "Add drills to the practice — focus, shot character, code and duration. After the practice, fill in the actual time and notes, and lock it — it becomes a permanent record."
+    },
+    {
+      "title": "See where your time goes",
+      "body": "Analytics by week, month, quarter and year, compared to last season — broken down by drill code and shot character."
+    },
+    {
+      "title": "Share it, if you want",
+      "body": "In My profile you can generate a code for your parent or manager — they see your practices, read-only. Do you have a fitness coach who uses P.L.A.W? Link with them and their sessions show up in your calendar."
+    }
+  ],
+  "drillCodesTitle": "Example drill codes",
+  "drillCodesIntro": "Every new diary starts with these codes, so you can log a practice right away. They are only examples — keep them, or rename any slot to your own drill; your analytics follow whatever codes you use. You find them in the app under Drill codes.",
+  "tipsTitle": "Good to know",
+  "tips": [
+    "Add the app to your phone's home screen and use it like a native app right on the court.",
+    "The app is in English and always shows time in your own time zone."
+  ],
+  "ctaTitle": "Ready to start?",
+  "ctaText": "Create your diary in a few minutes and log your first practice today.",
+  "ctaButton": "Start my own diary",
+  "crossLinkText": "Are you a coach?",
+  "crossLinkCta": "See the coach guide"
+}

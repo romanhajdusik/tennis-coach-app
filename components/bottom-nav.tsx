@@ -22,6 +22,7 @@ const HIDDEN_PATHS = new Set([
   "/reset-password",
   "/navod",
   "/navod-hrac",
+  "/navod-self",
   "/cennik-hrac",
   "/federacie",
 ]);

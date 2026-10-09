@@ -84,6 +84,7 @@
     "title": "No coach on P.L.A.W? Keep your own training diary.",
     "text": "Log your practices yourself, with the drills you really do, and see where your training time goes. The diary is yours alone — share it with your parent, or link it with your fitness coach.",
     "price": "{monthly} a month or {yearly} a year. 14 days to try it out.",
-    "cta": "Start my own diary"
+    "cta": "Start my own diary",
+    "guideLink": "How does it work?"
   }
 }

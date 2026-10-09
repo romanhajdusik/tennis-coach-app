@@ -33,6 +33,14 @@ export function SelfDiaryInvite({ t }: { t: SelfDiaryInviteMessages }) {
         >
           {t.cta}
         </Link>
+        {/* Návod pre hráčsky denník — relatívne z rovnakého dôvodu ako
+            registrácia vyššie (na plaw.click ho proxy pošle na appku). */}
+        <Link
+          href="/navod-self"
+          className="text-sm font-medium text-muted underline underline-offset-2 transition-colors hover:text-foreground"
+        >
+          {t.guideLink}
+        </Link>
       </div>
     </section>
   );

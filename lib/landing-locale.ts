@@ -34,6 +34,8 @@ export type SelfDiaryInviteMessages = {
   /** `{monthly}` a `{yearly}` doplní komponent z `SELF_DIARY_PRICE`. */
   price: string;
   cta: string;
+  /** Odkaz na návod pre hráčsky denník (/navod-self). */
+  guideLink: string;
 };
 
 export async function loadLandingMessages() {
@@ -133,6 +135,14 @@ export async function loadNavodMessages(): Promise<NavodMessages> {
 // štruktúra ako trénerský návod.
 export async function loadNavodHracMessages(): Promise<NavodMessages> {
   const messages = await import("../messages/en/navod-hrac.json");
+  return messages.default as NavodMessages;
+}
+
+// Návod pre HRÁČSKY DENNÍK (/navod-self, od 2026-10-09) — hráč, ktorý si
+// zapisuje sám. Trénerský návod hovorí o „hráčoch" a /navod-hrac o kóde od
+// trénera, ani jeden mu nesedí. Rovnaká štruktúra ako trénerský návod.
+export async function loadNavodSelfMessages(): Promise<NavodMessages> {
+  const messages = await import("../messages/en/navod-self.json");
   return messages.default as NavodMessages;
 }
 
