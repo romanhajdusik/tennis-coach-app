@@ -1,7 +1,7 @@
 {
-  "metaTitle": "P.L.A.W for federations, clubs and academies",
-  "metaDescription": "The training data of a whole organisation in one place: the head coach's oversight console, side-by-side comparison of players, one shared methodology. The data belongs to the organisation, not to the coach.",
-  "eyebrow": "For federations, clubs and academies",
+  "metaTitle": "P.L.A.W for federations, clubs, academies and tour teams",
+  "metaDescription": "The training data of a whole organisation in one place: the head coach's oversight console, side-by-side comparison of players, one shared methodology. The data belongs to the organisation, not to the coach. For federations, clubs, academies and the team of a tour player.",
+  "eyebrow": "For federations, clubs, academies and tour teams",
   "backToHome": "Back to home",
   "title": "See how your whole organisation trains",
   "subtitle": "Your coaches plan and record practices on court. Your head coach sees in one console how the work actually runs — and the data stays with the organisation even after a coach leaves.",
@@ -30,6 +30,10 @@
     {
       "title": "A coach with several players",
       "description": "The coach's app is built for a phone, right on court: the day's schedule across all of their players, switching between them in one tap, and a warning about the one who has gone longest without a practice."
+    },
+    {
+      "title": "A team for a tour player",
+      "description": "A tennis coach and a fitness coach working with the same player each log their own part. The head coach or manager sees both sides — court and fitness — in one console. When someone on the team changes, the player's history stays."
     }
   ],
   "howTitle": "How it works",

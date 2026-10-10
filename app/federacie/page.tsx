@@ -5,6 +5,7 @@ import {
   ChartBarIcon,
   ClipboardCheckIcon,
   DeviceMobileIcon,
+  EyeIcon,
   GlobeIcon,
   TagIcon,
   UsersIcon,
@@ -31,7 +32,9 @@ import { PublicAnalytics } from "@/components/public-analytics";
  * a návodmi — tmavá téma cez tokeny.
  */
 // Poradie sedí s `features` v messages/{en,sk}/federacie.json — každá dlaždica
-// má vlastnú ikonu, žiadna sa neopakuje.
+// má vlastnú ikonu, žiadna sa neopakuje. Siedma (tím okolo jedného
+// hráča, od 2026-10-10) je posledná a cez celú šírku — v mriežke po dvoch aj
+// po troch by inak ostala sama v riadku.
 const FEATURE_ICONS = [
   ClipboardCheckIcon,
   ChartBarIcon,
@@ -39,6 +42,7 @@ const FEATURE_ICONS = [
   TagIcon,
   GlobeIcon,
   DeviceMobileIcon,
+  EyeIcon,
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -107,10 +111,12 @@ export default async function FederaciePage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {t.features.map((feature, index) => {
             const Icon = FEATURE_ICONS[index % FEATURE_ICONS.length];
+            const isOddLast =
+              index === t.features.length - 1 && t.features.length % 6 === 1;
             return (
               <div
                 key={feature.title}
-                className="rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+                className={`rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md ${isOddLast ? "sm:col-span-2 lg:col-span-3" : ""}`}
               >
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm shadow-primary/25">
                   <Icon className="h-5 w-5" />
