@@ -55,8 +55,7 @@
   "notesTitle": "Good to know",
   "notes": [
     "The head coach's overview is read-only — practices are created and edited by the coaches, so nobody overwrites their data and nothing goes missing on them.",
-    "The organisation decides how many coach seats it needs, and the number can be increased at any time.",
-    "Following practices as a parent or a player is a feature of the standalone product for individual coaches — in organisation mode the training data stays internal."
+    "The organisation decides how many coach seats it needs, and the number can be increased at any time."
   ],
   "pricingBadge": "Pricing",
   "pricingTitle": "From €49 per coach per month",
