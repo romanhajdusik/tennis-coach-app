@@ -40,7 +40,7 @@ export const PARENT_ORIGIN = "https://plaw.click";
 /**
  * plawsports.com = **ROZCESTNÍK P.L.A.W športov** (od 2026-10-07, rozhodol
  * user): jednoduchá stránka, z ktorej sa ide do appky svojho športu. Športy
- * sú jeho poddomény (`padel.plawsports.com`, `fitness.plawsports.com` …),
+ * majú vlastné adresy (`plawpadel.com`, `fitness.plawsports.com` …),
  * tenis ostáva na `plaw.win`. Plánujú sa aj ďalšie individuálne športy,
  * takže zoznam musí uniesť ľubovoľný počet (`components/sports-hub.tsx`).
  *
