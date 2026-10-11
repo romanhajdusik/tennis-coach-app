@@ -1,0 +1,35 @@
+{
+  "metaTitle": "Still writing practices in a notebook? — P.L.A.W",
+  "metaDescription": "P.L.A.W is a training diary for tennis coaches: log every practice at the court with your own drills and see each player's progress in charts.",
+  "titleBefore": "Still writing practices in a",
+  "titleHighlight": "notebook?",
+  "lead": "P.L.A.W is that notebook — on your phone. Log every practice right at the court with your own drills, and see how each player develops.",
+  "cta": "Try it free for 14 days",
+  "ctaNote": "No card needed to start.",
+  "priceLine": "Then from {price}/month for 3 players — {cents} cents per player a day.",
+  "compareTitle": "Your notebook vs. P.L.A.W",
+  "compareNotebook": "Notebook",
+  "compareApp": "P.L.A.W",
+  "compareRows": [
+    {
+      "notebook": "Pages get lost or stay at home",
+      "app": "Every practice saved, on your phone"
+    },
+    {
+      "notebook": "Your own shorthand nobody else reads",
+      "app": "Your own drill codes, set up your way"
+    },
+    {
+      "notebook": "No idea how a player improved this season",
+      "app": "Charts by stroke, month by month"
+    },
+    {
+      "notebook": "Parents keep asking how it went",
+      "app": "Parents get read-only access"
+    }
+  ],
+  "showcaseTitle": "This is what it looks like",
+  "finalTitle": "Close the notebook. Open P.L.A.W.",
+  "pricingLink": "See all plans",
+  "signIn": "Already have an account? Sign in"
+}

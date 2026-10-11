@@ -451,6 +451,7 @@ Na prihlásení (trénerskom aj rodičovskom) je „Forgot your password?" → `
 - **Do appky po prihlásení NEPATRÍ a nedávaj ho do `app/layout.tsx`** (rozhodol user): adresy v appke nesú ID hráčov a tréningov a odkaz na obnovu hesla jednorazový kľúč v query. `beforeSend` je druhá poistka — pustí len cesty zo zoznamu `PUBLIC_PATHS` a vždy zahodí query aj hash.
 - **Bez cookies a bez IP adries**, preto stále netreba cookie lištu. **Zásady to od 2026-10-07 hovoria v §9** (všetky tri — tréner, sledujúci, organizácia, EN aj SK). Dovtedy tam stálo „we have no analytics", takže **pri pridaní akéhokoľvek ďalšieho merania alebo pixelu (Meta Pixel) treba zásady prepísať znova** — Pixel navyše cookies používa a súhlas by si vyžiadal.
 - Meranie sa zapína aj vo Verceli (projekt → Analytics → Enable), bez toho skript nič neodošle.
+- **`/notebook` = stránka pre ľudí z reklamy** (od 2026-10-11, `app/notebook/page.tsx`): začína tou istou otázkou a fotkou ako reklama „Still writing practices in a notebook?" a hneď ponúka registráciu. Vznikla po meraní, ktoré ukázalo, že z ~300 ľudí z Instagramu na landingu otvorili registráciu dvaja. Reklamy s notesom majú viesť sem, nie na `/`. Pri ďalšej reklame s iným posolstvom patrí k nej vlastná podobná stránka, nie ďalšia sekcia landingu.
 
 ## Internacionalizácia (i18n)
 

@@ -25,6 +25,7 @@ const PUBLIC_PATHS = new Set([
   "/navod",
   "/navod-hrac",
   "/navod-self",
+  "/notebook",
   "/cennik-hrac",
   "/federacie",
   "/register",

@@ -141,6 +141,32 @@ export async function loadNavodHracMessages(): Promise<NavodMessages> {
 // Návod pre HRÁČSKY DENNÍK (/navod-self, od 2026-10-09) — hráč, ktorý si
 // zapisuje sám. Trénerský návod hovorí o „hráčoch" a /navod-hrac o kóde od
 // trénera, ani jeden mu nesedí. Rovnaká štruktúra ako trénerský návod.
+// Stránka pre ľudí z reklamy „Still writing practices in a notebook?"
+// (/notebook, od 2026-10-11) — pokračuje presne tam, kde reklama skončila.
+export type NotebookMessages = {
+  metaTitle: string;
+  metaDescription: string;
+  titleBefore: string;
+  titleHighlight: string;
+  lead: string;
+  cta: string;
+  ctaNote: string;
+  priceLine: string;
+  compareTitle: string;
+  compareNotebook: string;
+  compareApp: string;
+  compareRows: { notebook: string; app: string }[];
+  showcaseTitle: string;
+  finalTitle: string;
+  pricingLink: string;
+  signIn: string;
+};
+
+export async function loadNotebookMessages(): Promise<NotebookMessages> {
+  const messages = await import("../messages/en/notebook.json");
+  return messages.default as NotebookMessages;
+}
+
 export async function loadNavodSelfMessages(): Promise<NavodMessages> {
   const messages = await import("../messages/en/navod-self.json");
   return messages.default as NavodMessages;
