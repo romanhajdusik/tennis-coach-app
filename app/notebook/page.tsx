@@ -70,20 +70,28 @@ export default async function NotebookPage() {
     <div className="flex w-full min-w-0 flex-col items-center bg-background">
       <section className="flex w-full max-w-md flex-col items-center gap-5 px-4 pb-10 pt-6 text-center">
         <Wordmark />
-        <h1 className="text-3xl font-bold tracking-tight text-balance text-foreground sm:text-4xl">
-          {t.titleBefore} <span className="text-primary">{t.titleHighlight}</span>
-        </h1>
         {/* Tá istá fotka ako v reklame — človek má hneď vidieť, že je na
-            správnom mieste. Vygenerovaná (AI), bez rozhrania appky. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/hero/notebook.jpg"
-          alt=""
-          width={1080}
-          height={1080}
-          fetchPriority="high"
-          className="aspect-[4/3] w-full rounded-2xl object-cover object-[50%_70%] ring-1 ring-border"
-        />
+            správnom mieste. Vygenerovaná (AI), bez rozhrania appky. Celá,
+            neorezaná (user: orezaná hlava sa mu nepáčila); nadpis je cez
+            tmavú oblohu hore, zošit s telefónom ostáva voľný. */}
+        <div className="relative w-full overflow-hidden rounded-2xl ring-1 ring-border">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/hero/notebook.jpg"
+            alt=""
+            width={1080}
+            height={1080}
+            fetchPriority="high"
+            className="block w-full"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background/90 via-background/55 to-transparent"
+          />
+          <h1 className="absolute inset-x-0 top-0 px-4 pt-5 text-3xl font-bold tracking-tight text-balance text-foreground [text-shadow:0_2px_12px_rgb(0_0_0/0.6)] sm:text-4xl">
+            {t.titleBefore} <span className="text-primary">{t.titleHighlight}</span>
+          </h1>
+        </div>
         <p className="text-base text-balance text-muted">{t.lead}</p>
         {cta}
       </section>
