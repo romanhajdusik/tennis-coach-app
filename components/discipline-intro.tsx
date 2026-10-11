@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Wordmark } from "@/components/wordmark";
@@ -24,6 +25,7 @@ export async function DisciplineIntro({
   domain,
   subtitle,
   more,
+  backdrop,
 }: {
   /**
    * `null` = šport ešte nemá vlastnú fotku (padel od 2026-10-05). Úvod je
@@ -39,11 +41,30 @@ export async function DisciplineIntro({
    * nie je vidno, že stránka pokračuje.
    */
   more?: { href: string; label: string };
+  /**
+   * Kresba namiesto chýbajúcej fotky (padel od 2026-10-11: kurt zhora).
+   * Použije sa len bez fotky. Je vycentrovaná na výšku obrazovky, takže
+   * jej stred (pri kurte sieť) je presne v strede úvodu — veta `subtitle` sa
+   * potom položí hneď pod neho a je veľká, lebo je to hlavné posolstvo.
+   * Bez nej ostáva pôvodný tvar s malou vetou pod štítkom.
+   */
+  backdrop?: ReactNode;
 }) {
   const t = await getTranslations("Home");
+  const drawn = !photo && backdrop;
 
   return (
-    <section className="relative isolate flex min-h-svh w-full min-w-0 flex-col items-center justify-between overflow-hidden px-4 pb-10 pt-20 text-center">
+    <section
+      className={`relative isolate flex min-h-svh w-full min-w-0 flex-col items-center justify-between overflow-hidden px-4 pb-10 pt-20 text-center ${drawn ? "min-h-[40rem]" : ""}`}
+    >
+      {drawn && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-4 inset-y-12 -z-10 flex justify-center text-primary opacity-35"
+        >
+          {backdrop}
+        </div>
+      )}
       {photo && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -80,12 +101,25 @@ export async function DisciplineIntro({
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           {label}
         </span>
-        {subtitle ? (
+        {subtitle && !drawn ? (
           <p className="mt-1 max-w-xs text-sm text-balance text-foreground/85">
             {subtitle}
           </p>
         ) : null}
       </div>
+
+      {/* Pri kresbe leží veta hneď pod jej stredom (pri kurte pod sieťou).
+          V DOM-e je za nápisom, aby ju čítačka obrazovky prečítala v tom
+          istom poradí, v akom ju človek vidí. */}
+      {drawn && subtitle ? (
+        <p className="absolute inset-x-0 top-1/2 mx-auto mt-6 max-w-sm px-6 text-[1.75rem] font-semibold leading-tight tracking-tight text-balance text-foreground sm:max-w-md sm:text-4xl">
+          {/* Podklad prekryje čiary kresby pod písmenami (pri kurte stredovú
+              čiaru), inak ňou bola veta preškrtnutá. */}
+          <span className="bg-background px-2 [box-decoration-break:clone]">
+            {subtitle}
+          </span>
+        </p>
+      ) : null}
 
       <div className="flex w-full max-w-sm flex-col gap-3">
         <Link

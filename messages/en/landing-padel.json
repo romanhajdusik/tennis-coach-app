@@ -6,17 +6,18 @@
   "points": [
     {
       "title": "Your own drills",
-      "text": "Nine focus areas, and in each one up to twenty drills you name yourself. No templates pushed on you."
+      "text": "Nine focus areas, each with up to twenty drills named the way you call them on court. Nothing pre-written that you have to work around."
     },
     {
       "title": "See where the time goes",
-      "text": "Charts show how each player's practice time splits across focus areas and drills, and between offensive, neutral and defensive play."
+      "text": "Charts show how each player's practice time splits across focus areas and drills, and how much of it was attacking, neutral or defensive play."
     },
     {
-      "title": "Work alongside the fitness coach",
-      "text": "Enter the link code from the player's fitness coach and their sessions show up in your calendar, read-only. If you choose, they see a summary of your court work in return."
+      "title": "One session, both players",
+      "text": "Coaching a pair? Log the session once and copy it to the partner: same drills, same time, same notes. Then change whatever one of them didn't play."
     }
   ],
+  "pointsNote": "Working with a fitness coach? Link the player's card and their fitness sessions show up in your calendar.",
   "pricingTitle": "Pricing",
   "pricingSubtitle": "14 days to try it out, then it's paid. Every plan includes every feature — the only difference is how many players you keep active at once.",
   "footerTagline": "P.L.A.W Padel — a training diary for padel coaches",

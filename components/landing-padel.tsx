@@ -8,19 +8,27 @@ import {
 import { LandingPricing } from "@/components/landing-pricing";
 import { DisciplineIntro } from "@/components/discipline-intro";
 import { coachTierViews } from "@/lib/landing-pricing";
-import { ChartBarIcon, TagIcon, UsersIcon } from "@/components/landing-icons";
+import {
+  PadelCourt,
+  PadelCourtGlyph,
+  type CourtGlyphVariant,
+} from "@/components/padel-court";
 import type { DisciplineConfig } from "@/lib/discipline";
 
-const POINT_ICONS = [TagIcon, ChartBarIcon, UsersIcon];
+// Poradie sedí s bodmi v `landing-padel.json`: vlastné cvičenia, kam ide
+// čas, dvojica.
+const POINT_GLYPHS: CourtGlyphVariant[] = ["drills", "time", "pair"];
 
 /**
- * Landing PADELU na `padel.plawsports.com` (od 2026-10-05). **Každý šport má
+ * Landing PADELU na `plawpadel.com` (od 2026-10-05, doména od 2026-10-11). **Každý šport má
  * vlastný landing** (rozhodol user; spoločný pre všetky športy zamietol) —
  * zdieľajú sa len stavebné kocky (úvod, cenník), texty a obsah sú padelové.
  * Rozcestník všetkých športov bude na `plawsports.com`.
  *
  * **Zatiaľ krátky ako kondička:** úvod, tri body, cenník, pätička.
- * - **Bez fotky**, kým nebude padelová — tenisová by klamala.
+ * - **Bez fotky**, kým nebude padelová — tenisová by klamala. Od 2026-10-11
+ *   je namiesto nej kresba kurtu (`components/padel-court.tsx`) a body
+ *   hovoria o padeli (dvojica namiesto kondičky; kondička je veta pod nimi).
  * - **Žiadne screenshoty** — padelové nemáme a tenisové by klamali.
  * - **Žiadny odkaz pre rodiča na plaw.click** — tá stránka menuje tenis
  *   (otvorená otázka č. 5 v docs §1.1).
@@ -48,33 +56,38 @@ export async function LandingPadel({
         domain={config.domain}
         subtitle={t.heroSubtitle}
         more={{ href: "#cennik", label: t.pricingTitle }}
+        backdrop={<PadelCourt className="h-full w-auto max-w-full" />}
       />
 
-      <section className="w-full max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
+      {/* Body ako zoznam s kúskom kurtu, nie tri karty s ikonkou v
+          štvorčeku — to je najbežnejší vzor SaaS landingov (kritika
+          Impeccable 2026-10-11). Značka pri bode ukazuje, o ktorú časť
+          kurtu ide. */}
+      <section className="w-full max-w-2xl px-4 py-14 sm:px-6 sm:py-20">
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           {t.pointsTitle}
         </h2>
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {t.points.map((point, index) => {
-            const Icon = POINT_ICONS[index % POINT_ICONS.length];
-            return (
-              <div
-                key={point.title}
-                className="rounded-2xl border border-border bg-surface p-5"
-              >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm shadow-primary/25">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="mb-1.5 font-semibold text-foreground">
+        <ul className="mt-10 divide-y divide-border border-y border-border">
+          {t.points.map((point, index) => (
+            <li key={point.title} className="flex gap-5 py-6 sm:gap-7">
+              <PadelCourtGlyph
+                variant={POINT_GLYPHS[index % POINT_GLYPHS.length]}
+                className="h-16 w-9 shrink-0 text-primary"
+              />
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
                   {point.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-muted">
-                  {point.text}
-                </p>
+                <p className="mt-1.5 leading-relaxed text-muted">{point.text}</p>
               </div>
-            );
-          })}
-        </div>
+            </li>
+          ))}
+        </ul>
+        {t.pointsNote ? (
+          <p className="mt-6 text-center text-sm text-balance text-muted">
+            {t.pointsNote}
+          </p>
+        ) : null}
       </section>
 
       <section

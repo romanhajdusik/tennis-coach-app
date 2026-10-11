@@ -373,12 +373,14 @@ export async function loadLandingFitnessMessages(): Promise<LandingFitnessMessag
   return messages.default as LandingFitnessMessages;
 }
 
-// Landing PADELU na `padel.plawsports.com` (od 2026-10-05). **Každý šport má
+// Landing PADELU na `plawpadel.com` (od 2026-10-05, doména od 2026-10-11). **Každý šport má
 // vlastný landing** (rozhodol user — spoločný landing pre všetky športy
 // zamietol), takže aj vlastné texty; tvar je dnes zhodný s kondičkou, preto
 // ten istý typ. Cenník rovnako ako kondička berie z `landing.json`.
 export type LandingPadelMessages = LandingFitnessMessages & {
   selfDiary: SelfDiaryInviteMessages;
+  /** Jedna veta pod bodmi (padel od 2026-10-11: kondičný tréner). */
+  pointsNote?: string;
 };
 
 export async function loadLandingPadelMessages(): Promise<LandingPadelMessages> {
