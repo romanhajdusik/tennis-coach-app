@@ -9,7 +9,7 @@ import { TimezoneDetector } from "@/components/timezone-detector";
 import { TrialBanner } from "@/components/trial-banner";
 import { headers } from "next/headers";
 import { getOrgContext } from "@/lib/org/context";
-import { isSportsHubHost } from "@/lib/public-face";
+import { isPublicFaceHost, isSportsHubHost } from "@/lib/public-face";
 import { getDiscipline, getDisciplineConfig } from "@/lib/discipline";
 import { DisciplineProvider } from "@/lib/discipline-context";
 import "./globals.css";
@@ -40,6 +40,10 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 async function appVariant(): Promise<string | undefined> {
   if (await getOrgContext()) return "org";
+  // plaw.online je od 2026-10-07 len pre zväzy (bývajú na nej /federacie
+  // a zásady organizácie), takže od 2026-10-12 nesie federačný vzhľad ako
+  // appka, do ktorej sa zväz prihlási (rozhodol user) — nie tenisový.
+  if (isPublicFaceHost((await headers()).get("host"))) return "org";
   // Rozcestník športov (plawsports.com) nemá farbu žiadneho športu — beží na
   // tenisovom nasadení, takže by inak dostal limetkovú.
   if (isSportsHubHost((await headers()).get("host"))) return "hub";
