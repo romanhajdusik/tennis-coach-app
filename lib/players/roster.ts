@@ -29,6 +29,11 @@ export type ScheduledSession = {
   id: string;
   playerId: string;
   playerName: string;
+  /**
+   * Kto tréning zapísal. Vo federácii môže mať hráč viac trénerov tej istej
+   * disciplíny (2026-10-12), takže rozvrh ukazuje aj tréningy kolegov.
+   */
+  coachId: string;
   /** ISO reťazec — skutočný čas, ak už je zadaný, inak plánovaný. */
   date: string;
   status: string;
@@ -60,6 +65,7 @@ type ActualData = { date?: string };
 type SessionRow = {
   id: string;
   player_id: string;
+  coach_id: string;
   status: string;
   planned_data: unknown;
   actual_data: unknown;
@@ -129,7 +135,7 @@ export async function getRosterOverview(
   // v org režime nahrádzajú mazanie (§5.4), takže ich v histórii bude pribúdať.
   let query = supabase
     .from("sessions")
-    .select("id, player_id, status, planned_data, actual_data")
+    .select("id, player_id, coach_id, status, planned_data, actual_data")
     .in(
       "player_id",
       players.map((player) => player.id),
@@ -164,6 +170,7 @@ export async function getRosterOverview(
       id: row.id,
       playerId: player.id,
       playerName: player.name,
+      coachId: row.coach_id,
       date: dateValue,
       status: row.status,
       durationMinutes: planned?.duration_minutes ?? null,

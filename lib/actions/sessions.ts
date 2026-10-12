@@ -59,7 +59,8 @@ export async function createSession(
       status: "planned",
       planned_data: { date, duration_minutes: durationMinutes },
       // Štítok disciplíny patrí na TRÉNING, nie na trénera
-      // (`assign_player_to_coach` mu prepisuje `coach_id` aj spätne). Mimo
+      // (tréner môže hráča stratiť aj získať a vo federácii má hráč viac
+      // trénerov, takže z `coach_id` sa disciplína odvodiť nedá). Mimo
       // federácie ju určuje nasadenie, vo federácii členstvo — obe vie
       // `getDiscipline()`, a RLS pri zápise žiada zhodu s členstvom.
       discipline: await getDiscipline(),

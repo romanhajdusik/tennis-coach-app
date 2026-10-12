@@ -2,8 +2,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, getFormatter } from "next-intl/server";
 import { requireDirector } from "@/app/director/guard";
-import { AssignPlayer } from "@/app/director/assign-player";
+import {
+  AddCoachForm,
+  RemoveCoachButton,
+} from "@/app/director/coach-assignment";
 import { getDisciplineConfig } from "@/lib/discipline";
+import {
+  disciplineConfig,
+  isCourtDiscipline,
+  isDisciplineId,
+  orgDisciplines,
+} from "@/lib/disciplines/registry";
+import { getColleagueNames } from "@/lib/org/colleagues";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -44,10 +54,7 @@ export default async function DirectorPlayerPage({
     notFound();
   }
 
-  // Aktívni tréneri organizácie — zoznam, komu sa dá hráč prideliť, a zároveň
-  // zdroj mena súčasného trénera. Profil odídeného člena šéftréner už nevidí
-  // (policy `profiles_select_director_org_members`), preto sa meno hľadá tu
-  // a nie samostatným dotazom na `profiles`.
+  // Aktívni tréneri organizácie — komu sa dá hráč prideliť.
   const { data: members } = await supabase
     .from("organization_members")
     .select("user_id, discipline")
@@ -59,41 +66,55 @@ export default async function DirectorPlayerPage({
     (member): member is { user_id: string; discipline: string } =>
       Boolean(member.user_id),
   );
-  const coachIds = activeCoaches.map((member) => member.user_id);
+  const activeIds = new Set(activeCoaches.map((member) => member.user_id));
 
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, full_name, email")
-    .in("id", coachIds.length > 0 ? coachIds : [org.id]);
+  // Mená aj odídených členov — ich priradenie môže pri hráčovi ešte visieť
+  // a šéftréner ho musí vedieť odobrať.
+  const names = await getColleagueNames(supabase);
+  const nameOf = (userId: string) => names.get(userId) || "—";
 
-  const assignable = activeCoaches.map(({ user_id, discipline }) => {
-    const profile = (profiles ?? []).find((row) => row.id === user_id);
-    return {
-      userId: user_id,
-      name: profile?.full_name?.trim() || profile?.email || "—",
-      discipline,
-    };
-  });
-  assignable.sort((a, b) => a.name.localeCompare(b.name));
+  const sport = disciplineConfig(org.courtDiscipline).label;
+  const disciplineLabel = (discipline: string) =>
+    isDisciplineId(discipline) && !isCourtDiscipline(discipline)
+      ? tDirector("disciplineFitness")
+      : tDirector("disciplineCourt", { sport });
 
-  // Súčasný tréner sa hľadá cez PRIRADENIE na kurt, nie cez `players.coach_id`
-  // — ten je v org režime autor riadku. Hráč môže mať aj kondičného trénera,
-  // toho preradenie na kurte nemení.
+  // Od 2026-10-12 môže mať hráč v disciplíne viac trénerov naraz.
   const { data: playerAssignments } = await supabase
     .from("player_assignments")
     .select("coach_id, discipline")
     .eq("player_id", player.id);
 
-  const courtCoachId =
-    (playerAssignments ?? []).find((row) => row.discipline === org.courtDiscipline)
-      ?.coach_id ?? null;
+  const assigned = playerAssignments ?? [];
+  const assignedIds = new Set(assigned.map((row) => row.coach_id));
 
-  const currentCoach =
-    assignable.find((coach) => coach.userId === courtCoachId) ?? null;
+  const coachesByDiscipline = orgDisciplines(org.courtDiscipline).map(
+    (discipline) => ({
+      discipline,
+      label: disciplineLabel(discipline),
+      coaches: assigned
+        .filter((row) => row.discipline === discipline)
+        .map((row) => ({
+          userId: row.coach_id,
+          name: nameOf(row.coach_id),
+          active: activeIds.has(row.coach_id),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    }),
+  );
+
+  const addable = activeCoaches
+    .filter((member) => !assignedIds.has(member.user_id))
+    .map((member) => ({
+      userId: member.user_id,
+      name: nameOf(member.user_id),
+      disciplineLabel: disciplineLabel(member.discipline),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const { data: sessions } = await supabase
     .from("sessions")
-    .select("id, status, planned_data, actual_data")
+    .select("id, status, planned_data, actual_data, coach_id")
     .eq("player_id", player.id);
 
   const { data: drills } = await supabase
@@ -140,18 +161,9 @@ export default async function DirectorPlayerPage({
               {t("birthYear", { year: player.birth_year })}
             </p>
           )}
-          {/* Kým hráč trénera má, meno ukazuje výber nižšie — písať ho dvakrát
-              netreba. Po odchode trénera výber nikoho vybraného nemá, a to
-              treba povedať nahlas. */}
-          {!currentCoach && (
-            <p className="text-sm text-muted">
-              {t("coach", { name: tDirector("formerCoach") })}
-            </p>
-          )}
-
           {/* Jediný zápis šéftrénera do hráčskeho riadku — a to len do
               priradenia (§5.4). Zvyšok pultu ostáva read-only. */}
-          <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
+          <div className="mt-2 flex flex-col gap-3 border-t border-border pt-3">
             <div>
               <h2 className="text-sm font-medium text-foreground">
                 {tAssign("heading")}
@@ -160,11 +172,44 @@ export default async function DirectorPlayerPage({
                 {tAssign("description")}
               </p>
             </div>
-            <AssignPlayer
-              playerId={player.id}
-              coaches={assignable}
-              currentCoachId={currentCoach?.userId ?? null}
-            />
+            {coachesByDiscipline.map((group) => (
+              <div key={group.discipline} className="flex flex-col gap-2">
+                <h3 className="text-xs font-medium text-muted">
+                  {group.label}
+                </h3>
+                {group.coaches.length === 0 ? (
+                  <p className="text-sm text-muted">
+                    {tAssign("none")}
+                  </p>
+                ) : (
+                  <ul className="flex flex-col gap-2">
+                    {group.coaches.map((coach) => (
+                      <li
+                        key={coach.userId}
+                        className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 py-2"
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm text-foreground">
+                            {coach.name}
+                          </span>
+                          {!coach.active && (
+                            <span className="block text-xs text-amber-400">
+                              {tAssign("inactive")}
+                            </span>
+                          )}
+                        </span>
+                        <RemoveCoachButton
+                          playerId={player.id}
+                          coachId={coach.userId}
+                          coachName={coach.name}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+            <AddCoachForm playerId={player.id} coaches={addable} />
           </div>
         </div>
 
@@ -198,6 +243,11 @@ export default async function DirectorPlayerPage({
                           dateStyle: "medium",
                           timeStyle: "short",
                         })}
+                      </span>
+                      {/* Kto tréning viedol — od 2026-10-12 sa história pri
+                          zmene trénera neprepisuje, takže je to pravda. */}
+                      <span className="block truncate text-xs text-muted">
+                        {nameOf(session.coach_id)}
                       </span>
                       {total && (
                         <span className="block text-xs text-muted">

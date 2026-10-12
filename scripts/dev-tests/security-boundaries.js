@@ -183,7 +183,9 @@ async function main() {
     // PUBLIC stratil EXECUTE na `security definer` funkciách (audit). Aj keby
     // ho niekto vrátil, funkcie sa bránia samy cez `auth.uid()`.
     for (const fn of [
-      ["assign_player_to_coach", { p_player_id: orgPlayer.id, p_coach_id: orgCoach.id }],
+      ["add_player_coaches", { p_player_ids: [orgPlayer.id], p_coach_ids: [orgCoach.id] }],
+      ["remove_player_coaches", { p_player_ids: [orgPlayer.id], p_coach_ids: [orgCoach.id] }],
+      ["org_member_names", {}],
       ["delete_organization_member", { p_member_id: orgPlayer.id }],
       ["org_players_for_copy", {}],
     ]) {

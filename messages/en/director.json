@@ -20,22 +20,30 @@
   "allActive": "all active",
   "attentionTag": "{count, plural, one {# needs attention} other {# need attention}}",
   "assign": {
-    "label": "Assign to a coach",
+    "label": "Add a coach",
     "placeholder": "Pick a coach...",
-    "submit": "Assign",
-    "pending": "Assigning...",
-    "heading": "Assigned coach",
-    "description": "The player, their practices and their history move to the chosen coach. Nothing is deleted — the data belongs to the organization.",
-    "current": "Currently: {name}",
+    "heading": "Coaches",
+    "description": "Every coach listed here sees all of this player's practices and can log new ones. Each coach can change only the practices they logged themselves, and completed practices keep the name of the coach who led them.",
     "noCoaches": "No coach to assign to. Invite one first.",
     "errors": {
-      "missingCoach": "Pick a coach first.",
       "targetNotCoach": "That account is no longer an active coach of the organization.",
       "playerNotInOrg": "This player does not belong to the organization.",
-      "failed": "Failed to reassign the player."
+      "failed": "The change could not be saved.",
+      "nothingSelected": "Select at least one player and one coach.",
+      "confirmRemove": "Confirm that planned practices of the removed coaches will be cancelled."
     },
-    "disciplineCourt": "{sport}",
-    "disciplineFitness": "Fitness"
+    "none": "No coach yet.",
+    "inactive": "No longer in the organization",
+    "add": "Add",
+    "adding": "Adding...",
+    "allAssigned": "Every coach of the organization is already assigned.",
+    "remove": "Remove",
+    "removeConfirm": "Remove {name} from this player? Their planned practices with this player will be cancelled. Completed practices stay.",
+    "confirmRemove": "Remove coach",
+    "keep": "Keep",
+    "removing": "Removing...",
+    "added": "{count, plural, =0 {Nothing new: the coaches were already assigned.} one {# assignment added.} other {# assignments added.}}",
+    "removed": "{count, plural, =0 {Nothing to remove: the coaches were not assigned.} one {# assignment removed.} other {# assignments removed.}}"
   },
   "team": {
     "link": "Coaches and seats",
@@ -123,5 +131,22 @@
   "disciplineCourt": "{sport}",
   "disciplineFitness": "Fitness",
   "loadSplit": "Last 30 days: {court} min {sport} · {fitness} min fitness",
-  "settings": "Settings"
+  "settings": "Settings",
+  "bulk": {
+    "link": "Assign coaches",
+    "title": "Assign coaches",
+    "intro": "Select players and coaches, then assign or remove them in one step. A player can have several coaches in the same discipline.",
+    "playersHeading": "Players",
+    "coachesHeading": "Coaches",
+    "selectAll": "Select all",
+    "noPlayers": "No players yet.",
+    "noCoaches": "No coach has joined the organization yet.",
+    "noCoachYet": "No coach yet",
+    "assign": "Assign selected coaches",
+    "assigning": "Assigning...",
+    "remove": "Remove selected coaches",
+    "removing": "Removing...",
+    "removeConfirm": "I understand that planned practices of the removed coaches with these players will be cancelled. Completed practices stay.",
+    "back": "Back to the panel"
+  }
 }

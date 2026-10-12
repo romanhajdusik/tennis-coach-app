@@ -110,21 +110,20 @@ async function main() {
   }
   const detailText = textOf(detail.body);
   check("detail hráča sa načíta", detail.status === 200, "status " + detail.status);
-  // Meno prideleného trénera sa od commitu `0560a31` nepíše zvlášť — ukazuje ho
-  // predvolená voľba vo výbere na preradenie (dvakrát by tam stálo zbytočne).
-  // Preto sa kontroluje vybraná `<option>` v surovom HTML, nie text stránky:
-  // v texte sú aj mená ostatných trénerov ako ďalšie voľby, takže obyčajné
-  // „meno je na stránke" by prešlo aj pri zle priradenom hráčovi.
+  // Od 2026-10-12 má hráč zoznam trénerov (môže ich mať viac) a výber slúži
+  // len na PRIDANIE ďalšieho. Pridelený tréner preto musí byť v zozname mimo
+  // `<option>` a vo výbere nesmie byť — inak by šéftréner „pridával" toho,
+  // koho hráč už má. Text bez `<option>` je nutný: v ponuke sú aj mená
+  // ostatných trénerov, takže „meno je na stránke" by prešlo vždy.
+  const withoutOptions = detail.body.replace(/<option[^>]*>[^<]*<\/option>/g, "");
+  const listed = (textOf(withoutOptions).match(/Andrea Prva|Boris Druhy/g) || [])[0];
+  check("ukazuje prideleného trénera", Boolean(listed), detailText.slice(0, 250));
   check(
-    "ukazuje prideleného trénera",
-    // Za menom je od migrácie 20260815090000 aj disciplína („Andrea Prva —
-    // Tennis", do 2026-10-05 „court"): preradenie sa týka len jednej disciplíny, takže výber musí
-    // povedať, ktorú mení.
-    /<option[^>]*\sselected[^>]*>(Andrea Prva|Boris Druhy) — (Tennis|Fitness)</.test(
-      detail.body,
-    ),
-    detailText.slice(0, 250),
+    "pridelený tréner nie je v ponuke na pridanie",
+    listed &&
+      !new RegExp(`<option[^>]*>${listed} — `).test(detail.body),
   );
+  check("pri trénerovi je tlačidlo na odobratie", />Remove</.test(detail.body));
   check("zoznam tréningov", /Practices/.test(detailText));
 
   const sessionId = (detail.body.match(/\/director\/sessions\/([0-9a-f-]{36})/) || [])[1];

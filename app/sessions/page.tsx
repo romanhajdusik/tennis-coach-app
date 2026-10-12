@@ -5,6 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 import { getSelectedPlayer } from "@/lib/players/selected";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import { NewSessionForm } from "./new-session-form";
+import { getColleagueNames } from "@/lib/org/colleagues";
+import {
+  disciplineConfig,
+  getDisciplineConfig,
+  type DisciplineId,
+} from "@/lib/discipline";
 
 type PlannedData = {
   date?: string;
@@ -28,10 +34,22 @@ export default async function SessionsPage() {
   const { data: sessions } = activePlayer
     ? await supabase
         .from("sessions")
-        .select("id, status, planned_data")
+        .select("id, status, planned_data, discipline, coach_id")
         .eq("player_id", activePlayer.id)
         .order("created_at", { ascending: false })
     : { data: null };
+
+  // Vo federácii vydá RLS aj tréningy, ktoré hráčovi zapísal niekto iný —
+  // kolega tej istej disciplíny (viac trénerov pri hráčovi, 2026-10-12) alebo
+  // tréner druhej disciplíny. Tie vedú na read-only detail a nesú, kto ich
+  // viedol; editovateľná stránka by trénerovi každý zápis zamietla.
+  const myDiscipline = (await getDisciplineConfig()).id;
+  const colleagueNames = (sessions ?? []).some(
+    (session) =>
+      session.coach_id !== user.id && session.discipline === myDiscipline,
+  )
+    ? await getColleagueNames(supabase)
+    : new Map<string, string>();
 
   return (
     <div className="mx-auto flex min-h-dvh w-full min-w-0 max-w-md flex-col gap-6 px-4 py-8">
@@ -79,11 +97,20 @@ export default async function SessionsPage() {
               <ul className="flex flex-col gap-2">
                 {sessions.map((session) => {
                   const planned = session.planned_data as PlannedData | null;
+                  const foreign = session.coach_id !== user.id;
+                  const byColleague =
+                    foreign && session.discipline === myDiscipline;
                   return (
                     <li key={session.id}>
                       <Link
-                        href={`/sessions/${session.id}`}
-                        className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 "
+                        href={
+                          foreign
+                            ? `/linked-sessions/${session.id}`
+                            : `/sessions/${session.id}`
+                        }
+                        className={`flex items-center justify-between gap-3 rounded-xl border bg-surface p-4 ${
+                          foreign ? "border-dashed border-border" : "border-border"
+                        }`}
                       >
                         <p className="font-medium text-foreground ">
                           {planned?.date
@@ -93,8 +120,19 @@ export default async function SessionsPage() {
                               })
                             : t("noDate")}
                         </p>
-                        <span className="text-xs font-medium text-muted ">
-                          {tCommon(`status.${session.status}`)}
+                        <span className="min-w-0 truncate text-xs font-medium text-muted ">
+                          {byColleague
+                            ? t("byColleague", {
+                                status: tCommon(`status.${session.status}`),
+                                name:
+                                  colleagueNames.get(session.coach_id) ||
+                                  t("linked.colleague"),
+                              })
+                            : foreign
+                              ? disciplineConfig(
+                                  session.discipline as DisciplineId,
+                                ).label
+                              : tCommon(`status.${session.status}`)}
                         </span>
                       </Link>
                     </li>

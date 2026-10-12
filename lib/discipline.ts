@@ -24,9 +24,9 @@ export {
  *
  * - zo ŠPORTU HRÁČA nie, lebo kondičný tréner má v jednom rosteri tenistu
  *   aj bedmintonistu,
- * - z TRÉNERA nie, lebo `assign_player_to_coach` prepisuje `coach_id` aj na
- *   starých tréningoch, takže by preradenie hráča spätne premenilo tenisové
- *   tréningy na kondičné,
+ * - z TRÉNERA nie, lebo hráč má vo federácii naraz tenisových aj kondičných
+ *   trénerov (od 2026-10-12 aj viac v jednej disciplíne) a dovtedy sa navyše
+ *   pri preradení prepisoval `coach_id` aj na starých tréningoch,
  * - z HOSTNAME nie, lebo vo federácii chodia tenisový aj kondičný tréner na
  *   tú istú org subdoménu.
  *

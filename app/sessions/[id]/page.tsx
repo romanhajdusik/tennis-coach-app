@@ -35,12 +35,19 @@ export default async function SessionDetailPage({
 
   const { data: session } = await supabase
     .from("sessions")
-    .select("id, status, planned_data, actual_data, notes, player_id")
+    .select("id, status, planned_data, actual_data, notes, player_id, coach_id")
     .eq("id", id)
     .maybeSingle();
 
   if (!session) {
     notFound();
+  }
+
+  // Cudzí tréning (kolega pri tom istom hráčovi alebo druhá disciplína) patrí
+  // na read-only detail — tu by mal tréner tlačidlá, ktoré mu server zamietne.
+  // Zrkadlo presmerovania na `/linked-sessions/[id]` opačným smerom.
+  if (session.coach_id !== user.id) {
+    redirect(`/linked-sessions/${session.id}`);
   }
 
   const { data: drills } = await supabase

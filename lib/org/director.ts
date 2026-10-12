@@ -69,19 +69,17 @@ function emptyMinutes(): MinutesByKind {
 }
 
 /**
- * Tréner danej disciplíny, `null` keď hráč v nej trénera nemá. Pozornosť aj
- * meno trénera pri hráčovi sú vec KURTU — kondičný tréner za dni bez tréningu
+ * Tréneri danej disciplíny (od 2026-10-12 ich môže byť viac). Pozornosť aj
+ * mená trénerov pri hráčovi sú vec KURTU — kondičný tréner za dni bez tréningu
  * na kurte nezodpovedá.
  */
-export function coachIdFor(
+export function coachIdsFor(
   entry: DirectorPlayer,
   discipline: OrgDiscipline,
-): string | null {
-  return (
-    entry.assignments.find(
-      (assignment) => assignment.discipline === discipline,
-    )?.coachId ?? null
-  );
+): string[] {
+  return entry.assignments
+    .filter((assignment) => assignment.discipline === discipline)
+    .map((assignment) => assignment.coachId);
 }
 
 export async function getDirectorDashboard(
@@ -187,16 +185,18 @@ export async function getDirectorDashboard(
 
   coaches.sort((a, b) => a.name.localeCompare(b.name));
 
-  // Hráči s priradením na niekoho, kto už nie je aktívnym členom — po odchode
+  // Hráči, s ktorými už nepracuje NIKTO z aktívnych trénerov — po odchode
   // trénera ostávajú federácii (to je celý zmysel org vlastníctva, §5.4),
   // takže z pultu nesmú zmiznúť, kým ich niekto neprevezme. Rovnako sem patrí
   // hráč BEZ priradenia (napr. po trvalom zmazaní člena). Skupina bez `userId`
-  // si názov berie z prekladov (šéftréner meno bývalého už nevidí).
+  // si názov berie z prekladov.
+  //
+  // Od 2026-10-12 môže mať hráč viac trénerov: kým mu ostal aspoň jeden aktívny,
+  // sem nepatrí — odídeného kolegu šéftréner odoberie na profile hráča.
   const orphaned = entries.filter(
     (entry) =>
-      entry.assignments.length === 0 ||
-      entry.assignments.some(
-        (assignment) => !coachIds.includes(assignment.coachId),
+      !entry.assignments.some((assignment) =>
+        coachIds.includes(assignment.coachId),
       ),
   );
   if (orphaned.length > 0) {

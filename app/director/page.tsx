@@ -3,12 +3,12 @@ import { getTranslations, getTimeZone } from "next-intl/server";
 import { logout } from "@/lib/actions/auth";
 import {
   getDirectorDashboard,
-  coachIdFor,
+  coachIdsFor,
   type DirectorPlayer,
 } from "@/lib/org/director";
 import { disciplineConfig, isCourtDiscipline } from "@/lib/disciplines/registry";
 import { requireDirector } from "./guard";
-import { AssignPlayer } from "./assign-player";
+import { AddCoachForm } from "./coach-assignment";
 import {
   AttentionDot,
   ATTENTION_TEXT_CLASSES,
@@ -30,6 +30,7 @@ export default async function DirectorPage() {
   const tCompare = await getTranslations("Director.compare");
   const tTeam = await getTranslations("Director.team");
   const tDrillCodes = await getTranslations("Director.drillCodes");
+  const tBulk = await getTranslations("Director.bulk");
   const { supabase, org } = await requireDirector();
   const timeZone = await getTimeZone();
 
@@ -74,8 +75,22 @@ export default async function DirectorPage() {
     .map((coach) => ({
       userId: coach.userId as string,
       name: coach.name,
-      discipline: coach.discipline ?? org.courtDiscipline,
+      disciplineLabel:
+        !coach.discipline || isCourtDiscipline(coach.discipline)
+          ? t("disciplineCourt", { sport })
+          : t("disciplineFitness"),
     }));
+
+  // Meno trénera pri hráčovi v zozname pozornosti — tréneri na kurte, od
+  // 2026-10-12 ich môže byť viac.
+  const courtCoachNames = (entry: DirectorPlayer) =>
+    coachIdsFor(entry, org.courtDiscipline)
+      .map(
+        (id) =>
+          dashboard.coaches.find((coach) => coach.userId === id)?.name ?? "",
+      )
+      .filter(Boolean)
+      .join(", ") || t("formerCoach");
 
   return (
     // Pult je nástroj pre laptop/tablet (na rozdiel od trénerovej appky, ktorá
@@ -101,6 +116,12 @@ export default async function DirectorPage() {
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >
             {tCompare("link")}
+          </Link>
+          <Link
+            href="/director/assign"
+            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground"
+          >
+            {tBulk("link")}
           </Link>
           <Link
             href="/director/team"
@@ -149,12 +170,7 @@ export default async function DirectorPage() {
                   entry={entry}
                   last={labels.get(entry.player.id)?.last ?? ""}
                   next={labels.get(entry.player.id)?.next ?? ""}
-                  coachName={
-                    dashboard.coaches.find(
-                      (coach) =>
-                        coach.userId === coachIdFor(entry, org.courtDiscipline),
-                    )?.name ?? t("formerCoach")
-                  }
+                  coachName={courtCoachNames(entry)}
                 />
               </li>
             ))}
@@ -237,10 +253,9 @@ export default async function DirectorPage() {
                           nikto nepracuje. Formulár je mimo karty: karta je
                           `<a>` a formulár sa doň vnoriť nesmie. */}
                       {!coach.userId && (
-                        <AssignPlayer
+                        <AddCoachForm
                           playerId={entry.player.id}
                           coaches={assignable}
-                          currentCoachId={null}
                         />
                       )}
                     </li>

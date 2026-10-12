@@ -721,9 +721,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      assign_player_to_coach: {
-        Args: { p_coach_id: string; p_player_id: string }
-        Returns: undefined
+      add_player_coaches: {
+        Args: { p_coach_ids: string[]; p_player_ids: string[] }
+        Returns: number
       }
       claim_organization_invite: {
         Args: { p_code: string }
@@ -773,6 +773,13 @@ export type Database = {
           duration_minutes: number
         }[]
       }
+      org_member_names: {
+        Args: never
+        Returns: {
+          full_name: string
+          user_id: string
+        }[]
+      }
       org_players_for_copy: {
         Args: never
         Returns: {
@@ -795,6 +802,10 @@ export type Database = {
       promo_code_is_valid: { Args: { p_code: string }; Returns: boolean }
       reads_linked_player: { Args: { p_player_id: string }; Returns: boolean }
       reads_linked_session: { Args: { p_session_id: string }; Returns: boolean }
+      remove_player_coaches: {
+        Args: { p_coach_ids: string[]; p_player_ids: string[] }
+        Returns: number
+      }
       revoke_my_connection: { Args: never; Returns: undefined }
       revoke_player_link: { Args: { p_link_id: string }; Returns: undefined }
       set_link_follower_sharing: {

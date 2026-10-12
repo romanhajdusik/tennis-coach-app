@@ -19,7 +19,10 @@
     "notes": "Notes",
     "noNotes": "No notes.",
     "drillsHeading": "Drills",
-    "noDrills": "No drills recorded."
+    "noDrills": "No drills recorded.",
+    "byCoach": "Logged by {name}",
+    "colleague": "a colleague",
+    "readOnlyNoteColleague": "Recorded by a colleague who also coaches this player. You can see it, but only they can change it."
   },
   "newForm": {
     "heading": "Schedule a practice",
@@ -119,5 +122,6 @@
     "invalidDuration": "Invalid duration.",
     "addFailed": "Failed to add the drill.",
     "replaceFailed": "Failed to add the replacement drill."
-  }
+  },
+  "byColleague": "{status} · {name}"
 }

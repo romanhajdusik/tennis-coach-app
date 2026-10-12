@@ -216,16 +216,21 @@ async function main() {
   // `player_assignments` (hráč × tréner × disciplína).
   const { data: borisAssignment } = await db
     .from("player_assignments")
-    .select("player_id, discipline, players(id, name, is_active)")
+    .select("player_id, discipline, organization_id, players(id, name, is_active)")
     .eq("coach_id", boris.user_id)
     .limit(1)
     .single();
   const orphan = borisAssignment.players;
   const { data: orphanSessions } = await db
     .from("sessions")
-    .select("id")
-    .eq("player_id", orphan.id);
+    .select("id, status")
+    .eq("player_id", orphan.id)
+    .eq("coach_id", boris.user_id);
   const orphanSessionIds = (orphanSessions ?? []).map((session) => session.id);
+  // Odobratie Borisa od hráča ich zruší — upratanie ich musí vrátiť.
+  const borisPlannedIds = (orphanSessions ?? [])
+    .filter((session) => session.status === "planned")
+    .map((session) => session.id);
 
   try {
     // Odobratie ide cez UI (potvrdzuje sa natívnym `confirm`).
@@ -250,7 +255,7 @@ async function main() {
     check("jeho hráči ostali federácii", new RegExp(orphan.name).test(orphaned));
     check("sú v skupine po odídenom trénerovi", /No longer in the organization/.test(orphaned));
     const selects = await director.locator('select[name="coachId"]').count();
-    check("pri nich je výber nového trénera", selects >= 1, "výberov: " + selects);
+    check("pri nich je výber trénera", selects >= 1, "výberov: " + selects);
 
     await director
       .locator('select[name="coachId"]')
@@ -262,19 +267,28 @@ async function main() {
       .click();
     await director.waitForTimeout(3000);
 
-    const { data: reassigned } = await db
+    // Od 2026-10-12 sa tréner PRIDÁVA (hráč môže mať viac trénerov) a história
+    // sa neprepisuje: Borisove tréningy ostávajú podpísané ním.
+    const { data: afterAdd } = await db
       .from("player_assignments")
       .select("coach_id")
       .eq("player_id", orphan.id)
-      .eq("discipline", borisAssignment.discipline)
-      .single();
-    check("priradenie prešlo na zvoleného trénera", reassigned.coach_id === andrea.user_id);
-    const { count: strandedSessions } = await db
+      .eq("discipline", borisAssignment.discipline);
+    check(
+      "zvolený tréner je hráčovi pridaný",
+      (afterAdd ?? []).some((row) => row.coach_id === andrea.user_id),
+      JSON.stringify(afterAdd),
+    );
+    const { count: keptSessions } = await db
       .from("sessions")
       .select("id", { count: "exact", head: true })
       .eq("player_id", orphan.id)
       .eq("coach_id", boris.user_id);
-    check("po hráčovi neostali tréningy pri starom trénerovi", strandedSessions === 0, "zvyšok: " + strandedSessions);
+    check(
+      "história ostala podpísaná pôvodným trénerom",
+      keptSessions === orphanSessionIds.length,
+      `${keptSessions}/${orphanSessionIds.length}`,
+    );
 
     await director.goto(`${BASE}/director`);
     await director.waitForTimeout(2000);
@@ -282,6 +296,45 @@ async function main() {
     check("skupina po odídenom trénerovi zmizla", !/No longer in the organization/.test(afterAssign));
     check("hráč je stále v pulte", new RegExp(orphan.name).test(afterAssign));
     await director.screenshot({ path: `${SCREENSHOT_DIR}/assign.png`, fullPage: true });
+
+    // Odídeného Borisa šéftréner od hráča odoberie na jeho profile —
+    // dvojkrokovo, lebo to zruší Borisove naplánované tréningy s hráčom.
+    await director.goto(`${BASE}/director/players/${orphan.id}`);
+    await director.waitForTimeout(2000);
+    const profileText = await browserText(director);
+    check("na profile je odídený tréner označený", /No longer in the organization/.test(profileText));
+    await director
+      .locator('li:has-text("No longer in the organization") button:has-text("Remove")')
+      .first()
+      .click();
+    await director.waitForTimeout(500);
+    check(
+      "pred odobratím sa pýta a varuje pred zrušením tréningov",
+      /planned practices with this player will be cancelled/.test(await browserText(director)),
+    );
+    await director.locator('button:has-text("Remove coach")').first().click();
+    await director.waitForTimeout(3000);
+    const { data: afterRemove } = await db
+      .from("player_assignments")
+      .select("coach_id")
+      .eq("player_id", orphan.id)
+      .eq("discipline", borisAssignment.discipline);
+    check(
+      "odídený tréner je od hráča odobratý",
+      (afterRemove ?? []).length === 1 && afterRemove[0].coach_id === andrea.user_id,
+      JSON.stringify(afterRemove),
+    );
+    if (borisPlannedIds.length > 0) {
+      const { data: cancelled } = await db
+        .from("sessions")
+        .select("status")
+        .in("id", borisPlannedIds);
+      check(
+        "jeho naplánované tréningy sa zrušili",
+        (cancelled ?? []).every((row) => row.status === "cancelled"),
+        JSON.stringify(cancelled),
+      );
+    }
 
     // Overenie z druhej strany: hráča preberá nový tréner aj v svojej appke.
     const takeover = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -302,11 +355,26 @@ async function main() {
     // nerobilo, ďalší beh našiel hráča podľa `coach_id` pri Borisovi, ale
     // priradený bol stále Andrei — po odobratí Borisa teda nevznikla skupina
     // „No longer in the organization" a scenár padol bez zjavnej príčiny.
+    // Od 2026-10-12: hráč smie mať viac trénerov, takže sa Andrein riadok
+    // zmaže a Borisov sa vráti (odobratie ho zmazalo).
     await db
       .from("player_assignments")
-      .update({ coach_id: boris.user_id })
+      .delete()
       .eq("player_id", orphan.id)
-      .eq("discipline", borisAssignment.discipline);
+      .eq("discipline", borisAssignment.discipline)
+      .neq("coach_id", boris.user_id);
+    await db.from("player_assignments").upsert(
+      {
+        organization_id: borisAssignment.organization_id,
+        player_id: orphan.id,
+        coach_id: boris.user_id,
+        discipline: borisAssignment.discipline,
+      },
+      { onConflict: "player_id,discipline,coach_id", ignoreDuplicates: true },
+    );
+    if (borisPlannedIds.length > 0) {
+      await db.from("sessions").update({ status: "planned" }).in("id", borisPlannedIds);
+    }
     await db.from("players").update({ coach_id: boris.user_id }).eq("id", orphan.id);
     await db.from("sessions").update({ coach_id: boris.user_id }).eq("player_id", orphan.id);
     if (orphanSessionIds.length > 0) {
@@ -516,6 +584,150 @@ async function main() {
     if (fitnessSessionId) {
       await db.from("sessions").delete().eq("id", fitnessSessionId);
     }
+  }
+
+  section("10) Viac trénerov pri hráčovi: hromadné priradenie a kolegov tréning");
+  // Od 2026-10-12: skupina trénerov na skupinu hráčov jedným krokom, a tréner
+  // vidí tréningy kolegu pri spoločnom hráčovi s jeho menom, len na čítanie.
+  const { data: profiles10 } = await db
+    .from("profiles")
+    .select("id, full_name")
+    .in("full_name", ["Andrea Prva", "Boris Druhy"]);
+  const { data: members10 } = await db
+    .from("organization_members")
+    .select("user_id, organization_id")
+    .eq("role", "coach")
+    .eq("status", "active")
+    .in("user_id", (profiles10 ?? []).map((profile) => profile.id));
+  const memberByName = (name) => {
+    const id = (profiles10 ?? []).find((profile) => profile.full_name === name)?.id;
+    return (members10 ?? []).find((member) => member.user_id === id);
+  };
+  const andrea10 = memberByName("Andrea Prva");
+  const boris10 = memberByName("Boris Druhy");
+  const { data: andreaPlayers } = await db
+    .from("player_assignments")
+    .select("player_id, players(name)")
+    .eq("coach_id", andrea10.user_id)
+    .eq("discipline", "tennis")
+    .limit(2);
+  const shared = andreaPlayers.map((row) => ({ id: row.player_id, name: row.players.name }));
+  let colleagueSessionId = null;
+  const colleagueContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  try {
+    await director.setViewportSize({ width: 1440, height: 900 });
+    await director.goto(`${BASE}/director`);
+    await director.waitForTimeout(1500);
+    await director.click("a:has-text('Assign coaches')");
+    await director.waitForTimeout(2000);
+    check("z pultu sa dá prejsť na hromadné priradenie", /\/director\/assign/.test(director.url()));
+
+    for (const player of shared) {
+      await director.locator(`label:has-text("${player.name}") input[name="playerId"]`).check();
+    }
+    await director.locator(`label:has-text("Boris Druhy") input[name="coachId"]`).check();
+    await director.click("button:has-text('Assign selected coaches')");
+    await director.waitForTimeout(3000);
+    check(
+      "potvrdí počet nových priradení",
+      /2 assignments added/.test(await browserText(director)),
+    );
+    const { data: afterBulk } = await db
+      .from("player_assignments")
+      .select("player_id")
+      .eq("coach_id", boris10.user_id)
+      .in("player_id", shared.map((player) => player.id));
+    check("obaja hráči majú teraz aj Borisa", (afterBulk ?? []).length === 2);
+    await director.screenshot({ path: `${SCREENSHOT_DIR}/bulk-assign.png`, fullPage: true });
+
+    // Andrea má s prvým spoločným hráčom tréning — Boris ho má vidieť s jej
+    // menom a otvoriť len na čítanie.
+    const { data: andreaSession } = await db
+      .from("sessions")
+      .insert({
+        coach_id: andrea10.user_id,
+        organization_id: andrea10.organization_id,
+        player_id: shared[0].id,
+        status: "planned",
+        planned_data: { date: new Date(Date.now() + 3600_000).toISOString(), duration_minutes: 60 },
+        discipline: "tennis",
+      })
+      .select("id")
+      .single();
+    colleagueSessionId = andreaSession.id;
+
+    const borisPage = await colleagueContext.newPage();
+    await browserLogin(borisPage, "coach2-today@test.local", BASE);
+    await borisPage.goto(`${BASE}/`);
+    await borisPage.waitForTimeout(2500);
+    const borisHome = await browserText(borisPage);
+    check(
+      "na nástenke je kolegov tréning s jej menom",
+      new RegExp(`${shared[0].name}\\s*·\\s*Andrea Prva`).test(borisHome),
+      borisHome.slice(0, 300),
+    );
+
+    await borisPage.goto(`${BASE}/linked-sessions/${colleagueSessionId}`);
+    await borisPage.waitForTimeout(2000);
+    const readOnly = await browserText(borisPage);
+    check("detail kolegovho tréningu ukáže, kto ho viedol", /Logged by Andrea Prva/.test(readOnly));
+    check("a je len na čítanie", (await borisPage.locator("form").count()) === 0 || !/Complete practice/.test(readOnly));
+
+    await borisPage.goto(`${BASE}/sessions/${colleagueSessionId}`);
+    await borisPage.waitForTimeout(2000);
+    check(
+      "editovateľná adresa presmeruje na read-only detail",
+      new RegExp(`/linked-sessions/${colleagueSessionId}`).test(borisPage.url()),
+      borisPage.url(),
+    );
+    await borisPage.screenshot({ path: `${SCREENSHOT_DIR}/colleague-session.png`, fullPage: true });
+
+    // Hromadné odobratie bez potvrdenia neprejde, s ním áno.
+    await director.goto(`${BASE}/director/assign`);
+    await director.waitForTimeout(2000);
+    for (const player of shared) {
+      await director.locator(`label:has-text("${player.name}") input[name="playerId"]`).check();
+    }
+    await director.locator(`label:has-text("Boris Druhy") input[name="coachId"]`).check();
+    await director.click("button:has-text('Remove selected coaches')");
+    await director.waitForTimeout(2500);
+    check(
+      "odobratie bez potvrdenia neprejde",
+      /Confirm that planned practices/.test(await browserText(director)),
+    );
+    for (const player of shared) {
+      await director.locator(`label:has-text("${player.name}") input[name="playerId"]`).check();
+    }
+    await director.locator(`label:has-text("Boris Druhy") input[name="coachId"]`).check();
+    await director.locator('input[name="confirm"]').check();
+    await director.click("button:has-text('Remove selected coaches')");
+    await director.waitForTimeout(3000);
+    check(
+      "s potvrdením odoberie",
+      /2 assignments removed/.test(await browserText(director)),
+    );
+    const { data: afterRemove10 } = await db
+      .from("player_assignments")
+      .select("player_id")
+      .eq("coach_id", boris10.user_id)
+      .in("player_id", shared.map((player) => player.id));
+    check("Boris už hráčov nemá", (afterRemove10 ?? []).length === 0);
+    const { data: andreaKept } = await db
+      .from("sessions")
+      .select("status")
+      .eq("id", colleagueSessionId)
+      .single();
+    check("Andrein naplánovaný tréning sa nezrušil", andreaKept.status === "planned", andreaKept.status);
+  } finally {
+    await colleagueContext.close();
+    if (colleagueSessionId) {
+      await db.from("sessions").delete().eq("id", colleagueSessionId);
+    }
+    await db
+      .from("player_assignments")
+      .delete()
+      .eq("coach_id", boris10.user_id)
+      .in("player_id", shared.map((player) => player.id));
   }
 
   // upratanie, nech seed ostane v pôvodnom stave

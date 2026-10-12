@@ -5,6 +5,7 @@ import { getRosterOverview, type ScheduledSession } from "@/lib/players/roster";
 import { getActivePlayers } from "@/lib/players/selected";
 import { getDiscipline } from "@/lib/discipline";
 import type { OrgContext } from "@/lib/org/context";
+import { getColleagueNames } from "@/lib/org/colleagues";
 
 // Ľavý rámček karty tréningu podľa stavu — rovnaká konvencia ako v kalendári.
 const SESSION_BORDER_CLASSES: Record<string, string> = {
@@ -74,6 +75,22 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
       .sort((a, b) => a.date.localeCompare(b.date))
       .at(-1) ?? null;
 
+  // Vo federácii môže mať hráč viac trénerov tej istej disciplíny (2026-10-12)
+  // — ich tréningy sú v rozvrhu tiež a musí byť vidieť, kto ich vedie. Mená sa
+  // pýtajú len vtedy, keď taký tréning naozaj je.
+  const shown = [
+    ...overview.today,
+    ...overview.tomorrow,
+    ...(lastSession ? [lastSession] : []),
+  ];
+  const colleagueNames = shown.some((session) => session.coachId !== user.id)
+    ? await getColleagueNames(supabase)
+    : new Map<string, string>();
+  const colleagueOf = (session: ScheduledSession) =>
+    session.coachId === user.id
+      ? undefined
+      : colleagueNames.get(session.coachId) || t("colleague");
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-5">
       <div>
@@ -99,7 +116,11 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
           // 2026-09-24) — namiesto hlášky sa ukáže posledný odtrénovaný, aby
           // bolo na čo ťuknúť. Staršie než okno rostera už v dátach nie sú.
           lastSession ? (
-            <SessionRow session={lastSession} showDate />
+            <SessionRow
+              session={lastSession}
+              showDate
+              colleague={colleagueOf(lastSession)}
+            />
           ) : (
             <p className="text-sm text-muted">{t("noSessionsToday")}</p>
           )
@@ -107,7 +128,10 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
           <ul className="flex flex-col gap-2">
             {overview.today.map((session) => (
               <li key={session.id}>
-                <SessionRow session={session} />
+                <SessionRow
+                  session={session}
+                  colleague={colleagueOf(session)}
+                />
               </li>
             ))}
           </ul>
@@ -128,7 +152,11 @@ export async function TodayBoard({ org }: { org?: OrgContext | null }) {
           <ul className="flex flex-col gap-2">
             {overview.tomorrow.map((session) => (
               <li key={session.id}>
-                <SessionRow session={session} muted />
+                <SessionRow
+                  session={session}
+                  muted
+                  colleague={colleagueOf(session)}
+                />
               </li>
             ))}
           </ul>
@@ -147,11 +175,14 @@ async function SessionRow({
   session,
   muted,
   showDate,
+  colleague,
 }: {
   session: ScheduledSession;
   muted?: boolean;
   /** Pri staršom tréningu nestačí čas — bez dátumu nie je jasné, kedy bol. */
   showDate?: boolean;
+  /** Meno kolegu, ak tréning nezapísal tento tréner — otvorí sa len na čítanie. */
+  colleague?: string;
 }) {
   const t = await getTranslations("Today");
   const tCommon = await getTranslations("Common");
@@ -162,7 +193,9 @@ async function SessionRow({
       action={selectPlayerAndOpen.bind(
         null,
         session.playerId,
-        `/sessions/${session.id}`,
+        colleague
+          ? `/linked-sessions/${session.id}`
+          : `/sessions/${session.id}`,
       )}
     >
       <button
@@ -184,6 +217,9 @@ async function SessionRow({
         </span>
         <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
           {session.playerName}
+          {colleague && (
+            <span className="font-normal text-muted">{` · ${colleague}`}</span>
+          )}
         </span>
         <span
           className={`flex-none rounded-full px-2 py-0.5 text-xs font-medium ${

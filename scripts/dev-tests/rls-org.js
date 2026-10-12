@@ -203,7 +203,11 @@ async function main() {
   const { data: orgs } = await director.from("organizations").select("id");
   check("vidí len vlastnú organizáciu", (orgs ?? []).length === 1);
 
-  section("9) Preradenie hráča (assign_player_to_coach)");
+  section("9) Viac trénerov pri hráčovi (add_player_coaches / remove_player_coaches)");
+  // Od migrácie 20261012090000: hráč môže mať v disciplíne viac trénerov
+  // naraz, každý vidí všetky jeho tréningy, ale mení len tie, ktoré sám
+  // založil. História sa pri zmene trénera NEPREPISUJE a odobratie trénera
+  // zruší jeho naplánované tréningy s hráčom (rozhodol user 2026-10-12).
   const { data: coachUsers } = await db
     .from("organization_members")
     .select("user_id, role")
@@ -215,8 +219,7 @@ async function main() {
   // **Trénerov ber podľa e-mailu, nie podľa poradia riadkov.** Dotaz vyššie je
   // bez `order`, takže poradie závisí od toho, kedy ktoré členstvo vzniklo —
   // a `browser-director.js` jedného trénera odoberá a zase vracia, čím sa
-  // poradie preklopí. Scenár nižšie sa prihlasuje konkrétnymi účtami, takže
-  // pri opačnom poradí kontroloval nesprávneho trénera a padal.
+  // poradie preklopí.
   const emailToId = (email) => users.users.find((user) => user.email === email).id;
   const coachA = emailToId("coach-today@test.local");
   const coachB = emailToId("coach2-today@test.local");
@@ -225,32 +228,38 @@ async function main() {
     activeIds.has(coachA) && activeIds.has(coachB),
   );
 
-  const { data: moved } = await db
+  const { data: aPlayers } = await db
     .from("players")
     .select("id, name")
     .eq("coach_id", coachA)
+    .eq("organization_id", org.id)
     .eq("is_active", true)
     .order("name")
-    .limit(1)
-    .single();
+    .limit(2);
+  const moved = aPlayers[0];
+  const second = aPlayers[1];
 
-  // Koľko riadkov histórie hráč má — po preradení sa musí presunúť všetko,
-  // inak nový tréner uvidí hráča, ale nie jeho tréningy.
-  const { data: hisSessions } = await db.from("sessions").select("id").eq("player_id", moved.id);
-  const sessionIds = (hisSessions ?? []).map((s) => s.id);
-  const { count: drillCount } = await db
-    .from("session_drills")
+  const { count: historyByA } = await db
+    .from("sessions")
     .select("id", { count: "exact", head: true })
-    .in("session_id", sessionIds.length ? sessionIds : ["00000000-0000-0000-0000-000000000000"]);
+    .eq("player_id", moved.id)
+    .eq("coach_id", coachA);
 
-  const byCoach = await coach.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: coachB });
-  check("tréner preradiť nemôže", /not_director/.test(byCoach.error?.message ?? ""), byCoach.error?.message ?? "PRESLO!");
+  const pair = (players, coaches) => ({ p_player_ids: players, p_coach_ids: coaches });
 
-  const toOutsider = await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: outsider.id });
-  check("nečlenovi sa hráč prideliť nedá", /target_not_coach/.test(toOutsider.error?.message ?? ""), toOutsider.error?.message ?? "PRESLO!");
+  const byCoach = await coach.rpc("add_player_coaches", pair([moved.id], [coachB]));
+  check("tréner trénera pridať nemôže", /not_director/.test(byCoach.error?.message ?? ""), byCoach.error?.message ?? "PRESLO!");
+  const byCoachRemove = await coach.rpc("remove_player_coaches", pair([moved.id], [coachA]));
+  check("tréner trénera odobrať nemôže", /not_director/.test(byCoachRemove.error?.message ?? ""), byCoachRemove.error?.message ?? "PRESLO!");
 
-  const toDirector = await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: directorId });
-  check("šéftrénerovi samému sa hráč prideliť nedá", /target_not_coach/.test(toDirector.error?.message ?? ""), toDirector.error?.message ?? "PRESLO!");
+  const toOutsider = await director.rpc("add_player_coaches", pair([moved.id], [outsider.id]));
+  check("nečlena pridať nejde", /target_not_coach/.test(toOutsider.error?.message ?? ""), toOutsider.error?.message ?? "PRESLO!");
+
+  const toDirector = await director.rpc("add_player_coaches", pair([moved.id], [directorId]));
+  check("šéftréner sa hráčovi pridať nedá", /target_not_coach/.test(toDirector.error?.message ?? ""), toDirector.error?.message ?? "PRESLO!");
+
+  const empty = await director.rpc("add_player_coaches", pair([], [coachB]));
+  check("prázdny výber neprejde", /nothing_selected/.test(empty.error?.message ?? ""), empty.error?.message ?? "PRESLO!");
 
   const { data: personal } = await db
     .from("players")
@@ -259,52 +268,211 @@ async function main() {
     .limit(1)
     .maybeSingle();
   if (personal) {
-    const foreignPlayer = await director.rpc("assign_player_to_coach", { p_player_id: personal.id, p_coach_id: coachB });
-    check("hráča mimo organizácie nepreradí", /player_not_in_org/.test(foreignPlayer.error?.message ?? ""), foreignPlayer.error?.message ?? "PRESLO!");
+    const foreignPlayer = await director.rpc("add_player_coaches", pair([personal.id], [coachB]));
+    check("hráča mimo organizácie nepriradí", /player_not_in_org/.test(foreignPlayer.error?.message ?? ""), foreignPlayer.error?.message ?? "PRESLO!");
+    const foreignRemove = await director.rpc("remove_player_coaches", pair([personal.id], [coachB]));
+    check("ani neodoberie", /player_not_in_org/.test(foreignRemove.error?.message ?? ""), foreignRemove.error?.message ?? "PRESLO!");
+    // Zmiešaný výber (vlastný + cudzí hráč) neprejde celý — nič sa nezapíše.
+    const mixed = await director.rpc("add_player_coaches", pair([moved.id, personal.id], [coachB]));
+    check("zmiešaný výber s cudzím hráčom neprejde", /player_not_in_org/.test(mixed.error?.message ?? ""), mixed.error?.message ?? "PRESLO!");
   }
 
-  const ok = await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: coachB });
-  check(`šéftréner preradí hráča (${moved.name})`, ok.error === null, ok.error?.message);
+  const added = await director.rpc("add_player_coaches", pair([moved.id], [coachB]));
+  check(`šéftréner pridá druhého trénera (${moved.name})`, added.error === null && added.data === 1, added.error?.message ?? `vrátilo ${added.data}`);
+  const again = await director.rpc("add_player_coaches", pair([moved.id], [coachB]));
+  check("opakované pridanie nič nezdvojí", again.error === null && again.data === 0, again.error?.message ?? `vrátilo ${again.data}`);
 
-  // Od migrácie 20260815090000 hovorí o priradení `player_assignments`, nie
-  // `players.coach_id` — ten v org režime zamrzol ako AUTOR riadku, aby hráč
-  // mohol mať naraz tenisového aj kondičného trénera (docs §2.2).
-  const { data: afterAssignment } = await db
+  const { data: tennisRows } = await db
     .from("player_assignments")
-    .select("coach_id, discipline")
-    .eq("player_id", moved.id);
-  const tennisAssignment = (afterAssignment ?? []).find((row) => row.discipline === "tennis");
-  check("priradenie prešlo na nového trénera", tennisAssignment?.coach_id === coachB);
+    .select("coach_id")
+    .eq("player_id", moved.id)
+    .eq("discipline", "tennis");
+  check(
+    "hráč má naraz dvoch tenisových trénerov",
+    (tennisRows ?? []).length === 2 &&
+      tennisRows.some((row) => row.coach_id === coachA) &&
+      tennisRows.some((row) => row.coach_id === coachB),
+    JSON.stringify(tennisRows),
+  );
 
-  const { data: afterPlayer } = await db.from("players").select("coach_id").eq("id", moved.id).single();
-  check("players.coach_id sa nemenil (autor riadku)", afterPlayer.coach_id !== coachB);
-  const { count: movedSessions } = await db
+  const { count: stillByA } = await db
     .from("sessions")
     .select("id", { count: "exact", head: true })
     .eq("player_id", moved.id)
-    .eq("coach_id", coachB);
-  check(`história prešla s ním (${movedSessions}/${sessionIds.length} tréningov)`, movedSessions === sessionIds.length);
-  const { count: movedDrills } = await db
-    .from("session_drills")
-    .select("id", { count: "exact", head: true })
-    .in("session_id", sessionIds.length ? sessionIds : ["00000000-0000-0000-0000-000000000000"])
-    .eq("coach_id", coachB);
-  check(`cvičenia prešli s ním (${movedDrills}/${drillCount})`, movedDrills === drillCount);
+    .eq("coach_id", coachA);
+  check(`história ostala podpísaná pôvodným trénerom (${stillByA}/${historyByA})`, stillByA === historyByA);
 
-  // Prístup sa riadi RLS, nie appkou — preto sa pozeráme cez session oboch trénerov.
-  const newCoach = await signIn("coach2-today@test.local");
-  const { data: seenByNew } = await newCoach.from("players").select("id").eq("id", moved.id);
-  check("nový tréner hráča vidí", (seenByNew ?? []).length === 1);
-  const { data: seenSessions } = await newCoach.from("sessions").select("id").eq("player_id", moved.id);
-  check("nový tréner vidí aj jeho históriu", (seenSessions ?? []).length === sessionIds.length, `${(seenSessions ?? []).length}/${sessionIds.length}`);
-  const oldCoach = await signIn("coach-today@test.local");
-  const { data: seenByOld } = await oldCoach.from("players").select("id").eq("id", moved.id);
-  check("pôvodný tréner ho už nevidí", (seenByOld ?? []).length === 0);
+  const coachBSession = await signIn("coach2-today@test.local");
+  const { data: seenByB } = await coachBSession.from("players").select("id").eq("id", moved.id);
+  check("druhý tréner hráča vidí", (seenByB ?? []).length === 1);
+  const { data: bSeesHistory } = await coachBSession
+    .from("sessions")
+    .select("id")
+    .eq("player_id", moved.id)
+    .eq("coach_id", coachA);
+  check("druhý tréner vidí kolegove tréningy", (bSeesHistory ?? []).length === historyByA, `${(bSeesHistory ?? []).length}/${historyByA}`);
+  const { data: aStillSees } = await coach.from("players").select("id").eq("id", moved.id);
+  check("pôvodný tréner hráča vidí ďalej", (aStillSees ?? []).length === 1);
 
-  // vrátenie do pôvodného stavu, aby ostatné sady sedeli
-  await director.rpc("assign_player_to_coach", { p_player_id: moved.id, p_coach_id: coachA });
-  const { data: restored } = await db.from("players").select("coach_id").eq("id", moved.id).single();
-  check("preradenie sa dá vrátiť späť", restored.coach_id === coachA);
+  // Oba tréneri smú kedykoľvek zapisovať (rozhodnutie 1).
+  const createdIds = [];
+  const newSession = async (client, coachId, date) => {
+    const { data, error } = await client
+      .from("sessions")
+      .insert({
+        coach_id: coachId,
+        organization_id: org.id,
+        player_id: moved.id,
+        status: "planned",
+        planned_data: { date, duration_minutes: 60 },
+        discipline: "tennis",
+      })
+      .select("id")
+      .single();
+    if (data) createdIds.push(data.id);
+    return { data, error };
+  };
+  const bPlanned = await newSession(coachBSession, coachB, "2099-05-01T10:00:00.000Z");
+  check("druhý tréner zapíše nový tréning", bPlanned.error === null, bPlanned.error?.message);
+  const bDone = await newSession(coachBSession, coachB, "2099-05-02T10:00:00.000Z");
+  const aPlanned = await newSession(coach, coachA, "2099-05-03T10:00:00.000Z");
+  check("pôvodný tréner zapisuje ďalej", aPlanned.error === null, aPlanned.error?.message);
+
+  if (bPlanned.data && bDone.data && aPlanned.data) {
+    const drill = await coachBSession
+      .from("session_drills")
+      .insert({
+        session_id: bDone.data.id,
+        coach_id: coachB,
+        organization_id: org.id,
+        category: "Forehand",
+        character: "neutral",
+        drill_code: "FH CC",
+        duration_minutes: 15,
+        sort_order: 1,
+      })
+      .select("id");
+    check("druhý tréner pridá cvičenie do svojho tréningu", drill.error === null, drill.error?.message);
+    const complete = await coachBSession
+      .from("sessions")
+      .update({ status: "completed" })
+      .eq("id", bDone.data.id)
+      .select("id");
+    check("druhý tréner svoj tréning dokončí", (complete.data ?? []).length === 1, complete.error?.message);
+
+    // NAJDÔLEŽITEJŠIA HRANICA: do kolegovho tréningu sa nezasahuje.
+    const aEditsB = await coach
+      .from("sessions")
+      .update({ notes: "prepisane kolegom" })
+      .eq("id", bPlanned.data.id)
+      .select("id");
+    check("kolegov tréning upraviť nejde", (aEditsB.data ?? []).length === 0);
+    const aCompletesB = await coach
+      .from("sessions")
+      .update({ status: "completed" })
+      .eq("id", bPlanned.data.id)
+      .select("id");
+    check("kolegov tréning dokončiť nejde", (aCompletesB.data ?? []).length === 0);
+    const aCancelsB = await coach
+      .from("sessions")
+      .update({ status: "cancelled" })
+      .eq("id", bPlanned.data.id)
+      .select("id");
+    check("kolegov tréning zrušiť nejde", (aCancelsB.data ?? []).length === 0);
+    const aDrillIntoB = await coach
+      .from("session_drills")
+      .insert({
+        session_id: bPlanned.data.id,
+        coach_id: coachA,
+        organization_id: org.id,
+        category: "Forehand",
+        character: "neutral",
+        drill_code: "FH CC",
+        duration_minutes: 15,
+        sort_order: 1,
+      })
+      .select("id");
+    check("do kolegovho tréningu cvičenie nepridá", aDrillIntoB.error !== null || (aDrillIntoB.data ?? []).length === 0, aDrillIntoB.error?.code ?? "PRESLO!");
+    const aForgesB = await coach
+      .from("sessions")
+      .insert({
+        coach_id: coachB,
+        organization_id: org.id,
+        player_id: moved.id,
+        status: "planned",
+        planned_data: { date: "2099-05-04T10:00:00.000Z", duration_minutes: 60 },
+        discipline: "tennis",
+      })
+      .select("id");
+    check("tréning na meno kolegu nezaloží", aForgesB.error !== null, aForgesB.error?.code ?? "PRESLO!");
+    const { data: seenB } = await coach.from("sessions").select("id").eq("id", bPlanned.data.id);
+    check("kolegov tréning ale vidí", (seenB ?? []).length === 1);
+
+    // Mená kolegov: len meno, len vlastná organizácia.
+    const { data: names } = await coach.rpc("org_member_names");
+    check(
+      "tréner vidí mená kolegov",
+      (names ?? []).some((row) => row.user_id === coachB && row.full_name === "Boris Druhy"),
+      JSON.stringify(names),
+    );
+    check(
+      "funkcia vydá len id a meno",
+      (names ?? []).every((row) => Object.keys(row).sort().join(",") === "full_name,user_id"),
+    );
+    const outsiderClient = await signIn("coach-new@test.local");
+    const { data: outsiderNames } = await outsiderClient.rpc("org_member_names");
+    check("tréner mimo organizácie mená nevidí", (outsiderNames ?? []).length === 0, JSON.stringify(outsiderNames));
+
+    // Ponuka na skopírovanie má hráča raz, aj keď má dvoch trénerov.
+    const { data: copyOffer } = await coach.rpc("org_players_for_copy");
+    const offered = (copyOffer ?? []).filter((row) => row.id === moved.id);
+    check("ponuka skupinového tréningu má hráča len raz", offered.length === 1, `počet: ${offered.length}`);
+    check("kópia by pripadla volajúcemu (má hráča priradeného)", offered[0]?.coach_id === coachA);
+
+    // Odobratie: naplánované tréningy odobratého sa zrušia, dokončené ostanú.
+    const removed = await director.rpc("remove_player_coaches", pair([moved.id], [coachB]));
+    check("šéftréner odoberie trénera", removed.error === null && removed.data === 1, removed.error?.message ?? `vrátilo ${removed.data}`);
+    const { data: afterRemoval } = await db
+      .from("sessions")
+      .select("id, status, coach_id")
+      .in("id", [bPlanned.data.id, bDone.data.id, aPlanned.data.id]);
+    const byId = new Map((afterRemoval ?? []).map((row) => [row.id, row]));
+    check("jeho naplánovaný tréning sa zrušil", byId.get(bPlanned.data.id)?.status === "cancelled", byId.get(bPlanned.data.id)?.status);
+    check("jeho dokončený tréning ostal", byId.get(bDone.data.id)?.status === "completed", byId.get(bDone.data.id)?.status);
+    check("dokončený ostal podpísaný ním", byId.get(bDone.data.id)?.coach_id === coachB);
+    check("kolegov naplánovaný tréning sa nedotkol", byId.get(aPlanned.data.id)?.status === "planned", byId.get(aPlanned.data.id)?.status);
+
+    const { data: bAfter } = await coachBSession.from("players").select("id").eq("id", moved.id);
+    check("odobratý tréner hráča nevidí", (bAfter ?? []).length === 0);
+    const { data: bOwnAfter } = await coachBSession
+      .from("sessions")
+      .select("id")
+      .in("id", [bPlanned.data.id, bDone.data.id]);
+    check("ani tréningy, ktoré sám viedol (patria organizácii)", (bOwnAfter ?? []).length === 0, `počet: ${(bOwnAfter ?? []).length}`);
+    const { data: aSeesDone } = await coach.from("sessions").select("id").eq("id", bDone.data.id);
+    check("ostávajúci tréner jeho dokončený tréning vidí", (aSeesDone ?? []).length === 1);
+
+    const removeAgain = await director.rpc("remove_player_coaches", pair([moved.id], [coachB]));
+    check("opakované odobratie nič nerobí", removeAgain.error === null && removeAgain.data === 0, removeAgain.error?.message ?? `vrátilo ${removeAgain.data}`);
+  }
+
+  // Hromadne: dvaja hráči × jeden tréner.
+  const bulkAdd = await director.rpc("add_player_coaches", pair([moved.id, second.id], [coachB]));
+  check("hromadné pridanie (2 hráči × 1 tréner)", bulkAdd.error === null && bulkAdd.data === 2, bulkAdd.error?.message ?? `vrátilo ${bulkAdd.data}`);
+  const bulkRemove = await director.rpc("remove_player_coaches", pair([moved.id, second.id], [coachB]));
+  check("hromadné odobratie (2 hráči × 1 tréner)", bulkRemove.error === null && bulkRemove.data === 2, bulkRemove.error?.message ?? `vrátilo ${bulkRemove.data}`);
+
+  // Upratanie: testovacie tréningy preč, priradenia ako na začiatku.
+  if (createdIds.length > 0) {
+    await db.from("session_drills").delete().in("session_id", createdIds);
+    await db.from("sessions").delete().in("id", createdIds);
+  }
+  const { data: restored } = await db
+    .from("player_assignments")
+    .select("coach_id")
+    .eq("player_id", moved.id)
+    .eq("discipline", "tennis");
+  check("priradenia sú späť ako na začiatku", (restored ?? []).length === 1 && restored[0].coach_id === coachA, JSON.stringify(restored));
 
   section("10) Životný cyklus členstva: neaktívny, návrat, trvalé zmazanie");
   const { data: coach2Member } = await db
@@ -715,9 +883,9 @@ async function fitnessInFederation({ db, director, org, check, section }) {
       "počet: " + (before.data ?? []).length,
     );
 
-    const assign = await director.rpc("assign_player_to_coach", {
-      p_player_id: player.id,
-      p_coach_id: userId,
+    const assign = await director.rpc("add_player_coaches", {
+      p_player_ids: [player.id],
+      p_coach_ids: [userId],
     });
     check("šéftréner pridelí hráča kondičnej trénerke", assign.error === null, assign.error?.message);
 

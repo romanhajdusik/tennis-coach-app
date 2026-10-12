@@ -4,7 +4,12 @@ import { getTranslations, getFormatter, getTimeZone } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelectedPlayer } from "@/lib/players/selected";
 import { getLinkedPlayerId } from "@/lib/players/linked";
-import { disciplineConfig, type DisciplineId } from "@/lib/discipline";
+import {
+  disciplineConfig,
+  getDisciplineConfig,
+  type DisciplineId,
+} from "@/lib/discipline";
+import { getColleagueNames } from "@/lib/org/colleagues";
 import { PlayerSwitcher } from "@/components/player-switcher";
 import {
   LABEL_TIME_ZONE,
@@ -44,8 +49,16 @@ type CalendarView = "week" | "month";
 // v mriežke znamená „tu mám ja niečo s hráčom"; kondičný tréning by trénera
 // pomýlil rovnako ako v „dňoch bez tréningu" v rosteri — vyzeralo by, že hráč
 // bol na kurte, hoci bol na posilňovni. V zozname pod mriežkou ho vidí.
-function dayStatus(daySessions: { status: string; isForeign: boolean }[]) {
-  const own = daySessions.filter((session) => !session.isForeign);
+//
+// **Tréning kolegu TEJ ISTEJ disciplíny sa ráta** (od 2026-10-12, viac trénerov
+// pri hráčovi vo federácii): je to práca s hráčom na kurte, len ju viedol
+// kolega — pri striedaní po mesiacoch by inak mriežka mesiac mlčala.
+function dayStatus(
+  daySessions: { status: string; isForeign: boolean; byColleague: boolean }[],
+) {
+  const own = daySessions.filter(
+    (session) => !session.isForeign || session.byColleague,
+  );
   if (own.some((session) => session.status === "planned")) return "planned";
   if (own.some((session) => session.status === "completed")) return "completed";
   return null;
@@ -163,8 +176,12 @@ export default async function CalendarPage({
       date: string;
       discipline: string;
       isForeign: boolean;
+      /** Cudzí tréning MOJEJ disciplíny = kolega pri tom istom hráčovi. */
+      byColleague: boolean;
+      coachId: string;
     }[]
   >();
+  const myDiscipline = (await getDisciplineConfig()).id;
   for (const session of sessions ?? []) {
     const planned = session.planned_data as PlannedData | null;
     const actual = session.actual_data as ActualData | null;
@@ -191,6 +208,9 @@ export default async function CalendarPage({
       date: dateValue,
       discipline: session.discipline,
       isForeign: session.coach_id !== user.id,
+      byColleague:
+        session.coach_id !== user.id && session.discipline === myDiscipline,
+      coachId: session.coach_id,
     });
     sessionsByDay.set(key, list);
   }
@@ -198,6 +218,12 @@ export default async function CalendarPage({
   const windowSessions = [...sessionsByDay.entries()]
     .flatMap(([, list]) => list)
     .sort((a, b) => a.date.localeCompare(b.date));
+
+  // Mená sa pýtajú len vtedy, keď je čo podpísať — samostatný tréner kolegu
+  // nemá, takže mu dotaz nepribudne.
+  const colleagueNames = windowSessions.some((session) => session.byColleague)
+    ? await getColleagueNames(supabase)
+    : new Map<string, string>();
 
   const prevMonthAnchor = addPlainDays(monthAnchor, -1);
   const nextMonthAnchor = addPlainDays(
@@ -393,7 +419,14 @@ export default async function CalendarPage({
                           timeStyle: "short",
                         })}
                       </p>
-                      {session.isForeign ? (
+                      {session.byColleague ? (
+                        <span className="min-w-0 truncate pl-3 text-xs font-medium text-muted">
+                          {`${tCommon(`status.${session.status}`)} · ${
+                            colleagueNames.get(session.coachId) ||
+                            t("colleague")
+                          }`}
+                        </span>
+                      ) : session.isForeign ? (
                         <span className="text-xs font-medium text-muted">
                           {disciplineConfig(
                             session.discipline as DisciplineId,

@@ -2,7 +2,12 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getTranslations, getFormatter } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { disciplineConfig, type DisciplineId } from "@/lib/discipline";
+import {
+  disciplineConfig,
+  getDisciplineConfig,
+  type DisciplineId,
+} from "@/lib/discipline";
+import { getColleagueNames } from "@/lib/org/colleagues";
 
 type PlannedData = { date?: string };
 type ActualData = { date?: string };
@@ -78,6 +83,16 @@ export default async function LinkedSessionPage({
 
   const foreign = disciplineConfig(session.discipline as DisciplineId);
 
+  // Tréning MOJEJ disciplíny od niekoho iného = kolega pri tom istom hráčovi
+  // (vo federácii môže mať hráč viac trénerov disciplíny, 2026-10-12). Pri ňom
+  // je podstatné, KTO ho viedol — pri striedaní po mesiacoch na tom nadväzujem.
+  const byColleague =
+    session.discipline === (await getDisciplineConfig()).id;
+  const colleagueName = byColleague
+    ? (await getColleagueNames(supabase)).get(session.coach_id) ||
+      t("colleague")
+    : null;
+
   const { data: drills } = await supabase
     .from("session_drills")
     .select("id, category, character, drill_code, duration_minutes, status")
@@ -128,8 +143,15 @@ export default async function LinkedSessionPage({
         <p className="mt-1 text-sm text-muted">
           {t("totalDuration", { minutes: totalMinutes })}
         </p>
+        {colleagueName && (
+          <p className="mt-1 text-sm text-foreground">
+            {t("byCoach", { name: colleagueName })}
+          </p>
+        )}
         <p className="mt-2 text-xs text-muted">
-          {t("readOnlyNote", { discipline: foreign.label })}
+          {byColleague
+            ? t("readOnlyNoteColleague")
+            : t("readOnlyNote", { discipline: foreign.label })}
         </p>
       </div>
 
