@@ -149,7 +149,9 @@ body:has(.bottom-nav) .min-h-dvh {
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Geist z next/font (layout.tsx); Arial tu kedysi ostal zo šablóny
+     a prebíjal ho na celom webe aj v appke. */
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
 /* Paleta pre dátové vizualizácie (Recharts grafy v analytike) — jeden zdroj
