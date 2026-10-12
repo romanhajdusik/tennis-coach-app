@@ -47,15 +47,19 @@ Vercel → projekt `tennis-coach-app` → Settings → Domains → **Add**
 
 ## Krok 2 — DNS na Websupporte
 
-Zóna `plaw.win` (`admin.websupport.sk/sk/dns/15904763`) → nový **CNAME**:
+Zóna `plawtennis.com` (Websupport → Domény → `plawtennis.com` → DNS) → nový
+**CNAME**. Do 2026-10-12 to bola zóna `plaw.win` — adresa zväzu sa vtedy zmenila
+na `<slug>.plawtennis.com` (`8440da7`). Padelový zväz pôjde do zóny `plawpadel.com`.
 
 | Typ | Názov | Hodnota |
 |---|---|---|
 | CNAME | `<slug>` | hodnota z Vercelu, dnes `044898b4a673cb8d.vercel-dns-017.com.` |
 
 **Hodnotu vždy odčítaj z Vercelu** („View DNS configuration"), môže sa zmeniť.
-Wildcard zámerne nepoužívame — inak by sa museli presunúť nameservery plaw.win
-na Vercel a prišli by sme o MX/mail na doméne.
+Wildcard zámerne nepoužívame — inak by sa museli presunúť nameservery
+plawtennis.com na Vercel a prišli by sme o poštu: `plawtennis.com` je alias
+doména Google Workspace (`roman@plawtennis.com`), jej MX, SPF, DKIM a DMARC
+sa nesmú dotknúť. Pridáva sa LEN jeden CNAME, nič sa nemaže ani nemení.
 
 ## Krok 3 — HTTPS
 
