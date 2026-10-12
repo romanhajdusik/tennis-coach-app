@@ -752,8 +752,8 @@ funkcionality, postupom podľa §6.2. Stripe nespracúva údaje hráčov.
 7. ~~**§9.5 — cyklus záloh `[X]` dní.**~~ **VYPLNENÉ 2026-09-25: 7 dní.**
    Produkcia prešla na **Supabase Pro** (na Free pláne sa nezálohovalo vôbec —
    „Not included" — a projekt sa navyše po týždni nečinnosti pozastavoval).
-   Pro robí denné zálohy s retenciou 7 dní. **Skúška obnovy ešte nebola**, a je
-   to posledná vec, ktorá blokuje ostrú prevádzku so skutočnými deťmi.
+   Pro robí denné zálohy s retenciou 7 dní. **Skúška obnovy prebehla
+   2026-09-25** (postup v `docs/pred-prvym-zvazom.md`, „Zálohy a skúška obnovy").
    **Pozor: obnova v Supabase je in-place** — prepíše produkčnú databázu
    a projekt je počas nej nedostupný, takže sa NESMIE použiť ako skúška.
 8. **Príloha C — `[počet]` osôb s prístupom k produkcii.** Dnes jedna; s prvým

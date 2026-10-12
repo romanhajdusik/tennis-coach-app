@@ -85,10 +85,10 @@ sporov, dátumy a údaje druhej strany sa dopĺňajú až pri použití.
   je odteraz **po anglicky a mieri von** — a pôvodné „čoskoro" znelo pri produkte
   pre organizácie ako „ešte nevieme, čo robíme".
 
-- [ ] **Cyklus záloh do §9.5** — zistiť u Supabase, akú retenciu má produkčný
-  projekt na svojom pláne, a nahradiť `[X]` skutočným číslom.
-  Zmluva bez neho tvrdí, že dáta zo záloh vypadnú „najneskôr do [X] dní".
-  **Vymyslieť sa to nedá.**
+- [x] ~~**Cyklus záloh do §9.5**~~ — **HOTOVÉ 2026-09-25: 7 dní** (Supabase Pro,
+  denné zálohy s retenciou 7 dní; v §9.5 zmluvy podľa čl. 28 v EN aj SK).
+  Odškrtnuté až 2026-10-12 — bod ostal otvorený omylom, viď „Zálohy a skúška
+  obnovy" nižšie.
 
 - [ ] **Počet osôb s prístupom do prílohy C** — dnes `[počet]`.
   Vyrieši sa samo pri zástupcovi, ale nesmie sa naň zabudnúť.
