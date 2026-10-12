@@ -6,6 +6,13 @@
   "pricingNav": "Pricing",
   "title": "See how your whole organisation trains",
   "subtitle": "Your coaches plan and record practices on court. Your head coach sees in one console how the work actually runs, and the data stays with the organisation even after a coach leaves.",
+  "diagram": {
+    "address": "yourclub.plawtennis.com",
+    "headCoach": "Head coach's console",
+    "coach": "Coach",
+    "fitnessCoach": "Fitness coach",
+    "players": "Players"
+  },
   "pillarsTitle": "What your organisation gets",
   "pillars": [
     {
@@ -29,7 +36,7 @@
     },
     {
       "title": "Your own sign-in site",
-      "description": "The organisation gets its own address in the form yourclub.plaw.win, with sign-in for its people only. One organisation's data is kept separate from every other."
+      "description": "The organisation gets its own address in the form yourclub.plawtennis.com, with sign-in for its people only. One organisation's data is kept separate from every other."
     },
     {
       "title": "A coach with several players",

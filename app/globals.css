@@ -169,3 +169,22 @@ body {
   --series-6: #e66767;
   --series-other: #52514e;
 }
+
+/* Tok dát v kresbe organizácie na `/federacie` (`components/org-diagram.tsx`):
+   čiarky bežia od trénera hore do pultu. Jediný pohyb na stránke; kto má
+   zapnuté obmedzenie pohybu, vidí kresbu stáť. */
+@keyframes org-flow {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+.org-flow {
+  animation: org-flow 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .org-flow {
+    animation: none;
+  }
+}

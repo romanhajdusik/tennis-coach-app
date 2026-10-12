@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { loadFederacieMessages } from "@/lib/landing-locale";
+import { OrgDiagram } from "@/components/org-diagram";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
 import { ogMetadata } from "@/lib/og";
@@ -77,14 +78,24 @@ export default async function FederaciePage() {
       </header>
 
       <main className="flex w-full min-w-0 flex-col items-center">
-        <section className="flex w-full max-w-3xl flex-col items-center gap-5 px-4 pb-12 pt-14 text-center sm:px-6 sm:pb-16 sm:pt-20">
-          <h1 className="text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl">
-            {t.title}
-          </h1>
-          <p className="max-w-xl text-base text-balance text-muted sm:text-lg">
-            {t.subtitle}
-          </p>
-          <p className="text-sm font-medium text-foreground/85">{t.audience}</p>
+        {/* Úvod: text a kresba organizácie — na počítači vedľa seba, na
+            telefóne kresba pod textom (od 2026-10-12). */}
+        <section className="grid w-full max-w-5xl items-center gap-10 px-4 pb-12 pt-14 sm:px-6 sm:pb-16 sm:pt-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14">
+          <div className="flex flex-col items-center gap-5 text-center lg:items-start lg:text-left">
+            <h1 className="text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl">
+              {t.title}
+            </h1>
+            <p className="max-w-xl text-base text-balance text-muted sm:text-lg">
+              {t.subtitle}
+            </p>
+            <p className="text-sm font-medium text-foreground/85">
+              {t.audience}
+            </p>
+          </div>
+          <OrgDiagram
+            labels={t.diagram}
+            className="mx-auto w-full max-w-sm text-primary lg:max-w-md"
+          />
         </section>
 
         {/* Tri piliere, ktoré zväz naozaj kupuje — veľké, nadpis vľavo a text

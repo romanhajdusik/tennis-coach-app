@@ -308,6 +308,14 @@ export type FederacieMessages = {
   pricingNav: string;
   title: string;
   subtitle: string;
+  /** Popisky kresby organizácie v úvode (`components/org-diagram.tsx`). */
+  diagram: {
+    address: string;
+    headCoach: string;
+    coach: string;
+    fitnessCoach: string;
+    players: string;
+  };
   /** Tri hlavné piliere — veľké, nad zvyškom (od 2026-10-12). */
   pillarsTitle: string;
   pillars: { title: string; description: string }[];
