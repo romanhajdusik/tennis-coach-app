@@ -31,7 +31,9 @@ async function faceText(face: OgFace): Promise<{ eyebrow?: string; title: string
   if (face === "org") {
     // plaw.online je od 2026-10-07 len pre zväzy — náhľad nesie ich stránku.
     const t = await loadFederacieMessages();
-    return { eyebrow: t.eyebrow, title: t.title };
+    // Na stránke je to od 2026-10-12 veta pod podnadpisom, v náhľade ostáva
+    // štítkom — bez koncovej bodky.
+    return { eyebrow: t.audience.replace(/\.$/, ""), title: t.title };
   }
   if (face === "hub") {
     // Rozcestník športov — štítok je značka, nadpis výzva na výber.

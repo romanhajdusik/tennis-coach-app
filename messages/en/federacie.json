@@ -1,43 +1,46 @@
 {
   "metaTitle": "P.L.A.W for federations, clubs, academies and tour teams",
   "metaDescription": "The training data of a whole organisation in one place: the head coach's oversight console, side-by-side comparison of players, one shared methodology. The data belongs to the organisation, not to the coach. For federations, clubs, academies and the team of a tour player.",
-  "eyebrow": "For federations, clubs, academies and tour teams",
+  "audience": "For federations, clubs, academies and tour teams.",
   "backToHome": "Back to home",
+  "pricingNav": "Pricing",
   "title": "See how your whole organisation trains",
-  "subtitle": "Your coaches plan and record practices on court. Your head coach sees in one console how the work actually runs — and the data stays with the organisation even after a coach leaves.",
-  "featuresTitle": "What your organisation gets",
-  "features": [
+  "subtitle": "Your coaches plan and record practices on court. Your head coach sees in one console how the work actually runs, and the data stays with the organisation even after a coach leaves.",
+  "pillarsTitle": "What your organisation gets",
+  "pillars": [
     {
       "title": "The data belongs to the organisation",
-      "description": "The players and their entire training history belong to the organisation, not to the coach. When a coach leaves, neither the players nor their records go anywhere — the head coach reassigns them and the work continues where it stopped."
+      "description": "The players and their entire training history belong to the organisation, not to the coach. When a coach leaves, neither the players nor their records go anywhere. The head coach reassigns them and the work continues where it stopped."
     },
     {
       "title": "The head coach's console",
       "description": "On one screen: how many practices are on today, which players have fallen out of rhythm and which coach is responsible for them. From there you can open a player, a single practice, or the analytics behind it."
     },
     {
-      "title": "Players side by side",
-      "description": "The same charts your coaches see, for a whole group at once — grouped by coach or by year of birth. You can see where the focus of training diverges, without collecting numbers by hand."
-    },
-    {
       "title": "One shared methodology",
-      "description": "The organisation sets the drill codes once, for all of its coaches. Without that every coach measures in their own way and the numbers cannot be compared across the organisation — this way they can."
+      "description": "The organisation sets the drill codes once, for all of its coaches. Without that every coach measures in their own way and the numbers cannot be compared across the organisation. This way they can."
+    }
+  ],
+  "featuresTitle": "Also included",
+  "features": [
+    {
+      "title": "Players side by side",
+      "description": "The same charts your coaches see, for a whole group at once, grouped by coach or by year of birth."
     },
     {
-      "title": "Your own address",
+      "title": "Your own sign-in site",
       "description": "The organisation gets its own address in the form yourclub.plaw.win, with sign-in for its people only. One organisation's data is kept separate from every other."
     },
     {
       "title": "A coach with several players",
-      "description": "The coach's app is built for a phone, right on court: the day's schedule across all of their players, switching between them in one tap, and a warning about the one who has gone longest without a practice."
-    },
-    {
-      "title": "A team for a tour player",
-      "description": "A tennis coach and a fitness coach working with the same player each log their own part. The head coach or manager sees both sides — court and fitness — in one console. When someone on the team changes, the player's history stays."
+      "description": "The coach's app is built for a phone, right on court: the day's schedule across all of their players, and switching between them in one tap."
     }
   ],
+  "tourTeam": {
+    "title": "A tour player's team is an organisation of its own",
+    "description": "The team around one player gets everything above for itself: its own sign-in site and its own console, separate from any federation or club. The tennis coach and the fitness coach each log their own part. The head coach or manager sees both sides, court and fitness, in one place. When someone on the team changes, the player's history stays."
+  },
   "howTitle": "How it works",
-  "stepWord": "Step",
   "steps": [
     {
       "title": "The organisation gets its own address",
@@ -45,21 +48,23 @@
     },
     {
       "title": "The head coach invites the coaches",
-      "body": "They generate an invitation code and send it to a coach. The coach enters it once in the app and is in the organisation — nobody has to be added on their behalf."
+      "body": "They generate an invitation code and send it to a coach. The coach enters it once in the app and is in the organisation. Nobody has to be added on their behalf."
     },
     {
       "title": "The coaches work, the console shows the result",
-      "body": "A coach plans and records practices as usual. The head coach enters nothing — they see a live overview and the analytics of the whole organisation."
+      "body": "A coach plans and records practices as usual. The head coach enters nothing: they see a live overview and the analytics of the whole organisation."
     }
   ],
   "notesTitle": "Good to know",
   "notes": [
-    "The head coach's overview is read-only — practices are created and edited by the coaches, so nobody overwrites their data and nothing goes missing on them.",
-    "The organisation decides how many coach seats it needs, and the number can be increased at any time."
+    "The head coach's overview is read-only. Practices are created and edited by the coaches, and once a practice is completed, nobody can change it in the app.",
+    "The database and its backups are in the EU (Frankfurt), and a data processing agreement under Art. 28 GDPR is part of the contract.",
+    "The organisation decides how many coach seats it needs, and the number can be increased at any time.",
+    "A coach who already uses P.L.A.W on their own, with their own players, joins the organisation with a separate account. The organisation's data and a coach's private work never mix."
   ],
-  "pricingBadge": "Pricing",
   "pricingTitle": "From €49 per coach per month",
-  "pricingText": "Minimum three coaches. Prices exclude VAT. Pay for the year up front and save up to 30%.",
-  "pricingContact": "Tell us how many coaches you have and we'll send you a quote:",
+  "pricingText": "Minimum three coaches, a tour player's team included; the head coach does not take a seat. The contract runs for 12 months. Prices exclude VAT. Pay for the year up front and save up to 30%.",
+  "pricingContact": "Tell us how many coaches you have and we'll send you a quote.",
+  "pricingEmailSubject": "P.L.A.W for our organisation",
   "footerTagline": "P.L.A.W — Plan. Log. Analyze. Win."
 }

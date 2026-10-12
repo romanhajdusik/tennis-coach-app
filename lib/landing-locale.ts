@@ -301,21 +301,34 @@ export async function loadLandingHracMessages(): Promise<LandingHracMessages> {
 export type FederacieMessages = {
   metaTitle: string;
   metaDescription: string;
-  eyebrow: string;
+  /** Pre koho stránka je — veta pod podnadpisom (do 2026-10-12 štítok nad nadpisom). */
+  audience: string;
   backToHome: string;
+  /** Odkaz v hlavičke na cenu a kontakt (`#pricing`). */
+  pricingNav: string;
   title: string;
   subtitle: string;
+  /** Tri hlavné piliere — veľké, nad zvyškom (od 2026-10-12). */
+  pillarsTitle: string;
+  pillars: { title: string; description: string }[];
+  /** Ostatné vlastnosti — krátky zoznam pod piliermi. */
   featuresTitle: string;
   features: { title: string; description: string }[];
+  /**
+   * Tím okolo jedného hráča — samostatný blok, nie položka zoznamu: je to
+   * VLASTNÁ organizácia s vlastnou adresou a pultom, nie súčasť zväzu
+   * (upresnil user 2026-10-12).
+   */
+  tourTeam: { title: string; description: string };
   howTitle: string;
-  stepWord: string;
   steps: { title: string; body: string }[];
   notesTitle: string;
   notes: string[];
-  pricingBadge: string;
   pricingTitle: string;
   pricingText: string;
   pricingContact: string;
+  /** Predvyplnený predmet e-mailu na `office@`. */
+  pricingEmailSubject: string;
   footerTagline: string;
 };
 

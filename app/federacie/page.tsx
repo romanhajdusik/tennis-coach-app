@@ -1,15 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { loadFederacieMessages } from "@/lib/landing-locale";
-import {
-  ChartBarIcon,
-  ClipboardCheckIcon,
-  DeviceMobileIcon,
-  EyeIcon,
-  GlobeIcon,
-  TagIcon,
-  UsersIcon,
-} from "@/components/landing-icons";
 import { Wordmark } from "@/components/wordmark";
 import { publicRobots } from "@/lib/seo";
 import { ogMetadata } from "@/lib/og";
@@ -31,20 +22,6 @@ import { PublicAnalytics } from "@/components/public-analytics";
  * predpoklad, nie rozhodnutie.** Zvyšok vzhľadu je zhodný s landingom
  * a návodmi — tmavá téma cez tokeny.
  */
-// Poradie sedí s `features` v messages/{en,sk}/federacie.json — každá dlaždica
-// má vlastnú ikonu, žiadna sa neopakuje. Siedma (tím okolo jedného
-// hráča, od 2026-10-10) je posledná a cez celú šírku — v mriežke po dvoch aj
-// po troch by inak ostala sama v riadku.
-const FEATURE_ICONS = [
-  ClipboardCheckIcon,
-  ChartBarIcon,
-  UsersIcon,
-  TagIcon,
-  GlobeIcon,
-  DeviceMobileIcon,
-  EyeIcon,
-];
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await loadFederacieMessages();
   return {
@@ -80,133 +57,170 @@ export default async function FederaciePage() {
           <Link href="/" aria-label="P.L.A.W">
             <Wordmark />
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Link
               href="/"
               className="text-sm font-medium text-muted transition-colors hover:text-foreground"
             >
               {t.backToHome}
             </Link>
+            {/* Jediný kontakt je úplne dole (na mobile ~3 500 px), preto
+                skratka naň z hlavičky, ktorá ostáva prilepená hore. */}
+            <a
+              href="#pricing"
+              className="rounded-full border border-primary/50 px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+            >
+              {t.pricingNav}
+            </a>
           </div>
         </div>
       </header>
 
-      <section className="flex w-full max-w-3xl flex-col items-center gap-5 px-4 pb-12 pt-14 text-center sm:px-6 sm:pb-16 sm:pt-20">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-primary/30">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-          {t.eyebrow}
-        </span>
-        <h1 className="text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl">
-          {t.title}
-        </h1>
-        <p className="max-w-xl text-base text-balance text-muted sm:text-lg">
-          {t.subtitle}
-        </p>
-      </section>
+      <main className="flex w-full min-w-0 flex-col items-center">
+        <section className="flex w-full max-w-3xl flex-col items-center gap-5 px-4 pb-12 pt-14 text-center sm:px-6 sm:pb-16 sm:pt-20">
+          <h1 className="text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl">
+            {t.title}
+          </h1>
+          <p className="max-w-xl text-base text-balance text-muted sm:text-lg">
+            {t.subtitle}
+          </p>
+          <p className="text-sm font-medium text-foreground/85">{t.audience}</p>
+        </section>
 
-      <section className="w-full max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
-        <h2 className="mb-10 text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          {t.featuresTitle}
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {t.features.map((feature, index) => {
-            const Icon = FEATURE_ICONS[index % FEATURE_ICONS.length];
-            const isOddLast =
-              index === t.features.length - 1 && t.features.length % 6 === 1;
-            return (
+        {/* Tri piliere, ktoré zväz naozaj kupuje — veľké, nadpis vľavo a text
+            vpravo, oddelené čiarou. Do 2026-10-12 to bolo sedem rovnakých
+            kariet s ikonkou v štvorčeku (kritika Impeccable: všetko rovnako
+            dôležité, nič nevynikne). */}
+        <section className="w-full max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+          <h2 className="mb-8 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            {t.pillarsTitle}
+          </h2>
+          <div className="divide-y divide-border border-y border-border">
+            {t.pillars.map((pillar) => (
               <div
-                key={feature.title}
-                className={`rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md ${isOddLast ? "sm:col-span-2 lg:col-span-3" : ""}`}
+                key={pillar.title}
+                className="grid gap-3 py-8 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-10"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm shadow-primary/25">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="mb-1.5 font-semibold text-foreground">
-                  {feature.title}
+                <h3 className="text-xl font-semibold tracking-tight text-balance text-primary sm:text-2xl">
+                  {pillar.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-muted">
-                  {feature.description}
+                <p className="text-base leading-relaxed text-muted sm:text-lg">
+                  {pillar.description}
                 </p>
               </div>
-            );
-          })}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      <section className="w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
-        <h2 className="mb-8 text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          {t.howTitle}
-        </h2>
-        <ol className="flex flex-col gap-4">
-          {t.steps.map((step, index) => (
-            <li
-              key={step.title}
-              className="flex gap-4 rounded-2xl border border-border bg-surface p-5"
-            >
-              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground">
-                {index + 1}
-              </span>
-              <span className="min-w-0">
-                <span className="block text-xs font-medium uppercase tracking-wide text-muted">
-                  {t.stepWord} {index + 1}
+        <section className="w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
+          <h2 className="mb-6 text-lg font-semibold text-foreground">
+            {t.featuresTitle}
+          </h2>
+          <ul className="grid gap-x-10 gap-y-6 md:grid-cols-3">
+            {t.features.map((feature) => (
+              <li key={feature.title} className="flex gap-3">
+                <span
+                  aria-hidden
+                  className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-primary"
+                />
+                <span className="min-w-0">
+                  <h3 className="font-semibold text-foreground">
+                    {feature.title}
+                  </h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">
+                    {feature.description}
+                  </p>
                 </span>
-                <h3 className="mt-0.5 font-semibold text-foreground">
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Tour team je VLASTNÁ organizácia (vlastná adresa aj pult), nie
+            funkcia zväzu — v zozname „Also included" pôsobil ako súčasť
+            zväzu, preto samostatný blok (user, 2026-10-12). */}
+        <section className="w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+          <div className="rounded-2xl border border-primary/40 bg-surface p-6 sm:p-8">
+            <h2 className="text-xl font-semibold tracking-tight text-balance text-primary sm:text-2xl">
+              {t.tourTeam.title}
+            </h2>
+            <p className="mt-3 max-w-prose text-base leading-relaxed text-muted">
+              {t.tourTeam.description}
+            </p>
+          </div>
+        </section>
+
+        {/* Kroky vedľa seba na širokej obrazovke, číslo len raz (do
+            2026-10-12 bolo dvakrát: „1" v štvorčeku aj „STEP 1"). */}
+        <section className="w-full max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+          <h2 className="mb-8 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            {t.howTitle}
+          </h2>
+          <ol className="grid gap-8 md:grid-cols-3 md:gap-6">
+            {t.steps.map((step, index) => (
+              <li key={step.title} className="border-t border-primary/60 pt-4">
+                <span className="text-3xl font-semibold tabular-nums text-primary">
+                  {index + 1}
+                </span>
+                <h3 className="mt-2 font-semibold text-foreground">
                   {step.title}
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted">
                   {step.body}
                 </p>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
-        <div className="rounded-2xl border border-border bg-surface p-6">
-          <h2 className="text-lg font-semibold text-foreground">
-            {t.notesTitle}
-          </h2>
-          <ul className="mt-3 flex flex-col gap-2.5">
-            {t.notes.map((note) => (
-              <li key={note} className="flex gap-2.5 text-sm text-muted">
-                <span
-                  aria-hidden
-                  className="mt-1.5 h-1.5 w-1.5 flex-none rounded-full bg-primary"
-                />
-                <span className="leading-relaxed">{note}</span>
               </li>
             ))}
-          </ul>
-        </div>
-      </section>
+          </ol>
+        </section>
 
-      <section className="w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="rounded-2xl border border-border bg-surface p-8 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-xs font-medium text-muted ring-1 ring-inset ring-border">
-            {t.pricingBadge}
-          </span>
-          <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
-            {t.pricingTitle}
-          </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted">
-            {t.pricingText}
-          </p>
-          {/* Jediná výzva na akciu na celej stránke a je zámerne len e-mail:
-              organizácia sa nezakladá samoobslužne, takže tlačidlo „registrovať"
-              by viedlo do prázdna. Adresa je `office@` (obchod), nie `support@`
-              — ten patrí k zmluvám a k podpore existujúceho zákazníka. */}
-          <p className="mx-auto mt-4 max-w-md text-sm text-muted">
-            {t.pricingContact}{" "}
-            <a
-              href="mailto:office@plawsports.com"
-              className="font-medium text-foreground underline"
-            >
-              office@plawsports.com
-            </a>
-          </p>
-        </div>
-      </section>
+        {/* Poznámky a cena v jednom bloku: čo musí zväz vedieť (GDPR, zámok
+            tréningu, samostatný účet), stojí hneď pred jediným kontaktom. */}
+        <section
+          id="pricing"
+          className="w-full max-w-3xl scroll-mt-20 px-4 py-8 sm:px-6 sm:py-12"
+        >
+          <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
+            <h2 className="text-lg font-semibold text-foreground">
+              {t.notesTitle}
+            </h2>
+            <ul className="mt-3 flex flex-col gap-2.5">
+              {t.notes.map((note) => (
+                <li key={note} className="flex gap-2.5 text-sm text-muted">
+                  <span
+                    aria-hidden
+                    className="mt-1.5 h-1.5 w-1.5 flex-none rounded-full bg-primary"
+                  />
+                  <span className="leading-relaxed">{note}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 border-t border-border pt-8 text-center">
+              <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                {t.pricingTitle}
+              </h2>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
+                {t.pricingText}
+              </p>
+              {/* Jediná výzva na akciu na celej stránke a je zámerne len
+                  e-mail: organizácia sa nezakladá samoobslužne, takže tlačidlo
+                  „registrovať" by viedlo do prázdna. Adresa je `office@`
+                  (obchod), nie `support@` — ten patrí k zmluvám a k podpore
+                  existujúceho zákazníka. Adresa je vypísaná celá, aby si ju
+                  dal skopírovať aj ten, komu `mailto` neotvorí poštu. */}
+              <p className="mx-auto mt-6 max-w-md text-sm text-foreground/85">
+                {t.pricingContact}
+              </p>
+              <a
+                href={`mailto:office@plawsports.com?subject=${encodeURIComponent(t.pricingEmailSubject)}`}
+                className="mt-3 inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+              >
+                office@plawsports.com
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
 
       {/* Organizácia má vlastné zásady; zmluvy sem nepatria — tie sa podpisujú
           a dostane ich ako dokument (docs/onboarding-organizacie.md). */}
