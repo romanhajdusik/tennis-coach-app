@@ -170,19 +170,26 @@ async function main() {
     "status " + foreign.status,
   );
 
-  section("6) Pult menuje šport zväzu, nie „court\" (od 2026-10-05)");
+  section("6) Tréner sa v pulte nevolá „Court coach\" (od 2026-10-05)");
   // Rozhodol user: šéftréner má vidieť „Tennis coach", v padelovom zväze
   // „Padel coach". „Court" je len vnútorné rozlíšenie v kóde (kind).
-  const team = textOf((await request("/director/team", { cookies: director })).body);
+  const teamBody = (await request("/director/team", { cookies: director })).body;
+  const team = textOf(teamBody);
   check("pri trénerovi stojí „Tennis coach\"", /Tennis coach/.test(team), team.slice(0, 200));
-  const dashText = textOf((await request("/director", { cookies: director })).body);
-  const codesText = textOf(
-    (await request("/director/drill-codes", { cookies: director })).body,
-  );
+  const dashBody = (await request("/director", { cookies: director })).body;
+  const codesBody = (await request("/director/drill-codes", { cookies: director })).body;
+  const all = team + textOf(dashBody) + textOf(codesBody);
+
+  // Stráži sa JEDINE to, že sa tréner nevolá „Court coach" (user
+  // 2026-10-12: „slovom court nemôže byť nazývaný coach, ale všetko ostatné
+  // je možné"). Slovo „court" kdekoľvek inde — kódy a vysvetlivky cvičení
+  // („Forehand cross-court", vlastný kód „COURT SPRINT"), iné texty — je
+  // dovolené a test naň reagovať nesmie.
+  const courtCoach = all.match(/\bcourt coach\b/i);
   check(
-    "slovo „court\" sa v pulte nevypisuje",
-    !/\bcourt\b/i.test(team + dashText + codesText),
-    ((team + dashText + codesText).match(/.{40}\bcourt\b.{40}/i) ?? [""])[0],
+    "tréner sa v pulte nevolá „Court coach\"",
+    !courtCoach,
+    courtCoach ? all.slice(Math.max(0, courtCoach.index - 40), courtCoach.index + 40) : "",
   );
 
   report();
