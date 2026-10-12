@@ -162,7 +162,7 @@ async function main() {
   section("5) Tenant izolácia cez URL");
   const foreign = await request(`/director/players/${playerId}`, {
     cookies: director,
-    host: "demo.plaw.win",
+    host: "demo.plawtennis.com",
   });
   check(
     "hráč org nie je dostupný z cudzej subdomény",

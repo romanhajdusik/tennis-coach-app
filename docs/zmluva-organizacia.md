@@ -39,7 +39,7 @@ Together "the Parties".
 ### 1. Subject matter
 
 **1.1** The Provider gives the Organisation access to the **P.L.A.W**
-application as a service, at the address `<slug>.plaw.win` stated in **Annex 1**.
+application as a service, at the address `<slug>.plawtennis.com` stated in **Annex 1**.
 
 **1.2** The service comprises coach accounts with a roster of assigned players,
 planning and recording of training, analytics, the head coach's read-only
@@ -290,7 +290,7 @@ the entire agreement between the Parties.
 
 | | |
 |---|---|
-| Address of the service | `[slug]`.plaw.win |
+| Address of the service | `[slug]`.plawtennis.com |
 | Disciplines | [tennis / fitness / both] |
 | Number of seats | [number, minimum 3] |
 | Invoicing | [monthly / annually in advance] |
@@ -352,7 +352,7 @@ Spolu „zmluvné strany".
 ### 1. Predmet zmluvy
 
 **1.1** Poskytovateľ sprístupňuje organizácii aplikáciu **P.L.A.W** ako službu,
-na adrese `<slug>.plaw.win` uvedenej v **prílohe 1**.
+na adrese `<slug>.plawtennis.com` uvedenej v **prílohe 1**.
 
 **1.2** Služba zahŕňa účty trénerov so zoznamom pridelených hráčov, plánovanie
 a zaznamenávanie tréningov, analytiku, riadiaci pult šéftrénera určený len na
@@ -601,7 +601,7 @@ dohodu strán.
 
 | | |
 |---|---|
-| Adresa služby | `[slug]`.plaw.win |
+| Adresa služby | `[slug]`.plawtennis.com |
 | Disciplíny | [tenis / kondícia / obe] |
 | Počet sedadiel | [počet, najmenej 3] |
 | Fakturácia | [mesačne / ročne vopred] |

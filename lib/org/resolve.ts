@@ -6,12 +6,19 @@ import { orgCourtDiscipline } from "@/lib/disciplines/registry";
 /**
  * Multi-tenant mapovanie hostname → organizácia (§5.2).
  *
- * Každá organizácia má vlastnú subdoménu `<slug>.plaw.win`, ktorá sa pridáva
- * RUČNE per organizácia (CNAME vo Websupporte + doména vo Verceli) — preto sa
- * kód nemení pri pridaní ďalšej organizácie, mení sa len obsah tabuľky
- * `organizations`. Postup je v docs/mockups/onboarding-org.html.
+ * Každá organizácia má vlastnú subdoménu `<slug>.plawtennis.com`, ktorá sa
+ * pridáva RUČNE per organizácia (CNAME vo Websupporte + doména vo Verceli) —
+ * preto sa kód nemení pri pridaní ďalšej organizácie, mení sa len obsah
+ * tabuľky `organizations`. Postup je v docs/onboarding-organizacie.md.
+ *
+ * **Od 2026-10-12 doména ŠPORTU, nie `plaw.win`** (rozhodol user): sedí
+ * s pravidlom „každý šport má vlastnú .com doménu" a zväz je vždy jeden šport.
+ * Padelový zväz dostane `<slug>.plawpadel.com` spolu s nasadením padelu.
+ * Do vtedy bola adresa `<slug>.plaw.win`; zmenilo sa to skôr, než bežal prvý
+ * zväz, takže nikoho neodhlásila. Holá `plawtennis.com` (a `www`) ostáva
+ * presmerovaním na plaw.win, robí ho Vercel.
  */
-const ORG_HOST_SUFFIX = ".plaw.win";
+const ORG_HOST_SUFFIX = ".plawtennis.com";
 
 /**
  * Subdomény, ktoré NIE SÚ organizácie. `www` je alias hlavnej domény;
@@ -41,7 +48,7 @@ export function orgSlugFromHost(host: string): string | null {
 
   const slug = hostname.slice(0, -ORG_HOST_SUFFIX.length);
 
-  // Prázdne (samotné plaw.win), viacúrovňové (a.b.plaw.win) ani rezervované
+  // Prázdne (samotná doména), viacúrovňové (a.b.plawtennis.com) ani rezervované
   // subdomény nie sú organizácie.
   if (!slug || slug.includes(".") || RESERVED_SUBDOMAINS.has(slug)) {
     return null;

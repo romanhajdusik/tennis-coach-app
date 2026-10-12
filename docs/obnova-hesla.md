@@ -48,7 +48,7 @@ Dashboard projektu `pwnmssfyfrkmugnxprjj` → **Authentication → URL Configura
 ```
 https://plaw.win/**
 https://www.plaw.win/**
-https://*.plaw.win/**
+https://*.plawtennis.com/**
 https://fitness.plawsports.com/**
 ```
 

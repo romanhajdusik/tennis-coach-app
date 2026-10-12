@@ -1,6 +1,6 @@
 # Onboarding organizácie (federácia / klub / akadémia)
 
-Postup, ako naostro spustiť novú B2B organizáciu na `<slug>.plaw.win`. Je to
+Postup, ako naostro spustiť novú B2B organizáciu na `<slug>.plawtennis.com`. Je to
 **ručný administrátorský úkon**, nie samoobsluha — organizácií je málo
 a onboardujú sa zámerne (§5.2 v [`roadmap-buduce-smery.md`](roadmap-buduce-smery.md)).
 
@@ -43,7 +43,7 @@ nespracúvajú.
 ## Krok 1 — subdoména vo Verceli
 
 Vercel → projekt `tennis-coach-app` → Settings → Domains → **Add**
-`<slug>.plaw.win`. Vercel ukáže, aký CNAME záznam očakáva.
+`<slug>.plawtennis.com`. Vercel ukáže, aký CNAME záznam očakáva.
 
 ## Krok 2 — DNS na Websupporte
 
@@ -81,7 +81,7 @@ returning id, slug, seat_limit;
 ## Krok 5 — šéftréner
 
 Šéftréner si najprv **sám vytvorí účet na hlavnej adrese `plaw.win/register`**
-(appka heslá nenastavuje za neho). **Na `<slug>.plaw.win/register` to nejde** —
+(appka heslá nenastavuje za neho). **Na `<slug>.plawtennis.com/register` to nejde** —
 `proxy.ts` tam registráciu presmeruje 307 na `/join`, lebo do federácie sa
 nevstupuje samoobslužne. Účet teda vzniká na hlavnej adrese a k organizácii sa
 pripojí až potom.
@@ -109,7 +109,7 @@ Priamy zápis `user_id` je povolený **len tu**: trigger ho zamieta, keď ho rob
 prihlásený používateľ (členstvo je dobrovoľné, §5.7), ale v SQL Editore je
 `auth.uid()` prázdne, takže administrátorský bootstrap prejde.
 
-Potom sa šéftréner **prihlási na `<slug>.plaw.win`** a pristane rovno na
+Potom sa šéftréner **prihlási na `<slug>.plawtennis.com`** a pristane rovno na
 `/director`. Je to druhé prihlásenie — cookies sú host-only, takže sa
 prihlásenie z `plaw.win` na subdoménu neprenáša.
 
@@ -144,7 +144,7 @@ zmena (a treba rozhodnúť, či organizáciu prepnúť do read-only, alebo zamkn
 
 ## Overenie na záver
 
-1. `https://<slug>.plaw.win/` → prihlásenie (org subdoména nemá marketingovú landing).
+1. `https://<slug>.plawtennis.com/` → prihlásenie (org subdoména nemá marketingovú landing).
 2. Šéftréner sa prihlási → má pristáť rovno na `/director`.
 3. `/director/team` → sedí počet sedadiel, dá sa vytvoriť pozývací kód.
 4. Tréner s účtom z `plaw.win/register` sa prihlási na subdoméne → `/join` →

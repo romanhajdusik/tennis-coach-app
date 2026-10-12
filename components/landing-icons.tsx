@@ -60,7 +60,7 @@ export function DeviceMobileIcon({ className = base }: IconProps) {
   );
 }
 
-// Vlastná adresa organizácie (<slug>.plaw.win) na stránke /federacie.
+// Vlastná adresa organizácie (<slug>.plawtennis.com) na stránke /federacie.
 export function GlobeIcon({ className = base }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={className}>

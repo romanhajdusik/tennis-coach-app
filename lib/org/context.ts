@@ -4,7 +4,7 @@ import type { DisciplineId } from "@/lib/disciplines/types";
 
 /**
  * Organizácia (federácia/klub/akadémia), do ktorej patrí aktuálna požiadavka —
- * určená subdoménou `<slug>.plaw.win`. Na `plaw.win` je vždy null = samostatný
+ * určená subdoménou `<slug>.plawtennis.com`. Na `plaw.win` je vždy null = samostatný
  * (1:1) produkt. Pozri docs/roadmap-buduce-smery.md §5.2 a §5.3.
  */
 export type OrgContext = {

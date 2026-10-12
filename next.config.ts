@@ -7,15 +7,16 @@ const nextConfig: NextConfig = {
   // Umožňuje testovanie z mobilu v lokálnej WiFi sieti (Mobile First vývoj) —
   // Next.js dev server inak blokuje cross-origin prístup z iného zariadenia.
   //
-  // `*.plaw.win` je tu kvôli lokálnemu vývoju FEDERAČNÉHO režimu: org kontext
+  // `*.plawtennis.com` (do 2026-10-12 `*.plaw.win`) je tu kvôli lokálnemu
+  // vývoju FEDERAČNÉHO režimu: org kontext
   // sa odvodzuje výhradne z hostname, takže sa musí testovať cez subdoménu
   // (namapovanú na dev server). Bez tejto výnimky Next zablokuje dev
   // požiadavky z toho hostname a stránka sa **nehydratuje** — tlačidlá
   // závislé od JS potom ticho nič nerobia. Nastavenie sa týka len `next dev`.
   //
-  // POZOR: `*.plaw.win` **nezahŕňa holé `plaw.win`** — musí byť uvedené zvlášť.
-  // Bez neho sa nehydratuje samostatný (1:1) režim, keď sa testuje cez ostré
-  // hostname; prejaví sa to presne tak isto: klik ticho nespraví nič.
+  // POZOR: holé `plaw.win` musí byť uvedené zvlášť (zástupný znak ho
+  // nezahŕňa). Bez neho sa nehydratuje samostatný (1:1) režim, keď sa
+  // testuje cez ostré hostname; prejaví sa to tak isto: klik ticho nespraví nič.
   // Marketingové domény (plaw.online = rozcestník, plaw.click = landing pre
   // hráča, rodiča a manažéra) majú prepínač jazykov, čo je klientský komponent —
   // bez týchto hostnames sa pri lokálnom teste cez ostrú adresu nehydratujú a
@@ -23,7 +24,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "10.248.90.191",
     "plaw.win",
-    "*.plaw.win",
+    "*.plawtennis.com",
     "plaw.online",
     "plaw.click",
   ],

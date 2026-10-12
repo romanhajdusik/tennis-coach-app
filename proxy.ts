@@ -215,7 +215,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(pathname + search, APP_ORIGIN), 307);
   }
 
-  // <slug>.plaw.win = federačná (B2B) subdoména organizácie (§5.2).
+  // <slug>.plawtennis.com = federačná (B2B) subdoména organizácie (§5.2).
   const orgSlug = orgSlugFromHost(host);
   if (orgSlug) {
     return handleOrgRequest(request, orgSlug);

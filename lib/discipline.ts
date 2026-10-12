@@ -34,7 +34,7 @@ export {
  *
  * 1. **Samostatný režim** (`plaw.win`, `fitness.plawsports.com`) — vec
  *    NASADENIA. Jedno nasadenie = jedna disciplína.
- * 2. **Federácia** (`<slug>.plaw.win`) — vlastnosť ČLENSTVA prihláseného
+ * 2. **Federácia** (`<slug>.plawtennis.com`) — vlastnosť ČLENSTVA prihláseného
  *    trénera (`organization_members.discipline`, docs §2.2). Adresa o nej
  *    nehovorí nič, obaja tréneri chodia na tú istú subdoménu.
  *

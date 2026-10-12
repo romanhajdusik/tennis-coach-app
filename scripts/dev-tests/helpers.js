@@ -17,7 +17,7 @@ const SERVICE_KEY =
 
 const DEV_PORT = Number(process.env.DEV_PORT ?? 3000);
 /** Subdoména testovacej organizácie — org kontext ide výhradne z hostname. */
-const ORG_HOST = process.env.ORG_HOST ?? "todaytest.plaw.win";
+const ORG_HOST = process.env.ORG_HOST ?? "todaytest.plawtennis.com";
 const ORG_SLUG = ORG_HOST.split(".")[0];
 const APP_HOST = process.env.APP_HOST ?? "plaw.win";
 

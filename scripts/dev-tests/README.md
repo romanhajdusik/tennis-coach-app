@@ -72,10 +72,10 @@ Toto sú pasce, ktoré nás pri písaní scenárov reálne pomýlili — sú oš
 v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
 
 - **Federačný režim sa nedá testovať na `localhost`.** Org kontext ide výhradne
-  z hostname, takže požiadavky musia niesť `Host: <slug>.plaw.win`. Node `fetch`
+  z hostname, takže požiadavky musia niesť `Host: <slug>.plawtennis.com`. Node `fetch`
   hlavičku `Host` zahadzuje (je „forbidden"), preto `node:http`; v prehliadači
-  `--host-resolver-rules=MAP <slug>.plaw.win 127.0.0.1:3000`.
-- **`allowedDevOrigins` musí obsahovať `*.plaw.win`** (už je v `next.config.ts`).
+  `--host-resolver-rules=MAP <slug>.plawtennis.com 127.0.0.1:3000`.
+- **`allowedDevOrigins` musí obsahovať `*.plawtennis.com`** (už je v `next.config.ts`).
   Bez toho Next v dev zablokuje požiadavky z tohto hostname a stránka sa
   **nehydratuje** — tlačidlá závislé od JS ticho nefungujú, kým formuláre
   (server actions) bežia ďalej. Prejaví sa to len lokálne, nie na produkcii.
@@ -116,7 +116,7 @@ v `helpers.js`, ale keď budeš pridávať ďalšie, platia rovnako:
   host sa v prehliadači vyrieši cez DNS — teda na **produkciu**, kde by sa test
   prihlásil a zapisoval naostro. Preto sú mapované aj `plaw.win`, aj org
   subdoména; `allowedDevOrigins` v `next.config.ts` musí obsahovať oboje
-  (`*.plaw.win` **nezahŕňa** holé `plaw.win`).
+  (zástupný znak **nezahŕňa** holú doménu, preto je `plaw.win` uvedené zvlášť).
 - **Natívne `confirm()` Playwright automaticky ZAMIETNE.** Akcie na
   `/director/team` (odobrať, vrátiť späť, vymazať) sa pýtajú kontrolnou otázkou,
   takže pred každým klikom treba `page.once("dialog", d => d.accept())` — inak

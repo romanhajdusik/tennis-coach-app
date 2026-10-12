@@ -4,7 +4,7 @@ import { headers } from "next/headers";
  * Origin aktuálnej požiadavky poskladaný z hlavičky `Host`.
  *
  * Appka beží na viacerých hostoch nad jedným Supabase Auth (`plaw.win`,
- * org subdomény `<slug>.plaw.win`, kondička `fitness.plawsports.com`,
+ * org subdomény `<slug>.plawtennis.com`, kondička `fitness.plawsports.com`,
  * `*.vercel.app`), takže odkaz v maili musí viesť späť tam, odkiaľ človek
  * odišiel — natvrdo zapísaná adresa by federačného trénera vyhodila z jeho
  * subdomény a spolu s ňou aj zo session (cookies sú host-only).
