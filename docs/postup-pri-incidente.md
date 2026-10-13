@@ -207,9 +207,16 @@ miestom, kde sa hromadia dáta o deťoch.
 - **Žiadne sledovanie ani upozornenia.** O probléme sa dozvieme od používateľa
   alebo náhodou. Appka nemá push notifikácie vôbec, takže neexistuje ani cesta,
   ktorou by nás niečo zobudilo.
-- **Neoverené zálohy.** Produkcia beží na Free pláne a obnova sa nikdy neskúšala,
-  takže na incident typu „strata dát" nie je pripravená odpoveď. To isté číslo
-  chýba v §9.5 zmluvy (cyklus záloh).
+- ~~**Neoverené zálohy.**~~ **VYRIEŠENÉ 2026-09-25:** produkcia beží na
+  Supabase Pro s dennými zálohami (retencia 7 dní, číslo je v §9.5 zmluvy)
+  a skúška obnovy do oddelenej databázy prebehla — postup je v
+  [`pred-prvym-zvazom.md`](pred-prvym-zvazom.md), „Zálohy a skúška obnovy".
+  **Obnova v Supabase je in-place** (prepíše produkciu), pri incidente ju
+  nespúšťaj bez rozmyslu.
 - **Jeden človek.** Keď je nedostupný, 48-hodinovú lehotu nesplní nikto.
   **Pred prvým zväzom treba zástupcu** — aspoň druhý človek s prístupom
-  a s podpísanou mlčanlivosťou (§4 zmluvy, príloha C).
+  a s podpísanou mlčanlivosťou (§4 zmluvy, príloha C). **Rozhodnuté
+  2026-10-13: Renata Hacherová**, zástupkyňa pre prevádzku a bezpečnostné
+  incidenty, prístup do databázy len na čítanie; dohoda o mlčanlivosti je
+  [`dohoda-o-mlcanlivosti-zastupca.md`](dohoda-o-mlcanlivosti-zastupca.md).
+  Kým nie je podpísaná a prístup zriadený, platí stále „jeden človek".
