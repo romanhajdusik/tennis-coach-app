@@ -1,5 +1,5 @@
 /**
- * Kresba organizácie pre stránku `/federacie` (od 2026-10-12): pult
+ * Kresba organizácie pre stránku `/federation` (od 2026-10-12): pult
  * šéftrénera hore, tréneri v strede, hráči dole — celé v jednom rámčeku
  * s adresou organizácie. Ukazuje to, čo zväz kupuje (dáta tečú do jedného
  * pultu a ostávajú pod jednou strechou), a sedí pre každý šport — kurt by

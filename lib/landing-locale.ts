@@ -295,7 +295,7 @@ export async function loadLandingHracMessages(): Promise<LandingHracMessages> {
   return messages.default as LandingHracMessages;
 }
 
-// Stránka pre federácie/kluby/akadémie (/federacie) — informačná, bez
+// Stránka pre federácie/kluby/akadémie (/federation) — informačná, bez
 // prihlásenia a bez registračného tlačidla; organizácia sa nezakladá
 // samoobslužne (docs/onboarding-organizacie.md).
 export type FederacieMessages = {

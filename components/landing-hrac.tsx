@@ -380,7 +380,7 @@ export async function LandingHrac() {
         </p>
       </div>
 
-      {/* `info@` je všeobecná adresa; `/federacie` má obchodnú `office@`.
+      {/* `info@` je všeobecná adresa; `/federation` má obchodnú `office@`.
           Samotná adresa sa neprekladá, takže nepribudol kľúč do deviatich
           jazykov — nie je čo rozísť. */}
       {/* Znenie pre SLEDUJÚCEHO — je iné než trénerské (sledujúci je vždy

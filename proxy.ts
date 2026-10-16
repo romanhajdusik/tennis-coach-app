@@ -33,7 +33,7 @@ import {
 // (WhatsApp, Messenger, Instagram) si ho sťahuje z tej istej adresy, na akej
 // je zdieľaná stránka. Presmerovanie by jej vrátilo 307 namiesto obrázka
 // a rodičovský aj federačný odkaz by prišiel bez náhľadu.
-const PUBLIC_PATHS = new Set(["/", "/federacie", "/zasady-organizacia", "/og"]);
+const PUBLIC_PATHS = new Set(["/", "/federation", "/zasady-organizacia", "/og"]);
 
 // plaw.click hovorí k druhej strane appky (hráč, rodič, manažér), takže na nej
 // nie je celý verejný web — len jej landing na `/` a dve stránky, na ktoré
@@ -71,11 +71,11 @@ const SPORTS_HUB_PATHS = new Set(["/", "/og"]);
 // inde, dostane 307.
 const CANONICAL_ORIGINS = new Map([
   ["/navod", APP_ORIGIN],
-  ["/federacie", PUBLIC_ORIGIN],
+  ["/federation", PUBLIC_ORIGIN],
   ["/navod-hrac", PARENT_ORIGIN],
   ["/cennik-hrac", PARENT_ORIGIN],
   // Právne stránky (od 2026-09-24) — každá tam, kde je jej publikum: tréner na
-  // produktovej doméne, sledujúci na plaw.click, organizácia pri /federacie.
+  // produktovej doméne, sledujúci na plaw.click, organizácia pri /federation.
   ["/podmienky", APP_ORIGIN],
   ["/zasady", APP_ORIGIN],
   ["/podmienky-hrac", PARENT_ORIGIN],
@@ -140,12 +140,27 @@ function clearAuthCookies(request: NextRequest, response: NextResponse) {
  */
 const STRIPE_WEBHOOK_PATH = "/api/stripe/webhook";
 
+// Stará slovenská adresa stránky pre zväzy (do 2026-10-16), viď proxy().
+const LEGACY_FEDERATION_PATH = "/federacie";
+
 export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname === STRIPE_WEBHOOK_PATH) {
     return NextResponse.next();
   }
 
   const host = normalizeHost(request.headers.get("host"));
+
+  // Stránka pre zväzy bývala do 2026-10-16 na slovenskej adrese `/federacie`;
+  // verejný web je anglický, takže je na `/federation` (rozhodol user). Stará
+  // adresa natrvalo (308) presmeruje — kolujú na ňu odkazy (prezentácia,
+  // správy zväzom). Pristane na `/federation` toho istého hostiteľa a odtiaľ
+  // ju v prípade potreby prevezme kanonizácia nižšie.
+  if (request.nextUrl.pathname === LEGACY_FEDERATION_PATH && request.method === "GET") {
+    return NextResponse.redirect(
+      new URL("/federation" + request.nextUrl.search, request.url),
+      308,
+    );
+  }
 
   // Kanonizácia ide PRED rozdelením podľa hostiteľa — inak by si stránku stihol
   // vykresliť hostiteľ, ktorému nepatrí. Len GET: presmerovanie server action
@@ -181,9 +196,9 @@ export async function proxy(request: NextRequest) {
     // stránka pre zväzy. Rozcestník medzi produktmi, ktorý tu bol, nahradil
     // rozcestník športov na plawsports.com. Presmerovanie (nie druhá adresa
     // tej istej stránky) drží pravidlo „jedna stránka = jedna adresa"
-    // a existujúce odkazy na /federacie fungujú ďalej.
+    // a existujúce odkazy na stránku pre zväzy fungujú ďalej.
     if (pathname === "/") {
-      return NextResponse.redirect(new URL("/federacie" + search, request.url), 307);
+      return NextResponse.redirect(new URL("/federation" + search, request.url), 307);
     }
     // Verejné stránky nepotrebujú Supabase session (sú bez prihlásenia).
     if (PUBLIC_PATHS.has(pathname)) {

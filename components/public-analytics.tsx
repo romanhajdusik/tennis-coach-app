@@ -10,7 +10,7 @@ import { Analytics, type BeforeSendEvent } from "@vercel/analytics/next";
  * **Do appky po prihlásení NEPATRÍ** (rozhodol user pri zavedení): adresy
  * v appke nesú identifikátory hráčov a tréningov a odkaz na obnovu hesla
  * jednorazový kľúč. Komponent sa preto vkladá len do verejných stránok
- * (landing v odhlásenej vetve `app/page.tsx`, návody, cenník, `/federacie`,
+ * (landing v odhlásenej vetve `app/page.tsx`, návody, cenník, `/federation`,
  * `/register`) — nie do `app/layout.tsx`.
  *
  * `beforeSend` je druhá poistka: pustí len cesty zo zoznamu nižšie a vždy
@@ -27,7 +27,7 @@ const PUBLIC_PATHS = new Set([
   "/navod-self",
   "/notebook",
   "/cennik-hrac",
-  "/federacie",
+  "/federation",
   "/register",
 ]);
 

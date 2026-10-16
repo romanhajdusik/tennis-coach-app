@@ -25,7 +25,7 @@ const HIDDEN_PATHS = new Set([
   "/navod-self",
   "/notebook",
   "/cennik-hrac",
-  "/federacie",
+  "/federation",
 ]);
 const HIDDEN_PREFIXES = ["/parent", "/director", "/auth"];
 

@@ -1,6 +1,6 @@
 /**
  * plaw.online = doména **ZVÄZOV** (od 2026-10-07 len pre ne, rozhodol user):
- * stránka pre zväzy, kluby a akadémie (`/federacie`, kam `proxy.ts` presmeruje
+ * stránka pre zväzy, kluby a akadémie (`/federation`, kam `proxy.ts` presmeruje
  * aj `/`) a zásady pre organizácie. Do 2026-10-07 tu bol rozcestník medzi
  * produktmi — ten nahradil rozcestník športov na plawsports.com.
  *

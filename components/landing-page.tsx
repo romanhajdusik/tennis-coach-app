@@ -361,7 +361,7 @@ export async function LandingPage() {
         </div>
       </section>
 
-      {/* `info@` je všeobecná adresa; `/federacie` má obchodnú `office@`.
+      {/* `info@` je všeobecná adresa; `/federation` má obchodnú `office@`.
           Samotná adresa sa neprekladá, takže nepribudol kľúč do deviatich
           jazykov — nie je čo rozísť. */}
       {/* Odkazy na podmienky a zásady patria na stránku, kde sa predáva —

@@ -36,7 +36,7 @@ const FITNESS = "fitness.plawsports.com";
 const CANONICAL = [
   ["/", APP], // trénerský landing
   ["/navod", APP],
-  ["/federacie", PUBLIC],
+  ["/federation", PUBLIC],
   ["/navod-hrac", PARENT],
   ["/cennik-hrac", PARENT],
   // Právne stránky (od 2026-09-24) — každá na doméne svojho publika.
@@ -119,8 +119,17 @@ async function main() {
   check(
     "plaw.online/ presmeruje na stránku pre zväzy",
     publicRoot.status === 307 &&
-      (publicRoot.headers.location ?? "").endsWith("/federacie"),
+      (publicRoot.headers.location ?? "").endsWith("/federation"),
     `status ${publicRoot.status}, location ${publicRoot.headers.location}`,
+  );
+  // Do 2026-10-16 bola stránka pre zväzy na slovenskej adrese — kolujú na ňu
+  // odkazy, takže musí natrvalo presmerovať.
+  const legacy = await request("/federacie?x=1", { host: PUBLIC });
+  check(
+    "stará adresa /federacie presmeruje 308 na /federation (s query)",
+    legacy.status === 308 &&
+      (legacy.headers.location ?? "").endsWith("/federation?x=1"),
+    `status ${legacy.status}, location ${legacy.headers.location}`,
   );
   check(
     "plaw.click = landing pre sledujúceho, bez B2B dverí",
@@ -251,7 +260,7 @@ async function main() {
     [APP, "coach", "/"],
     [PARENT, "parent", "/"],
     // Domovom plaw.online je od 2026-10-07 stránka pre zväzy.
-    [PUBLIC, "org", "/federacie"],
+    [PUBLIC, "org", "/federation"],
   ]) {
     const page = await request(path, { host });
     const image = `${ORIGIN[host]}/og?face=${face}`;

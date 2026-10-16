@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 async function appVariant(): Promise<string | undefined> {
   if (await getOrgContext()) return "org";
-  // plaw.online je od 2026-10-07 len pre zväzy (bývajú na nej /federacie
+  // plaw.online je od 2026-10-07 len pre zväzy (bývajú na nej /federation
   // a zásady organizácie), takže od 2026-10-12 nesie federačný vzhľad ako
   // appka, do ktorej sa zväz prihlási (rozhodol user) — nie tenisový.
   if (isPublicFaceHost((await headers()).get("host"))) return "org";

@@ -4,7 +4,7 @@ import { loadLegalDoc } from "@/lib/legal-docs";
 import { publicRobots } from "@/lib/seo";
 
 // Zásady ochrany údajov pre zväz, klub a akadémiu. Žijú na `plaw.online`, kde
-// je aj stránka `/federacie` — tam ich číta ich publikum.
+// je aj stránka `/federation` — tam ich číta ich publikum.
 //
 // **Zmluvy sem nepatria.** Sprostredkovateľská zmluva podľa čl. 28 a hlavná
 // zmluva o službe sa podpisujú, nezverejňujú sa; organizácia ich dostáva ako
@@ -23,7 +23,7 @@ export default async function ZasadyOrganizaciaPage() {
     <LegalPage
       doc={doc}
       audience="For federations, clubs and academies"
-      sibling={{ href: "/federacie", label: "About the federation mode" }}
+      sibling={{ href: "/federation", label: "About the federation mode" }}
     />
   );
 }
