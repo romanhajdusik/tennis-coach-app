@@ -20,6 +20,8 @@
   "parentNotice": "Notice for parents",
   "parentNoticeHint": "The notice for parents is not about you — it is a ready-made text to hand over, so you do not have to write your own.",
   "billingHeading": "Subscription",
+  "subscribeText": "Choose your plan whenever you are ready — you can subscribe during the trial too.",
+  "subscribeButton": "Subscribe",
   "billingText": "Change your card, switch plan or cancel — all in one place.",
   "billingButton": "Manage subscription",
   "billingOpening": "Opening…",

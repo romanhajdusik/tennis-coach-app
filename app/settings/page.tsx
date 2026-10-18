@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getOrgMembership } from "@/lib/org/membership";
 import { isStripeConfigured } from "@/lib/stripe";
+import { getSubscription } from "@/lib/subscription";
 import { ManageSubscription } from "./manage-subscription";
 
 // Nastavenia účtu. Stránka zanikla 2026-08-29 spolu s Google Kalendárom (bol
@@ -53,6 +54,20 @@ export default async function SettingsPage() {
   // organizácia faktúrou mimo appky (§5.9).
   const canManageBilling =
     isCoach && isStripeConfigured() && Boolean(profile?.stripe_customer_id);
+  // Cesta k nákupu musí byť od prvej minuty po registrácii (rozhodol user
+  // 2026-10-18): pruh hore sa počas skúšobnej doby zámerne skrýva, takže nový
+  // tréner dovtedy nemal kde kliknúť. Kto už platí alebo má prístup zadarmo
+  // od nás, ponuku nevidí; za federačného trénera platí organizácia.
+  const subscription = isCoach
+    ? await getSubscription(supabase, user.id)
+    : null;
+  const canSubscribe =
+    isCoach &&
+    isStripeConfigured() &&
+    subscription !== null &&
+    !subscription.coveredByOrganization &&
+    subscription.status !== "active" &&
+    subscription.status !== "complimentary";
 
   // Každé publikum má vlastné znenie: tréner (samostatný aj federačný — jeho
   // prípad rieši §3 podmienok) trénerské, sledujúci spotrebiteľské, šéftréner
@@ -130,13 +145,28 @@ export default async function SettingsPage() {
           Vidí to len ten, kto cez Stripe naozaj platil: šéftrénera aj
           sledujúceho by to mýlilo a účet s prístupom zadarmo od nás nemá
           v portáli čo spravovať. */}
-      {canManageBilling && (
+      {(canSubscribe || canManageBilling) && (
         <section className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
           <h2 className="text-sm font-medium text-foreground">
             {t("billingHeading")}
           </h2>
-          <p className="text-sm text-muted">{t("billingText")}</p>
-          <ManageSubscription />
+          {canSubscribe && (
+            <>
+              <p className="text-sm text-muted">{t("subscribeText")}</p>
+              <Link
+                href="/subscribe"
+                className="self-start rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary-hover"
+              >
+                {t("subscribeButton")}
+              </Link>
+            </>
+          )}
+          {canManageBilling && (
+            <>
+              <p className="text-sm text-muted">{t("billingText")}</p>
+              <ManageSubscription />
+            </>
+          )}
         </section>
       )}
 
