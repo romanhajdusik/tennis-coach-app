@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { register } from "@/lib/actions/auth";
+import { Wordmark } from "@/components/wordmark";
 
 export function RegisterForm({
   promoRequired,
@@ -26,6 +27,30 @@ export function RegisterForm({
       ? { terms: "/podmienky", privacy: "/zasady" }
       : { terms: "/podmienky-hrac", privacy: "/zasady-hrac" };
 
+  // Pole s kódom. Kým je registrácia na pozvánku, ide prvé a je povinné.
+  // Pri otvorenej registrácii je schované pod odkazom na konci formulára
+  // (od 2026-10-18): ako prvé pole s nápisom „Invitation code" odrádzalo
+  // ľudí z reklamy — z ~450, čo formulár otvorili, sa zaregistroval jeden.
+  const promoField = (
+    <div className="flex flex-col gap-1">
+      <label
+        htmlFor="promo_code"
+        className="text-sm font-medium text-foreground "
+      >
+        {promoRequired ? t("promoCodeLabel") : t("promoCodeLabelOptional")}
+      </label>
+      <input
+        id="promo_code"
+        name="promo_code"
+        type="text"
+        required={promoRequired}
+        autoComplete="off"
+        autoCapitalize="characters"
+        className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
+      />
+    </div>
+  );
+
   // Účet vznikol, ale prihlásiť sa dá až po kliknutí v maili. Bez tejto
   // obrazovky by to vyzeralo, že odoslanie formulára nespravilo nič.
   if (state?.checkEmail) {
@@ -47,30 +72,23 @@ export function RegisterForm({
 
   return (
     <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-sm ">
-      <h1 className="text-xl font-semibold text-foreground ">
+      <Wordmark />
+      <h1 className="mt-3 text-xl font-semibold text-foreground ">
         {t("heading")}
       </h1>
+      {/* Človek z reklamy prichádza rovno sem, bez landingu — má hneď vidieť,
+          čo ho registrácia stojí. Sledujúci skúšobnú dobu nemá (nič neplatí,
+          kým si nepredplatí kalendár a analytiku), preto iná veta. */}
+      {!promoRequired && (
+        <p className="mt-1 text-sm text-muted ">
+          {role === "coach" || role === "self" ? t("trialNote") : t("followerNote")}
+        </p>
+      )}
       {promoRequired && (
         <p className="mt-1 text-sm text-muted ">{t("inviteOnly")}</p>
       )}
       <form action={formAction} className="mt-6 flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="promo_code"
-            className="text-sm font-medium text-foreground "
-          >
-            {promoRequired ? t("promoCodeLabel") : t("promoCodeLabelOptional")}
-          </label>
-          <input
-            id="promo_code"
-            name="promo_code"
-            type="text"
-            required={promoRequired}
-            autoComplete="off"
-            autoCapitalize="characters"
-            className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
-          />
-        </div>
+        {promoRequired && promoField}
         <div className="flex flex-col gap-1">
           <label
             htmlFor="full_name"
@@ -206,6 +224,14 @@ export function RegisterForm({
             ),
           })}
         </p>
+        {!promoRequired && (
+          <details className="text-sm text-muted">
+            <summary className="cursor-pointer underline underline-offset-2">
+              {t("promoCodeToggle")}
+            </summary>
+            <div className="mt-3">{promoField}</div>
+          </details>
+        )}
         {state?.error && (
           <p className="text-sm text-red-400">{state.error}</p>
         )}
