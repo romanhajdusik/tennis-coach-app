@@ -12,6 +12,7 @@ import {
   isDisciplineId,
   type DisciplineConfig,
 } from "@/lib/discipline";
+import { withColumnPrefixes } from "@/lib/drill-options";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -111,6 +112,19 @@ export async function getDrillOptionsByCategory(
 
 export type DrillCodesFormState = { error?: string } | undefined;
 
+/**
+ * Pri zameraniach so stĺpcami (Return, Serve) doplní kódu prefix stĺpca —
+ * viď `withColumnPrefixes`. Ostatné zamerania sa ukladajú, ako sú.
+ */
+function withPrefixesIfGrouped(
+  codes: string[],
+  discipline: DisciplineConfig,
+  category: string,
+) {
+  const groups = discipline.analytics.groupedCategories[category];
+  return groups ? withColumnPrefixes(codes, groups, SLOT_COUNT) : codes;
+}
+
 export async function saveDrillCodes(
   category: string,
   _prevState: DrillCodesFormState,
@@ -124,7 +138,11 @@ export async function saveDrillCodes(
     return { error: t("invalidCategory") };
   }
 
-  const codes = formData.getAll("code").map((value) => (value as string).trim());
+  const codes = withPrefixesIfGrouped(
+    formData.getAll("code").map((value) => (value as string).trim()),
+    discipline,
+    category,
+  );
 
   const supabase = await createClient();
   const {
@@ -205,7 +223,11 @@ export async function saveOrgDrillCodes(
     return { error: t("invalidCategory") };
   }
 
-  const codes = formData.getAll("code").map((value) => (value as string).trim());
+  const codes = withPrefixesIfGrouped(
+    formData.getAll("code").map((value) => (value as string).trim()),
+    disciplineConfig(disciplineId),
+    category,
+  );
 
   const supabase = await createClient();
   const {

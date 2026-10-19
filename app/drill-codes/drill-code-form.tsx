@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { saveDrillCodes, saveOrgDrillCodes } from "@/lib/actions/drill-codes";
-import { splitSlotsIntoGroups, type AnalyticsCodeGroup } from "@/lib/drill-options";
+import { slotsToColumns, type AnalyticsCodeGroup } from "@/lib/drill-options";
 import type { DisciplineId } from "@/lib/disciplines/types";
 import { DrillGlossaryList, type DrillGuide } from "@/components/drill-glossary";
 
@@ -38,7 +38,7 @@ export function DrillCodeForm({
     undefined,
   );
 
-  const buckets = groups ? splitSlotsIntoGroups(initialSlots, groups) : [];
+  const buckets = groups ? slotsToColumns(initialSlots, groups) : [];
 
   return (
     <form
@@ -72,6 +72,13 @@ export function DrillCodeForm({
               <span className="text-xs font-medium text-muted ">
                 {group.label}
               </span>
+              {/* Prefix doplní appka pri uložení (`withColumnPrefixes`) —
+                  tréner ho písať nemusí, ale má vidieť, čo sa s kódom stane. */}
+              {!readOnly && (
+                <span className="text-[11px] text-muted">
+                  {t("columnPrefixHint", { prefix: group.prefix })}
+                </span>
+              )}
               {buckets[groupIndex].map((value, i) => (
                 <input
                   key={i}

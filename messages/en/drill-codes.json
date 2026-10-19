@@ -5,6 +5,7 @@
   "glossaryToggle": "What the default (example only) codes mean",
   "glossaryNote": "These are only starter codes. Keep them, or rename any slot to your own drill — your analytics follow whatever codes you use.",
   "save": "Save codes",
+  "columnPrefixHint": "Just type e.g. CROSS — the app adds {prefix}- for you.",
   "saving": "Saving...",
   "errors": {
     "invalidCategory": "Invalid focus area.",
