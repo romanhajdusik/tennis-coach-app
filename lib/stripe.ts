@@ -12,6 +12,8 @@
 // sa vedome a na oboch miestach naraz.
 const STRIPE_API_VERSION = "2025-08-27.basil";
 
+import type { StripeSubscriptionLite } from "@/lib/stripe-state";
+
 /**
  * Je Stripe vôbec nastavený? **Na produkcii dnes NIE** a je to zámer: kým tam
  * kľúče nepribudnú, appka sa nesmie tváriť, že vie prijať platbu. Preto sa
@@ -80,8 +82,31 @@ export async function findPriceIdByLookupKey(lookupKey: string) {
   return (found.data?.[0]?.id as string | undefined) ?? null;
 }
 
+/**
+ * Všetky predplatné zákazníka vrátane skončených. Číta to webhook (stav účtu
+ * sa odvodzuje z celku, nie z jednej udalosti — `lib/stripe-state.ts`)
+ * a pokladňa (druhé predplatné popri bežiacom sa nekupuje).
+ *
+ * Kľúč potrebuje právo **Subscriptions: Read**. Bez neho volanie spadne a obaja
+ * volajúci sa vrátia k pôvodnému správaniu — nič sa nepokazí, len sa stráž
+ * neuplatní (a je to vidieť v logu).
+ */
+export async function listCustomerSubscriptions(customerId: string) {
+  const found = await stripeRequest(
+    "GET",
+    `/subscriptions?customer=${encodeURIComponent(customerId)}&status=all&limit=100`,
+  );
+  return (found.data ?? []) as StripeSubscriptionLite[];
+}
+
 export type CheckoutSessionInput = {
   priceId: string;
+  /**
+   * Zákazník, ktorého účet v Stripe už má. Bez neho by každá pokladňa založila
+   * NOVÉHO zákazníka a staré predplatné by tréner vo svojom portáli nevidel —
+   * nemohol by ho ani zrušiť (nález S1, 2026-10-19).
+   */
+  customerId?: string;
   /** Účet, ktorému predplatné patrí — podľa neho ho neskôr priradí webhook. */
   userId: string;
   customerEmail: string | undefined;
@@ -122,6 +147,7 @@ export type CheckoutSessionInput = {
  */
 export async function createCheckoutSession({
   priceId,
+  customerId,
   userId,
   customerEmail,
   successUrl,
@@ -156,7 +182,12 @@ export async function createCheckoutSession({
         [`subscription_data[metadata][${key}]`, value],
       ]),
     ),
-    ...(customerEmail ? { customer_email: customerEmail } : {}),
+    // Stripe neprijme oboje naraz: známy zákazník má e-mail už v sebe.
+    ...(customerId
+      ? { customer: customerId }
+      : customerEmail
+        ? { customer_email: customerEmail }
+        : {}),
   });
 
   return session.url as string;

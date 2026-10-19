@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
-import { verifyWebhookEvent } from "@/lib/stripe";
+import { listCustomerSubscriptions, verifyWebhookEvent } from "@/lib/stripe";
+import { deriveAccountState } from "@/lib/stripe-state";
 import { playerLimitOfLookupKey } from "@/lib/stripe-plans";
 import { COACH_TIERS } from "@/lib/landing-pricing";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
@@ -57,6 +58,8 @@ type Outcome = {
   playerLimit?: number;
   /** Zákazník v Stripe — podľa neho appka otvára zákaznícky portál. */
   customerId?: string;
+  /** Zákazník, ktorého predplatné sa majú prečítať zo Stripe (nález S1/S2). */
+  lookupCustomerId?: string;
 } | null;
 
 /** Metadáta nesie platba aj predplatné — obe sa im nastavujú pri pokladni. */
@@ -85,7 +88,13 @@ function outcomeFor(event: Stripe.Event): Outcome {
     // vzniká, a bez neho by sme trénera do portálu nevedeli pustiť.
     const customerId =
       typeof session.customer === "string" ? session.customer : undefined;
-    return { userId: id, status: "active", playerLimit, customerId };
+    return {
+      userId: id,
+      status: "active",
+      playerLimit,
+      customerId,
+      lookupCustomerId: customerId,
+    };
   }
 
   if (
@@ -121,9 +130,14 @@ function outcomeFor(event: Stripe.Event): Outcome {
     // (`requireWriteAccess`), ale zrazením hladiny na nulu by sa dostal do
     // stavu „prekročená hladina" a po opätovnom zaplatení by mu appka
     // povedala, nech archivuje deti. To je zlá odpoveď na zaplatenie.
+    // Zákazník tu ide len kvôli odvodeniu stavu (`deriveAccountState`), nie
+    // na zápis — ten patrí pokladni, kde zákazník vzniká.
+    const subscriptionCustomer =
+      typeof subscription.customer === "string" ? subscription.customer : undefined;
+
     return status === "canceled"
-      ? { userId, status }
-      : { userId, status, playerLimit };
+      ? { userId, status, lookupCustomerId: subscriptionCustomer }
+      : { userId, status, playerLimit, lookupCustomerId: subscriptionCustomer };
   }
 
   return null;
@@ -161,14 +175,42 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ignored: event.type });
   }
 
+  // Udalosť hovorí o JEDNOM predplatnom a môže prísť oneskorene. Stav účtu
+  // preto odvodíme zo všetkých jeho predplatných tak, ako sú v Stripe TERAZ
+  // (`lib/stripe-state.ts`, nálezy S1 a S2 z previerky 2026-10-19). Keď sa
+  // to nepodarí (výpadok Stripe, kľúč bez práva Subscriptions: Read), ostáva
+  // udalosť — to je správanie spred opravy, nie horšie.
+  let status = outcome.status;
+  let playerLimit = outcome.playerLimit;
+
+  if (outcome.lookupCustomerId) {
+    try {
+      const derived = deriveAccountState(
+        await listCustomerSubscriptions(outcome.lookupCustomerId),
+        outcome.userId,
+      );
+      if (derived) {
+        status = derived.status;
+        playerLimit = derived.playerLimit;
+      }
+    } catch (error) {
+      console.error(
+        `Stripe webhook: predplatné sa nedali prečítať, platí udalosť (${event.type})`,
+        error,
+      );
+    }
+  }
+
   const update: {
     subscription_status: string;
     player_limit?: number;
     stripe_customer_id?: string;
-  } = { subscription_status: outcome.status };
+  } = { subscription_status: status };
 
-  if (outcome.playerLimit !== undefined) {
-    update.player_limit = outcome.playerLimit;
+  // Hladina sa mení len pri platenom stave — pri zrušení a dlhu ostáva
+  // (dôvod je vyššie pri `customer.subscription.deleted`).
+  if (status === "active" && playerLimit !== undefined) {
+    update.player_limit = playerLimit;
   }
   // Zákazník sa zapisuje len keď v udalosti je — pri zrušení sa NEMAŽE.
   // Tréner sa môže vrátiť a je to ten istý zákazník; vymazaním by sme mu

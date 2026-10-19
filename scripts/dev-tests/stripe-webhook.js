@@ -229,8 +229,107 @@ async function main() {
       "účet sa tým nezmenil",
       unchanged.subscription_status === "canceled" && unchanged.player_limit === 12,
     );
+
+    await realSubscriptions(account, profile);
   } finally {
     await db.from("profiles").update(original).eq("id", account.id);
+  }
+}
+
+// --- Skutočné predplatné v testovacom režime Stripe (nálezy S1 a S2) ---
+//
+// Webhook od 2026-10-19 neverí obsahu jednej udalosti, ale prečíta si zo
+// Stripe všetky predplatné zákazníka. To sa nedá overiť vymyslenými id —
+// treba skutočného testovacieho zákazníka. Sada ho na konci zmaže (tým
+// zaniknú aj jeho predplatné).
+
+const STRIPE_KEY = envValue("STRIPE_SECRET_KEY");
+
+async function stripe(method, endpoint, params) {
+  const response = await fetch(`https://api.stripe.com/v1${endpoint}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${STRIPE_KEY}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Stripe-Version": "2025-08-27.basil",
+    },
+    body: params ? new URLSearchParams(params).toString() : undefined,
+  });
+  const body = await response.json();
+  if (!response.ok) throw new Error(`Stripe ${endpoint}: ${body?.error?.message}`);
+  return body;
+}
+
+async function realSubscriptions(account, profile) {
+  section("5) Viac predplatných a oneskorené udalosti (skutočný Stripe, test)");
+  if (!STRIPE_KEY?.startsWith("sk_test_")) {
+    check("STRIPE_SECRET_KEY je testovací kľúč", false);
+    return;
+  }
+
+  // Vlastný dočasný produkt, nie ostré `plaw_coach_*` ceny: testovacia
+  // polovica účtu ich mať nemusí a sada nemá zakladať trvalé ceny s našimi
+  // `lookup_key`. Cena bez `lookup_key` → webhook berie hladinu z metadát.
+  const product = await stripe("POST", "/products", {
+    name: "dev-tests stripe-webhook (dočasný)",
+  });
+  const customer = await stripe("POST", "/customers", {
+    email: COACH,
+    payment_method: "pm_card_visa",
+    "invoice_settings[default_payment_method]": "pm_card_visa",
+  });
+
+  const subscribe = (players) =>
+    stripe("POST", "/subscriptions", {
+      customer: customer.id,
+      "items[0][price_data][currency]": "eur",
+      "items[0][price_data][product]": product.id,
+      "items[0][price_data][unit_amount]": "690",
+      "items[0][price_data][recurring][interval]": "month",
+      "metadata[plaw_user_id]": account.id,
+      "metadata[plaw_role]": "coach",
+      "metadata[plaw_player_limit]": String(players),
+    });
+
+  try {
+    const old = await subscribe(6);
+    const current = await subscribe(12);
+
+    // S1: zruší sa STARÉ predplatné, nové beží ďalej. Do opravy by webhook
+    // zapísal „canceled" účtu, ktorý práve platí.
+    const ended = await stripe("DELETE", `/subscriptions/${old.id}`);
+    const s1 = event("customer.subscription.deleted", ended);
+    const s1res = await post(s1, sign(s1, SECRET));
+    check("zrušenie starého predplatného → 200", s1res.status === 200, `status ${s1res.status}`);
+    const afterS1 = await profile();
+    check(
+      "účet s bežiacim novým predplatným ostáva active",
+      afterS1.subscription_status === "active",
+      afterS1.subscription_status,
+    );
+    check(
+      "hladina je z bežiaceho predplatného (12)",
+      afterS1.player_limit === 12,
+      String(afterS1.player_limit),
+    );
+
+    // S2: všetko je zrušené, potom príde oneskorená udalosť „active" (Stripe
+    // doručuje znova aj po hodinách a poradie nezaručuje).
+    const endedToo = await stripe("DELETE", `/subscriptions/${current.id}`);
+    const deleted = event("customer.subscription.deleted", endedToo);
+    await post(deleted, sign(deleted, SECRET));
+    const late = event("customer.subscription.updated", { ...current, status: "active" });
+    await post(late, sign(late, SECRET));
+    const afterS2 = await profile();
+    check(
+      "oneskorené „active“ po zrušení prístup NEVRÁTI",
+      afterS2.subscription_status === "canceled",
+      afterS2.subscription_status,
+    );
+  } finally {
+    await stripe("DELETE", `/customers/${customer.id}`).catch(() => {});
+    // Produkt s cenou sa zmazať nedá, len archivovať.
+    await stripe("POST", `/products/${product.id}`, { active: "false" }).catch(() => {});
   }
 }
 

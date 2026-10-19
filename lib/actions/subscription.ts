@@ -15,7 +15,9 @@ import {
   createPortalSession,
   findPriceIdByLookupKey,
   isStripeConfigured,
+  listCustomerSubscriptions,
 } from "@/lib/stripe";
+import { LIVE_STATUSES } from "@/lib/stripe-state";
 
 /**
  * Otvorenie platobnej stránky Stripe pre trénera.
@@ -47,7 +49,7 @@ export async function startCheckout(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, self_diary")
+    .select("role, self_diary, stripe_customer_id")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -81,6 +83,24 @@ export async function startCheckout(
   // má právo prejsť na platený. Blokuje sa len ten, kto už platí.
   if (subscription.status === "active") {
     return { error: "alreadySubscribed" };
+  }
+
+  // Druhé predplatné popri bežiacom sa nekupuje — ani keď to prvé dlží
+  // (`past_due`). Inak by mal účet dve predplatné, a keď Stripe to staré po
+  // neúspešných pokusoch zruší, platiaci tréner by dostal „canceled" a staré
+  // by navyše platil ďalej, ak karta ožije (nález S1, previerka 2026-10-19).
+  // Dlh sa rieši v portáli novou kartou, nie novou pokladňou. Keď sa zoznam
+  // nedá prečítať, nákup sa NEBLOKUJE — webhook stav aj tak odvodí z celku.
+  const customerId = profile?.stripe_customer_id ?? undefined;
+  if (customerId) {
+    try {
+      const subscriptions = await listCustomerSubscriptions(customerId);
+      if (subscriptions.some((s) => LIVE_STATUSES.has(s.status))) {
+        return { error: "manageInPortal" };
+      }
+    } catch (error) {
+      console.error("Stripe: predplatné zákazníka sa nedali prečítať:", error);
+    }
   }
 
   // Hladinu má len tréner. Sledujúci sleduje vždy jedného hráča, takže mu
@@ -132,6 +152,7 @@ export async function startCheckout(
   try {
     const url = await createCheckoutSession({
       priceId,
+      customerId,
       userId: user.id,
       customerEmail: user.email,
       successUrl: `${origin}${back}?paid=1`,

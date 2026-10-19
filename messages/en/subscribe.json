@@ -21,6 +21,7 @@
     "unauthenticated": "Please sign in again.",
     "notForThisAccount": "This account does not pay for P.L.A.W.",
     "alreadySubscribed": "You already have an active subscription.",
+    "manageInPortal": "You already have a subscription. To update your card or change the plan, open Settings and choose Manage subscription.",
     "unknownPlan": "That plan does not exist."
   },
   "coach": {

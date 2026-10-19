@@ -270,6 +270,18 @@ zámerné: návštevník z Googlu sa musí vedieť hneď zaregistrovať aj zapla
 - **Webhook musí overovať podpis Stripe.** Je to verejná adresa bez prihlásenia,
   ktorá zapisuje do databázy — bez overenia podpisu by si ktokoľvek nastavil
   „zaplatené".
+- **Webhook neverí jednej udalosti.** Stav účtu odvodzuje zo VŠETKÝCH
+  predplatných zákazníka tak, ako sú v Stripe v čase spracovania
+  ([`lib/stripe-state.ts`](../lib/stripe-state.ts)). Stripe nezaručuje poradie
+  udalostí a opakuje ich aj po hodinách, a jeden účet môže mať viac
+  predplatných — zrušenie starého nesmie zapísať „canceled" účtu, ktorý platí
+  nové (previerka 2026-10-19, nálezy S1 a S2, stráži `stripe-webhook.js` §5).
+  **Kľúč preto potrebuje právo Subscriptions: Read**; bez neho webhook spadne
+  späť na obsah udalosti a pokladňa stráž neuplatní (vidno to v logu).
+- **Druhé predplatné popri bežiacom sa nekupuje** — ani pri `past_due`. Dlh sa
+  rieši novou kartou v portáli. Pokladňa navyše posiela uloženého zákazníka
+  (`customer`), nie e-mail, inak by Stripe založil nového a staré predplatné by
+  tréner v portáli nevidel.
 - **Federačného trénera sa Stripe netýka.** Sedadlá sa fakturujú mimo aplikácie
   (viď [`docs/onboarding-organizacie.md`](onboarding-organizacie.md)) a členstvo
   v organizácii prebíja stav profilu.
