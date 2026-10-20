@@ -227,7 +227,8 @@ enough, and we do not do it.
   these rights on the player's behalf.
 
 **This policy is effective from 1 October 2026.**
-Last updated 7 October 2026: website visit counting added to §9.
+Last updated 20 October 2026: billing details added (§3, §4, §9) and Stripe added as a provider (§7).
+Earlier update 7 October 2026: website visit counting added to §9.
 
 ---
 ---
@@ -427,7 +428,8 @@ a nerobíme to.
   uplatňuje za hráča.
 
 **Tieto zásady platia od 1. októbra 2026.**
-Aktualizované 7. októbra 2026: do §9 pribudlo počítanie návštev webu.
+Aktualizované 20. októbra 2026: pribudli fakturačné údaje (§3, §4, §9) a Stripe medzi poskytovateľmi (§7).
+Predchádzajúca aktualizácia 7. októbra 2026: do §9 pribudlo počítanie návštev webu.
 
 ---
 ---

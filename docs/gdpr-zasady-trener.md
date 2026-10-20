@@ -191,7 +191,8 @@ change — we will tell you by email or in the app. Quietly rewriting the page i
 enough, and we do not do it.
 
 **This policy is effective from 1 October 2026.**
-Last updated 7 October 2026: website visit counting added to §9.
+Last updated 20 October 2026: billing details added (§3, §4, §6) and Stripe added as a provider (§5).
+Earlier update 7 October 2026: website visit counting added to §9.
 
 ---
 ---
@@ -364,7 +365,8 @@ dáme ti vedieť e-mailom alebo priamo v aplikácii. Ticho prepísať stránku n
 a nerobíme to.
 
 **Tieto zásady platia od 1. októbra 2026.**
-Aktualizované 7. októbra 2026: do §9 pribudlo počítanie návštev webu.
+Aktualizované 20. októbra 2026: pribudli fakturačné údaje (§3, §4, §6) a Stripe medzi poskytovateľmi (§5).
+Predchádzajúca aktualizácia 7. októbra 2026: do §9 pribudlo počítanie návštev webu.
 
 ---
 ---
