@@ -56,6 +56,9 @@ ask — see section 11.
 we can see it), your role (parent, manager or player), which player you are
 connected to, and your subscription status.
 
+**If you fill in billing details:** company name, company address, company ID and
+tax ID. They appear on your invoices.
+
 **About the player you follow:** name, year of birth, practice dates and times,
 what was trained (focus areas, drills, duration) and the coach's notes on the
 session.
@@ -80,6 +83,7 @@ not obtain it from you, and we never collect it directly from the player.
 | Running your account and signing you in | performance of our contract with you |
 | Keeping the practice records available to you | performance of our contract with you |
 | Subscription | performance of the contract |
+| Billing details on your invoices | performance of the contract |
 | Operation, security, abuse detection | our legitimate interest in keeping the service running and free of abuse |
 
 We do not ask you for consent — it is not the legal basis for any of the above.
@@ -123,9 +127,12 @@ they need:
 - **Supabase** — database and sign-in (Frankfurt, EU)
 - **Vercel** — running the application (Frankfurt, EU)
 - **Resend** — sending registration and password-reset emails
+- **Stripe** — payments and invoices. If you fill in billing details, we pass them
+  to Stripe so that they appear on your invoice. The invoice itself is issued by
+  Link, a Stripe company that sells the subscription on our behalf.
 
-Vercel and Resend are US companies, so part of the processing may take place
-outside the EU; we have in place with them the standard contractual clauses
+Vercel, Resend and Stripe are US companies, so part of the processing may take
+place outside the EU; we have in place with them the standard contractual clauses
 designated by the European Union for that purpose.
 
 ### 8. Where the data is stored
@@ -140,6 +147,7 @@ applies to backups and to the servers the application runs on.
 | Practice records in your account | 6 months, or 24 months with a subscription (section 5) |
 | Your account | as long as you have it — deleting it removes everything |
 | An account not signed into for 24 months | we send a warning and then delete it |
+| Billing details | until you clear them or delete your account — invoices already issued keep them for 10 years, as the law requires |
 | Operational logs | short-term, per our providers' settings |
 
 ### 10. Your own account is read-only
@@ -258,6 +266,9 @@ zmeniť v jeho záznamoch, obráť sa naňho — pozri §11.
 nevidíme ho ani my), rola (rodič, manažér alebo hráč), s ktorým hráčom si prepojený
 a stav predplatného.
 
+**Ak vyplníš fakturačné údaje:** názov firmy, adresa firmy, IČO a DIČ. Objavia sa
+na tvojich faktúrach.
+
 **O hráčovi, ktorého sleduješ:** meno, rok narodenia, dátumy a časy tréningov, čo
 sa trénovalo (zamerania, cvičenia, trvanie) a poznámky trénera k tréningu.
 
@@ -280,6 +291,7 @@ ich nezbierame priamo od hráča.
 | Vedenie tvojho účtu a prihlasovanie | plnenie našej zmluvy s tebou |
 | Sprístupnenie záznamov o tréningoch | plnenie našej zmluvy s tebou |
 | Predplatné | plnenie zmluvy |
+| Fakturačné údaje na tvojich faktúrach | plnenie zmluvy |
 | Prevádzka, bezpečnosť, odhaľovanie zneužitia | náš oprávnený záujem na tom, aby služba bežala a nebola zneužitá |
 
 Súhlas od teba nepýtame — pri ničom z tohto nie je právnym základom. **A s údajmi
@@ -320,10 +332,13 @@ k tomu, čo potrebuje:
 - **Supabase** — databáza a prihlasovanie (Frankfurt, EÚ)
 - **Vercel** — prevádzka aplikácie (Frankfurt, EÚ)
 - **Resend** — odosielanie e-mailov o registrácii a obnove hesla
+- **Stripe** — platby a faktúry. Ak vyplníš fakturačné údaje, odovzdáme ich
+  Stripe, aby boli na tvojej faktúre. Samotnú faktúru vystavuje Link, spoločnosť
+  zo skupiny Stripe, ktorá predplatné predáva v našom mene.
 
-Vercel aj Resend sú americké spoločnosti, takže časť spracúvania môže prebehnúť
-mimo EÚ; máme s nimi uzavreté štandardné zmluvné doložky, ktoré na to Európska únia
-určila.
+Vercel, Resend aj Stripe sú americké spoločnosti, takže časť spracúvania môže
+prebehnúť mimo EÚ; máme s nimi uzavreté štandardné zmluvné doložky, ktoré na to
+Európska únia určila.
 
 ### 8. Kde sú údaje uložené
 
@@ -337,6 +352,7 @@ zálohy aj pre servery, na ktorých aplikácia beží.
 | Záznamy o tréningoch v tvojom účte | 6 mesiacov, s predplatným 24 (§5) |
 | Tvoj účet | kým ho máš — po zmazaní odchádza všetko |
 | Účet, do ktorého sa 24 mesiacov neprihlásiš | pošleme upozornenie a potom ho zmažeme |
+| Fakturačné údaje | kým ich nevymažeš alebo nezrušíš účet — na už vystavených faktúrach ostávajú 10 rokov, ako káže zákon |
 | Prevádzkové záznamy | krátkodobo, podľa nastavenia poskytovateľov |
 
 ### 10. Tvoj účet je len na čítanie

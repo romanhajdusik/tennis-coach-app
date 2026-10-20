@@ -6,7 +6,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getOrgMembership } from "@/lib/org/membership";
 import { isStripeConfigured } from "@/lib/stripe";
 import { getSubscription } from "@/lib/subscription";
+import { getBillingDetails } from "@/lib/billing-details";
 import { ManageSubscription } from "./manage-subscription";
+import { BillingDetailsForm } from "./billing-details-form";
 
 // Nastavenia účtu. Stránka zanikla 2026-08-29 spolu s Google Kalendárom (bol
 // jej jediný obsah) a vracia sa preto, že prihlásený sa inak k podmienkam
@@ -68,6 +70,15 @@ export default async function SettingsPage() {
     !subscription.coveredByOrganization &&
     subscription.status !== "active" &&
     subscription.status !== "complimentary";
+  // Fakturačné údaje má každý, kto platí cez Stripe sám — tréner (aj hráčsky
+  // denník) aj sledujúci. Šéftréner a federačný tréner nie: za nich platí
+  // organizácia faktúrou mimo appky (§5.9).
+  const showBillingDetails =
+    isStripeConfigured() &&
+    (isFollower || (isCoach && !subscription?.coveredByOrganization));
+  const billingDetails = showBillingDetails
+    ? await getBillingDetails(supabase, user.id)
+    : null;
 
   // Každé publikum má vlastné znenie: tréner (samostatný aj federačný — jeho
   // prípad rieši §3 podmienok) trénerské, sledujúci spotrebiteľské, šéftréner
@@ -167,6 +178,21 @@ export default async function SettingsPage() {
               <ManageSubscription />
             </>
           )}
+        </section>
+      )}
+
+      {/* Kotva `#billing` — odkazuje sem stránka s cenníkom, aby si tréner
+          kupujúci na firmu údaje vyplnil skôr, než zaplatí. */}
+      {showBillingDetails && (
+        <section
+          id="billing"
+          className="flex scroll-mt-4 flex-col gap-3 rounded-xl border border-border bg-surface p-4"
+        >
+          <h2 className="text-sm font-medium text-foreground">
+            {t("billingDetails.heading")}
+          </h2>
+          <p className="text-sm text-muted">{t("billingDetails.intro")}</p>
+          <BillingDetailsForm details={billingDetails} />
         </section>
       )}
 

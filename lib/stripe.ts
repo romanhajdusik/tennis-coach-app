@@ -99,6 +99,99 @@ export async function listCustomerSubscriptions(customerId: string) {
   return (found.data ?? []) as StripeSubscriptionLite[];
 }
 
+/** Fakturačné údaje účtu — riadok `billing_details` bez technických stĺpcov. */
+export type BillingDetails = {
+  company: string | null;
+  address: string | null;
+  companyId: string | null;
+  taxId: string | null;
+};
+
+/**
+ * Riadky, ktoré Stripe vytlačí na faktúru hore pod dátumami.
+ *
+ * **Všetko ide do `custom_fields`, aj firma a adresa.** Pokladňa Managed
+ * Payments `customer.name` aj `customer.address` po platbe prepíše — meno
+ * nahradí menom z karty a adresu zúži na krajinu — a zabrániť tomu nejde
+ * (`customer_update` Stripe pri Managed Payments odmietne). `custom_fields`
+ * prežijú. Overené testovacou platbou 2026-10-20.
+ *
+ * Názvy sú anglické a všeobecné (rozhodol user): zákazníci sú tréneri z celého
+ * sveta, „IČO" talianskemu trénerovi nič nepovie. Stripe berie najviac štyri
+ * riadky, názov do 40 a hodnotu do 140 znakov — limit hodnoty drží aj CHECK
+ * v `billing_details`.
+ *
+ * Prázdne údaje = prázdne pole; `""` v parametroch Stripe riadky zmaže.
+ */
+export function billingCustomFields(
+  details: BillingDetails | null,
+): Record<string, string> {
+  const rows = [
+    ["Company", details?.company],
+    ["Address", details?.address],
+    ["Company ID", details?.companyId],
+    ["Tax ID", details?.taxId],
+  ].filter((row): row is [string, string] => Boolean(row[1]));
+
+  if (rows.length === 0) {
+    return { "invoice_settings[custom_fields]": "" };
+  }
+
+  return Object.fromEntries(
+    rows.flatMap(([name, value], index) => [
+      [`invoice_settings[custom_fields][${index}][name]`, name],
+      [`invoice_settings[custom_fields][${index}][value]`, value],
+    ]),
+  );
+}
+
+/** Má účet vyplnené aspoň niečo, čo patrí na faktúru? */
+export function hasBillingDetails(
+  details: BillingDetails | null,
+): details is BillingDetails {
+  return Boolean(
+    details?.company || details?.address || details?.companyId || details?.taxId,
+  );
+}
+
+/**
+ * Založí zákazníka v Stripe **pred** pokladňou, aby fakturačné údaje boli už
+ * na prvej faktúre — tá vzniká pri platbe a vystavenú faktúru Stripe nezmení.
+ *
+ * `stripe_customer_id` sa tu do appky NEZAPISUJE: robí to výhradne webhook
+ * z `checkout.session.completed` (nesie `session.customer`). Keď tréner
+ * pokladňu zavrie bez platby, ostane v Stripe zákazník bez predplatného —
+ * neškodí to a ďalší pokus založí nového.
+ */
+export async function createCustomerWithBillingDetails({
+  email,
+  userId,
+  details,
+}: {
+  email: string | undefined;
+  userId: string;
+  details: BillingDetails;
+}) {
+  const customer = await stripeRequest("POST", "/customers", {
+    ...(email ? { email } : {}),
+    "metadata[plaw_user_id]": userId,
+    ...billingCustomFields(details),
+  });
+  return customer.id as string;
+}
+
+/** Prepíše fakturačné riadky existujúceho zákazníka — platia od ďalšej faktúry. */
+export async function updateCustomerBillingDetails(
+  customerId: string,
+  details: BillingDetails | null,
+) {
+  await stripeRequest(
+    "POST",
+    `/customers/${encodeURIComponent(customerId)}`,
+    billingCustomFields(details),
+  );
+}
+
 export type CheckoutSessionInput = {
   priceId: string;
   /**

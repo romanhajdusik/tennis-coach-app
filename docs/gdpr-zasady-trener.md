@@ -58,6 +58,9 @@ one.
 **While you use the app:** subscription and trial status, how many players you may
 keep active, and your drill codes.
 
+**If you fill in billing details:** company name, company address, company ID and
+tax ID. They appear on your invoices.
+
 **Automatically on every visit:** IP address, browser type and the time of the
 request. This serves operation and abuse detection.
 
@@ -71,6 +74,7 @@ the app contains no advertising or tracking tool.
 |---|---|
 | Running your account and signing you in | performance of the service contract |
 | Subscription, trial period, promo codes | performance of the contract |
+| Billing details on your invoices | performance of the contract |
 | Operation, security, abuse detection | our legitimate interest in keeping the service running and free of abuse |
 | Answering your questions | performance of the contract |
 | Invoices and accounting records | legal obligation |
@@ -89,12 +93,15 @@ These providers help us, each with access only to what they need:
 - **Supabase** — database and sign-in (Frankfurt, EU)
 - **Vercel** — running the application (Frankfurt, EU)
 - **Resend** — sending registration and password-reset emails
+- **Stripe** — payments and invoices. If you fill in billing details, we pass them
+  to Stripe so that they appear on your invoice. The invoice itself is issued by
+  Link, a Stripe company that sells the subscription on our behalf.
 
-Vercel and Resend are US companies, so part of the processing may take place
-outside the EU; we have in place with them the standard contractual clauses
+Vercel, Resend and Stripe are US companies, so part of the processing may take
+place outside the EU; we have in place with them the standard contractual clauses
 designated by the European Union for that purpose.
 
-**We pass the data to no one else and we do not sell it.**
+**We pass the data to no one beyond these providers and we do not sell it.**
 
 ### 6. How long we keep it
 
@@ -105,6 +112,7 @@ designated by the European Union for that purpose.
 | **An individual practice** | **at most 4 years** from the date of the practice |
 | **A player's records as a whole** | **one year after their last practice** — we warn you in advance and offer a download |
 | Invoices and accounting records | 10 years (required by law) |
+| Billing details | until you clear them or delete your account — invoices already issued keep them for 10 years, as the law requires |
 | Operational logs | short-term, per our providers' settings |
 
 **Two rules apply to practice records, and whichever comes first wins:**
@@ -227,6 +235,9 @@ nejaký použil.
 **Počas používania:** stav predplatného a skúšobnej doby, koľko hráčov smieš mať
 aktívnych, tvoje kódy cvičení.
 
+**Ak vyplníš fakturačné údaje:** názov firmy, adresa firmy, IČO a DIČ. Objavia sa
+na tvojich faktúrach.
+
 **Automaticky pri každej návšteve:** IP adresa, typ prehliadača a čas požiadavky.
 Slúži to na prevádzku a na odhalenie zneužitia.
 
@@ -240,6 +251,7 @@ ani sledovací nástroj.
 |---|---|
 | Vedenie tvojho účtu a prihlasovanie | plnenie zmluvy o poskytovaní služby |
 | Predplatné, skúšobná doba, promo kódy | plnenie zmluvy |
+| Fakturačné údaje na tvojich faktúrach | plnenie zmluvy |
 | Prevádzka, bezpečnosť, odhaľovanie zneužitia | náš oprávnený záujem na tom, aby služba bežala a nebola zneužitá |
 | Odpovede na tvoje otázky | plnenie zmluvy |
 | Faktúry a účtovné doklady | zákonná povinnosť |
@@ -257,12 +269,15 @@ Pomáhajú nám títo poskytovatelia a každý má prístup len k tomu, čo potr
 - **Supabase** — databáza a prihlasovanie (Frankfurt, EÚ)
 - **Vercel** — prevádzka aplikácie (Frankfurt, EÚ)
 - **Resend** — odosielanie e-mailov o registrácii a obnove hesla
+- **Stripe** — platby a faktúry. Ak vyplníš fakturačné údaje, odovzdáme ich
+  Stripe, aby boli na tvojej faktúre. Samotnú faktúru vystavuje Link, spoločnosť
+  zo skupiny Stripe, ktorá predplatné predáva v našom mene.
 
-Vercel aj Resend sú americké spoločnosti, takže časť spracúvania môže prebehnúť
-mimo EÚ; máme s nimi uzavreté štandardné zmluvné doložky, ktoré na to Európska únia
-určila.
+Vercel, Resend aj Stripe sú americké spoločnosti, takže časť spracúvania môže
+prebehnúť mimo EÚ; máme s nimi uzavreté štandardné zmluvné doložky, ktoré na to
+Európska únia určila.
 
-**Nikomu ďalšiemu údaje neodovzdávame a nepredávame ich.**
+**Okrem týchto poskytovateľov údaje nikomu neodovzdávame a nepredávame ich.**
 
 ### 6. Ako dlho to držíme
 
@@ -273,6 +288,7 @@ určila.
 | **Jednotlivý tréning** | **najviac 4 roky** od dátumu tréningu |
 | **Záznamy o hráčovi ako celok** | **rok od jeho posledného tréningu** — vopred ťa upozorníme a ponúkneme stiahnutie |
 | Faktúry a účtovné doklady | 10 rokov (ukladá to zákon) |
+| Fakturačné údaje | kým ich nevymažeš alebo nezrušíš účet — na už vystavených faktúrach ostávajú 10 rokov, ako káže zákon |
 | Prevádzkové záznamy | krátkodobo, podľa nastavenia poskytovateľov |
 
 **Na tréningové záznamy platia dve pravidlá a rozhoduje to, ktoré nastane skôr:**

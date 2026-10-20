@@ -34,6 +34,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      billing_details: {
+        Row: {
+          address: string | null
+          company: string | null
+          company_id: string | null
+          created_at: string
+          tax_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          company?: string | null
+          company_id?: string | null
+          created_at?: string
+          tax_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          company?: string | null
+          company_id?: string | null
+          created_at?: string
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       drill_codes: {
         Row: {
           category: string

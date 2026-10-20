@@ -12,11 +12,15 @@ import {
 } from "@/lib/stripe-plans";
 import {
   createCheckoutSession,
+  createCustomerWithBillingDetails,
   createPortalSession,
   findPriceIdByLookupKey,
+  hasBillingDetails,
   isStripeConfigured,
   listCustomerSubscriptions,
+  updateCustomerBillingDetails,
 } from "@/lib/stripe";
+import { getBillingDetails } from "@/lib/billing-details";
 import { LIVE_STATUSES } from "@/lib/stripe-state";
 
 /**
@@ -91,7 +95,7 @@ export async function startCheckout(
   // by navyše platil ďalej, ak karta ožije (nález S1, previerka 2026-10-19).
   // Dlh sa rieši v portáli novou kartou, nie novou pokladňou. Keď sa zoznam
   // nedá prečítať, nákup sa NEBLOKUJE — webhook stav aj tak odvodí z celku.
-  const customerId = profile?.stripe_customer_id ?? undefined;
+  let customerId = profile?.stripe_customer_id ?? undefined;
   if (customerId) {
     try {
       const subscriptions = await listCustomerSubscriptions(customerId);
@@ -137,6 +141,28 @@ export async function startCheckout(
     // alebo sa zmenil cenník a stará cena sa archivovala.
     console.error(`Stripe: cena ${lookupKey} v účte neexistuje`);
     return { error: "unavailable" };
+  }
+
+  // Fakturačné údaje musia byť v Stripe SKÔR, než pokladňa vystaví faktúru —
+  // vystavenú faktúru Stripe nezmení, takže by firma chýbala práve na prvej
+  // (a pri ročnom pláne na jedinej za rok). Kto ich nevyplnil, ide do
+  // pokladne ako doteraz. Zlyhanie nákup NEBLOKUJE: zaplatiť sa musí dať
+  // aj vtedy a údaje sa dajú doplniť z nastavení (`saveBillingDetails`).
+  const billingDetails = await getBillingDetails(supabase, user.id);
+  if (hasBillingDetails(billingDetails)) {
+    try {
+      if (customerId) {
+        await updateCustomerBillingDetails(customerId, billingDetails);
+      } else {
+        customerId = await createCustomerWithBillingDetails({
+          email: user.email,
+          userId: user.id,
+          details: billingDetails,
+        });
+      }
+    } catch (error) {
+      console.error("Stripe: fakturačné údaje sa nedali odoslať:", error);
+    }
   }
 
   // Adresa sa skladá z hlavičky `Host`, nikdy natvrdo — appka beží na

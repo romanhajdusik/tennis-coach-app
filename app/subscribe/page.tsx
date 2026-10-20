@@ -161,7 +161,17 @@ export default async function SubscribePage({
           </Link>
         </div>
       ) : (
-        <PlanPicker plans={plans} />
+        <>
+          {/* Faktúra vzniká pri platbe a vystavená sa už nezmení — kto kupuje
+              na firmu, musí údaje vyplniť PRED kliknutím na Subscribe. */}
+          <Link
+            href="/settings#billing"
+            className="text-sm font-medium text-primary underline underline-offset-2"
+          >
+            {t("billingLink")}
+          </Link>
+          <PlanPicker plans={plans} />
+        </>
       )}
 
       <Link

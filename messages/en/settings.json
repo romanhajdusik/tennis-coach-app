@@ -29,5 +29,24 @@
     "unavailable": "Could not open it right now. Please try again later.",
     "unauthenticated": "Please sign in again.",
     "noSubscription": "You do not have a paid subscription yet."
+  },
+  "billingDetails": {
+    "heading": "Billing details",
+    "intro": "Buying as a company? Whatever you fill in here appears on your invoices. Fill it in before you subscribe — an invoice that has already been issued cannot be changed.",
+    "labels": {
+      "company": "Company name",
+      "address": "Company address",
+      "companyId": "Company ID",
+      "taxId": "Tax ID"
+    },
+    "vatHint": "Your VAT number does not go here. Enter it at checkout under “I'm purchasing as a business” — and only if your company is VAT registered, because it changes how VAT is charged.",
+    "save": "Save billing details",
+    "saving": "Saving…",
+    "saved": "Saved. Your next invoice will include these details.",
+    "errors": {
+      "tooLong": "Each field can have at most 140 characters.",
+      "saveFailed": "Could not save your details. Please try again.",
+      "notSynced": "Your details are saved, but we could not update your invoices right now. Please save them again later."
+    }
   }
 }

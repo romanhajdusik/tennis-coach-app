@@ -99,19 +99,28 @@ export default async function ParentSubscribePage({
           </Link>
         </div>
       ) : (
-        <FollowerPlanPicker
-          plan={{
-            price: {
-              month: formatEur(FOLLOWER_PRICE.monthly),
-              year: formatEur(FOLLOWER_PRICE.yearly),
-            },
-            lookupKey: {
-              month: priceLookupKey(FOLLOWER_PRODUCT_ID, "month"),
-              year: priceLookupKey(FOLLOWER_PRODUCT_ID, "year"),
-            },
-            centsPerDay: centsPerPlayerDay(FOLLOWER_PRICE.yearly, 1),
-          }}
-        />
+        <>
+          {/* Rovnaký dôvod ako na `/subscribe`: faktúra vzniká pri platbe. */}
+          <Link
+            href="/settings#billing"
+            className="text-sm font-medium text-primary underline underline-offset-2"
+          >
+            {t("billingLink")}
+          </Link>
+          <FollowerPlanPicker
+            plan={{
+              price: {
+                month: formatEur(FOLLOWER_PRICE.monthly),
+                year: formatEur(FOLLOWER_PRICE.yearly),
+              },
+              lookupKey: {
+                month: priceLookupKey(FOLLOWER_PRODUCT_ID, "month"),
+                year: priceLookupKey(FOLLOWER_PRODUCT_ID, "year"),
+              },
+              centsPerDay: centsPerPlayerDay(FOLLOWER_PRICE.yearly, 1),
+            }}
+          />
+        </>
       )}
 
       <Link

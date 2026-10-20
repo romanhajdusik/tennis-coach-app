@@ -16,6 +16,7 @@
   "paidTitle": "Payment received.",
   "paidText": "If your account still shows the trial, give it a moment and refresh the page.",
   "back": "Back",
+  "billingLink": "Buying as a company? Add your billing details first",
   "errors": {
     "unavailable": "Payments are not available right now. Please try again later.",
     "unauthenticated": "Please sign in again.",

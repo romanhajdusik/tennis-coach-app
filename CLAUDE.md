@@ -345,6 +345,22 @@ Pre zväz je to jedna z vecí na kritickej ceste v [`docs/pred-prvym-zvazom.md`]
 - **Odkazy sú RELATÍVNE**, nie absolútne — znenie pre sledujúceho žije na
   `plaw.click` a proxy tam odkaz presmeruje (`CANONICAL_ORIGINS`). Absolútna
   adresa by z lokálneho vývoja viedla na produkciu.
+- **Fakturačné údaje (od 2026-10-20, migrácia `20261020090000`)** — sekcia
+  „Billing details" (`#billing`, `app/settings/billing-details-form.tsx`) pre
+  každého, kto platí cez Stripe sám (tréner, hráčsky denník, sledujúci; nie
+  šéftréner ani federačný tréner). Údaje sú vo **vlastnej tabuľke
+  `billing_details`**, nie v `profiles` (tá nemá pre účet UPDATE). Do Stripe
+  idú **výhradne ako `invoice_settings.custom_fields`** zákazníka (Company,
+  Address, Company ID, Tax ID — `lib/stripe.ts#billingCustomFields`):
+  **pokladňa Managed Payments meno aj adresu zákazníka po platbe PREPÍŠE**
+  (menom z karty, adresu zúži na krajinu) a `customer_update` Stripe pri
+  Managed Payments odmietne — overené testovacou platbou. Kto ešte neplatil,
+  tomu `startCheckout` **založí zákazníka s údajmi PRED pokladňou**, inak by
+  firma chýbala na prvej faktúre (vystavenú Stripe nezmení);
+  `stripe_customer_id` aj tak zapisuje len webhook. **IČ DPH tam zámerne nie
+  je** — mení daňový režim, pýta sa naň pokladňa. Faktúru vystavuje Link vo
+  vlastnom mene ako agent &Go (Managed Payments). Overuje
+  `scripts/dev-tests/billing-details.js`.
 - **Export dát a zmazanie účtu sú zatiaľ KONTAKT, nie tlačidlo**
   (`support@plawsports.com`, `info@` je kontakt verejného webu). Dôvod je
   technický: zmazať účet z `auth.users` sa nedá bez `service_role` kľúča a ten
