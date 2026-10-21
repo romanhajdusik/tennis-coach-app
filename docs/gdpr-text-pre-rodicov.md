@@ -219,7 +219,7 @@ Personal Data Protection of the Slovak Republic, Hraničná 12, 820 07 Bratislav
    zmenách lehôt: tento text sa musí meniť tiež** — je to jediný dokument, ktorý
    rodič naozaj dostane do ruky, a najľahšie sa naň zabudne.
 3. ~~Zverejniť ako stránku~~ **HOTOVÉ 2026-09-25:**
-   `plaw.click/informacia-pre-rodicov` (`app/informacia-pre-rodicov/page.tsx`,
+   `plaw.click/parent-notice` (`app/parent-notice/page.tsx`,
    číta sa odtiaľto cez `loadParentNotice()`). **Zverejnená je IBA anglická
    verzia** — rozhodol používateľ, appka aj celý verejný web sú anglické.
    Slovenská ostáva v tomto súbore. Na stránku vedie odkaz z `/settings`

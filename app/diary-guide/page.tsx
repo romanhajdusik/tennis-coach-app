@@ -13,8 +13,8 @@ import {
 } from "@/lib/disciplines/registry";
 
 // Návod pre HRÁČSKY DENNÍK (docs/roadmap-buduce-smery.md §6) — hráč, ktorý si
-// tréningy zapisuje sám. Kostra je tá istá ako trénerský návod (/navod), texty
-// sú vlastné: trénerský hovorí o „hráčoch", /navod-hrac o kóde od trénera.
+// tréningy zapisuje sám. Kostra je tá istá ako trénerský návod (/guide), texty
+// sú vlastné: trénerský hovorí o „hráčoch", /player-guide o kóde od trénera.
 // Odkazuje naň ponuka denníka na landingoch (`SelfDiaryInvite`).
 export async function generateMetadata(): Promise<Metadata> {
   const t = await loadNavodSelfMessages();
@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function NavodSelfPage() {
   const t = await loadNavodSelfMessages();
   // Denník je len na kurte (registrácia ho kondičke neponúka), preto tam
-  // návod nie je. Na rozdiel od /navod (natvrdo tenis) ukazuje kódy športu
+  // návod nie je. Na rozdiel od /guide (natvrdo tenis) ukazuje kódy športu
   // NASADENIA — hráč padelu sa registruje v padelovej appke a dostane padelové.
   const disciplineId = getDeploymentDiscipline();
   if (!isCourtDiscipline(disciplineId)) {
@@ -191,7 +191,7 @@ export default async function NavodSelfPage() {
       <div className="w-full max-w-3xl px-4 py-6 text-center text-sm text-muted sm:px-6">
         {t.crossLinkText}{" "}
         <Link
-          href="/navod"
+          href="/guide"
           className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
         >
           {t.crossLinkCta}

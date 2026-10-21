@@ -22,11 +22,11 @@ import { Analytics, type BeforeSendEvent } from "@vercel/analytics/next";
  */
 const PUBLIC_PATHS = new Set([
   "/",
-  "/navod",
-  "/navod-hrac",
-  "/navod-self",
+  "/guide",
+  "/player-guide",
+  "/diary-guide",
   "/notebook",
-  "/cennik-hrac",
+  "/pricing",
   "/federation",
   "/register",
 ]);

@@ -55,19 +55,19 @@ async function main() {
   const followerHtml = rendered(followerSettings.body);
   check(
     "dostane SVOJE znenie",
-    followerHtml.includes('href="/podmienky-hrac"') &&
-      followerHtml.includes('href="/zasady-hrac"'),
+    followerHtml.includes('href="/player-terms"') &&
+      followerHtml.includes('href="/player-privacy"'),
   );
   check(
     "nedostane trénerské znenie",
-    !followerHtml.includes('href="/podmienky"') &&
-      !followerHtml.includes('href="/zasady"'),
+    !followerHtml.includes('href="/terms"') &&
+      !followerHtml.includes('href="/privacy"'),
   );
   // Text pre rodičov mu tréner ODOVZDÁVA; v jeho vlastných nastaveniach by
   // pôsobil, akoby ho mal niekomu dať sám.
   check(
     "nedostane trénerov nástroj na odovzdanie rodičovi",
-    !followerHtml.includes("/informacia-pre-rodicov"),
+    !followerHtml.includes("/parent-notice"),
   );
 
   const { coach: fitnessCoach, player: fitnessPlayer } =

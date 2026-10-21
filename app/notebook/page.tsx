@@ -152,7 +152,7 @@ export default async function NotebookPage() {
         </h2>
         {cta}
         <div className="flex flex-col items-center gap-2 pt-2 text-sm">
-          <Link href="/#cennik" className="text-muted underline hover:text-foreground">
+          <Link href="/#pricing" className="text-muted underline hover:text-foreground">
             {t.pricingLink}
           </Link>
           <Link href="/login" className="text-muted underline hover:text-foreground">

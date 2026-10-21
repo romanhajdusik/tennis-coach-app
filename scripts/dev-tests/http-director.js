@@ -51,11 +51,11 @@ async function main() {
   const orgSettings = rendered((await request("/settings", { cookies: director })).body);
   check(
     "šéftréner dostane zásady pre organizácie",
-    orgSettings.includes('href="/zasady-organizacia"'),
+    orgSettings.includes('href="/organization-privacy"'),
   );
   check(
     "nedostane spotrebiteľské znenie trénera",
-    !orgSettings.includes('href="/podmienky"') && !orgSettings.includes('href="/zasady"'),
+    !orgSettings.includes('href="/terms"') && !orgSettings.includes('href="/privacy"'),
   );
   // Federačný TRÉNER je naopak trénerom ako každý iný — §3 podmienok
   // výslovne počíta s tým, že účet patrí organizácii.
@@ -64,7 +64,7 @@ async function main() {
   );
   check(
     "federačný tréner dostane trénerské znenie",
-    coachSettings.includes('href="/podmienky"') && coachSettings.includes('href="/zasady"'),
+    coachSettings.includes('href="/terms"') && coachSettings.includes('href="/privacy"'),
   );
 
   check("6 hráčov v dlaždici", /6 players/.test(panelText), panelText.slice(0, 250));

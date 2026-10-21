@@ -24,8 +24,8 @@ export function RegisterForm({
   const [role, setRole] = useState<string>(initialRole);
   const pravne =
     role === "coach"
-      ? { terms: "/podmienky", privacy: "/zasady" }
-      : { terms: "/podmienky-hrac", privacy: "/zasady-hrac" };
+      ? { terms: "/terms", privacy: "/privacy" }
+      : { terms: "/player-terms", privacy: "/player-privacy" };
 
   // Pole s kódom. Kým je registrácia na pozvánku, ide prvé a je povinné.
   // Pri otvorenej registrácii je schované pod odkazom na konci formulára

@@ -98,7 +98,7 @@ async function main() {
   );
   check(
     "pod fotkou je odkaz na cenník a cenník má kotvu",
-    /href="#cennik"/.test(home.body) && /id="cennik"/.test(home.body),
+    /href="#pricing"/.test(home.body) && /id="pricing"/.test(home.body),
   );
   check(
     "titulok stránky je kondičný",

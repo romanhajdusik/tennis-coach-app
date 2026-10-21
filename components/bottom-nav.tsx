@@ -20,11 +20,11 @@ const HIDDEN_PATHS = new Set([
   "/join",
   "/forgot-password",
   "/reset-password",
-  "/navod",
-  "/navod-hrac",
-  "/navod-self",
+  "/guide",
+  "/player-guide",
+  "/diary-guide",
   "/notebook",
-  "/cennik-hrac",
+  "/pricing",
   "/federation",
 ]);
 const HIDDEN_PREFIXES = ["/parent", "/director", "/auth"];

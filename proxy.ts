@@ -33,21 +33,21 @@ import {
 // (WhatsApp, Messenger, Instagram) si ho sťahuje z tej istej adresy, na akej
 // je zdieľaná stránka. Presmerovanie by jej vrátilo 307 namiesto obrázka
 // a rodičovský aj federačný odkaz by prišiel bez náhľadu.
-const PUBLIC_PATHS = new Set(["/", "/federation", "/zasady-organizacia", "/og"]);
+const PUBLIC_PATHS = new Set(["/", "/federation", "/organization-privacy", "/og"]);
 
 // plaw.click hovorí k druhej strane appky (hráč, rodič, manažér), takže na nej
 // nie je celý verejný web — len jej landing na `/` a dve stránky, na ktoré
-// odkazuje. Trénerský marketing (`/navod`, cenník na landingu) sem nepatrí:
+// odkazuje. Trénerský marketing (`/guide`, cenník na landingu) sem nepatrí:
 // kto sem prišiel, prišiel sa pozerať, nie trénovať.
 const PARENT_FACE_PATHS = new Set([
   "/",
-  "/navod-hrac",
-  "/cennik-hrac",
-  "/podmienky-hrac",
-  "/zasady-hrac",
+  "/player-guide",
+  "/pricing",
+  "/player-terms",
+  "/player-privacy",
   // Text, ktorý tréner odovzdáva rodičovi — číta ho rodič, takže patrí sem
   // (od 2026-09-25). Tréner mu sem pošle odkaz zo zásad.
-  "/informacia-pre-rodicov",
+  "/parent-notice",
   // Náhľadový obrázok — dôvod viď pri PUBLIC_PATHS.
   "/og",
 ]);
@@ -58,8 +58,8 @@ const SPORTS_HUB_PATHS = new Set(["/", "/og"]);
 
 // KAŽDÁ VEREJNÁ STRÁNKA MÁ PRÁVE JEDNU ADRESU (od 2026-08-24).
 //
-// Dovtedy odpovedali `/navod-hrac` a `/cennik-hrac` na TROCH hostiteľoch naraz
-// (plaw.win, plaw.online aj plaw.click) a `/navod` na dvoch — jedna stránka,
+// Dovtedy odpovedali `/player-guide` a `/pricing` na TROCH hostiteľoch naraz
+// (plaw.win, plaw.online aj plaw.click) a `/guide` na dvoch — jedna stránka,
 // tri adresy. Kým je web `noindex`, nikomu to neškodí; pri spustení do
 // vyhľadávačov by si tá istá stránka konkurovala sama so sebou a každý by
 // zdieľal inú verziu odkazu.
@@ -70,18 +70,18 @@ const SPORTS_HUB_PATHS = new Set(["/", "/og"]);
 // pre federácie na rozcestník, ktorému inak ostáva len rozcestovanie. Kto príde
 // inde, dostane 307.
 const CANONICAL_ORIGINS = new Map([
-  ["/navod", APP_ORIGIN],
+  ["/guide", APP_ORIGIN],
   ["/federation", PUBLIC_ORIGIN],
-  ["/navod-hrac", PARENT_ORIGIN],
-  ["/cennik-hrac", PARENT_ORIGIN],
+  ["/player-guide", PARENT_ORIGIN],
+  ["/pricing", PARENT_ORIGIN],
   // Právne stránky (od 2026-09-24) — každá tam, kde je jej publikum: tréner na
   // produktovej doméne, sledujúci na plaw.click, organizácia pri /federation.
-  ["/podmienky", APP_ORIGIN],
-  ["/zasady", APP_ORIGIN],
-  ["/podmienky-hrac", PARENT_ORIGIN],
-  ["/zasady-hrac", PARENT_ORIGIN],
-  ["/zasady-organizacia", PUBLIC_ORIGIN],
-  ["/informacia-pre-rodicov", PARENT_ORIGIN],
+  ["/terms", APP_ORIGIN],
+  ["/privacy", APP_ORIGIN],
+  ["/player-terms", PARENT_ORIGIN],
+  ["/player-privacy", PARENT_ORIGIN],
+  ["/organization-privacy", PUBLIC_ORIGIN],
+  ["/parent-notice", PARENT_ORIGIN],
 ]);
 const LOGIN_PATH = "/login";
 
@@ -140,8 +140,22 @@ function clearAuthCookies(request: NextRequest, response: NextResponse) {
  */
 const STRIPE_WEBHOOK_PATH = "/api/stripe/webhook";
 
-// Stará slovenská adresa stránky pre zväzy (do 2026-10-16), viď proxy().
-const LEGACY_FEDERATION_PATH = "/federacie";
+// Staré slovenské adresy verejných stránok → anglické (viď proxy()).
+// `/federacie` do 2026-10-16, ostatné do 2026-10-21 (rozhodol user: klient má
+// vidieť len anglické slová).
+const LEGACY_PATHS = new Map([
+  ["/federacie", "/federation"],
+  ["/navod", "/guide"],
+  ["/navod-hrac", "/player-guide"],
+  ["/navod-self", "/diary-guide"],
+  ["/cennik-hrac", "/pricing"],
+  ["/podmienky", "/terms"],
+  ["/zasady", "/privacy"],
+  ["/podmienky-hrac", "/player-terms"],
+  ["/zasady-hrac", "/player-privacy"],
+  ["/zasady-organizacia", "/organization-privacy"],
+  ["/informacia-pre-rodicov", "/parent-notice"],
+]);
 
 export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname === STRIPE_WEBHOOK_PATH) {
@@ -150,14 +164,16 @@ export async function proxy(request: NextRequest) {
 
   const host = normalizeHost(request.headers.get("host"));
 
-  // Stránka pre zväzy bývala do 2026-10-16 na slovenskej adrese `/federacie`;
-  // verejný web je anglický, takže je na `/federation` (rozhodol user). Stará
-  // adresa natrvalo (308) presmeruje — kolujú na ňu odkazy (prezentácia,
-  // správy zväzom). Pristane na `/federation` toho istého hostiteľa a odtiaľ
-  // ju v prípade potreby prevezme kanonizácia nižšie.
-  if (request.nextUrl.pathname === LEGACY_FEDERATION_PATH && request.method === "GET") {
+  // Verejné stránky bývali na slovenských adresách (`/federacie`, `/navod`,
+  // `/podmienky`…); verejný web je anglický, takže sú na anglických (rozhodol
+  // user). Stará adresa natrvalo (308) presmeruje — kolujú na ňu odkazy
+  // (Stripe, dokumenty, Instagram, správy zväzom). Pristane na novej ceste
+  // toho istého hostiteľa a odtiaľ ju v prípade potreby prevezme kanonizácia
+  // nižšie.
+  const legacyTarget = LEGACY_PATHS.get(request.nextUrl.pathname);
+  if (legacyTarget && request.method === "GET") {
     return NextResponse.redirect(
-      new URL("/federation" + request.nextUrl.search, request.url),
+      new URL(legacyTarget + request.nextUrl.search, request.url),
       308,
     );
   }

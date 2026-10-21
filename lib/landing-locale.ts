@@ -34,7 +34,7 @@ export type SelfDiaryInviteMessages = {
   /** `{monthly}` a `{yearly}` doplní komponent z `SELF_DIARY_PRICE`. */
   price: string;
   cta: string;
-  /** Odkaz na návod pre hráčsky denník (/navod-self). */
+  /** Odkaz na návod pre hráčsky denník (/diary-guide). */
   guideLink: string;
 };
 
@@ -92,7 +92,7 @@ export async function loadLandingMessages() {
   };
 }
 
-// Návod (stránka /navod) berie texty odtiaľto ako landing, nie z appkového
+// Návod (stránka /guide) berie texty odtiaľto ako landing, nie z appkového
 // next-intl — je to verejná časť webu popri landingu.
 export type NavodMessages = {
   metaTitle: string;
@@ -116,11 +116,11 @@ export type NavodMessages = {
   ctaButton: string;
   crossLinkText: string;
   crossLinkCta: string;
-  // Len /navod (tréner): sekcia s významom predvolených kódov cvičení
+  // Len /guide (tréner): sekcia s významom predvolených kódov cvičení
   // (od 2026-10-09). Samotné kódy a významy sú v konfigurácii disciplíny.
   drillCodesTitle?: string;
   drillCodesIntro?: string;
-  // Len /navod-hrac: odkaz na cenník pre hráča, rodiča a manažéra.
+  // Len /player-guide: odkaz na cenník pre hráča, rodiča a manažéra.
   // Trénerský návod tieto kľúče nemá, preto sú nepovinné.
   pricingLinkText?: string;
   pricingLinkCta?: string;
@@ -131,15 +131,15 @@ export async function loadNavodMessages(): Promise<NavodMessages> {
   return messages.default as NavodMessages;
 }
 
-// Krátky návod pre pripojeného hráča/rodiča/manažéra (/navod-hrac) — rovnaká
+// Krátky návod pre pripojeného hráča/rodiča/manažéra (/player-guide) — rovnaká
 // štruktúra ako trénerský návod.
 export async function loadNavodHracMessages(): Promise<NavodMessages> {
   const messages = await import("../messages/en/navod-hrac.json");
   return messages.default as NavodMessages;
 }
 
-// Návod pre HRÁČSKY DENNÍK (/navod-self, od 2026-10-09) — hráč, ktorý si
-// zapisuje sám. Trénerský návod hovorí o „hráčoch" a /navod-hrac o kóde od
+// Návod pre HRÁČSKY DENNÍK (/diary-guide, od 2026-10-09) — hráč, ktorý si
+// zapisuje sám. Trénerský návod hovorí o „hráčoch" a /player-guide o kóde od
 // trénera, ani jeden mu nesedí. Rovnaká štruktúra ako trénerský návod.
 // Stránka pre ľudí z reklamy „Still writing practices in a notebook?"
 // (/notebook, od 2026-10-11) — pokračuje presne tam, kde reklama skončila.
@@ -172,7 +172,7 @@ export async function loadNavodSelfMessages(): Promise<NavodMessages> {
   return messages.default as NavodMessages;
 }
 
-// Cenník pre hráča, rodiča a manažéra (/cennik-hrac) je zámerne SAMOSTATNÁ
+// Cenník pre hráča, rodiča a manažéra (/pricing) je zámerne SAMOSTATNÁ
 // stránka, nie sekcia landingu: tréner platí za hráča menej než rodič
 // (4,1–4,6 vs. 9,9 centa denne), lebo platí za viacerých naraz — vedľa seba
 // v jednej tabuľke by to vyzeralo, že rodič má menej funkcií za viac peňazí
@@ -218,10 +218,10 @@ export async function loadCennikHracMessages(): Promise<CennikHracMessages> {
 
 // Landing pre hráča, rodiča a manažéra (`plaw.click`, od 2026-08-22) — druhá
 // strana appky konečne dostala vlastný PREDAJ, nie len vysvetlenie: dovtedy
-// mala iba návod (`/navod-hrac`) a cenník (`/cennik-hrac`), kým celý ostatný
+// mala iba návod (`/player-guide`) a cenník (`/pricing`), kým celý ostatný
 // verejný web hovoril k trénerovi.
 //
-// **Menuje tenis** (rozhodnuté 2026-08-22) — na rozdiel od /cennik-hrac, ktorý
+// **Menuje tenis** (rozhodnuté 2026-08-22) — na rozdiel od /pricing, ktorý
 // je zámerne bez tenisového slovníka. Dôvod je vecný, nie marketingový: rodič
 // vidí len kópie JEDNEJ karty, takže KONDIČNÉ tréningy hráča nevidí (tie sú
 // cross-read cez prepojenie kariet a ten má výhradne tréner, pozri

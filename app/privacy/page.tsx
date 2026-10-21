@@ -3,7 +3,7 @@ import { LegalPage } from "@/components/legal-page";
 import { loadLegalDoc } from "@/lib/legal-docs";
 import { publicRobots } from "@/lib/seo";
 
-// Zásady ochrany osobných údajov pre trénera — pozri komentár v `/podmienky`.
+// Zásady ochrany osobných údajov pre trénera — pozri komentár v `/terms`.
 // Pre sledujúceho a pre organizáciu budú vlastné stránky na ich doménach,
 // lebo každá verejná stránka má práve jednu adresu (CANONICAL_ORIGINS).
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function ZasadyPage() {
     <LegalPage
       doc={doc}
       audience="For coaches"
-      sibling={{ href: "/podmienky", label: "Terms of Use" }}
+      sibling={{ href: "/terms", label: "Terms of Use" }}
     />
   );
 }

@@ -160,18 +160,18 @@ async function main() {
   check("tréner sa na ne dostane", settings.status === 200, String(settings.status));
   check(
     "dostane SVOJE znenie (podmienky aj zásady trénera)",
-    settingsHtml.includes('href="/podmienky"') && settingsHtml.includes('href="/zasady"'),
+    settingsHtml.includes('href="/terms"') && settingsHtml.includes('href="/privacy"'),
   );
   check(
     "nedostane znenie iného publika",
-    !/podmienky-hrac|zasady-hrac|zasady-organizacia/.test(settingsHtml),
+    !/player-terms|player-privacy|organization-privacy/.test(settingsHtml),
   );
   // Text na odovzdanie rodičovi nie je dokument, ktorý trénera viaže — je to
   // nástroj, bez ktorého si informačnú povinnosť musí vyriešiť sám. Zásady mu
   // ho sľubujú, takže sa k nemu musí dostať.
   check(
     "má po ruke text na odovzdanie rodičovi",
-    settingsHtml.includes(String.fromCharCode(34) + "/informacia-pre-rodicov" + String.fromCharCode(34)),
+    settingsHtml.includes(String.fromCharCode(34) + "/parent-notice" + String.fromCharCode(34)),
   );
   check(
     "export dát a zmazanie účtu majú kontakt",

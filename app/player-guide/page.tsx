@@ -7,7 +7,7 @@ import { PublicAnalytics } from "@/components/public-analytics";
 
 // Krátky verejný návod pre pripojeného hráča/rodiča/manažéra (druhá strana
 // appky). Tá istá textová vrstva aj tmavá téma ako trénerský návod
-// (/navod). Zámerne noindex.
+// (/guide). Zámerne noindex.
 export async function generateMetadata(): Promise<Metadata> {
   const t = await loadNavodHracMessages();
   return {
@@ -135,7 +135,7 @@ export default async function NavodHracPage() {
         <div className="w-full max-w-3xl px-4 pt-6 text-center text-sm text-muted sm:px-6">
           {t.pricingLinkText}{" "}
           <Link
-            href="/cennik-hrac"
+            href="/pricing"
             className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
           >
             {t.pricingLinkCta}
@@ -146,7 +146,7 @@ export default async function NavodHracPage() {
       <div className="w-full max-w-3xl px-4 py-6 text-center text-sm text-muted sm:px-6">
         {t.crossLinkText}{" "}
         <Link
-          href="/navod"
+          href="/guide"
           className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
         >
           {t.crossLinkCta}

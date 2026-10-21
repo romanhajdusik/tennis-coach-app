@@ -20,7 +20,7 @@ export default async function PodmienkyHracPage() {
     <LegalPage
       doc={doc}
       audience="For parents, players and managers"
-      sibling={{ href: "/zasady-hrac", label: "Privacy Policy" }}
+      sibling={{ href: "/player-privacy", label: "Privacy Policy" }}
     />
   );
 }

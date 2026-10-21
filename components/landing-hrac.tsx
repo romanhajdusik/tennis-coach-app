@@ -46,7 +46,7 @@ const FEATURE_ICONS = [
  *
  * **Appka to zatiaľ nevynucuje** — stráž na čítanie (`requireViewAccess`) sa
  * stavia so Stripe. Keď sa bude stavať, musí sedieť s týmto poľom aj s
- * `WITHOUT_SUBSCRIPTION` v `app/cennik-hrac/page.tsx`.
+ * `WITHOUT_SUBSCRIPTION` v `app/pricing/page.tsx`.
  */
 const PAID_FEATURES = [false, false, true, true, false, false];
 
@@ -134,18 +134,18 @@ export async function LandingHrac() {
             >
               {t.ctaPrimary}
             </Link>
-            <Link href="#ako-to-funguje" className="text-sm font-medium text-muted underline underline-offset-2 transition-colors hover:text-foreground md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
+            <Link href="#how-it-works" className="text-sm font-medium text-muted underline underline-offset-2 transition-colors hover:text-foreground md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
               {t.ctaHowItWorks}
             </Link>
           </div>
           <div className="flex flex-col items-center gap-2">
             <Link
-              href="#vlastny-dennik"
+              href="#own-diary"
               className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface"
             >
               {t.ctaSecondary}
             </Link>
-            <Link href="/navod-self" className="text-sm font-medium text-muted underline underline-offset-2 transition-colors hover:text-foreground md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
+            <Link href="/diary-guide" className="text-sm font-medium text-muted underline underline-offset-2 transition-colors hover:text-foreground md:text-foreground md:[text-shadow:0_1px_10px_rgb(0_0_0/0.6)]">
               {t.ctaHowItWorks}
             </Link>
           </div>
@@ -154,7 +154,7 @@ export async function LandingHrac() {
       </div>
 
       <section
-        id="ako-to-funguje"
+        id="how-it-works"
         className="w-full max-w-5xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16"
       >
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
@@ -279,7 +279,7 @@ export async function LandingHrac() {
       </section>
 
       {/* Celý cenník (mesačná cena, tabuľka bez predplatného vs. s ním) žije na
-          /cennik-hrac — tu je len jedno číslo a odkaz, nech landing nepredáva
+          /pricing — tu je len jedno číslo a odkaz, nech landing nepredáva
           dvakrát to isté. */}
       <section className="w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
@@ -323,7 +323,7 @@ export async function LandingHrac() {
 
           <div className="mt-6 flex justify-center">
             <Link
-              href="/cennik-hrac"
+              href="/pricing"
               className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:border-primary/50 hover:bg-background"
             >
               {t.pricingCta}
@@ -334,7 +334,7 @@ export async function LandingHrac() {
       </section>
 
       {/* Hráč, ktorého tréner P.L.A.W nepoužíva, si môže zapisovať sám (docs §6). */}
-      <SelfDiaryInvite t={t.selfDiary} id="vlastny-dennik" />
+      <SelfDiaryInvite t={t.selfDiary} id="own-diary" />
 
       <section className="relative mt-4 w-full overflow-hidden bg-primary py-14 sm:py-16">
         <div
@@ -361,7 +361,7 @@ export async function LandingHrac() {
         <p>
           {t.guideText}{" "}
           <Link
-            href="/navod-hrac"
+            href="/player-guide"
             className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
           >
             {t.guideCta}
@@ -388,11 +388,11 @@ export async function LandingHrac() {
       <footer className="w-full max-w-5xl px-4 pb-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
         <span className="mx-2">·</span>
-        <Link href="/podmienky-hrac" className="underline transition-colors hover:text-foreground">
+        <Link href="/player-terms" className="underline transition-colors hover:text-foreground">
           Terms
         </Link>
         <span className="mx-2">·</span>
-        <Link href="/zasady-hrac" className="underline transition-colors hover:text-foreground">
+        <Link href="/player-privacy" className="underline transition-colors hover:text-foreground">
           Privacy
         </Link>
         <span className="mx-2">·</span>

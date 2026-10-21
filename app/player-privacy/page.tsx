@@ -3,7 +3,7 @@ import { LegalPage } from "@/components/legal-page";
 import { loadLegalDoc } from "@/lib/legal-docs";
 import { publicRobots } from "@/lib/seo";
 
-// Zásady ochrany údajov pre sledujúceho — pozri komentár v `/podmienky-hrac`.
+// Zásady ochrany údajov pre sledujúceho — pozri komentár v `/player-terms`.
 export const metadata: Metadata = {
   title: "Privacy Policy — P.L.A.W",
   description:
@@ -18,7 +18,7 @@ export default async function ZasadyHracPage() {
     <LegalPage
       doc={doc}
       audience="For parents, players and managers"
-      sibling={{ href: "/podmienky-hrac", label: "Terms of Use" }}
+      sibling={{ href: "/player-terms", label: "Terms of Use" }}
     />
   );
 }

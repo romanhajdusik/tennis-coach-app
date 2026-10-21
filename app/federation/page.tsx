@@ -239,7 +239,7 @@ export default async function FederaciePage() {
         {t.footerTagline}
         <span className="mx-2">·</span>
         <Link
-          href="/zasady-organizacia"
+          href="/organization-privacy"
           className="underline transition-colors hover:text-foreground"
         >
           Privacy

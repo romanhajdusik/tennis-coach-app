@@ -43,7 +43,7 @@ export type PricingLabels = {
   vat: string;
   /**
    * Odkaz pre sledujúceho vedie na plaw.click (celá landing), nie rovno na
-   * /cennik-hrac: kto sem zablúdil, má najprv vidieť, čo dostane — cena je
+   * /pricing: kto sem zablúdil, má najprv vidieť, čo dostane — cena je
    * odtiaľ jeden klik. Trénerské a sledujúce ceny tak navyše naďalej nestoja
    * vedľa seba, čo je zámer z docs/cennik-navrh.md §8.2.
    *

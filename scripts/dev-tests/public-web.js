@@ -35,18 +35,18 @@ const FITNESS = "fitness.plawsports.com";
 // v `proxy.ts`; keď tam niečo pribudne, patrí to aj sem.
 const CANONICAL = [
   ["/", APP], // trénerský landing
-  ["/navod", APP],
+  ["/guide", APP],
   ["/federation", PUBLIC],
-  ["/navod-hrac", PARENT],
-  ["/cennik-hrac", PARENT],
+  ["/player-guide", PARENT],
+  ["/pricing", PARENT],
   // Právne stránky (od 2026-09-24) — každá na doméne svojho publika.
-  ["/podmienky", APP],
-  ["/zasady", APP],
-  ["/podmienky-hrac", PARENT],
-  ["/zasady-hrac", PARENT],
-  ["/zasady-organizacia", PUBLIC],
+  ["/terms", APP],
+  ["/privacy", APP],
+  ["/player-terms", PARENT],
+  ["/player-privacy", PARENT],
+  ["/organization-privacy", PUBLIC],
   // Text na odovzdanie rodičovi (od 2026-09-25) — číta ho rodič, takže plaw.click.
-  ["/informacia-pre-rodicov", PARENT],
+  ["/parent-notice", PARENT],
 ];
 
 const HOSTS = [APP, PUBLIC, PARENT];
@@ -131,6 +131,27 @@ async function main() {
       (legacy.headers.location ?? "").endsWith("/federation?x=1"),
     `status ${legacy.status}, location ${legacy.headers.location}`,
   );
+  // Od 2026-10-21 sú anglické aj ostatné verejné adresy — staré slovenské
+  // natrvalo presmerujú (odkazy v Stripe, dokumentoch, na Instagrame).
+  for (const [from, to] of [
+    ["/navod", "/guide"],
+    ["/navod-hrac", "/player-guide"],
+    ["/navod-self", "/diary-guide"],
+    ["/cennik-hrac", "/pricing"],
+    ["/podmienky", "/terms"],
+    ["/zasady", "/privacy"],
+    ["/podmienky-hrac", "/player-terms"],
+    ["/zasady-hrac", "/player-privacy"],
+    ["/zasady-organizacia", "/organization-privacy"],
+    ["/informacia-pre-rodicov", "/parent-notice"],
+  ]) {
+    const old = await request(from, { host: APP });
+    check(
+      `stará adresa ${from} presmeruje 308 na ${to}`,
+      old.status === 308 && (old.headers.location ?? "").endsWith(to),
+      `status ${old.status}, location ${old.headers.location}`,
+    );
+  }
   check(
     "plaw.click = landing pre sledujúceho, bez B2B dverí",
     !/federation|federácie/i.test(parentHome),
@@ -139,7 +160,7 @@ async function main() {
   section("3) Verejný web je jednojazyčný (anglický)");
   // Cookie po starom prepínači môže návštevníkovi v prehliadači ešte ležať —
   // stránka ju musí ignorovať, nie sa podľa nej prepnúť.
-  const withCookie = await request("/navod-hrac", {
+  const withCookie = await request("/player-guide", {
     host: PUBLIC,
     cookies: "LANDING_LOCALE=sk",
   });
@@ -149,7 +170,7 @@ async function main() {
     withCookie.headers.location,
   );
 
-  const ignoredCookie = await request("/navod-hrac", {
+  const ignoredCookie = await request("/player-guide", {
     host: PARENT,
     cookies: "LANDING_LOCALE=sk",
   });
@@ -159,7 +180,7 @@ async function main() {
     textOf(ignoredCookie.body).slice(0, 120),
   );
 
-  const ignoredLang = await request("/navod-hrac?lang=sk", { host: PARENT });
+  const ignoredLang = await request("/player-guide?lang=sk", { host: PARENT });
   check(
     "?lang= v adrese stránku nepreloží",
     /Guide/.test(textOf(ignoredLang.body)),
@@ -168,7 +189,7 @@ async function main() {
 
   // Prepínač vykresľoval kódy jazykov ako tlačidlá (`>DE<`, `>JA<`) — keby sa
   // vrátil, spadne práve táto kontrola.
-  const parentGuide = await request("/navod-hrac", { host: PARENT });
+  const parentGuide = await request("/player-guide", { host: PARENT });
   check(
     "prepínač jazykov na stránke nie je",
     !/>DE<|>JA<|>SK</.test(parentGuide.body),
@@ -179,11 +200,11 @@ async function main() {
   // zachytia, keď sa čítanie rozbije a stránka sa vykreslí prázdna.
   section("5) Právne stránky nesú text schváleného dokumentu");
   const PRAVNE = [
-    ["/podmienky", APP, "Terms of Use"],
-    ["/zasady", APP, "Privacy Policy"],
-    ["/podmienky-hrac", PARENT, "Terms of Use"],
-    ["/zasady-hrac", PARENT, "Privacy Policy"],
-    ["/zasady-organizacia", PUBLIC, "Privacy Policy"],
+    ["/terms", APP, "Terms of Use"],
+    ["/privacy", APP, "Privacy Policy"],
+    ["/player-terms", PARENT, "Terms of Use"],
+    ["/player-privacy", PARENT, "Privacy Policy"],
+    ["/organization-privacy", PUBLIC, "Privacy Policy"],
   ];
   for (const [path, host, nadpis] of PRAVNE) {
     const res = await request(path, { host });
@@ -199,7 +220,7 @@ async function main() {
   }
 
   section("5b) Text pre rodičov je celý a bez interných častí");
-  const rodicia = await request("/informacia-pre-rodicov", { host: PARENT });
+  const rodicia = await request("/parent-notice", { host: PARENT });
   const rodiciaText = textOf(rodicia.body);
   check(
     "stránka sa vykreslí",
@@ -244,10 +265,10 @@ async function main() {
   // §„Údaje o deťoch"), takže sa o ňom musí dozvedieť aj z VEREJNÉHO návodu —
   // do 2026-09-28 na text viedla cesta len zo zásad a z `/settings`, teda až
   // spoza prihlásenia.
-  const navod = await request("/navod", { host: APP });
+  const navod = await request("/guide", { host: APP });
   check(
     "verejný návod odkazuje na text pre rodičov",
-    /href="\/informacia-pre-rodicov"/.test(navod.body),
+    /href="\/parent-notice"/.test(navod.body),
   );
 
   section("6) Náhľad odkazu pri zdieľaní");

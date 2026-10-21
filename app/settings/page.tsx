@@ -86,19 +86,19 @@ export default async function SettingsPage() {
   // býva na plaw.click a proxy tam odkaz presmeruje (`CANONICAL_ORIGINS`) —
   // rovnako ako pri registrácii.
   const documents = isDirector
-    ? [{ href: "/zasady-organizacia", label: t("privacy") }]
+    ? [{ href: "/organization-privacy", label: t("privacy") }]
     : isFollower
       ? [
-          { href: "/podmienky-hrac", label: t("terms") },
-          { href: "/zasady-hrac", label: t("privacy") },
+          { href: "/player-terms", label: t("terms") },
+          { href: "/player-privacy", label: t("privacy") },
         ]
       : [
-          { href: "/podmienky", label: t("terms") },
-          { href: "/zasady", label: t("privacy") },
+          { href: "/terms", label: t("terms") },
+          { href: "/privacy", label: t("privacy") },
           // Text na odovzdanie rodičovi nie je dokument, ktorý trénera viaže,
           // ale bez neho si informačnú povinnosť podľa čl. 13 musí vyriešiť
           // sám. Zásady mu ho sľubujú, takže tu musí byť po ruke.
-          { href: "/informacia-pre-rodicov", label: t("parentNotice") },
+          { href: "/parent-notice", label: t("parentNotice") },
         ];
 
   // Každá časť appky má vlastný domov, rovnako ako v `components/home-button.tsx`.

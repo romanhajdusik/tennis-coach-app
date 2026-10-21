@@ -21,7 +21,7 @@ export const APP_ORIGIN = "https://plaw.win";
 /**
  * plaw.click = **tretia verejná doména: landing pre hráča, rodiča a manažéra**
  * (od 2026-08-22). Dovtedy hovoril celý verejný web výhradne k trénerovi —
- * druhá strana appky mala len návod (`/navod-hrac`) a cenník (`/cennik-hrac`),
+ * druhá strana appky mala len návod (`/player-guide`) a cenník (`/pricing`),
  * čo sú vysvetlenia, nie predaj.
  *
  * Je to vlastná doména a nie ďalšia cesta na plaw.win zámerne: je to adresa,
@@ -76,7 +76,7 @@ export function isSportsHubHost(host: string | null | undefined) {
  * Preto NEPATRÍ do `faceOriginOf` — ten vracia adresu, na ktorej stránka
  * BÝVA, a kondička ňou nie je pre žiadnu. Je tu preto, aby ju `proxy.ts`
  * počítal medzi hostiteľov, na ktorých sa kanonizuje: do 2026-09-28 sa na
- * nej `/podmienky` a spol. vykresľovali druhýkrát, teda tá istá stránka na
+ * nej `/terms` a spol. vykresľovali druhýkrát, teda tá istá stránka na
  * dvoch adresách. Kým je web `noindex`, neškodí to; po spustení
  * indexovania by si stránky kazili poradie navzájom.
  */

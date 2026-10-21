@@ -229,13 +229,13 @@ export async function LandingPage() {
         </div>
         <div className="flex w-full flex-col justify-center gap-3 pt-1 sm:flex-row">
           <Link
-            href="/navod"
+            href="/guide"
             className="rounded-lg border border-border bg-surface px-5 py-2.5 text-center text-sm font-medium text-foreground transition hover:border-primary/50"
           >
             {t.guideCoach}
           </Link>
           <Link
-            href="/navod-hrac"
+            href="/player-guide"
             className="rounded-lg border border-border bg-surface px-5 py-2.5 text-center text-sm font-medium text-foreground transition hover:border-primary/50"
           >
             {t.guidePlayer}
@@ -304,7 +304,7 @@ export async function LandingPage() {
       </section>
 
       <section
-        id="cennik"
+        id="pricing"
         className="w-full max-w-5xl scroll-mt-20 px-4 py-8 sm:px-6 sm:py-12"
       >
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
@@ -370,11 +370,11 @@ export async function LandingPage() {
       <footer className="w-full max-w-5xl px-4 py-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
         <span className="mx-2">·</span>
-        <Link href="/podmienky" className="underline transition-colors hover:text-foreground">
+        <Link href="/terms" className="underline transition-colors hover:text-foreground">
           Terms
         </Link>
         <span className="mx-2">·</span>
-        <Link href="/zasady" className="underline transition-colors hover:text-foreground">
+        <Link href="/privacy" className="underline transition-colors hover:text-foreground">
           Privacy
         </Link>
         <span className="mx-2">·</span>

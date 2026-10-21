@@ -20,7 +20,7 @@ export default async function PodmienkyPage() {
     <LegalPage
       doc={doc}
       audience="For coaches"
-      sibling={{ href: "/zasady", label: "Privacy Policy" }}
+      sibling={{ href: "/privacy", label: "Privacy Policy" }}
     />
   );
 }

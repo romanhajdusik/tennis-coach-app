@@ -1,5 +1,5 @@
 // Značka „áno / nie" v porovnávacích tabuľkách cenníkov. Zdieľajú ju cenník
-// trénera na landingu a cenník pre hráča/rodiča/manažéra na `/cennik-hrac`,
+// trénera na landingu a cenník pre hráča/rodiča/manažéra na `/pricing`,
 // aby obe tabuľky vyzerali rovnako — sú to dve strany tej istej ponuky.
 //
 // Zámerne bez `"use client"`: je to čistý markup bez stavu, takže sa dá

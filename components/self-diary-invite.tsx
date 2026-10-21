@@ -46,7 +46,7 @@ export function SelfDiaryInvite({
         {/* Návod pre hráčsky denník — relatívne z rovnakého dôvodu ako
             registrácia vyššie (na plaw.click ho proxy pošle na appku). */}
         <Link
-          href="/navod-self"
+          href="/diary-guide"
           className="text-sm font-medium text-muted underline underline-offset-2 transition-colors hover:text-foreground"
         >
           {t.guideLink}

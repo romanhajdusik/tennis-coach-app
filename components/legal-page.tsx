@@ -6,7 +6,7 @@ import { Wordmark } from "@/components/wordmark";
 /**
  * Spoločné vykreslenie právneho dokumentu (podmienky, zásady). Text prichádza
  * zo schváleného súboru v `docs/` cez `loadLegalDoc()` — táto vrstva rieši len
- * podobu. Štýl je zámerne ten istý ako `/navod` a `/cennik-hrac`: tmavá téma
+ * podobu. Štýl je zámerne ten istý ako `/guide` a `/pricing`: tmavá téma
  * cez tokeny, mobile first.
  */
 

@@ -55,7 +55,7 @@ export async function LandingPadel({
         label={config.label}
         domain={config.domain}
         subtitle={t.heroSubtitle}
-        more={{ href: "#cennik", label: t.pricingTitle }}
+        more={{ href: "#pricing", label: t.pricingTitle }}
         backdrop={<PadelCourt className="h-full w-auto max-w-full" />}
       />
 
@@ -91,7 +91,7 @@ export async function LandingPadel({
       </section>
 
       <section
-        id="cennik"
+        id="pricing"
         className="w-full max-w-5xl scroll-mt-6 px-4 py-8 sm:px-6 sm:py-12"
       >
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
@@ -131,11 +131,11 @@ export async function LandingPadel({
       <footer className="w-full max-w-5xl px-4 py-8 text-center text-xs text-muted sm:px-6">
         {t.footerTagline}
         <span className="mx-2">·</span>
-        <Link href="/podmienky" className="underline transition-colors hover:text-foreground">
+        <Link href="/terms" className="underline transition-colors hover:text-foreground">
           Terms
         </Link>
         <span className="mx-2">·</span>
-        <Link href="/zasady" className="underline transition-colors hover:text-foreground">
+        <Link href="/privacy" className="underline transition-colors hover:text-foreground">
           Privacy
         </Link>
         <span className="mx-2">·</span>

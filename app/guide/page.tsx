@@ -182,7 +182,7 @@ export default async function NavodPage() {
       <div className="w-full max-w-3xl px-4 py-6 text-center text-sm text-muted sm:px-6">
         {t.crossLinkText}{" "}
         <Link
-          href="/navod-hrac"
+          href="/player-guide"
           className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-muted"
         >
           {t.crossLinkCta}
