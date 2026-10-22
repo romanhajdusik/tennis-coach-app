@@ -866,6 +866,9 @@ naraz) — oplatí sa okolo toho navrhnúť cenník.
 - Vo federačnom svete sú len **director (pult) + coach (1:N appka)**; tréningové dáta sú
   federačne interné, žiadny rodič/hráč login. (Director len technicky *reusuje* read-only
   `app/parent/` stránky ako komponenty pre drill-in — code-reuse, nie parent prístup.)
+- **Mení sa (návrh 2026-10-22, §7):** hráč smie šéftrénerovi sprístupniť svoj
+  VLASTNÝ denník kódom. Dáta organizácie (denník trénera) ostávajú bez
+  rodiča/hráča, ako je tu napísané.
 
 ### 5.7 BEZPEČNOSŤ / RLS (povinné pri implementácii org vrstvy)
 - **Dvojrežimová RLS vedľa seba:**
@@ -1216,6 +1219,132 @@ Prečo to sedí bez veľkých zásahov:
 
 **Všetky štyri otázky sú rozhodnuté (2026-10-05) — návrh je pripravený na
 stavbu podľa §6.4.**
+
+---
+
+## 7. HRÁČSKY DENNÍK V ORGANIZÁCII — šéftréner vidí aj denník hráča (návrh 2026-10-22)
+
+**Stav: návrh, nekóduje sa.** Mení pravidlo §5.6 („B2B nemá vrstvu hráča") —
+vedome, rozhodnutím usera.
+
+### 7.1 Zámer
+
+Bedmintonový zväz chce **jeden pult a ~50 hráčov rôznych kategórií, ktorí si
+tréningy zapisujú SAMI**; tréneri tam nezapisujú vôbec. User chce tú istú
+možnosť pre organizácie **vo všetkých športoch vrátane tenisu**, lebo
+v niektorých organizáciách budú tréneri, ktorí digitál odmietnu. Ďalší dôvod
+od usera: **hráč často cestuje na turnaje sám** a zaťaženie si tam zapisuje
+on.
+
+### 7.2 Rozhodnutia usera (2026-10-22)
+
+1. **Dva samostatné denníky, nič sa nesčítava:**
+   - **denník trénera** — tréner zapisuje svoje tréningy s hráčom, ako dnes
+     (§5.4, patrí organizácii);
+   - **denník hráča** — VŠETKO, čo hráč natrénuje (domáca príprava aj
+     turnaje), vedie si ho hráč sám.
+2. **Šéftréner si v pulte pri hráčovi PREPNE, čie údaje vidí** — trénerove
+   alebo hráčove. Bedmintonový zväz je prípad, keď denník trénera neexistuje.
+   (Prebehlo to cez varianty A „jeden zapisujúci" a B „obaja na jednu kartu
+   so súčtom" — oba user odmietol v prospech dvoch denníkov. Moja námietka,
+   že šéftréner neuvidí súčet, ostala zapísaná, user ju vedome prijal.)
+3. **Denník hráča patrí HRÁČOVI.** Pri odchode z organizácie si ho berie
+   a šéftréner k nemu stratí prístup. User: po odchode hráča údaje zväzu
+   netreba, nikto s jeho prácou nepokračuje; kontinuitu treba len pri odchode
+   **trénera** a tú už rieši §5.4.
+4. **Kód dáva hráč** — rodičovi a kondičnému trénerovi (existujúce
+   mechanizmy, §6.2 bod 3) a novo aj **šéftrénerovi**. Pre rodiča je to vo
+   federácii jediná cesta k dátam (federačný tréner zdieľať nesmie, §5.6).
+5. **Platenie — šéftréner pri prijatí hráča zvolí:**
+   - **„hráč si platí sám"** (Stripe, 6,90 € / 49,90 €): do počtu hráčov
+     organizácie sa nezapočíta a hráč môže šéftrénera **kedykoľvek odpojiť**;
+   - **„platí zväz"**: hráčovi sa vlastné predplatné v Stripe nastaví na
+     koniec po už zaplatenom období (nič sa nevracia, nič neprepadá),
+     a **hráča odpája LEN šéftréner** — hráč sa sám odpojiť nemôže
+     (voľba 1; kým zväz platí, zväz vidí).
+6. **Po odpojení** hráč všetko vidí, ale nezapisuje (režim po skončení
+   predplatného), kým si nezaplatí sám — potom pokračuje v tom istom denníku
+   s celou históriou. Nič sa nemaže.
+7. **Cena pre organizáciu je individuálna** (bedminton je finančne slabší než
+   tenis) a fakturuje sa mimo appky ako sedadlá. Appka len stráži dohodnutý
+   počet hráčov, ktorých platí zväz.
+
+### 7.3 Návrh: čo už stojí a čo pribudne
+
+**Stojí:** denník hráča (§6, `profiles.self_diary`), zdieľanie rodičovi
+(kópie), prepojenie s kondičným trénerom (`player_links`), pult so všetkým
+okrem prepínača, kategórie podľa ročníka (`birth_year`, `/director/compare`),
+stav `complimentary` v `lib/subscription.ts`.
+
+**Pribudne (odporúčanie, nie rozhodnutie):**
+1. **Prepojenie denníka s organizáciou** — nová tabuľka (napr.
+   `organization_diary_links`: organizácia, účet denníka, karta v org,
+   `paid_by_org`, stav). **Nie členstvo v `organization_members`** — hráč nie
+   je zamestnanec a jeho účet je samostatný (§6.3), takže
+   `one_active_membership_per_user` sa ho netýka.
+2. **Čítanie pre šéftrénera = živý read-only pohľad**, nie kópie (vzor
+   `player_links` / `reads_linked_player`): po odpojení má prístup zmiznúť,
+   lebo dáta nie sú organizácie. Zápis šéftrénera do denníka nikdy.
+3. **Odpojenie cez `security definer` funkciu** s pravidlom z 7.2 bod 5
+   (hráč smie, len ak `paid_by_org = false`) — policy na UPDATE nevie
+   obmedziť, kto čo mení (ten istý dôvod ako pri `player_links`).
+4. **`lib/subscription.ts`:** denník platí, ak má hráč vlastné predplatné
+   **alebo** aktívne prepojenie s `paid_by_org`. Jediný zdroj pravdy ostáva
+   tam.
+5. **Stráž počtu** — nový stĺpec organizácie (napr. `diary_seat_limit`),
+   vynútený pri prijatí ako `seat_limit` pri trénerovi.
+6. **Stripe pri „platí zväz":** `cancel_at_period_end` na predplatnom hráča.
+7. **Pult:** prepínač „Coach data / Player data" na detaile hráča,
+   analytike aj porovnaní (nesie sa v adrese ako `?discipline=`); bez
+   denníka trénera sa nevykreslí.
+   **Kto platí, nastavuje šéftréner V PULTE** (návrh 2026-10-22): pri
+   zadaní kódu hráča volí „Paid by organization" / „Player pays", počítadlo
+   „37 of 50 paid" ako sedadlá na `/director/team`; neskôr to zmení na
+   profile hráča v pulte, s potvrdením. Zmena na „Player pays" znamená, že
+   hráč bude do zaplatenia len čítať — šéftréner to musí vidieť pred
+   potvrdením.
+8. **Dokumenty:** zásady a podmienky denníka (§15) musia povedať, že hráč
+   môže zdieľať so šéftrénerom a čo vtedy organizácia vidí; zmluva so
+   zväzom rieši len denník trénera.
+
+### 7.4 Otvorené otázky (pýtať sa po jednej)
+
+1. **Juniori pod 16.** §6.5 č. 1 rozhodla, že **účet denníka juniora zakladá
+   rodič**. V tejto session som skôr (pri modeli „rola v organizácii")
+   navrhol pozvánku na e-mail hráča a user povedal „ok" — to však platilo pre
+   účet organizácie, nie pre hráčov vlastný denník. **Treba rozhodnúť znova:**
+   platí pri 50 hráčoch zväzu pravidlo §6.5 (zakladá rodič), alebo zväz
+   zakladá účty sám?
+   **ROZHODNUTÉ 2026-10-22: platí §6.5 — účet juniora zakladá RODIČ**, aj
+   keď platí zväz. User: rodič tak má pod kontrolou, čo si jeho dieťa na
+   internete zakladá. Podmienky a zásady denníka sa kvôli tomu nemenia.
+2. **Ako sa hráč do organizácie dostane:** hráč bez denníka dostane od
+   šéftrénera pozvánku a denník sa mu založí, alebo si ho založí sám a potom
+   dá kód?
+3. **Spárovanie v zmiešanej organizácii:** ku ktorej karte v pulte patrí
+   denník (šéftréner vyberie pri prijatí existujúceho hráča organizácie,
+   alebo vznikne nová karta)?
+4. **Zápisy spred pripojenia:** vidí šéftréner celú históriu denníka, alebo
+   len od dňa prepojenia?
+5. **Vidí denník hráča aj jeho tréner v organizácii**, alebo len šéftréner?
+6. **Kondička:** denník hráča je len kurt (§6.5 č. 3). Organizácii to stačí?
+7. **Bedminton nemá nasadenie** (Vercel projekt, doména `plawbadminton.com`,
+   org subdoména `<slug>.plawbadminton.com`) — predpoklad pre čokoľvek
+   z tohto návrhu pri bedmintonovom zväze.
+
+**K otázke č. 2 — PREDBEŽNE (2026-10-22), user to ešte konzultuje so zväzom:**
+1. hráč (16+) alebo rodič (junior) si založí hráčsky denník ako dnes —
+   14 dní skúšobnej doby, nič neplatí;
+2. v denníku vytvorí kód pre šéftrénera a pošle mu ho;
+3. šéftréner kód zadá v pulte a zvolí „platí zväz" / „hráč si platí sám";
+4. pri „platí zväz" hráč nikdy nezadáva kartu — skúšobná doba plynule prejde
+   na platbu od zväzu.
+
+Pozvánka, ktorá by účet založila za hráča, sa nestavia. Navyše odporúčam
+**registračný odkaz od zväzu** (šéftréner ho rozpošle, otvorí registráciu
+denníka v správnom športe) — účet si aj tak zakladá hráč alebo rodič. User:
+„takto sa mi to zdá priechodnejšie". Po konzultácii so zväzom potvrdiť
+alebo upraviť.
 
 ---
 
