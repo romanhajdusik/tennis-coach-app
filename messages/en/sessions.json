@@ -27,9 +27,8 @@
   "newForm": {
     "heading": "Schedule a practice",
     "dateLabel": "Date and time",
-    "durationLabel": "Planned duration",
     "submit": "Schedule",
-    "confirmMessage": "Schedule practice on {date}, duration {duration} min?",
+    "confirmMessage": "Schedule practice on {date}?",
     "confirmSubmit": "Yes, schedule",
     "confirmSubmitPending": "Saving...",
     "confirmEdit": "Edit"
@@ -49,11 +48,10 @@
     "button": "Reschedule",
     "heading": "Reschedule practice",
     "dateLabel": "New date and time",
-    "durationLabel": "Planned duration",
     "hint": "Drills stay as they are, only the time changes.",
     "submit": "Save new time",
     "cancel": "Cancel",
-    "confirmMessage": "Move the practice to {date}, duration {duration} min?",
+    "confirmMessage": "Move the practice to {date}?",
     "confirmSubmit": "Yes, move it",
     "confirmSubmitPending": "Saving...",
     "confirmEdit": "Edit"

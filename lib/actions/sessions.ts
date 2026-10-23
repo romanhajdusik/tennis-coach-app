@@ -11,15 +11,11 @@ import { getDiscipline } from "@/lib/discipline";
 
 export type SessionFormState = { error?: string } | undefined;
 
-const DEFAULT_SESSION_DURATION_MINUTES = 90;
-
 export async function createSession(
   _prevState: SessionFormState,
   formData: FormData,
 ): Promise<SessionFormState> {
   const date = formData.get("date") as string;
-  const durationMinutes =
-    Number(formData.get("duration_minutes")) || DEFAULT_SESSION_DURATION_MINUTES;
   const t = await getTranslations("Sessions.errors");
 
   if (!date) {
@@ -57,7 +53,9 @@ export async function createSession(
       organization_id: org?.id ?? null,
       player_id: activePlayer.id,
       status: "planned",
-      planned_data: { date, duration_minutes: durationMinutes },
+      // Plánované trvanie sa od 2026-10-23 nezadáva (podnet zákazníka):
+      // nikde sa nezobrazovalo ani nepočítalo — čas tréningu je súčet cvičení.
+      planned_data: { date },
       // Štítok disciplíny patrí na TRÉNING, nie na trénera
       // (tréner môže hráča stratiť aj získať a vo federácii má hráč viac
       // trénerov, takže z `coach_id` sa disciplína odvodiť nedá). Mimo
@@ -77,7 +75,7 @@ export async function createSession(
 
 type PlannedData = { date?: string; duration_minutes?: number };
 
-// Presun naplánovaného tréningu na iný čas (prípadne inú dĺžku). Cvičenia sa
+// Presun naplánovaného tréningu na iný čas. Cvičenia sa
 // nedotýka — v tom je celý zmysel: bez tejto akcie musel tréner tréning zrušiť
 // a založiť nanovo, čím prišiel o rozpísané cvičenia (`on delete cascade`) a vo
 // federačnom režime po ňom ostal riadok `cancelled`.
@@ -87,8 +85,6 @@ export async function updateSessionPlan(
   formData: FormData,
 ): Promise<SessionFormState> {
   const date = formData.get("date") as string;
-  const durationMinutes =
-    Number(formData.get("duration_minutes")) || DEFAULT_SESSION_DURATION_MINUTES;
   const t = await getTranslations("Sessions.errors");
 
   if (!date) {
@@ -130,7 +126,7 @@ export async function updateSessionPlan(
     .from("sessions")
     .update(
       {
-        planned_data: { ...planned, date, duration_minutes: durationMinutes },
+        planned_data: { ...planned, date },
       },
       { count: "exact" },
     )

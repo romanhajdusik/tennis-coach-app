@@ -9,7 +9,6 @@ export function NewSessionForm() {
   const format = useFormatter();
   const [state, formAction, pending] = useActionState(createSession, undefined);
   const [date, setDate] = useState("");
-  const [duration, setDuration] = useState("90");
   const [confirming, setConfirming] = useState(false);
   const dateInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,25 +41,6 @@ export function NewSessionForm() {
               className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label
-              htmlFor="duration_minutes"
-              className="text-sm font-medium text-foreground "
-            >
-              {t("durationLabel")}
-            </label>
-            <select
-              id="duration_minutes"
-              name="duration_minutes"
-              value={duration}
-              onChange={(event) => setDuration(event.target.value)}
-              className="rounded-lg border border-border px-3 py-2 text-sm bg-input"
-            >
-              <option value="60">60 min</option>
-              <option value="90">90 min</option>
-              <option value="120">120 min</option>
-            </select>
-          </div>
           <button
             type="button"
             onClick={() => {
@@ -82,7 +62,6 @@ export function NewSessionForm() {
                     timeStyle: "short",
                   })
                 : "",
-              duration,
             })}
           </p>
           <input
@@ -90,7 +69,6 @@ export function NewSessionForm() {
             name="date"
             value={date ? new Date(date).toISOString() : ""}
           />
-          <input type="hidden" name="duration_minutes" value={duration} />
           {state?.error && (
             <p className="text-sm text-red-400">{state.error}</p>
           )}

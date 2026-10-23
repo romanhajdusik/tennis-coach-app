@@ -97,7 +97,6 @@ async function rescheduleScenario(page, base, db, coach, player) {
 
     await page.getByRole("button", { name: "Reschedule", exact: true }).click();
     await page.fill("#reschedule_date", toLocalInput(movedTo));
-    await page.selectOption("#reschedule_duration", "120");
     await page.getByRole("button", { name: "Save new time" }).click();
     await page.waitForTimeout(500);
     await page.getByRole("button", { name: "Yes, move it" }).click();
@@ -114,9 +113,12 @@ async function rescheduleScenario(page, base, db, coach, player) {
       after.planned_data.date === movedTo.toISOString(),
       `${after.planned_data.date} (očakávané ${movedTo.toISOString()})`,
     );
+    // Plánované trvanie sa od 2026-10-23 nezadáva — presun mení len čas
+    // a staré trvanie v `planned_data` nechá tak, ako bolo.
     check(
-      "zmenila sa aj plánovaná dĺžka",
-      after.planned_data.duration_minutes === 120,
+      "pri presune sa nepýta na trvanie a staré ostane",
+      (await page.locator("#reschedule_duration").count()) === 0 &&
+        after.planned_data.duration_minutes === 90,
       String(after.planned_data.duration_minutes),
     );
     check(

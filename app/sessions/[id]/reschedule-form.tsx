@@ -5,8 +5,6 @@ import { useTranslations, useFormatter } from "next-intl";
 import { updateSessionPlan } from "@/lib/actions/sessions";
 import { toLocalInputValue } from "@/lib/datetime-input";
 
-const DURATION_OPTIONS = ["60", "90", "120"];
-
 /**
  * Presun naplánovaného tréningu na iný čas. Cvičenia ostávajú, preto sa to
  * ponúka priamo pri plánovanom termíne — nie ako „zrušiť a založiť nanovo".
@@ -17,11 +15,9 @@ const DURATION_OPTIONS = ["60", "90", "120"];
 export function RescheduleForm({
   sessionId,
   plannedDate,
-  plannedDuration,
 }: {
   sessionId: string;
   plannedDate?: string;
-  plannedDuration?: number;
 }) {
   const t = useTranslations("Sessions.reschedule");
   const format = useFormatter();
@@ -32,14 +28,12 @@ export function RescheduleForm({
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [date, setDate] = useState(toLocalInputValue(plannedDate));
-  const [duration, setDuration] = useState(String(plannedDuration ?? 90));
   const dateInputRef = useRef<HTMLInputElement>(null);
 
   function close() {
     setConfirming(false);
     setOpen(false);
     setDate(toLocalInputValue(plannedDate));
-    setDuration(String(plannedDuration ?? 90));
   }
 
   if (!open) {
@@ -80,26 +74,6 @@ export function RescheduleForm({
               className="rounded-lg border border-border bg-input px-3 py-2 text-sm"
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label
-              htmlFor="reschedule_duration"
-              className="text-sm font-medium text-foreground"
-            >
-              {t("durationLabel")}
-            </label>
-            <select
-              id="reschedule_duration"
-              value={duration}
-              onChange={(event) => setDuration(event.target.value)}
-              className="rounded-lg border border-border bg-input px-3 py-2 text-sm"
-            >
-              {DURATION_OPTIONS.map((minutes) => (
-                <option key={minutes} value={minutes}>
-                  {minutes} min
-                </option>
-              ))}
-            </select>
-          </div>
           <p className="text-xs text-muted">{t("hint")}</p>
           <div className="flex gap-2">
             <button
@@ -131,7 +105,6 @@ export function RescheduleForm({
                     timeStyle: "short",
                   })
                 : "",
-              duration,
             })}
           </p>
           {/* Do DB ide vždy jednoznačný ISO reťazec — prevod z pásma
@@ -141,7 +114,6 @@ export function RescheduleForm({
             name="date"
             value={date ? new Date(date).toISOString() : ""}
           />
-          <input type="hidden" name="duration_minutes" value={duration} />
           {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
           <div className="flex gap-2">
             <button

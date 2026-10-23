@@ -152,7 +152,6 @@ export default async function SessionDetailPage({
           <RescheduleForm
             sessionId={session.id}
             plannedDate={planned?.date}
-            plannedDuration={planned?.duration_minutes}
           />
         )}
       </div>
