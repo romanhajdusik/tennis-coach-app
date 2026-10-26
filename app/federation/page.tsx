@@ -23,6 +23,22 @@ import { PublicAnalytics } from "@/components/public-analytics";
  * predpoklad, nie rozhodnutie.** Zvyšok vzhľadu je zhodný s landingom
  * a návodmi — tmavá téma cez tokeny.
  */
+// Fotky za piliermi a malými dlaždicami (od 2026-10-26, marketéri chceli
+// viac obrázkov). Vygenerované v Higgsfielde — bez značiek a bez nápisov.
+// Priraďujú sa podľa PORADIA v `federacie.json`, takže pri zmene poradia
+// pilierov alebo funkcií treba posunúť aj fotky. `position` je výrez
+// (object-position), aby na úzkej dlaždici ostali v zábere ľudia.
+const PILLAR_PHOTOS = [
+  { src: "/federation/pillar-organisation.webp", position: "50% 40%" },
+  { src: "/federation/pillar-console.webp", position: "50% 45%" },
+  { src: "/federation/pillar-methodology.webp", position: "50% 45%" },
+];
+const FEATURE_PHOTOS = [
+  { src: "/federation/feature-side-by-side.webp", position: "50% 30%" },
+  { src: "/federation/feature-sign-in.webp", position: "50% 50%" },
+  { src: "/federation/feature-coach.webp", position: "50% 35%" },
+];
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await loadFederacieMessages();
   return {
@@ -106,20 +122,46 @@ export default async function FederaciePage() {
           <h2 className="mb-8 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {t.pillarsTitle}
           </h2>
+          {/* Fotka pod tmavým závojom za každým pilierom (user vybral „A"
+              pred matným sklom). Závoj je zľava tmavší, kde je nadpis. */}
           <div className="divide-y divide-border border-y border-border">
-            {t.pillars.map((pillar) => (
-              <div
-                key={pillar.title}
-                className="grid gap-3 py-8 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-10"
-              >
-                <h3 className="text-xl font-semibold tracking-tight text-balance text-primary sm:text-2xl">
-                  {pillar.title}
-                </h3>
-                <p className="text-base leading-relaxed text-muted sm:text-lg">
-                  {pillar.description}
-                </p>
-              </div>
-            ))}
+            {t.pillars.map((pillar, index) => {
+              const photo = PILLAR_PHOTOS[index];
+              return (
+                <div
+                  key={pillar.title}
+                  className="relative isolate overflow-hidden"
+                >
+                  {photo && (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={photo.src}
+                        alt=""
+                        aria-hidden
+                        loading="lazy"
+                        width={1600}
+                        height={905}
+                        style={{ objectPosition: photo.position }}
+                        className="absolute inset-0 -z-20 h-full w-full object-cover"
+                      />
+                      <div
+                        aria-hidden
+                        className="absolute inset-0 -z-10 bg-gradient-to-r from-background/90 via-background/80 to-background/70"
+                      />
+                    </>
+                  )}
+                  <div className="grid gap-3 px-5 py-10 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-10 sm:px-7 sm:py-12">
+                    <h3 className="text-xl font-semibold tracking-tight text-balance text-primary sm:text-2xl">
+                      {pillar.title}
+                    </h3>
+                    <p className="text-base leading-relaxed text-foreground [text-shadow:0_1px_10px_rgb(0_0_0/0.6)] sm:text-lg">
+                      {pillar.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -127,23 +169,51 @@ export default async function FederaciePage() {
           <h2 className="mb-6 text-lg font-semibold text-foreground">
             {t.featuresTitle}
           </h2>
-          <ul className="grid gap-x-10 gap-y-6 md:grid-cols-3">
-            {t.features.map((feature) => (
-              <li key={feature.title} className="flex gap-3">
-                <span
-                  aria-hidden
-                  className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-primary"
-                />
-                <span className="min-w-0">
-                  <h3 className="font-semibold text-foreground">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted">
-                    {feature.description}
-                  </p>
-                </span>
-              </li>
-            ))}
+          {/* Fotka cez celú dlaždicu, text dole na tmavom prechode. */}
+          <ul className="grid gap-4 md:grid-cols-3">
+            {t.features.map((feature, index) => {
+              const photo = FEATURE_PHOTOS[index];
+              return (
+                <li
+                  key={feature.title}
+                  className="relative isolate flex min-h-[260px] items-end overflow-hidden rounded-2xl border border-border"
+                >
+                  {photo && (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={photo.src}
+                        alt=""
+                        aria-hidden
+                        loading="lazy"
+                        width={900}
+                        height={672}
+                        style={{ objectPosition: photo.position }}
+                        className="absolute inset-0 -z-20 h-full w-full object-cover"
+                      />
+                      <div
+                        aria-hidden
+                        className="absolute inset-0 -z-10 bg-gradient-to-b from-background/25 via-background/75 to-background/95"
+                      />
+                    </>
+                  )}
+                  <div className="flex gap-3 p-5">
+                    <span
+                      aria-hidden
+                      className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-primary"
+                    />
+                    <span className="min-w-0">
+                      <h3 className="font-semibold text-foreground">
+                        {feature.title}
+                      </h3>
+                      <p className="mt-1 text-sm leading-relaxed text-foreground [text-shadow:0_1px_8px_rgb(0_0_0/0.6)]">
+                        {feature.description}
+                      </p>
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </section>
 
