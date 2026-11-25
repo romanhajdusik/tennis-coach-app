@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requestOrigin } from "@/lib/request-origin";
+import { looksLikeAccessCode } from "@/lib/access-code";
 import {
   getDeploymentDiscipline,
   isCourtDiscipline,
@@ -133,7 +134,14 @@ export async function register(
     );
 
     if (codeError || !valid) {
-      return { error: t("promoCodeInvalid") };
+      // Pozývací kód od šéftrénera aj kód pre rodiča sa sem vkladajú omylom
+      // (stalo sa pri prvom tour teame 2026-11-25) — patria až za prihlásenie,
+      // na /join resp. /parent. Platný promo kód má vždy prednosť.
+      return {
+        error: looksLikeAccessCode(promoCode)
+          ? t("promoCodeLooksLikeInvite")
+          : t("promoCodeInvalid"),
+      };
     }
   }
 

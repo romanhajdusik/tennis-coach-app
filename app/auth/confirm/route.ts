@@ -65,8 +65,16 @@ export async function GET(request: NextRequest) {
   }
 
   // Neplatný, vypršaný alebo už použitý odkaz nesmie skončiť prázdnou
-  // stránkou — stránka nižšie z toho spraví ponuku vyžiadať si nový.
-  const target = verified ? next : `${NEW_PASSWORD_PATH}?error=link`;
+  // stránkou. Pri obnove hesla z toho stránka spraví ponuku vyžiadať si nový
+  // odkaz; pri potvrdení registrácie (`next` je domov) patrí človek na
+  // prihlásenie — do 2026-11-25 skončil na obnove hesla, ktorú nežiadal.
+  // Sledujúci ide tiež na `/login`: `login()` ho po prihlásení pošle na
+  // `/parent` podľa roly.
+  const target = verified
+    ? next
+    : next === NEW_PASSWORD_PATH
+      ? `${NEW_PASSWORD_PATH}?error=link`
+      : "/login?confirm=failed";
 
   return NextResponse.redirect(new URL(target, origin), 303);
 }

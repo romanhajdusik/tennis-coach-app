@@ -32,3 +32,19 @@ export function generateAccessCode(length = 8): string {
   }
   return code;
 }
+
+const ACCESS_CODE_SHAPE = new RegExp(
+  `^[${CODE_ALPHABET}]{4}-?[${CODE_ALPHABET}]{4}$`,
+  "i",
+);
+
+/**
+ * Má hodnota tvar NAŠEHO kódu — pozvánky do organizácie (`ABCD-2345`) alebo
+ * kódu pre rodiča (`ABCD2345`)? Rozhoduje len tvar, do databázy sa nepozerá:
+ * registrácia je verejná a overovač existujúcich kódov by z nej spravil cestu,
+ * ako ich hádať. Volá ju `register()`, keď niekto takýto kód vloží do poľa
+ * na promo kód.
+ */
+export function looksLikeAccessCode(value: string): boolean {
+  return ACCESS_CODE_SHAPE.test(value);
+}

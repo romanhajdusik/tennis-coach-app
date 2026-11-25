@@ -11,8 +11,10 @@ import { login } from "@/lib/actions/auth";
  */
 export function LoginForm({
   otherApp,
+  confirmFailed = false,
 }: {
   otherApp: { name: string; href: string; domain: string } | null;
+  confirmFailed?: boolean;
 }) {
   const t = useTranslations("Auth.login");
   const loginAction = login.bind(null, "/");
@@ -39,6 +41,11 @@ export function LoginForm({
             <a href={otherApp.href} className="font-medium underline">
               {otherApp.domain}
             </a>
+          </p>
+        )}
+        {confirmFailed && (
+          <p className="mt-4 rounded-lg border border-border bg-input p-3 text-sm text-foreground">
+            {t("confirmFailed")}
           </p>
         )}
         <form action={formAction} className="mt-6 flex flex-col gap-4">
